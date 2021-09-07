@@ -5,7 +5,7 @@
  * Added ES6-style constructor and static property inheritance rather than just
  * copying the enumerable static properties each time.
  */
- define('backbone.es6', [
+define('backbone.es6', [
   'underscore',
   'backbone',
   'backbone.controller'
