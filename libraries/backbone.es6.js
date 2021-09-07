@@ -14,7 +14,7 @@ define('backbone.es6', [
   var hasNativeClassSupport = true;
   try {
     eval('class A {}');
-  } catch(err) {
+  } catch (err) {
     hasNativeClassSupport = false;
   }
 
@@ -30,34 +30,34 @@ define('backbone.es6', [
   if (hasNativeClassSupport) {
     // Transform Backbone classes into ES6 Classes
     ['View', 'Model', 'Collection', 'Router', 'History', 'Controller'].forEach(function(name) {
-      Backbone['_' + name]= Backbone[name];
-      Backbone[name] = eval('class ' + name + ' extends Backbone["_'+name+'"] { }; ' + name + ';');
+      Backbone['_' + name] = Backbone[name];
+      Backbone[name] = eval('class ' + name + ' extends Backbone["_' + name + '"] { }; ' + name + ';');
     });
   }
+
+  var getChild = function (parent, protoProps) {
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent constructor.
+    var hasConstructor = protoProps && _.has(protoProps, 'constructor');
+    if (hasNativeClassSupport && hasConstructor) {
+      return eval('class e extends protoProps.constructor { }; e;');
+    }
+    if (hasNativeClassSupport) {
+      return eval('class e extends parent { }; e;');
+    }
+    if (hasConstructor) {
+      return protoProps.constructor;
+    }
+    return function () { return parent.apply(this, arguments); };
+  };
 
   // Helper function to correctly set up the prototype chain for subclasses.
   // Similar to `goog.inherits`, but uses a hash of prototype properties and
   // class properties to be extended.
   var extend = function(protoProps, staticProps) {
     var parent = this;
-    var child;
-
-    // The constructor function for the new subclass is either defined by you
-    // (the "constructor" property in your `extend` definition), or defaulted
-    // by us to simply call the parent constructor.
-    if (hasNativeClassSupport) {
-      if (protoProps && _.has(protoProps, 'constructor')) {
-        child = eval('class e extends protoProps.constructor { }; e;');
-      } else {
-        child = eval('class e extends parent { }; e;');
-      }
-    } else {
-      if (protoProps && _.has(protoProps, 'constructor')) {
-        child = protoProps.constructor;
-      } else {
-        child = function(){ return parent.apply(this, arguments); };
-      }
-    }
+    var child = getChild(parent, protoProps);
 
     // Create static property inheritance chain
     Object.setPrototypeOf(child, parent);
@@ -90,27 +90,29 @@ define('backbone.es6', [
   // Fixes for Backbone.Collection in ES6 class environment
   Backbone.Collection.prototype.model = Backbone.Model;
   Backbone.Collection.prototype.modelId = function(t) {
-    return t[(this.model.prototype && this.model.prototype.idAttribute) || "id"];
+    return t[(this.model.prototype && this.model.prototype.idAttribute) || 'id'];
   };
   Backbone.Collection.prototype._prepareModel = function(t, e) {
     if (this._isModel(t)) {
-        if (!t.collection)
-            t.collection = this;
-        return t
+      if (!t.collection) {
+        t.collection = this;
+      }
+      return t;
     }
     e = e ? _.clone(e) : {};
     e.collection = this;
     var n;
     if (this.model === Backbone.Model || this.model.prototype instanceof Backbone.Model) {
       var Class = this.model;
-      n = new Class(t,e);
+      n = new Class(t, e);
     } else {
-      n = this.model(t,e);
+      n = this.model(t, e);
     }
-    if (!n.validationError)
-        return n;
-    this.trigger("invalid", this, n.validationError, e);
-    return false
+    if (!n.validationError) {
+      return n;
+    }
+    this.trigger('invalid', this, n.validationError, e);
+    return false;
   };
 
 });
