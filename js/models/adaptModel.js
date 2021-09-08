@@ -721,7 +721,7 @@ export default class AdaptModel extends LockingModel {
     const firstChild = children.shift();
     children.reduce((previousChild, child) => {
       const isLockedByPreviousChild = (!previousChild.get('_isComplete') && !previousChild.get('_isOptional'));
-      return child.set('_isLocked', isLockedByPreviousChild);
+      return child.set('_isLocked', isLockedByPreviousChild && !child.get('_isComplete'));
     }, firstChild);
   }
 
@@ -729,14 +729,14 @@ export default class AdaptModel extends LockingModel {
     const children = this.getAvailableChildModels();
     const firstChild = children.shift();
     const isLockedByFirstChild = (!firstChild.get('_isComplete') && !firstChild.get('_isOptional'));
-    children.forEach(child => child.set('_isLocked', isLockedByFirstChild));
+    children.forEach(child => child.set('_isLocked', isLockedByFirstChild && !child.get('_isComplete')));
   }
 
   setLockLastLocking() {
     const children = this.getAvailableChildModels();
     const lastChild = children.pop();
     const isLockedByChildren = children.some(child => (!child.get('_isComplete') && !child.get('_isOptional')));
-    lastChild.set('_isLocked', isLockedByChildren);
+    lastChild.set('_isLocked', isLockedByChildren && !lastChild.get('_isComplete'));
   }
 
   setCustomLocking() {
@@ -745,6 +745,7 @@ export default class AdaptModel extends LockingModel {
   }
 
   shouldLock(child) {
+    if (child.get('_isComplete')) return false;
     const lockedBy = child.get('_lockedBy');
     if (!lockedBy) return false;
     return lockedBy.some(id => {
