@@ -14,25 +14,16 @@
 
   @media (min-width: @device-width-medium) {
     &.is-left {
-      padding-right: @component-padding-hoz;
       width: 50%;
-
-      .dir-rtl & {
-        padding-right: inherit;
-        padding-left: @component-padding-hoz;
-      }
     }
 
     &.is-right {
       margin-left: auto;
-      padding-left: @component-padding-hoz;
       width: 50%;
 
       .dir-rtl & {
-        margin-left: inherit;
+        margin-left: 0;
         margin-right: auto;
-        padding-left: inherit;
-        padding-right: @component-padding-hoz;
       }
     }
   }
