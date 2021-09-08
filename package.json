@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/adaptlearning/adapt-contrib-core.git"
   },
+  "keywords": [
+    "adapt-plugin",
+    "adapt-core"
+  ],
   "license": "GPL-3.0",
   "bugs": "https://github.com/adaptlearning/adapt-contrib-core/issues"
 }
