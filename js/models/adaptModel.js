@@ -718,25 +718,31 @@ export default class AdaptModel extends LockingModel {
 
   setSequentialLocking() {
     const children = this.getAvailableChildModels();
-    const firstChild = children.shift();
-    children.reduce((previousChild, child) => {
-      const isLockedByPreviousChild = (!previousChild.get('_isComplete') && !previousChild.get('_isOptional'));
-      return child.set('_isLocked', isLockedByPreviousChild && !child.get('_isComplete'));
-    }, firstChild);
+    // Start from second child
+    children.slice(1).forEach((child, index) => {
+      const previousChild = children[index];
+      // If previous was locked, all subsequent will be locked.
+      const isLockedByPreviousChild = previousChild.get('_isLocked') ||
+        (
+          !previousChild.get('_isComplete') &&
+          !previousChild.get('_isOptional')
+        );
+      child.set('_isLocked', isLockedByPreviousChild);
+    }, false);
   }
 
   setUnlockFirstLocking() {
     const children = this.getAvailableChildModels();
     const firstChild = children.shift();
     const isLockedByFirstChild = (!firstChild.get('_isComplete') && !firstChild.get('_isOptional'));
-    children.forEach(child => child.set('_isLocked', isLockedByFirstChild && !child.get('_isComplete')));
+    children.forEach(child => child.set('_isLocked', isLockedByFirstChild));
   }
 
   setLockLastLocking() {
     const children = this.getAvailableChildModels();
     const lastChild = children.pop();
     const isLockedByChildren = children.some(child => (!child.get('_isComplete') && !child.get('_isOptional')));
-    lastChild.set('_isLocked', isLockedByChildren && !lastChild.get('_isComplete'));
+    lastChild.set('_isLocked', isLockedByChildren);
   }
 
   setCustomLocking() {
@@ -745,13 +751,17 @@ export default class AdaptModel extends LockingModel {
   }
 
   shouldLock(child) {
-    if (child.get('_isComplete')) return false;
     const lockedBy = child.get('_lockedBy');
     if (!lockedBy) return false;
     return lockedBy.some(id => {
       try {
-        const model = Adapt.findById(id);
-        return !model.get('_isComplete') && !model.get('_isOptional') && model.get('_isAvailable');
+        const anotherModel = Adapt.findById(id);
+        return anotherModel.get('_isLocked') ||
+          (
+            !anotherModel.get('_isComplete') &&
+            !anotherModel.get('_isOptional') &&
+            anotherModel.get('_isAvailable')
+          );
       } catch (e) {
         console.warn(`AdaptModel.shouldLock: unknown _lockedBy ID '${id}' found on ${child.get('_id')}`);
         return false;
