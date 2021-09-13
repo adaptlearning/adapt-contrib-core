@@ -756,11 +756,13 @@ export default class AdaptModel extends LockingModel {
     return lockedBy.some(id => {
       try {
         const anotherModel = Adapt.findById(id);
-        return anotherModel.get('_isLocked') ||
+        return anotherModel.get('_isAvailable') && 
           (
-            !anotherModel.get('_isComplete') &&
-            !anotherModel.get('_isOptional') &&
-            anotherModel.get('_isAvailable')
+            anotherModel.get('_isLocked') ||
+            (
+              !anotherModel.get('_isComplete') &&
+              !anotherModel.get('_isOptional')
+            )
           );
       } catch (e) {
         console.warn(`AdaptModel.shouldLock: unknown _lockedBy ID '${id}' found on ${child.get('_id')}`);
