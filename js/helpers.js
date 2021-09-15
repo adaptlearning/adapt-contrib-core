@@ -1,16 +1,5 @@
 import Adapt from 'core/js/adapt';
-
-const defaultAriaLevels = {
-  '_menu': 1,
-  '_menuGroup': 2,
-  '_menuItem': 2,
-  '_page': 1,
-  '_article': 2,
-  '_block': 3,
-  '_component': 4,
-  '_componentItem': 5,
-  '_notify': 1
-};
+import a11y from './a11y';
 
 const helpers = {
 
@@ -139,7 +128,7 @@ const helpers = {
    * Allow JSON to be a template and accessible text
    */
   compile_a11y_text(template, context) {
-    Adapt.a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
+    a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
     return helpers.compile.call(this, template, context);
   },
 
@@ -248,28 +237,28 @@ const helpers = {
   },
 
   a11y_text(text) {
-    Adapt.a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
+    a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
     return text;
   },
 
   /**
-   * Handlebars helper for `Adapt.a11y.normalize(htmls)`.
+   * Handlebars helper for `a11y.normalize(htmls)`.
    *
    * @param {string} htmls Any htmls.
    * @returns {string}
    */
   a11y_normalize(htmls) {
-    return Adapt.a11y.normalize.apply(Adapt.a11y, arguments);
+    return a11y.normalize.apply(a11y, arguments);
   },
 
   /**
-   * Handlebars helper for `Adapt.a11y.removeBreaks(htmls)`.
+   * Handlebars helper for `a11y.removeBreaks(htmls)`.
    *
    * @param {string} htmls Any htmls.
    * @returns {string}
    */
   a11y_remove_breaks(htmls) {
-    return Adapt.a11y.removeBreaks.apply(Adapt.a11y, arguments);
+    return a11y.removeBreaks.apply(a11y, arguments);
   },
 
   /**
@@ -339,32 +328,12 @@ const helpers = {
    * @returns {string}
    */
   a11y_attrs_heading(levelOrType) {
-    // get the global configuration from config.json
-    const cfg = Adapt.config.get('_accessibility');
-    // default level to use if nothing overrides it
-    let level = 1;
-
-    // first check to see if the Handlebars context has an override
-    if (this._ariaLevel) {
-      levelOrType = this._ariaLevel;
-    }
-
-    if (isNaN(levelOrType) === false) {
-      // if a number is passed just use this
-      level = levelOrType;
-    } else if (_.isString(levelOrType)) {
-      // if a string is passed check if it is defined in global configuration
-      cfg._ariaLevels = cfg._ariaLevels || defaultAriaLevels;
-      if (cfg._ariaLevels?.['_' + levelOrType] !== undefined) {
-        level = cfg._ariaLevels['_' + levelOrType];
-      }
-    }
-
+    const level = a11y.ariaLevel(levelOrType);
     return new Handlebars.SafeString(' role="heading" aria-level="' + level + '" ');
   },
 
   a11y_attrs_tabbable() {
-    Adapt.a11y.log.deprecated('a11y_attrs_tabbable should not be used. tabbable elements should be natively tabbable.');
+    a11y.log.deprecated('a11y_attrs_tabbable should not be used. tabbable elements should be natively tabbable.');
     return new Handlebars.SafeString(' role="region" tabindex="0" ');
   },
 
@@ -386,24 +355,23 @@ const helpers = {
 Object.assign(helpers, {
 
   if_value_equals() {
-    Adapt.a11y.log.deprecated('if_value_equals, use equals instead.');
+    a11y.log.deprecated('if_value_equals, use equals instead.');
     return helpers.equals.apply(this, arguments);
   },
 
   numbers() {
-    Adapt.a11y.log.deprecated('numbers, use inc instead.');
+    a11y.log.deprecated('numbers, use inc instead.');
     return helpers.inc.apply(this, arguments);
   },
 
   lowerCase() {
-    Adapt.a11y.log.deprecated('lowerCase, use lowercase instead.');
+    a11y.log.deprecated('lowerCase, use lowercase instead.');
     return helpers.lowercase.apply(this, arguments);
   }
 
 });
 
-for (let name in helpers) {
-  if (!helpers.hasOwnProperty(name)) continue;
+for (const name in helpers) {
   Handlebars.registerHelper(name, helpers[name]);
 }
 

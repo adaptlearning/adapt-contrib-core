@@ -6,6 +6,7 @@ import Log from 'core/js/a11y/log';
 import Scroll from 'core/js/a11y/scroll';
 import WrapFocus from 'core/js/a11y/wrapFocus';
 import Popup from 'core/js/a11y/popup';
+import defaultAriaLevels from './enums/defaultAriaLevels';
 
 import 'core/js/a11y/deprecated';
 
@@ -149,6 +150,35 @@ class A11y extends Backbone.Controller {
 
   isEnabled() {
     return this.config?._isEnabled;
+  }
+
+  /**
+   * Calculate the aria level for a heading
+   * @param {string|number} [levelOrType] Specify a level or type group.
+   * @returns {number}
+   */
+  ariaLevel(levelOrType) {
+    // get the global configuration from config.json
+    const cfg = Adapt.config.get('_accessibility');
+    // default level to use if nothing overrides it
+    let level = 1;
+
+    // first check to see if the Handlebars context has an override
+    if (this._ariaLevel) {
+      levelOrType = this._ariaLevel;
+    }
+
+    if (isNaN(levelOrType) === false) {
+      // if a number is passed just use this
+      level = levelOrType;
+    } else if (_.isString(levelOrType)) {
+      // if a string is passed check if it is defined in global configuration
+      cfg._ariaLevels = cfg._ariaLevels || defaultAriaLevels;
+      if (cfg._ariaLevels?.['_' + levelOrType] !== undefined) {
+        level = cfg._ariaLevels['_' + levelOrType];
+      }
+    }
+    return level;
   }
 
   /**
@@ -391,7 +421,7 @@ class A11y extends Backbone.Controller {
 
       // skip this sibling if explicitly instructed
       if (value === false) {
-        return;
+        return false;
       }
 
       if (value) {
@@ -402,7 +432,7 @@ class A11y extends Backbone.Controller {
 
       // check parent sibling children by walking the tree
       $found = this._findFirstForwardDescendant($sibling, iterator);
-      if ($found.length) return true;
+      return Boolean($found.length);
     });
     if ($found.length) {
       return $found;
@@ -423,7 +453,7 @@ class A11y extends Backbone.Controller {
 
         // skip this sibling if explicitly instructed
         if (value === false) {
-          return;
+          return false;
         }
 
         if (value) {
@@ -434,9 +464,7 @@ class A11y extends Backbone.Controller {
 
         // check parent sibling children by walking the tree
         $found = this._findFirstForwardDescendant($sibling, iterator);
-        if ($found.length) {
-          return true;
-        }
+        return Boolean($found.length);
       });
     });
 
@@ -585,7 +613,7 @@ class A11y extends Backbone.Controller {
     function perform() {
       if ($element.attr('tabindex') === undefined) {
         $element.attr({
-          'tabindex': '-1',
+          tabindex: '-1',
           'data-a11y-force-focus': 'true'
         });
       }
