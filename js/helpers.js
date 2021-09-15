@@ -328,7 +328,7 @@ const helpers = {
    * @returns {string}
    */
   a11y_attrs_heading(levelOrType) {
-    const level = a11y.ariaLevel(levelOrType);
+    const level = a11y.ariaLevel(levelOrType, this._ariaLevel);
     return new Handlebars.SafeString(' role="heading" aria-level="' + level + '" ');
   },
 

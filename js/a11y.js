@@ -154,31 +154,32 @@ class A11y extends Backbone.Controller {
 
   /**
    * Calculate the aria level for a heading
-   * @param {string|number} [levelOrType] Specify a level or type group.
+   * @param {string|number} [defaultLevelOrType] Specify a default level or type group.
+   * @param {string|number} [overrideLevelOrType] Override with a level or type group from the designer.
    * @returns {number}
    */
-  ariaLevel(levelOrType) {
+  ariaLevel(defaultLevelOrType = 1, overrideLevelOrType) {
     // get the global configuration from config.json
     const cfg = Adapt.config.get('_accessibility');
-    // default level to use if nothing overrides it
-    let level = 1;
 
     // first check to see if the Handlebars context has an override
-    if (this._ariaLevel) {
-      levelOrType = this._ariaLevel;
+    if (overrideLevelOrType) {
+      defaultLevelOrType = overrideLevelOrType;
     }
 
-    if (isNaN(levelOrType) === false) {
+    if (!isNaN(defaultLevelOrType)) {
       // if a number is passed just use this
-      level = levelOrType;
-    } else if (_.isString(levelOrType)) {
-      // if a string is passed check if it is defined in global configuration
-      cfg._ariaLevels = cfg._ariaLevels || defaultAriaLevels;
-      if (cfg._ariaLevels?.['_' + levelOrType] !== undefined) {
-        level = cfg._ariaLevels['_' + levelOrType];
-      }
+      return defaultLevelOrType;
     }
-    return level;
+
+    if (_.isString(defaultLevelOrType)) {
+      // if a string is passed, check if it is defined in global configuration
+      const ariaLevels = cfg._ariaLevels ?? defaultAriaLevels;
+      return ariaLevels?.['_' + defaultLevelOrType] ?? defaultLevelOrType;
+    }
+
+    // default level to use if nothing overrides it
+    return defaultLevelOrType;
   }
 
   /**
