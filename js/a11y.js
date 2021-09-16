@@ -342,7 +342,7 @@ class A11y extends Backbone.Controller {
     const config = this.config;
     const value = $($element).is(config._options._tabbableElements).is(config._options._tabbableElementsExcludes);
     if (!value) {
-      return undefined; // Allow _findForward to descend
+      return null; // Allow _findForward to descend
     }
     return value;
   }
@@ -393,7 +393,7 @@ class A11y extends Backbone.Controller {
       }
       return true;
     }
-    return undefined; // Allows _findForward to decend.
+    return null; // Allows _findForward to decend.
   }
 
   /**
@@ -406,7 +406,8 @@ class A11y extends Backbone.Controller {
   isFocusable($element, checkParents = true) {
     const config = this.config;
     $element = $($element).first();
-    return this.isReadable($element, checkParents) && $element.is(config._options._focusForwardElementsExcludes);
+    if (!$element.is(config._options._focusForwardElementsExcludes)) return null;
+    return this.isReadable($element, checkParents);
   }
 
   /**
