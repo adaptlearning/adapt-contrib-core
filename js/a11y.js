@@ -42,6 +42,10 @@ class A11y extends Backbone.Controller {
       _focusableElements: 'a,button,input,select,textarea,[tabindex],label',
       _readableElements: '[role=heading],[aria-label],[aria-labelledby],[alt]',
       /**
+       * Prevent adapt from focusing forward onto these elements.
+       */
+      _focusForwardElementsExcludes: ':not([aria-labelledby][role=dialog],[aria-labelledby][role=main],[aria-labelledby][role=region],[aria-labelledby][role=radiogroup],[aria-labelledby][role=group],[aria-labelledby][role=tablist],[aria-labelledby][role=list],[aria-labelledby][role=tree],[aria-labelledby][role=treegrid],[aria-labelledby][role=table],[aria-labelledby][role=grid][aria-labelledby],[role=menu],[aria-labelledby][role=rowgroup])',
+      /**
        * Selector for elements which cause tab wrapping.
        */
       _focusguard: '.a11y-focusguard',
@@ -59,6 +63,7 @@ class A11y extends Backbone.Controller {
   }
 
   initialize() {
+    this.isFocusable = this.isFocusable.bind(this);
     this.isReadable = this.isReadable.bind(this);
     this.isTabbable = this.isTabbable.bind(this);
     this.$html = $('html');
@@ -288,6 +293,17 @@ class A11y extends Backbone.Controller {
   }
 
   /**
+   * Find the first focusable element after the specified element.
+   *
+   * @param {Object|string|Array} $element
+   * @returns {Object}
+   */
+  findFirstFocusable($element) {
+    $element = $($element).first();
+    return this._findFirstForward($element, this.isFocusable);
+  }
+
+  /**
    * Find all tabbable elements in the specified element.
    *
    * @param {Object|string|Array} $element
@@ -305,6 +321,15 @@ class A11y extends Backbone.Controller {
    */
   findReadable($element) {
     return $($element).find('*').filter((index, element) => this.isReadable(element));
+  }
+
+  /**
+   * Find all focusable elements in the specified element.
+   *
+   * @param {Object|string|Array} $element
+   */
+  findFocusable($element) {
+    return $($element).find('*').filter((index, element) => this.isFocusable(element));
   }
 
   /**
@@ -369,6 +394,19 @@ class A11y extends Backbone.Controller {
       return true;
     }
     return undefined; // Allows _findForward to decend.
+  }
+
+  /**
+   * Check if the first item is readable by a screen reader.
+   *
+   * @param {Object|string|Array} $element
+   * @param {boolean} [checkParents=true] Check if parents are inaccessible.
+   * @returns {boolean}
+   */
+  isFocusable($element, checkParents = true) {
+    const config = this.config;
+    $element = $($element).first();
+    return this.isReadable($element, checkParents) && $element.is(config._options._focusForwardElementsExcludes);
   }
 
   /**
@@ -572,7 +610,7 @@ class A11y extends Backbone.Controller {
   focusNext($element, options) {
     options = new FocusOptions(options);
     $element = $($element).first();
-    $element = this.findFirstReadable($element);
+    $element = this.findFirstFocusable($element);
     this.focus($element, options);
     return this;
   }
@@ -592,7 +630,7 @@ class A11y extends Backbone.Controller {
       this.focus($element, options);
       return $element;
     }
-    $element = this.findFirstReadable($element);
+    $element = this.findFirstFocusable($element);
     this.focus($element, options);
     return $element;
   }
