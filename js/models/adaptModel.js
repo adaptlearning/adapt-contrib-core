@@ -718,11 +718,17 @@ export default class AdaptModel extends LockingModel {
 
   setSequentialLocking() {
     const children = this.getAvailableChildModels();
-    const firstChild = children.shift();
-    children.reduce((previousChild, child) => {
-      const isLockedByPreviousChild = (!previousChild.get('_isComplete') && !previousChild.get('_isOptional'));
-      return child.set('_isLocked', isLockedByPreviousChild);
-    }, firstChild);
+    // Start from second child
+    children.slice(1).forEach((child, index) => {
+      const previousChild = children[index];
+      // If previous was locked, all subsequent will be locked.
+      const isLockedByPreviousChild = previousChild.get('_isLocked') ||
+        (
+          !previousChild.get('_isComplete') &&
+          !previousChild.get('_isOptional')
+        );
+      child.set('_isLocked', isLockedByPreviousChild);
+    }, false);
   }
 
   setUnlockFirstLocking() {
@@ -749,8 +755,15 @@ export default class AdaptModel extends LockingModel {
     if (!lockedBy) return false;
     return lockedBy.some(id => {
       try {
-        const model = Adapt.findById(id);
-        return !model.get('_isComplete') && !model.get('_isOptional') && model.get('_isAvailable');
+        const anotherModel = Adapt.findById(id);
+        return anotherModel.get('_isAvailable') && 
+          (
+            anotherModel.get('_isLocked') ||
+            (
+              !anotherModel.get('_isComplete') &&
+              !anotherModel.get('_isOptional')
+            )
+          );
       } catch (e) {
         console.warn(`AdaptModel.shouldLock: unknown _lockedBy ID '${id}' found on ${child.get('_id')}`);
         return false;
