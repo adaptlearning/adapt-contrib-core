@@ -38,7 +38,7 @@ export default class BrowserFocus extends Backbone.Controller {
     }
     const $element = $(event.target);
     if ($element.is('[data-a11y-force-focus]')) {
-      _.defer(() => $element.removeAttr('tabindex data-a11y-force-focus'));
+      $element.removeAttr('tabindex data-a11y-force-focus');
     }
     // From here, only check source elements
     if (event.target !== event.currentTarget) {
