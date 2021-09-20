@@ -47,7 +47,7 @@ class QuestionView extends ComponentView {
 
     // Checks to see if the question should be reset on revisit
     if (this.checkIfResetOnRevisit !== QuestionView.prototype.checkIfResetOnRevisit) {
-      log.deprecated('QuestionView checkIfResetOnRevisit.');
+      log.deprecated('QuestionView.checkIfResetOnRevisit, please use QuestionModel.checkIfResetOnRevisit');
     }
     this.checkIfResetOnRevisit();
     _.defer(() => this.ensureLegacyLifecycleState());
@@ -91,7 +91,7 @@ class QuestionView extends ComponentView {
     // Skip if calling the empty function definition
     if (this.resetQuestionOnRevisit === QuestionView.prototype.resetQuestionOnRevisit) return;
     // Warn if using a legacy resetQuestionOnRevisit
-    log.deprecated('QuestionView resetQuestionOnRevisit. Please use the model reset function.');
+    log.deprecated('QuestionView.resetQuestionOnRevisit, please QuestionModel.reset');
     // Defer is added to allow the component to render
     _.defer(() => {
       this.resetQuestionOnRevisit(isResetOnRevisit);
