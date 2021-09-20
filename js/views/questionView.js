@@ -114,7 +114,7 @@ class QuestionView extends ComponentView {
   /**
    * Used by the question to reset the question when revisiting the component
    * @param {string} type
-   * @deprecated since core v6.0.1 Please use QuestionModel.reset.
+   * @deprecated since core v6.0.1 Please use QuestionModel.reset
    */
   resetQuestionOnRevisit(type) {}
 
