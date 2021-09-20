@@ -32,10 +32,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
   init() {
     super.init();
-    this.set({
-      _isCorrectAnswerShown: false,
-      _isRadio: this.isSingleSelect()
-    });
+    this.set('_isRadio', this.isSingleSelect());
     this.listenTo(this.getChildren(), 'change:_isActive', this.checkCanSubmit);
     this.checkCanSubmit();
   }

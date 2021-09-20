@@ -19,6 +19,7 @@ class QuestionModel extends ComponentModel {
       _canShowMarking: true,
       _canSubmit: true,
       _isSubmitted: false,
+      _isCorrectAnswerShown: false,
       _questionWeight: Adapt.config.get('_questionWeight'),
       _hasItemScoring: false,
       _items: []
