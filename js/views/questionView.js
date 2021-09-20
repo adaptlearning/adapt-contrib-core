@@ -50,7 +50,7 @@ class QuestionView extends ComponentView {
       log.deprecated('QuestionView checkIfResetOnRevisit.');
     }
     this.checkIfResetOnRevisit();
-    _.defer(() => this.ensureLegacyLifeCycleState());
+    _.defer(() => this.ensureLegacyLifecycleState());
     // This method helps setup default settings on the model
     this._runModelCompatibleFunction('setupDefaultSettings');
     // Blank method for setting up questions before rendering
@@ -102,7 +102,7 @@ class QuestionView extends ComponentView {
    * Ensure the view is in the correct state on first render
    * @private
    */
-  ensureLegacyLifeCycleState() {
+  ensureLegacyLifecycleState() {
     const isInteractionComplete = this.model.get('_isInteractionComplete');
     if (isInteractionComplete) {
       this.onHideCorrectAnswerClicked();
