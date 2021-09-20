@@ -283,14 +283,24 @@ class QuestionModel extends ComponentModel {
     return !this.get('_isComplete') || (this.get('_isEnabled') && !this.get('_isSubmitted'));
   }
 
-  // Reset the model to let the user have another go (not the same as attempts)
-  reset(type, force) {
-    if (!this.get('_canReset') && !force) return;
+  checkIfResetOnRevisit() {
+    super.checkIfResetOnRevisit();
+    // Setup button view state
+    this.set('_buttonState', this.get('_isInteractionComplete')
+      ? BUTTON_STATE.HIDE_CORRECT_ANSWER
+      : BUTTON_STATE.SUBMIT
+    );
+  }
 
-    type = type || true; // hard reset by default, can be "soft", "hard"/true
-
-    super.reset(type, force);
-
+  /**
+   * Reset the model to let the user have another go (not the same as attempts)
+   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
+   * @param {boolean} [canReset] Defaults to this.get('_canReset')
+   * @returns {boolean}
+   */
+  reset(type = 'hard', canReset = this.get('_canReset')) {
+    const wasReset = super.reset(type, canReset);
+    if (!wasReset) return false;
     const attempts = this.get('_attempts');
     this.set({
       _attemptsLeft: attempts,
@@ -298,6 +308,7 @@ class QuestionModel extends ComponentModel {
       _isSubmitted: false,
       _buttonState: BUTTON_STATE.SUBMIT
     });
+    return true;
   }
 
   // Reset question for subsequent attempts

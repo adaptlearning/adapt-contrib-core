@@ -2,7 +2,8 @@ import Adapt from 'core/js/adapt';
 import ComponentView from 'core/js/views/componentView';
 import ButtonsView from 'core/js/views/buttonsView';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
-
+import a11y from '../a11y';
+import log from '../logging';
 import 'core/js/models/questionModel';
 
 class QuestionView extends ComponentView {
@@ -45,7 +46,11 @@ class QuestionView extends ComponentView {
     this.listenTo(this.model, 'question:refresh', this.refresh);
 
     // Checks to see if the question should be reset on revisit
+    if (this.checkIfResetOnRevisit !== QuestionView.prototype.checkIfResetOnRevisit) {
+      log.deprecated('QuestionView checkIfResetOnRevisit.');
+    }
     this.checkIfResetOnRevisit();
+    _.defer(() => this.ensureLegacyLifeCycleState());
     // This method helps setup default settings on the model
     this._runModelCompatibleFunction('setupDefaultSettings');
     // Blank method for setting up questions before rendering
@@ -73,43 +78,44 @@ class QuestionView extends ComponentView {
   // Used by the question to enable the question during interactions
   enableQuestion() {}
 
-  // Used to check if the question should reset on revisit
+  /**
+   * Used to check if the question should reset on revisit
+   * @deprecated since core v6.0.1 Please use the model checkIfResetOnRevisit function
+   */
   checkIfResetOnRevisit() {
+    const canReset = (this.model.get('_canReset') !== false);
     const isResetOnRevisit = this.model.get('_isResetOnRevisit');
     // If reset is enabled set defaults
     // Call blank method for question to handle
-    if (isResetOnRevisit) {
-      this.model.reset(isResetOnRevisit, true);
-
-      // Defer is added to allow the component to render
-      _.defer(() => {
-        this.resetQuestionOnRevisit(isResetOnRevisit);
-      });
-
-      return;
-    }
-
-    // If complete - display learner's answer
-    // or reset the question if not complete
-    const isInteractionComplete = this.model.get('_isInteractionComplete');
-    if (isInteractionComplete) {
-      this.model.set('_buttonState', BUTTON_STATE.HIDE_CORRECT_ANSWER);
-      // Defer is added to allow the component to render
-      _.defer(() => {
-        this.onHideCorrectAnswerClicked();
-      });
-
-      return;
-    }
-
-    this.model.set('_buttonState', BUTTON_STATE.SUBMIT);
+    if (!canReset || !isResetOnRevisit) return;
+    // Skip if calling the empty function definition
+    if (this.resetQuestionOnRevisit === QuestionView.prototype.resetQuestionOnRevisit) return;
+    // Warn if using a legacy resetQuestionOnRevisit
+    log.deprecated('QuestionView resetQuestionOnRevisit. Please use the model reset function.');
     // Defer is added to allow the component to render
     _.defer(() => {
-      this.onResetClicked();
+      this.resetQuestionOnRevisit(isResetOnRevisit);
     });
   }
 
-  // Used by the question to reset the question when revisiting the component
+  /**
+   * Ensure the view is in the correct state on first render
+   * @private
+   */
+  ensureLegacyLifeCycleState() {
+    const isInteractionComplete = this.model.get('_isInteractionComplete');
+    if (isInteractionComplete) {
+      this.onHideCorrectAnswerClicked();
+      return;
+    }
+    this.onResetClicked();
+  }
+
+  /**
+   * Used by the question to reset the question when revisiting the component
+   * @param {string} type
+   * @deprecated since core v6.0.1 Please use the model reset function.
+   */
   resetQuestionOnRevisit(type) {}
 
   // Left blank for question setup - should be used instead of preRender
@@ -297,7 +303,7 @@ class QuestionView extends ComponentView {
     // Make sure the page is ready
     if (!currentModel?.get('_isReady')) return;
     // Focus on the first readable item in this element
-    Adapt.a11y.focusNext(this.$el, { preventScroll: true });
+    a11y.focusNext(this.$el, { preventScroll: true });
   }
 
   setQuestionAsReset() {
@@ -338,7 +344,9 @@ class QuestionView extends ComponentView {
   }
 
   // Used by the question to display the correct answer to the user
-  showCorrectAnswer() {}
+  showCorrectAnswer() {
+    this.model.set('_isCorrectAnswerShown', true);
+  }
 
   onHideCorrectAnswerClicked() {
     this.setQuestionAsHideCorrect();
@@ -357,7 +365,9 @@ class QuestionView extends ComponentView {
   // Used by the question to display the users answer and
   // hide the correct answer
   // Should use the values stored in storeUserAnswer
-  hideCorrectAnswer() {}
+  hideCorrectAnswer() {
+    this.model.set('_isCorrectAnswerShown', false);
+  }
 
   // Time elapsed between the time the interaction was made available to the learner for response and the time of the first response
   getLatency() {
@@ -390,63 +400,63 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
 
   // Returns an object specific to the question type.
   getInteractionObject() {
-    Adapt.log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
+    log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
     return this.model.getInteractionObject();
   }
 
   // Retturns a string detailing how the user answered the question.
   getResponse() {
-    Adapt.log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
+    log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
     return this.model.getResponse();
   }
 
   // Returns a string describing the type of interaction: "choice" and "matching" supported (see scorm wrapper)
   getResponseType() {
-    Adapt.log.deprecated('QuestionView.getResponseType, please use QuestionModel.getResponseType');
+    log.deprecated('QuestionView.getResponseType, please use QuestionModel.getResponseType');
     return this.model.getResponseType();
   }
 
   // Calls default methods to setup on questions
   setupDefaultSettings() {
-    Adapt.log.deprecated('QuestionView.setupDefaultSettings, please use QuestionModel.setupDefaultSettings');
+    log.deprecated('QuestionView.setupDefaultSettings, please use QuestionModel.setupDefaultSettings');
     return this.model.setupDefaultSettings();
   }
 
   // Used to setup either global or local button text
   setupButtonSettings() {
-    Adapt.log.deprecated('QuestionView.setupButtonSettings, please use QuestionModel.setupButtonSettings');
+    log.deprecated('QuestionView.setupButtonSettings, please use QuestionModel.setupButtonSettings');
     return this.model.setupButtonSettings();
   }
 
   // Used to setup either global or local question weight/score
   setupWeightSettings() {
-    Adapt.log.deprecated('QuestionView.setupWeightSettings, please use QuestionModel.setupWeightSettings');
+    log.deprecated('QuestionView.setupWeightSettings, please use QuestionModel.setupWeightSettings');
     return this.model.setupWeightSettings();
   }
 
   // Use to check if the user is allowed to submit the question
   // Maybe the user has to select an item?
   canSubmit() {
-    Adapt.log.deprecated('QuestionView.canSubmit, please use QuestionModel.canSubmit');
+    log.deprecated('QuestionView.canSubmit, please use QuestionModel.canSubmit');
     return this.model.canSubmit();
   }
 
   // Used to update the amount of attempts the user has left
   updateAttempts() {
-    Adapt.log.deprecated('QuestionView.updateAttempts, please use QuestionModel.updateAttempts');
+    log.deprecated('QuestionView.updateAttempts, please use QuestionModel.updateAttempts');
     return this.model.updateAttempts();
   }
 
   // This is important for returning or showing the users answer
   // This should preserve the state of the users answers
   storeUserAnswer() {
-    Adapt.log.deprecated('QuestionView.storeUserAnswer, please use QuestionModel.storeUserAnswer');
+    log.deprecated('QuestionView.storeUserAnswer, please use QuestionModel.storeUserAnswer');
     return this.model.storeUserAnswer();
   }
 
   // Used by the question view to reset the stored user answer
   resetUserAnswer() {
-    Adapt.log.deprecated('QuestionView.resetUserAnswer, please use QuestionModel.resetUserAnswer');
+    log.deprecated('QuestionView.resetUserAnswer, please use QuestionModel.resetUserAnswer');
     return this.model.resetUserAnswer();
   }
 
@@ -474,20 +484,20 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
 
   // Should return a boolean based upon whether to question is correct or not
   isCorrect() {
-    Adapt.log.deprecated('QuestionView.isCorrect, please use QuestionModel.isCorrect');
+    log.deprecated('QuestionView.isCorrect, please use QuestionModel.isCorrect');
     return this.model.isCorrect();
   }
 
   // Used to set the score based upon the _questionWeight
   setScore() {
-    Adapt.log.deprecated('QuestionView.setScore, please use QuestionModel.setScore');
+    log.deprecated('QuestionView.setScore, please use QuestionModel.setScore');
     return this.model.setScore();
   }
 
   // Updates buttons based upon question state by setting
   // _buttonState on the model which buttonsView listens to
   updateButtons() {
-    Adapt.log.deprecated('QuestionView.updateButtons, please use QuestionModel.updateButtons');
+    log.deprecated('QuestionView.updateButtons, please use QuestionModel.updateButtons');
     return this.model.updateButtons();
   }
 
@@ -515,22 +525,22 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   // Used by the question to determine if the question is incorrect or partly correct
   // Should return a boolean
   isPartlyCorrect() {
-    Adapt.log.deprecated('QuestionView.isPartlyCorrect, please use QuestionModel.isPartlyCorrect');
+    log.deprecated('QuestionView.isPartlyCorrect, please use QuestionModel.isPartlyCorrect');
     return this.model.isPartlyCorrect();
   }
 
   setupCorrectFeedback() {
-    Adapt.log.deprecated('QuestionView.setupCorrectFeedback, please use QuestionModel.setupCorrectFeedback');
+    log.deprecated('QuestionView.setupCorrectFeedback, please use QuestionModel.setupCorrectFeedback');
     return this.model.setupCorrectFeedback();
   }
 
   setupPartlyCorrectFeedback() {
-    Adapt.log.deprecated('QuestionView.setupPartlyCorrectFeedback, please use QuestionModel.setupPartlyCorrectFeedback');
+    log.deprecated('QuestionView.setupPartlyCorrectFeedback, please use QuestionModel.setupPartlyCorrectFeedback');
     return this.model.setupPartlyCorrectFeedback();
   }
 
   setupIncorrectFeedback() {
-    Adapt.log.deprecated('QuestionView.setupIncorrectFeedback, please use QuestionModel.setupIncorrectFeedback');
+    log.deprecated('QuestionView.setupIncorrectFeedback, please use QuestionModel.setupIncorrectFeedback');
     return this.model.setupIncorrectFeedback();
   }
 
