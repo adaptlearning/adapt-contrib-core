@@ -80,7 +80,7 @@ class QuestionView extends ComponentView {
 
   /**
    * Used to check if the question should reset on revisit
-   * @deprecated since core v6.0.1 Please use the model checkIfResetOnRevisit function
+   * @deprecated since core v6.0.1 Please use QuestionModel.checkIfResetOnRevisit
    */
   checkIfResetOnRevisit() {
     const canReset = (this.model.get('_canReset') !== false);
@@ -114,7 +114,7 @@ class QuestionView extends ComponentView {
   /**
    * Used by the question to reset the question when revisiting the component
    * @param {string} type
-   * @deprecated since core v6.0.1 Please use the model reset function.
+   * @deprecated since core v6.0.1 Please use QuestionModel.reset.
    */
   resetQuestionOnRevisit(type) {}
 
