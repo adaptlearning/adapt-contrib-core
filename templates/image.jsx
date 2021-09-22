@@ -16,12 +16,12 @@ export default function Image(props) {
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
   return (
     <div className={classes([
-      prefixClasses(props.classNamePrefixes, ['-image-container']),
+      prefixClasses(props.classNamePrefixes, ['__image-container']),
       props.attribution && 'has-attribution'
     ])}>
 
       <img
-        className={prefixClasses(props.classNamePrefixes, ['-image'])}
+        className={prefixClasses(props.classNamePrefixes, ['__image'])}
         src={src}
         aria-label={Adapt.a11y.normalize(props.alt)}
         aria-hidden={!props.alt}
