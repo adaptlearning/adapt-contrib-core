@@ -27,75 +27,67 @@ class Scrolling extends Backbone.Controller {
     const isIncluded = !limitTo || (this.$html.is(limitTo) || this.$html.hasClass(limitTo));
     if (!isIncluded) return;
     this.isLegacyScrolling = false;
+    this._windowScrollFix();
     this._addStyling();
-    this._fixJQuery();
-    this._fixScrollTo();
-    this._fixBrowser();
   }
 
   _addStyling() {
     this.$html.addClass('adapt-scrolling');
   }
 
-  _fixJQuery() {
-    const selectorScrollTop = $.fn.scrollTop;
-    const $app = Adapt.scrolling.$app;
-    $.fn.scrollTop = function() {
-      if (this[0] === window || this[0] === document.body) {
-        return selectorScrollTop.apply($app, arguments);
-      }
-      return selectorScrollTop.apply(this, arguments);
-    };
-    const selectorOffset = $.fn.offset;
-    $.fn.offset = function(coordinates) {
-      if (coordinates) {
-        return selectorOffset.apply(this, arguments);
-      }
-      const $app = Adapt.scrolling.$app;
-      const $element = this;
-      const elementOffset = selectorOffset.call($element);
-      const isCorrectedContainer = $element.is('html, body, #app') ||
-        $element.parents().is('#app');
-      if (!isCorrectedContainer) {
-        // Do not adjust the offset measurement as not in $app container and isn't html or body
-        return elementOffset;
-      }
-      // Adjust measurement by scrolling and offset of $app container
-      const scrollTop = parseInt($app.scrollTop());
-      const scrollLeft = parseInt($app.scrollLeft());
-      const appOffset = selectorOffset.call($app);
-      elementOffset.top += (scrollTop - appOffset.top);
-      elementOffset.left += (scrollLeft - appOffset.left);
-      return elementOffset;
-    };
-  }
-
-  _fixScrollTo() {
-    const selectorScrollTo = $.fn.scrollTo;
-    const scrollTo = $.scrollTo;
-    const $app = Adapt.scrolling.$app;
-    $.fn.scrollTo = function(target, duration, settings) {
-      if (this[0] === window || this[0] === document.body) {
-        return selectorScrollTo.apply($app, arguments);
-      }
-      return selectorScrollTo.apply(this, arguments);
-    };
-    $.scrollTo = function(target, duration, settings) {
-      return selectorScrollTo.apply($app, arguments);
-    };
-    Object.assign($.scrollTo, scrollTo);
-  }
-
-  _fixBrowser() {
+  _windowScrollFix() {
+    /** @type {HTMLDivElement} */
     const app = Adapt.scrolling.$app[0];
-    window.scrollTo = function(x, y) {
-      app.scrollTop = y || 0;
-      app.scrollLeft = x || 0;
+    const html = Adapt.scrolling.$html[0];
+    const scrollY = {
+      get: () => app.scrollTop,
+      set: value => (app.scrollTop = value)
     };
-    const $window = $(window);
-    this.$app.on('scroll', () => {
-      $window.scroll();
+    const scrollX = {
+      get: () => app.scrollLeft,
+      set: value => (app.scrollLeft = value)
+    };
+    const scrollHeight = {
+      get: () => app.scrollHeight,
+      set: value => (app.scrollHeight = value)
+    };
+    const scrollWidth = {
+      get: () => app.scrollWidth,
+      set: value => (app.scrollWidth = value)
+    };
+    // Fix window.scrollY, window.scrollX, window.pageYOffsert and window.pageXOffset
+    Object.defineProperties(window, {
+      scrollY,
+      scrollX,
+      pageYOffset: scrollY,
+      pageXOffset: scrollX
     });
+    // Fix html.scrollHeight and html.scrollWidth
+    Object.defineProperties(html, {
+      scrollHeight,
+      scrollWidth
+    });
+    // Fix window.scrollTo
+    window.scrollTo = (...args) => {
+      const isObject = (args.length === 1 && typeof args[0] === 'object' && args[0] !== null);
+      const left = (isObject ? args[0].left : args[0]) ?? null;
+      const top = (isObject ? args[0].top : args[1]) ?? null;
+      left !== null && (app.scrollLeft = left);
+      top !== null && (app.scrollTop = top);
+    };
+    // Fix MouseEvent.prototype.pageX and MouseEvent.prototype.pageY
+    const MouseEvent = window.MouseEvent;
+    Object.defineProperties(MouseEvent.prototype, {
+      pageX: {
+        get: function() { return this.clientX + scrollX.get(); }
+      },
+      pageY: {
+        get: function() { return this.clientY + scrollY.get(); }
+      }
+    });
+    // Trigger scroll events on window when scrolling
+    const $window = $(window);
+    this.$app.on('scroll', () => $window.scroll());
   }
 
   /**

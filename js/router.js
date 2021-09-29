@@ -69,7 +69,7 @@ class Router extends Backbone.Router {
       this.navigate('#/' + args.join('/'), options);
       return;
     }
-    Adapt.log.deprecated(`Use Backbone.history.navigate or window.location.href instead of Adapt.trigger('router:navigateTo')`);
+    Adapt.log.deprecated('Use Backbone.history.navigate or window.location.href instead of Adapt.trigger(\'router:navigateTo\')');
     this.handleRoute(...args);
   }
 
@@ -368,8 +368,9 @@ class Router extends Backbone.Router {
     }
 
     // Get the current location - this is set in the router
-    const location = (Adapt.location._contentType) ?
-      Adapt.location._contentType : Adapt.location._currentLocation;
+    const location = (Adapt.location._contentType)
+      ? Adapt.location._contentType
+      : Adapt.location._currentLocation;
     // Trigger initial scrollTo event
     Adapt.trigger(`${location}:scrollTo`, selector);
     // Setup duration variable
@@ -380,13 +381,10 @@ class Router extends Backbone.Router {
       settings.duration = $.scrollTo.defaults.duration;
     }
 
-    let offsetTop = 0;
-    if (Adapt.scrolling.isLegacyScrolling) {
-      offsetTop = -$('.nav').outerHeight();
-      // prevent scroll issue when component description aria-label coincident with top of component
-      if ($(selector).hasClass('component')) {
-        offsetTop -= $(selector).find('.aria-label').height() || 0;
-      }
+    let offsetTop = -$('.nav').outerHeight();
+    // prevent scroll issue when component description aria-label coincident with top of component
+    if ($(selector).hasClass('component')) {
+      offsetTop -= $(selector).find('.aria-label').height() || 0;
     }
 
     if (!settings.offset) settings.offset = { top: offsetTop, left: 0 };
