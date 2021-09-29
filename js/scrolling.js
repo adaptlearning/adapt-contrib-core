@@ -15,20 +15,8 @@ class Scrolling extends Backbone.Controller {
 
   initialize() {
     this.$html = null;
-    this.$app = null;
     this.isLegacyScrolling = true;
-    this._checkApp();
     Adapt.once('configModel:dataLoaded', this._loadConfig.bind(this));
-  }
-
-  _checkApp() {
-    this.$html = $('html');
-    this.$app = $('#app');
-    if (this.$app.length) return;
-    this.$app = $('<div id="app">');
-    $('body').append(this.$app);
-    this.$app.append($('#wrapper'));
-    Adapt.log.warn('UPDATE - Your html file needs to have #app adding. See https://github.com/adaptlearning/adapt_framework/issues/2168');
   }
 
   _loadConfig() {
@@ -72,23 +60,23 @@ class Scrolling extends Backbone.Controller {
    */
   _windowScrollFix() {
     /** @type {HTMLDivElement} */
-    const app = document.body;
+    const body = document.body;
     const html = Adapt.scrolling.$html[0];
     const scrollY = {
-      get: () => app.scrollTop,
-      set: value => (app.scrollTop = value)
+      get: () => body.scrollTop,
+      set: value => (body.scrollTop = value)
     };
     const scrollX = {
-      get: () => app.scrollLeft,
-      set: value => (app.scrollLeft = value)
+      get: () => body.scrollLeft,
+      set: value => (body.scrollLeft = value)
     };
     const scrollHeight = {
-      get: () => app.scrollHeight,
-      set: value => (app.scrollHeight = value)
+      get: () => body.scrollHeight,
+      set: value => (body.scrollHeight = value)
     };
     const scrollWidth = {
-      get: () => app.scrollWidth,
-      set: value => (app.scrollWidth = value)
+      get: () => body.scrollWidth,
+      set: value => (body.scrollWidth = value)
     };
     // Fix window.scrollY, window.scrollX, window.pageYOffset and window.pageXOffset
     Object.defineProperties(window, {
@@ -109,8 +97,8 @@ class Scrolling extends Backbone.Controller {
       const isObject = (args.length === 1 && typeof args[0] === 'object' && args[0] !== null);
       const left = (isObject ? args[0].left : args[0]) ?? null;
       const top = (isObject ? args[0].top : args[1]) ?? null;
-      left !== null && (app.scrollLeft = left);
-      top !== null && (app.scrollTop = top);
+      left !== null && (body.scrollLeft = left);
+      top !== null && (body.scrollTop = top);
     };
     // Fix MouseEvent.prototype.pageX and MouseEvent.prototype.pageY
     const MouseEvent = window.MouseEvent;

@@ -1,12 +1,7 @@
-.restrain-height() {
-  height: 100%;
-  overflow: hidden;
-}
-
 html.adapt-scrolling {
-  .restrain-height;
+  height: 100%;
   // Allow overflow scroll top for refresh on android
-  overflow-y: auto;
+  overflow: auto;
 
   // Offset the navigation bar width the the body scrollbar
   .nav {
@@ -17,7 +12,8 @@ html.adapt-scrolling {
   }
 
   body {
-    .restrain-height;
+    height: 100%;
+    overflow: hidden;
     position: relative;
     overflow-y: scroll;
     // Allow scrolling of the body in an iframe on ios
