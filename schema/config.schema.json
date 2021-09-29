@@ -380,7 +380,7 @@
         "_isEnabled": {
           "type": "boolean",
           "title": "Enable fixes",
-          "default": false
+          "default": true
         },
         "_limitToSelector": {
           "type": "string",
