@@ -381,8 +381,10 @@ class Router extends Backbone.Router {
       settings.duration = $.scrollTo.defaults.duration;
     }
 
-    let offsetTop = -$('.nav').outerHeight();
-    // prevent scroll issue when component description aria-label coincident with top of component
+    const $wrapper = $('#wrapper');
+    // Work out offset from the top of the wrapper rather than the height of the navigation bar
+    let offsetTop = -parseInt($wrapper.css('padding-top'));
+    // Prevent scroll issue when component description aria-label coincident with top of component
     if ($(selector).hasClass('component')) {
       offsetTop -= $(selector).find('.aria-label').height() || 0;
     }

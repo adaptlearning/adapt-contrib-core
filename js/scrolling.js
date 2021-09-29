@@ -1,5 +1,16 @@
 import Adapt from 'core/js/adapt';
 
+/**
+ * This allows Adapt to:
+ * - Be embedded in iframes on ios
+ *   ios iframes assume the content height and no scrolling
+ *   https://blog.codepen.io/2017/12/01/stupid-iframes-stupid-ios/
+ *   https://stackoverflow.com/questions/23083462/how-to-get-an-iframe-to-be-responsive-in-ios-safari
+ * - Prevent the 44px click region occluding trickle at the bottom of
+ *   ios safari by keeping the controls always visible
+ *   https://github.com/adaptlearning/adapt-contrib-trickle/issues/132
+ *   https://www.eventbrite.com/engineering/mobile-safari-why/
+ */
 class Scrolling extends Backbone.Controller {
 
   initialize() {
@@ -29,15 +40,39 @@ class Scrolling extends Backbone.Controller {
     this.isLegacyScrolling = false;
     this._windowScrollFix();
     this._addStyling();
+    this._updateScrollbarWidth();
+    // Update the scrollbar width on zooming/resize as it changes in chrome and firefox
+    this.listenTo(Adapt, 'device:resize', this._updateScrollbarWidth);
   }
 
   _addStyling() {
     this.$html.addClass('adapt-scrolling');
   }
 
+  /**
+   * Set the --adapt-scrollbar-width css variable to be used to offset the navigation bar
+   * width against the body scrollbar
+   * The body scrollbar does not constrain the navigation width in the same way the viewport
+   * scrollbar does
+   * IE11 always defaults to 18px
+   * Chrome and firefox change based on zooming
+   * Safari has floating scrollbars, so 0px
+   */
+  _updateScrollbarWidth() {
+    const $tester = $('<div class="outer" style="overflow:scroll; visibility: hidden; position:fixed; top: 0; left: 0;"><div class="inner"> </div></div>"');
+    $('body').append($tester);
+    const scrollBarWidth = $tester.outerWidth() - $tester.find('.inner').outerWidth();
+    $tester.remove();
+    const documentStyle = document.documentElement.style;
+    documentStyle.setProperty('--adapt-scrollbar-width', `${scrollBarWidth}px`);
+  }
+
+  /**
+   * Correct scrolling to use the body element rather than the html element or viewport
+   */
   _windowScrollFix() {
     /** @type {HTMLDivElement} */
-    const app = Adapt.scrolling.$app[0];
+    const app = document.body;
     const html = Adapt.scrolling.$html[0];
     const scrollY = {
       get: () => app.scrollTop,
@@ -90,7 +125,7 @@ class Scrolling extends Backbone.Controller {
     });
     // Trigger scroll events on window when scrolling
     const $window = $(window);
-    this.$app.on('scroll', () => $window.scroll());
+    $(document.body).on('scroll', () => $window.scroll());
   }
 
   /**
