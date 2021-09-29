@@ -55,15 +55,17 @@ class Scrolling extends Backbone.Controller {
       get: () => app.scrollWidth,
       set: value => (app.scrollWidth = value)
     };
-    // Fix window.scrollY, window.scrollX, window.pageYOffsert and window.pageXOffset
+    // Fix window.scrollY, window.scrollX, window.pageYOffset and window.pageXOffset
     Object.defineProperties(window, {
       scrollY,
       scrollX,
+      // Note: jQuery uses pageYOffset and pageXOffset instead of scrollY and scrollX
       pageYOffset: scrollY,
       pageXOffset: scrollX
     });
     // Fix html.scrollHeight and html.scrollWidth
     Object.defineProperties(html, {
+      // Note: jQuery animate as used in scrollTo library, uses scrollHeight to determine animation maxiumum
       scrollHeight,
       scrollWidth
     });
@@ -82,6 +84,7 @@ class Scrolling extends Backbone.Controller {
         get: function() { return this.clientX + scrollX.get(); }
       },
       pageY: {
+        // Note: MediaElementJS uses event.pageY to work out the mouse position for the volume controls
         get: function() { return this.clientY + scrollY.get(); }
       }
     });
