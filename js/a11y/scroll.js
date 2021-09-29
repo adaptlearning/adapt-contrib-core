@@ -174,7 +174,8 @@ export default class Scroll extends Backbone.Controller {
     if (directionY === 'none') {
       return this.$body;
     }
-    const parents = $target.parents();
+    // Make sure to check the element on which the scroll event was triggered
+    const parents = [$target[0], ...$target.parents()];
     for (let i = 0, l = parents.length; i < l; i++) {
       const $parent = $(parents[i]);
       if ($parent.is('body')) {
