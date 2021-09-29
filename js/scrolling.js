@@ -14,7 +14,7 @@ import Adapt from 'core/js/adapt';
 class Scrolling extends Backbone.Controller {
 
   initialize() {
-    this.$html = null;
+    this.$html = $('html');
     this.isLegacyScrolling = true;
     Adapt.once('configModel:dataLoaded', this._loadConfig.bind(this));
   }
