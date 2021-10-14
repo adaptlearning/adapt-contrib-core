@@ -166,7 +166,7 @@ class Data extends AdaptCollection {
   }
 
   async triggerDataReady(newLanguage) {
-    if (newLanguage) {
+    if (newLanguage && newLanguage !== Adapt.config.get('_activeLanguage')) {
       Adapt.trigger('app:languageChanged', newLanguage);
       _.defer(() => {
         Adapt.startController.loadCourseData();
