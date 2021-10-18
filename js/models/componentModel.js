@@ -77,10 +77,16 @@ class ComponentModel extends AdaptModel {
     this.set('_userAnswer', null);
   }
 
-  reset(type, force) {
-    if (!this.get('_canReset') && !force) return;
+  /**
+   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
+   * @param {boolean} [canReset] Defaults to this.get('_canReset')
+   * @returns {boolean}
+   */
+  reset(type = 'hard', canReset = this.get('_canReset')) {
+    const wasReset = super.reset(type, canReset);
+    if (!wasReset) return false;
     this.resetUserAnswer();
-    super.reset(type, force);
+    return true;
   }
 
   /**
