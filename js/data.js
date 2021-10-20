@@ -82,20 +82,16 @@ class Data extends AdaptCollection {
     this.loadCourseData(language);
   }
 
-  async loadCourseData(newLanguage) {
-
+  async loadCourseData(newLanguage = Adapt.config.get('_activeLanguage')) {
     // All code that needs to run before adapt starts should go here
-    const language = Adapt.config.get('_activeLanguage');
+    const courseFolder = 'course/' + newLanguage + '/';
 
-    const courseFolder = 'course/' + language + '/';
-
-    $('html').attr('lang', language);
+    $('html').attr('lang', newLanguage);
 
     await this.loadManifestFiles(courseFolder);
     await this.triggerDataLoaded();
     await this.triggerDataReady(newLanguage);
     this.triggerInit();
-
   }
 
   getJSON(path) {
@@ -166,7 +162,7 @@ class Data extends AdaptCollection {
   }
 
   async triggerDataReady(newLanguage) {
-    if (newLanguage && newLanguage !== Adapt.config.get('_activeLanguage')) {
+    if (newLanguage) {
       Adapt.trigger('app:languageChanged', newLanguage);
       _.defer(() => {
         Adapt.startController.loadCourseData();
