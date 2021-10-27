@@ -4,7 +4,13 @@ import 'core/js/templates';
 import logging from '../logging';
 
 /**
- * TODO: clear up and notes
+ * 27 October 2021 https://github.com/adaptlearning/adapt_authoring/issues/2570
+ * The function reactHelpers.html was stopping javascript generated in the AAT editor
+ * from presenting correctly in the DOM.
+ *
+ * This file helps deprecate the function reactHelpers.html and instead recommends
+ * replacing it with dangerouslySetInnerHTML, a native react property.
+ * https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
  */
 Adapt.on('app:dataReady', () => {
   const config = Adapt.config.get('_fixes');
@@ -33,8 +39,7 @@ function applyReactHelpersHTML() {
       return;
     }
     // Process one reactHelpers.html() child as dangerouslySetInnerHTML on the parent
-    // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
-    // Allows html generated from the json to appear in the dom in raw format
+    // Allows html generated from the json to appear in the DOM in raw format
     props = (event.args[1] = event.args[1] || {});
     props.dangerouslySetInnerHTML = children[0];
     event.args.length = 2;
