@@ -118,11 +118,9 @@ class QuestionModel extends ComponentModel {
 
   // Used to update the amount of attempts the user has left
   updateAttempts() {
-    if (!this.get('_attemptsLeft')) {
-      this.set('_attemptsLeft', this.get('_attempts'));
-    }
+    const attemptsLeft = this.get('_attemptsLeft') > 0 || this.get('_attempts');
 
-    this.set('_attemptsLeft', this.get('_attemptsLeft') - 1);
+    this.set('_attemptsLeft', attemptsLeft - 1);
   }
 
   // Used to set _isEnabled and _isSubmitted on the model
