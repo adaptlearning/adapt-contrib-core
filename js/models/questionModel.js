@@ -120,8 +120,8 @@ class QuestionModel extends ComponentModel {
   updateAttempts() {
     if (!this.get('_attemptsLeft')) {
       this.set('_attemptsLeft', this.get('_attempts'));
-      return;
     }
+
     this.set('_attemptsLeft', this.get('_attemptsLeft') - 1);
   }
 
