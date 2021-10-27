@@ -14,7 +14,7 @@ import logging from '../logging';
  */
 Adapt.on('app:dataReady', () => {
   const config = Adapt.config.get('_fixes');
-  if (config?._jsxUnsafeInnerHTML === false) return;
+  if (config?._jsxReactHelpersHTML === false) return;
   applyReactHelpersHTML();
 });
 
