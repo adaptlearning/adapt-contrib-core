@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import TemplateRenderEvent from './templateRenderEvent';
-import HTMLReactParser from 'html-react-parser';
 import React from 'react';
+import logging from './logging';
 
 /**
  * Used by babel plugin babel-plugin-transform-react-templates to inject react templates
@@ -54,15 +54,12 @@ export const templates = {};
 /**
  * Convert html strings to react dom, equivalent to handlebars {{{html}}}
  * @param {string} html
+ * @deprecated since v6.0.4, please use react dangerouslySetInnerHTML instead: https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
  */
-export function html(html, ref = null) {
+export function html(html) {
   if (!html) return;
-  let node = html ? HTMLReactParser(html) : '';
-  if (typeof node === 'object' && ref) {
-    node = Array.isArray(node) ? node[0] : node;
-    node = React.cloneElement(node, { ref });
-  }
-  return node;
+  logging.deprecated('reactHelpers.html please use react dangerouslySetInnerHTML instead: https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml');
+  return { __html: html };
 }
 
 /**
