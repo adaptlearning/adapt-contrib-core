@@ -10,7 +10,15 @@ import { html, classes, prefixClasses } from 'core/js/reactHelpers';
  */
 export default function Image(props) {
   const screenSize = Adapt.device.screenSize;
-  const src = (props[`_${screenSize}`] || props[`${screenSize}`] || props._src || props.src);
+  const largeSmallScreenSize = (screenSize === 'large' ? 'large' : 'small');
+  const src = (
+    props[`_${screenSize}`] || 
+    props[`${screenSize}`] || 
+    props[`_${largeSmallScreenSize}`] || 
+    props[`${largeSmallScreenSize}`] || 
+    props._src || 
+    props.src
+  );
   const hasSource = Boolean(src);
   if (!hasSource) return null;
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
