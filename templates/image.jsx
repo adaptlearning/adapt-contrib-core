@@ -11,8 +11,8 @@ import { html, classes, prefixClasses } from 'core/js/reactHelpers';
 export default function Image(props) {
   const hasMediumSetting = (Object.prototype.hasOwnProperty.call(props, '_medium') || Object.prototype.hasOwnProperty.call(props, 'medium'));
   const screenSize = hasMediumSetting
-    ? Adapt.device.screenSize;
-    : (Adapt.device.screenSize === 'large' ? 'large' : 'small);
+    ? Adapt.device.screenSize
+    : (Adapt.device.screenSize === 'large' ? 'large' : 'small');
   const src = (
     props[`_${screenSize}`] ||
     props[`${screenSize}`] ||
