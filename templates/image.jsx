@@ -9,8 +9,16 @@ import { html, classes, prefixClasses } from 'core/js/reactHelpers';
  * @param {Array} [props.attributionClassNamePrefixes]
  */
 export default function Image(props) {
-  const screenSize = Adapt.device.screenSize;
-  const src = (props[`_${screenSize}`] || props[`${screenSize}`] || props._src || props.src);
+  const hasMediumSetting = (Object.prototype.hasOwnProperty.call(props, '_medium') || Object.prototype.hasOwnProperty.call(props, 'medium'));
+  const screenSize = hasMediumSetting
+    ? Adapt.device.screenSize
+    : (Adapt.device.screenSize === 'large' ? 'large' : 'small');
+  const src = (
+    props[`_${screenSize}`] ||
+    props[`${screenSize}`] ||
+    props._src ||
+    props.src
+  );
   const hasSource = Boolean(src);
   if (!hasSource) return null;
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
