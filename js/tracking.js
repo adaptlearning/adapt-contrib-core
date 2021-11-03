@@ -48,7 +48,7 @@ class Tracking extends Backbone.Controller {
       return;
     }
   
-    Adapt.offlineStorage.set('score', this._assessmentState.score, 0, this._assessmentState.maxScore);
+    Adapt.offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
   }
 
   /**
