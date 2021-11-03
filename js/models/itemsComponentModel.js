@@ -13,7 +13,7 @@ export default class ItemsComponentModel extends ComponentModel {
   init() {
     this.setUpItems();
     this.listenTo(this.getChildren(), {
-      'all': this.onAll,
+      all: this.onAll,
       'change:_isVisited': this.checkCompletionStatus
     });
     super.init();
@@ -63,9 +63,16 @@ export default class ItemsComponentModel extends ComponentModel {
     this.setCompletionStatus();
   }
 
-  reset(type, force) {
+  /**
+   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
+   * @param {boolean} [canReset] Defaults to this.get('_canReset')
+   * @returns {boolean}
+   */
+  reset(type = 'hard', canReset = this.get('_canReset')) {
+    const wasReset = super.reset(type, canReset);
+    if (!wasReset) return false;
     this.getChildren().each(item => item.reset());
-    super.reset(type, force);
+    return true;
   }
 
   resetActiveItems() {

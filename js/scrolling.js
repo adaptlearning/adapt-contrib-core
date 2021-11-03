@@ -1,23 +1,22 @@
 import Adapt from 'core/js/adapt';
 
+/**
+ * This allows Adapt to:
+ * - Be embedded in iframes on ios
+ *   ios iframes assume the content height and no scrolling
+ *   https://blog.codepen.io/2017/12/01/stupid-iframes-stupid-ios/
+ *   https://stackoverflow.com/questions/23083462/how-to-get-an-iframe-to-be-responsive-in-ios-safari
+ * - Prevent the 44px click region occluding trickle at the bottom of
+ *   ios safari by keeping the controls always visible
+ *   https://github.com/adaptlearning/adapt-contrib-trickle/issues/132
+ *   https://www.eventbrite.com/engineering/mobile-safari-why/
+ */
 class Scrolling extends Backbone.Controller {
 
   initialize() {
-    this.$html = null;
-    this.$app = null;
-    this.isLegacyScrolling = true;
-    this._checkApp();
-    Adapt.once('configModel:dataLoaded', this._loadConfig.bind(this));
-  }
-
-  _checkApp() {
     this.$html = $('html');
-    this.$app = $('#app');
-    if (this.$app.length) return;
-    this.$app = $('<div id="app">');
-    $('body').append(this.$app);
-    this.$app.append($('#wrapper'));
-    Adapt.log.warn('UPDATE - Your html file needs to have #app adding. See https://github.com/adaptlearning/adapt_framework/issues/2168');
+    this.isLegacyScrolling = true;
+    Adapt.once('configModel:dataLoaded', this._loadConfig.bind(this));
   }
 
   _loadConfig() {
@@ -27,75 +26,94 @@ class Scrolling extends Backbone.Controller {
     const isIncluded = !limitTo || (this.$html.is(limitTo) || this.$html.hasClass(limitTo));
     if (!isIncluded) return;
     this.isLegacyScrolling = false;
+    this._windowScrollFix();
     this._addStyling();
-    this._fixJQuery();
-    this._fixScrollTo();
-    this._fixBrowser();
+    this._updateScrollbarWidth();
+    // Update the scrollbar width on zooming/resize as it changes in chrome and firefox
+    this.listenTo(Adapt, 'device:resize', this._updateScrollbarWidth);
   }
 
   _addStyling() {
     this.$html.addClass('adapt-scrolling');
   }
 
-  _fixJQuery() {
-    const selectorScrollTop = $.fn.scrollTop;
-    const $app = Adapt.scrolling.$app;
-    $.fn.scrollTop = function() {
-      if (this[0] === window || this[0] === document.body) {
-        return selectorScrollTop.apply($app, arguments);
-      }
-      return selectorScrollTop.apply(this, arguments);
-    };
-    const selectorOffset = $.fn.offset;
-    $.fn.offset = function(coordinates) {
-      if (coordinates) {
-        return selectorOffset.apply(this, arguments);
-      }
-      const $app = Adapt.scrolling.$app;
-      const $element = this;
-      const elementOffset = selectorOffset.call($element);
-      const isCorrectedContainer = $element.is('html, body, #app') ||
-        $element.parents().is('#app');
-      if (!isCorrectedContainer) {
-        // Do not adjust the offset measurement as not in $app container and isn't html or body
-        return elementOffset;
-      }
-      // Adjust measurement by scrolling and offset of $app container
-      const scrollTop = parseInt($app.scrollTop());
-      const scrollLeft = parseInt($app.scrollLeft());
-      const appOffset = selectorOffset.call($app);
-      elementOffset.top += (scrollTop - appOffset.top);
-      elementOffset.left += (scrollLeft - appOffset.left);
-      return elementOffset;
-    };
+  /**
+   * Set the --adapt-scrollbar-width css variable to be used to offset the navigation bar
+   * width against the body scrollbar
+   * The body scrollbar does not constrain the navigation width in the same way the viewport
+   * scrollbar does
+   * IE11 always defaults to 18px
+   * Chrome and firefox change based on zooming
+   * Safari has floating scrollbars, so 0px
+   */
+  _updateScrollbarWidth() {
+    const $tester = $('<div class="outer" style="overflow:scroll; visibility: hidden; position:fixed; top: 0; left: 0;"><div class="inner"> </div></div>"');
+    $('body').append($tester);
+    const scrollBarWidth = $tester.outerWidth() - $tester.find('.inner').outerWidth();
+    $tester.remove();
+    const documentStyle = document.documentElement.style;
+    documentStyle.setProperty('--adapt-scrollbar-width', `${scrollBarWidth}px`);
   }
 
-  _fixScrollTo() {
-    const selectorScrollTo = $.fn.scrollTo;
-    const scrollTo = $.scrollTo;
-    const $app = Adapt.scrolling.$app;
-    $.fn.scrollTo = function(target, duration, settings) {
-      if (this[0] === window || this[0] === document.body) {
-        return selectorScrollTo.apply($app, arguments);
-      }
-      return selectorScrollTo.apply(this, arguments);
+  /**
+   * Correct scrolling to use the body element rather than the html element or viewport
+   */
+  _windowScrollFix() {
+    /** @type {HTMLDivElement} */
+    const body = document.body;
+    const html = Adapt.scrolling.$html[0];
+    const scrollY = {
+      get: () => body.scrollTop,
+      set: value => (body.scrollTop = value)
     };
-    $.scrollTo = function(target, duration, settings) {
-      return selectorScrollTo.apply($app, arguments);
+    const scrollX = {
+      get: () => body.scrollLeft,
+      set: value => (body.scrollLeft = value)
     };
-    Object.assign($.scrollTo, scrollTo);
-  }
-
-  _fixBrowser() {
-    const app = Adapt.scrolling.$app[0];
-    window.scrollTo = function(x, y) {
-      app.scrollTop = y || 0;
-      app.scrollLeft = x || 0;
+    const scrollHeight = {
+      get: () => body.scrollHeight,
+      set: value => (body.scrollHeight = value)
     };
-    const $window = $(window);
-    this.$app.on('scroll', () => {
-      $window.scroll();
+    const scrollWidth = {
+      get: () => body.scrollWidth,
+      set: value => (body.scrollWidth = value)
+    };
+    // Fix window.scrollY, window.scrollX, window.pageYOffset and window.pageXOffset
+    Object.defineProperties(window, {
+      scrollY,
+      scrollX,
+      // Note: jQuery uses pageYOffset and pageXOffset instead of scrollY and scrollX
+      pageYOffset: scrollY,
+      pageXOffset: scrollX
     });
+    // Fix html.scrollHeight and html.scrollWidth
+    Object.defineProperties(html, {
+      // Note: jQuery animate as used in scrollTo library, uses scrollHeight to determine animation maxiumum
+      scrollHeight,
+      scrollWidth
+    });
+    // Fix window.scrollTo
+    window.scrollTo = (...args) => {
+      const isObject = (args.length === 1 && typeof args[0] === 'object' && args[0] !== null);
+      const left = (isObject ? args[0].left : args[0]) ?? null;
+      const top = (isObject ? args[0].top : args[1]) ?? null;
+      left !== null && (body.scrollLeft = left);
+      top !== null && (body.scrollTop = top);
+    };
+    // Fix MouseEvent.prototype.pageX and MouseEvent.prototype.pageY
+    const MouseEvent = window.MouseEvent;
+    Object.defineProperties(MouseEvent.prototype, {
+      pageX: {
+        get: function() { return this.clientX + scrollX.get(); }
+      },
+      pageY: {
+        // Note: MediaElementJS uses event.pageY to work out the mouse position for the volume controls
+        get: function() { return this.clientY + scrollY.get(); }
+      }
+    });
+    // Trigger scroll events on window when scrolling
+    const $window = $(window);
+    $(document.body).on('scroll', () => $window.scroll());
   }
 
   /**

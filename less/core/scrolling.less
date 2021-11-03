@@ -1,27 +1,22 @@
-.restrain-height() {
-  height: 100%;
-  overflow: hidden;
-}
-
 html.adapt-scrolling {
-  .restrain-height;
+  height: 100%;
+  // Allow overflow scroll top for refresh on android
+  overflow: auto;
 
-  body, #app {
-    .restrain-height;
-  }
-
+  // Offset the navigation bar width the the body scrollbar
   .nav {
-    position: relative;
+    // IE11 is consistant at 18px
+    width: calc(100% - 18px);
+    // Modern browsers change their scroll bar width on zoom
+    width: calc(100% - var(--adapt-scrollbar-width));
   }
 
-  #app {
+  body {
+    height: 100%;
+    overflow: hidden;
     position: relative;
-    height: calc(~'100% - @{navigation-height}');
     overflow-y: scroll;
+    // Allow scrolling of the body in an iframe on ios
     -webkit-overflow-scrolling: touch;
-  }
-
-  #wrapper {
-    padding: 0;
   }
 }

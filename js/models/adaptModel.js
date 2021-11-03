@@ -28,7 +28,7 @@ export default class AdaptModel extends LockingModel {
     return {
       _canShowFeedback: true,
       _classes: '',
-      _canReset: false,
+      _canReset: true,
       _canRequestChild: false,
       _isComplete: false,
       _isInteractionComplete: false,
@@ -220,26 +220,30 @@ export default class AdaptModel extends LockingModel {
 
   }
 
-  reset(type, force) {
-    if (!this.get('_canReset') && !force) return;
-
-    type = type || true;
-
+  /**
+   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
+   * @param {boolean} [canReset] Defaults to this.get('_canReset')
+   * @returns {boolean}
+   */
+  reset(type = 'hard', canReset = this.get('_canReset')) {
+    if (!canReset) return false;
     switch (type) {
-      case 'hard': case true:
+      case 'hard':
+      case true:
         this.set({
           _isEnabled: true,
           _isComplete: false,
           _isInteractionComplete: false
         });
-        break;
+        return true;
       case 'soft':
         this.set({
           _isEnabled: true,
           _isInteractionComplete: false
         });
-        break;
+        return true;
     }
+    return false;
   }
 
   /**
@@ -756,7 +760,7 @@ export default class AdaptModel extends LockingModel {
     return lockedBy.some(id => {
       try {
         const anotherModel = Adapt.findById(id);
-        return anotherModel.get('_isAvailable') && 
+        return anotherModel.get('_isAvailable') &&
           (
             anotherModel.get('_isLocked') ||
             (
@@ -783,10 +787,6 @@ export default class AdaptModel extends LockingModel {
    */
   checkIfResetOnRevisit() {
     const isResetOnRevisit = this.get('_isResetOnRevisit');
-    if (!isResetOnRevisit) {
-      return;
-    }
-    // If reset is enabled set defaults
     this.reset(isResetOnRevisit);
   }
 

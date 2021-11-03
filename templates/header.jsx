@@ -1,6 +1,6 @@
 import Adapt from 'core/js/adapt';
 import React, { useRef } from 'react';
-import { html, prefixClasses, compile, helper } from 'core/js/reactHelpers';
+import { html, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
@@ -17,7 +17,6 @@ import { html, prefixClasses, compile, helper } from 'core/js/reactHelpers';
 export default function Header(props) {
   // Create references to un-controlled view containers
   const jsxHeading = useRef(null);
-  const jsxComponentDescription = useRef(null);
   const {
     _id,
     displayTitle,
@@ -27,6 +26,7 @@ export default function Header(props) {
     _type,
     _component,
     _disableAccessibilityState,
+    _isA11yComponentDescriptionEnabled,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
       _component && _component.toLowerCase()
@@ -37,6 +37,8 @@ export default function Header(props) {
     instruction;
   const isSet = (displayTitle || body || sizedInstruction);
   if (!isSet) return null;
+  const _globals = Adapt.course.get('_globals');
+  const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
   return (
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
@@ -54,7 +56,11 @@ export default function Header(props) {
         </div>
         }
 
-        {html(helper('component_description', props), jsxComponentDescription)}
+        {_isA11yComponentDescriptionEnabled && ariaRegion &&
+        <div className="aria-label">
+          {html(compile(ariaRegion))}
+        </div>
+        }
 
         {body &&
         <div className={prefixClasses(classNamePrefixes, ['__body'])}>

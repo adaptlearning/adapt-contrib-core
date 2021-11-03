@@ -9,9 +9,14 @@ class BlendedItemsComponentQuestionModel extends QuestionModel {
     super.init();
   }
 
-  reset(type, force) {
-    ItemsComponentModel.prototype.reset.call(this, type, force);
-    super.reset(type, force);
+  /**
+   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
+   * @param {boolean} [canReset] Defaults to this.get('_canReset')
+   * @returns {boolean}
+   */
+  reset(type = 'hard', canReset = this.get('_canReset')) {
+    ItemsComponentModel.prototype.reset.call(this, type, canReset);
+    return super.reset(type, canReset);
   }
 
 }
