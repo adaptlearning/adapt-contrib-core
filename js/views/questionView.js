@@ -288,8 +288,6 @@ class QuestionView extends ComponentView {
 
     this._runModelCompatibleFunction('resetUserAnswer');
 
-    this.resetQuestion();
-
     this.model.checkCanSubmit();
 
     this._runModelCompatibleFunction('updateButtons');
@@ -308,13 +306,14 @@ class QuestionView extends ComponentView {
 
   setQuestionAsReset() {
     this.model.setQuestionAsReset();
+    this.resetQuestion();
     this.$('.component__widget').removeClass('is-submitted');
   }
 
-  // Used by the question view to reset the look and feel of the component.
-  // This could also include resetting item data
-  // This is triggered when the reset button is clicked so it shouldn't
-  // be a full reset
+  /**
+   * Used by the question view to reset the look and feel of the component.
+   * This is triggered when the reset button is clicked so it shouldn't be a full reset.
+   */
   resetQuestion() {}
 
   refresh() {

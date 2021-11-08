@@ -317,7 +317,14 @@ class QuestionModel extends ComponentModel {
       _isEnabled: true,
       _isSubmitted: false
     });
+    this.resetQuestion();
   }
+
+  /**
+   * Used by the question view to reset the options of the component.
+   * This is triggered when the reset button is clicked so it shouldn't be a full reset.
+   */
+  resetQuestion() {}
 
   refresh() {
     this.trigger('question:refresh');
