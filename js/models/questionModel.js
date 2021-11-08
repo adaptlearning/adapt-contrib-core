@@ -14,6 +14,7 @@ class QuestionModel extends ComponentModel {
     return ComponentModel.resultExtend('defaults', {
       _isQuestionType: true,
       _shouldDisplayAttempts: false,
+      _shouldShowMarking: false,
       _canShowModelAnswer: true,
       _canShowFeedback: true,
       _canShowMarking: true,
@@ -306,7 +307,8 @@ class QuestionModel extends ComponentModel {
       _attemptsLeft: attempts,
       _isCorrect: undefined,
       _isSubmitted: false,
-      _buttonState: BUTTON_STATE.SUBMIT
+      _buttonState: BUTTON_STATE.SUBMIT,
+      _shouldShowMarking: this.shouldShowMarking
     });
     return true;
   }
@@ -355,15 +357,12 @@ class QuestionModel extends ComponentModel {
   onSubmitted() {
     // Stores the current attempt state
     this.addAttemptObject();
+    this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
   /** @type {boolean} */
   get shouldShowMarking() {
-    if (!this.get('_canShowMarking')) {
-      return false;
-    }
-
-    return this.get('_isInteractionComplete');
+    return (!this.isInteractive() && this.get('_canShowMarking') && this.get('_isInteractionComplete'));
   }
 
 }

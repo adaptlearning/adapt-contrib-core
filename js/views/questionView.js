@@ -34,8 +34,10 @@ class QuestionView extends ComponentView {
   /**
    * Used to determine whether the learner is allowed to interact with the question component or not.
    * @return {Boolean}
+   * @deprecated since v6.0.5 please use this.model.isInteractive, this.model.get('_shouldShowMarking') or this.model.shouldShowMarking
   */
   isInteractive() {
+    log.deprecated('questionView.isInteractive please use this.model.isInteractive, this.model.get(\'_shouldShowMarking\') or this.model.shouldShowMarking');
     return this.model.isInteractive();
   }
 
@@ -320,7 +322,7 @@ class QuestionView extends ComponentView {
   refresh() {
     this.model.set('_buttonState', this.model.getButtonState());
 
-    if (this.model.shouldShowMarking && this.model.get('_isSubmitted')) {
+    if (this.model.shouldShowMarking) {
       this.showMarking();
     }
 
