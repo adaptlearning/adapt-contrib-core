@@ -132,7 +132,7 @@ export default class ButtonsView extends Backbone.View {
 
     this.checkResetSubmittedState();
 
-    if (!isInteractionComplete && attemptsLeft !== 0) {
+    if (!isInteractionComplete && attemptsLeft >= 0) {
       attemptsString = attemptsLeft + ' ';
       attemptsString += attemptsLeft === 1 ?
         this.model.get('_buttons').remainingAttemptText :
