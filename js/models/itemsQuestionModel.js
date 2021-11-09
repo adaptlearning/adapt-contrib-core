@@ -125,7 +125,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     if (!this.get('_hasItemScoring')) return super.maxScore;
     const children = this.getChildren()?.toArray() || [];
     const scores = children.map(child => child.get('_score') || 0);
-    scores.sort();
+    scores.sort((a, b) => a - b);
     return scores.reverse().slice(0, this.get('_selectable')).filter(score => score > 0).reduce((maxScore, score) => (maxScore += score), 0);
   }
 
@@ -133,7 +133,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     if (!this.get('_hasItemScoring')) return super.minScore;
     const children = this.getChildren()?.toArray() || [];
     const scores = children.map(child => child.get('_score') || 0);
-    scores.sort();
+    scores.sort((a, b) => a - b);
     return scores.slice(0, this.get('_selectable')).filter(score => score < 0).reduce((minScore, score) => (minScore += score), 0);
   }
 
