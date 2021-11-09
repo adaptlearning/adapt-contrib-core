@@ -244,7 +244,7 @@ class QuestionModel extends ComponentModel {
   setupCorrectFeedback() {
     this.set({
       feedbackTitle: this.getFeedbackTitle(),
-      feedbackMessage: this.get('_feedback').correct
+      feedbackMessage: Handlebars.compile(this.get('_feedback').correct)(this.toJSON())
     });
   }
 
@@ -267,12 +267,13 @@ class QuestionModel extends ComponentModel {
 
     this.set({
       feedbackTitle: this.getFeedbackTitle(),
-      feedbackMessage: body
+      feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });
   }
 
   getFeedbackTitle() {
-    return this.get('_feedback').title || this.get('displayTitle') || this.get('title') || '';
+    const title = this.get('_feedback').title || this.get('displayTitle') || this.get('title') || '';
+    return Handlebars.compile(title)(this.toJSON());
   }
 
   /**
