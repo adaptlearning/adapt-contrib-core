@@ -20,8 +20,8 @@ class Data extends AdaptCollection {
   initialize() {
     super.initialize();
     this.on({
-      'add': this.onAdded,
-      'remove': this.onRemoved
+      add: this.onAdded,
+      remove: this.onRemoved
     });
   }
 
@@ -136,7 +136,7 @@ class Data extends AdaptCollection {
     // Add course model first to allow other model/views to utilize its settings
     const course = allModelData.find(modelData => modelData._type === 'course');
     if (!course) {
-      throw new Error(`Expected a model data with "_type": "course", none found.`);
+      throw new Error('Expected a model data with "_type": "course", none found.');
     }
     Adapt.trigger('courseModel:dataLoading');
     Adapt.course = this.push(course);
@@ -168,11 +168,7 @@ class Data extends AdaptCollection {
   async triggerDataReady(newLanguage) {
     if (newLanguage) {
       Adapt.trigger('app:languageChanged', newLanguage);
-      _.defer(() => {
-        Adapt.startController.loadCourseData();
-        const hash = Adapt.startController.isEnabled() ? Adapt.startController.getStartHash(false) : '#/';
-        Adapt.router.navigate(hash, { trigger: true, replace: true });
-      });
+      this.performStartController();
     }
     Adapt.log.debug('Firing app:dataReady');
     try {
@@ -181,6 +177,13 @@ class Data extends AdaptCollection {
       Adapt.log.error('Error during app:dataReady trigger', e);
     }
     await Adapt.wait.queue();
+  }
+
+  performStartController() {
+    Adapt.startController.loadCourseData();
+    if (!Adapt.startController.isEnabled()) return;
+    const hash = Adapt.startController.getStartHash(false);
+    Adapt.router.navigate(hash, { trigger: true, replace: true });
   }
 
   triggerInit() {
