@@ -170,6 +170,9 @@ class Data extends AdaptCollection {
       Adapt.trigger('app:languageChanged', newLanguage);
       _.defer(() => {
         Adapt.startController.loadCourseData();
+
+        if (!Adapt.router.model.get('_canNavigate')) return;
+
         const hash = Adapt.startController.isEnabled() ? Adapt.startController.getStartHash(false) : '#/';
         Adapt.router.navigate(hash, { trigger: true, replace: true });
       });
