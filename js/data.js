@@ -181,8 +181,7 @@ class Data extends AdaptCollection {
 
   performStartController() {
     Adapt.startController.loadCourseData();
-    if (!Adapt.startController.isEnabled()) return;
-    const hash = Adapt.startController.getStartHash(false);
+    const hash = Adapt.startController.isEnabled() ? Adapt.startController.getStartHash(false) : '#/';
     Adapt.router.navigate(hash, { trigger: true, replace: true });
   }
 
