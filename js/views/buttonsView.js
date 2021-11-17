@@ -3,13 +3,13 @@ import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
 
 // convert BUTTON_STATE to property name
 const textPropertyName = {
-  'SUBMIT': 'submit',
-  'CORRECT': 'correct',
-  'INCORRECT': 'incorrect',
-  'SHOW_CORRECT_ANSWER': 'showCorrectAnswer',
-  'HIDE_CORRECT_ANSWER': 'hideCorrectAnswer',
-  'SHOW_FEEDBACK': 'showFeedback',
-  'RESET': 'reset'
+  SUBMIT: 'submit',
+  CORRECT: 'correct',
+  INCORRECT: 'incorrect',
+  SHOW_CORRECT_ANSWER: 'showCorrectAnswer',
+  HIDE_CORRECT_ANSWER: 'hideCorrectAnswer',
+  SHOW_FEEDBACK: 'showFeedback',
+  RESET: 'reset'
 };
 
 export default class ButtonsView extends Backbone.View {

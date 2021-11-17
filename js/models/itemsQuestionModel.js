@@ -189,6 +189,13 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return selectedItems[selectedItems.length - 1];
   }
 
+  /**
+   * Reset the question items for another attempt
+   */
+  resetQuestion() {
+    this.resetItems();
+  }
+
   resetItems() {
     this.resetActiveItems();
     this.set('_isAtLeastOneCorrectSelection', false);
