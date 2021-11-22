@@ -36,7 +36,19 @@ class Tracking extends Backbone.Controller {
   onAssessmentComplete(assessmentState) {
     this._assessmentState = assessmentState;
 
+    this.submitScore();
     this.checkCompletion();
+  }
+
+  submitScore() {
+    if (!this._config._shouldSubmitScore) return;
+  
+    if (this._assessmentState.isPercentageBased) {
+      Adapt.offlineStorage.set('score', this._assessmentState.scoreAsPercent, 0, 100);
+      return;
+    }
+  
+    Adapt.offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
   }
 
   /**
