@@ -111,6 +111,8 @@ export default class ContentObjectView extends AdaptView {
     }
     // Force all models up until the id to render
     models = models.slice(0, index + 1);
+    const isLocked = models.some(model => model.get('_isLocked'));
+    if (isLocked) throw new Error(`Cannot renderTo ${id} as it is preceded by locked content`);
     const ids = _.indexBy(models, (model) => model.get('_id'));
     const forceUntilId = (event) => {
       const addingId = event.model.get('_id');
