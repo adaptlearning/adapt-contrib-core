@@ -34,16 +34,18 @@ class AdaptSingleton extends LockingModel {
     return this.store;
   }
 
-  init() {
+  async init() {
     this.addDirection();
     this.disableAnimation();
     this.trigger('adapt:preInitialize');
+    await this.wait.queue();
 
     // wait until no more completion checking
-    this.deferUntilCompletionChecked(() => {
+    this.deferUntilCompletionChecked(async () => {
 
       // start adapt in a full restored state
       this.trigger('adapt:start');
+      await this.wait.queue();
 
       if (!Backbone.History.started) {
         Backbone.history.start();
@@ -52,6 +54,7 @@ class AdaptSingleton extends LockingModel {
       this.set('_isStarted', true);
 
       this.trigger('adapt:initialize');
+      await this.wait.queue();
 
     });
   }
@@ -95,12 +98,12 @@ class AdaptSingleton extends LockingModel {
 
     // Setup legacy events and handlers
     const beginWait = () => {
-      this.log.deprecated(`Use Adapt.wait.begin() as Adapt.trigger('plugin:beginWait') may be removed in the future`);
+      this.log.deprecated('Use Adapt.wait.begin() as Adapt.trigger(\'plugin:beginWait\') may be removed in the future');
       this.wait.begin();
     };
 
     const endWait = () => {
-      this.log.deprecated(`Use Adapt.wait.end() as Adapt.trigger('plugin:endWait') may be removed in the future`);
+      this.log.deprecated('Use Adapt.wait.end() as Adapt.trigger(\'plugin:endWait\') may be removed in the future');
       this.wait.end();
     };
 
@@ -330,6 +333,7 @@ class AdaptSingleton extends LockingModel {
       const modelId = model.get('_id');
       if (modelId === currentLocationId) return true;
       idPathToView.unshift(modelId);
+      return false;
     });
 
     if (!currentLocationModel) {
@@ -337,7 +341,7 @@ class AdaptSingleton extends LockingModel {
     }
 
     const foundView = idPathToView.reduce((view, currentId) => {
-      if (!view) return;
+      if (!view) return null;
       const childViews = view.getChildViews();
       return childViews?.find(view => view.model.get('_id') === currentId);
     }, this.parentView);
@@ -405,8 +409,8 @@ class AdaptSingleton extends LockingModel {
     const currentView = this.parentView;
     if (currentView) {
       currentView.model.setOnChildren({
-        '_isReady': false,
-        '_isRendered': false
+        _isReady: false,
+        _isRendered: false
       });
     }
     this.trigger('preRemove', currentView);
