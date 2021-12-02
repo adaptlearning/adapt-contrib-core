@@ -177,7 +177,7 @@ export default class Popup extends Backbone.Controller {
       }
       if (this._tabIndexes[elementUID]?.length) {
         // delete element tabindex store if empty
-        delete this._tabIndexe[elementUID];
+        delete this._tabIndexes[elementUID];
         delete this._ariaHiddens[elementUID];
       }
       if (config._options._isPopupTabIndexManagementEnabled) {
