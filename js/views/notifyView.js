@@ -2,7 +2,7 @@ import Adapt from 'core/js/adapt';
 import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 
-export default class Notify extends Backbone.View {
+export default class NotifyView extends Backbone.View {
 
   className() {
     return 'notify-container';
