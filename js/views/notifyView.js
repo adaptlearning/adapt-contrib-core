@@ -1,262 +1,120 @@
 import Adapt from 'core/js/adapt';
-import AdaptView from 'core/js/views/adaptView';
+import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
+import NotifyPopupView from 'core/js/views/notifyPopupView';
 
-export default class NotifyView extends Backbone.View {
+export default class Notify extends Backbone.View {
 
   className() {
-    return `notify ${this.model.get('_classes') || ''}`;
-  }
-
-  attributes () {
-    return Object.assign({
-      role: 'dialog',
-      'aria-labelledby': 'notify-heading',
-      'aria-modal': 'true'
-    }, this.model.get('_attributes'));
-  }
-
-  events() {
-    return {
-      'click .js-notify-btn-alert': 'onAlertButtonClicked',
-      'click .js-notify-btn-prompt': 'onPromptButtonClicked',
-      'click .js-notify-close-btn': 'onCloseButtonClicked',
-      'click .js-notify-shadow-click': 'onShadowClicked'
-    };
+    return 'notify-container';
   }
 
   initialize() {
-    _.bindAll(this, 'resetNotifySize', 'onKeyUp');
-    this.disableAnimation = Adapt.config.get('_disableAnimation') || false;
-    this.isOpen = false;
-    this.hasOpened = false;
-    this.setupEventListeners();
+    this._stack = [];
+    this.notifyPushes = new NotifyPushCollection();
+    this.listenTo(Adapt, {
+      'notify:popup': this._deprecated.bind(this, 'popup'),
+      'notify:alert': this._deprecated.bind(this, 'alert'),
+      'notify:prompt': this._deprecated.bind(this, 'prompt'),
+      'notify:push': this._deprecated.bind(this, 'push')
+    });
     this.render();
   }
 
-  setupEventListeners() {
-    this.listenTo(Adapt, {
-      'remove page:scrollTo': this.closeNotify,
-      'notify:resize': this.resetNotifySize,
-      'notify:cancel': this.cancelNotify,
-      'notify:close': this.closeNotify,
-      'device:resize': this.resetNotifySize
-    });
-    this.setupEscapeKey();
+  get stack() {
+    return this._stack;
   }
 
-  setupEscapeKey() {
-    $(window).on('keyup', this.onKeyUp);
-  }
-
-  onKeyUp(event) {
-    if (event.which !== 27) return;
-    event.preventDefault();
-    this.cancelNotify();
+  _deprecated(type, notifyObject) {
+    Adapt.log.deprecated(`NOTIFY DEPRECATED: Adapt.trigger('notify:${type}', notifyObject); is no longer supported, please use Adapt.notify.${type}(notifyObject);`);
+    return this.create(notifyObject, { _type: type });
   }
 
   render() {
-    const data = this.model.toJSON();
-    const template = Handlebars.templates.notify;
-    // hide notify container
-    this.$el.css('visibility', 'hidden');
-    // attach popup + shadow
-    this.$el.html(template(data)).appendTo('body');
-    // hide popup
-    this.$('.notify__popup').css('visibility', 'hidden');
-    // show notify container
-    this.$el.css('visibility', 'visible');
-    this.showNotify();
-    return this;
+    this.$el.appendTo('#wrapper');
   }
 
-  onAlertButtonClicked(event) {
-    event.preventDefault();
-    // tab index preservation, notify must close before subsequent callback is triggered
-    this.closeNotify();
-    Adapt.trigger(this.model.get('_callbackEvent'), this);
-  }
-
-  onPromptButtonClicked(event) {
-    event.preventDefault();
-    // tab index preservation, notify must close before subsequent callback is triggered
-    this.closeNotify();
-    Adapt.trigger($(event.currentTarget).attr('data-event'), this);
-  }
-
-  onCloseButtonClicked(event) {
-    event.preventDefault();
-    // tab index preservation, notify must close before subsequent callback is triggered
-    this.cancelNotify();
-  }
-
-  onShadowClicked(event) {
-    event.preventDefault();
-    if (this.model.get('_closeOnShadowClick') === false) return;
-    this.cancelNotify();
-  }
-
-  cancelNotify() {
-    if (this.model.get('_isCancellable') === false) return;
-    // tab index preservation, notify must close before subsequent callback is triggered
-    this.closeNotify();
-    Adapt.trigger('notify:cancelled', this);
-  }
-
-  resetNotifySize() {
-    if (!this.hasOpened) return;
-    this.resizeNotify();
-  }
-
-  resizeNotify() {
-    const windowHeight = $(window).height();
-    const notifyHeight = this.$('.notify__popup-inner').outerHeight();
-    const isFullWindow = (notifyHeight >= windowHeight);
-    this.$('.notify__popup').css({
-      'height': isFullWindow ? '100%' : 'auto',
-      'top': isFullWindow ? 0 : '',
-      'margin-top': isFullWindow ? '' : -(notifyHeight / 2),
-      'overflow-y': isFullWindow ? 'scroll' : '',
-      '-webkit-overflow-scrolling': isFullWindow ? 'touch' : ''
+  create(notifyObject, defaults) {
+    notifyObject = _.defaults({}, notifyObject, defaults, {
+      _type: 'popup',
+      _isCancellable: true,
+      _showCloseButton: true,
+      _closeOnShadowClick: true
     });
-  }
 
-  async showNotify() {
-    this.isOpen = true;
-    await this.addSubView();
-    // Add to the list of open popups
-    Adapt.notify.stack.push(this);
-    // Keep focus from previous action
-    this.$previousActiveElement = $(document.activeElement);
-    Adapt.trigger('notify:opened', this);
-    this.$el.imageready(this.onLoaded.bind(this));
-  }
-
-  onLoaded() {
-    if (this.disableAnimation) {
-      this.$('.notify__shadow').css('display', 'block');
-    } else {
-      this.$('.notify__shadow').velocity({ opacity: 0 }, { duration: 0 }).velocity({ opacity: 1 }, { duration: 400,
-        begin: () => {
-          this.$('.notify__shadow').css('display', 'block');
-        }
-      });
-    }
-    this.resizeNotify();
-    if (this.disableAnimation) {
-      this.$('.notify__popup').css('visibility', 'visible');
-      this.onOpened();
-    } else {
-      this.$('.notify__popup').velocity({ opacity: 0 }, { duration: 0 }).velocity({ opacity: 1 }, { duration: 400,
-        begin: () => {
-          // Make sure to make the notify visible and then set
-          // focus, disabled scroll and manage tabs
-          this.$('.notify__popup').css('visibility', 'visible');
-          this.onOpened();
-        }
-      });
-    }
-  }
-
-  onOpened() {
-    $.inview();
-    this.hasOpened = true;
-    // Allows popup manager to control focus
-    Adapt.a11y.popupOpened(this.$('.notify__popup'));
-    Adapt.a11y.scrollDisable('body');
-    $('html').addClass('notify');
-    // Set focus to first accessible element
-    Adapt.a11y.focusFirst(this.$('.notify__popup'), { defer: false });
-  }
-
-  async addSubView() {
-    this.subView = this.model.get('_view');
-    if (this.model.get('_id')) {
-      // Automatically render the specified id
-      const model = Adapt.findById(this.model.get('_id'));
-      const View = Adapt.getViewClass(model);
-      this.subView = new View({ model });
-    }
-    if (!this.subView) return;
-    this.subView.$el.on('resize', this.resetNotifySize);
-    this.$('.notify__content-inner').prepend(this.subView.$el);
-    if (!(this.subView instanceof AdaptView) || this.subView.model.get('_isReady')) return;
-    // Wait for the AdaptView subview to be ready
-    return new Promise(resolve => {
-      const check = (model, value) => {
-        if (!value) return;
-        this.subView.model.off('change:_isReady', check);
-        resolve();
-      };
-      this.subView.model.on('change:_isReady', check);
-    });
-  }
-
-  closeNotify() {
-    // Make sure that only the top most notify is closed
-    const stackItem = Adapt.notify.stack[Adapt.notify.stack.length - 1];
-    if (this !== stackItem) return;
-    Adapt.notify.stack.pop();
-    // Prevent from being invoked multiple times - see https://github.com/adaptlearning/adapt_framework/issues/1659
-    if (!this.isOpen) return;
-    this.isOpen = false;
-    // If closeNotify is called before showNotify has finished then wait
-    // until it's open.
-    if (this.hasOpened) {
-      this.onCloseReady();
+    if (notifyObject._type === 'push') {
+      this.notifyPushes.push(notifyObject);
       return;
     }
-    this.listenToOnce(Adapt, 'popup:opened', () => {
-      // Wait for popup:opened to finish processing
-      _.defer(this.onCloseReady.bind(this));
+
+    return new NotifyPopupView({
+      model: this.model
     });
   }
 
-  onCloseReady() {
-    if (this.disableAnimation) {
-      this.$('.notify__popup').css('visibility', 'hidden');
-      this.$el.css('visibility', 'hidden');
-      this.remove();
-    } else {
-      this.$('.notify__popup').velocity({ opacity: 0 }, { duration: 400,
-        complete: () => {
-          this.$('.notify__popup').css('visibility', 'hidden');
-        }
-      });
-      this.$('.notify__shadow').velocity({ opacity: 0 }, { duration: 400,
-        complete: () => {
-          this.$el.css('visibility', 'hidden');
-          this.remove();
-        }
-      });
-    }
-    Adapt.a11y.scrollEnable('body');
-    $('html').removeClass('notify');
-    // Return focus to previous active element
-    Adapt.a11y.popupClosed(this.$previousActiveElement);
-    // Return reference to the notify view
-    Adapt.trigger('notify:closed', this);
+  /**
+   * Creates a 'popup' notify
+   * @param {Object} notifyObject An object containing all the settings for the popup
+   * @param {string} notifyObject.title Title of the popup
+   * @param {string} notifyObject.body Body of the popup
+   * @param {Boolean} [notifyObject._showCloseButton=true] If set to `false` the popup will not have a close button. The learner will still be able to dismiss the popup by clicking outside of it or by pressing the Esc key. This setting is typically used mainly for popups that have a subview (where the subview contains the close button)
+   * @param {Boolean} [notifyObject._isCancellable=true] If set to `false` the learner will not be able to close the popup - use with caution!
+   * @param {string} [notifyObject._classes] A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
+   * @param {Backbone.View} [notifyObject._view] Subview to display in the popup instead of the standard view
+   */
+  popup(notifyObject) {
+    return this.create(notifyObject, { _type: 'popup' });
   }
 
-  remove(...args) {
-    this.removeSubView();
-    $(window).off('keyup', this.onKeyUp);
-    super.remove(...args);
+  /**
+   * Creates an 'alert' notify popup
+   * @param {Object} notifyObject An object containing all the settings for the alert popup
+   * @param {string} notifyObject.title Title of the alert popup
+   * @param {string} notifyObject.body Body of the alert popup
+   * @param {string} notifyObject.confirmText Label for the popup confirm button
+   * @param {Boolean} [notifyObject._isCancellable=true] If set to `false` only the confirm button can be used to dismiss/close the popup
+   * @param {Boolean} [notifyObject._showIcon=false] If set to `true` an 'alert' icon will be displayed in the popup
+   * @param {string} [notifyObject._callbackEvent] Event to trigger when the confirm button is clicked
+   * @param {string} [notifyObject._classes] A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
+   * @param {Backbone.View} [notifyObject._view] Subview to display in the popup instead of the standard view
+   */
+  alert(notifyObject) {
+    return this.create(notifyObject, { _type: 'alert' });
   }
 
-  removeSubView() {
-    if (!this.subView) return;
-    this.subView.$el.off('resize', this.resetNotifySize);
-    if (this.subView instanceof AdaptView) {
-      // Clear up nested views and models
-      const views = [...this.subView.findDescendantViews(), this.subView];
-      views.forEach(view => {
-        view.model.set('_isReady', false);
-        view.remove();
-      });
-    } else {
-      this.subView.remove();
-    }
-    this.subView = null;
+  /**
+   * Creates a 'prompt dialog' notify popup
+   * @param {Object} notifyObject An object containing all the settings for the prompt dialog
+   * @param {string} notifyObject.title Title of the prompt
+   * @param {string} notifyObject.body Body of the prompt
+   * @param {Object[]} notifyObject._prompts Array of objects that each define a button (and associated callback event) that you want shown in the prompt
+   * @param {string} notifyObject._prompts[].promptText Label for this button
+   * @param {string} notifyObject._prompts[]._callbackEvent Event to be triggered when this button is clicked
+   * @param {Boolean} [notifyObject._isCancellable=true] If set to `false` only the confirm button can be used to dismiss/close the prompt
+   * @param {Boolean} [notifyObject._showIcon=true] If set to `true` a 'query' icon will be displayed in the popup
+   * @param {string} [notifyObject._callbackEvent] Event to trigger when the confirm button is clicked
+   * @param {string} [notifyObject._classes] A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
+   * @param {Backbone.View} [notifyObject._view] Subview to display in the popup instead of the standard view
+   */
+  prompt(notifyObject) {
+    return this.create(notifyObject, { _type: 'prompt' });
+  }
+
+  /**
+   * Creates a 'push notification'
+   * @param {Object} notifyObject An object containing all the settings for the push notification
+   * @param {string} notifyObject.title Title of the push notification
+   * @param {string} notifyObject.body Body of the push notification
+   * @param {Number} [notifyObject._timeout=3000] Length of time (in milliseconds) the notification should left on-screen before automatically fading away
+   * @param {string} notifyObject._callbackEvent Event to be triggered if the learner clicks on the push notification (not triggered if they use the close button)
+   * @param {string} [notifyObject._classes] A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
+   */
+  push(notifyObject) {
+    this.$el.attr({
+      'aria-live': 'assertive',
+      'aria-atomic': true
+    });
+
+    return this.create(notifyObject, { _type: 'push' });
   }
 
 }
