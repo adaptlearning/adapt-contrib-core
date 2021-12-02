@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
+import NotifyModel from 'core/js/models/notifyModel';
 
 export default class NotifyView extends Backbone.View {
 
@@ -47,7 +48,7 @@ export default class NotifyView extends Backbone.View {
     }
 
     return new NotifyPopupView({
-      model: this.model
+      model: new NotifyModel(notifyObject)
     });
   }
 

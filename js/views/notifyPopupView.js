@@ -60,7 +60,7 @@ export default class NotifyPopupView extends Backbone.View {
     // hide notify container
     this.$el.css('visibility', 'hidden');
     // attach popup + shadow
-    this.$el.html(template(data)).appendTo('body');
+    this.$el.html(template(data)).appendTo('.notify-container');
     // hide popup
     this.$('.notify__popup').css('visibility', 'hidden');
     // show notify container
