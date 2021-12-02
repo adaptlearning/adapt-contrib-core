@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import AdaptView from 'core/js/views/adaptView';
+import Backbone from 'backbone';
 
 export default class NotifyPopupView extends Backbone.View {
 
