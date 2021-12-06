@@ -3,7 +3,7 @@ import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 import NotifyModel from 'core/js/models/notifyModel';
 
-class NotifyView extends Backbone.View {
+export default class NotifyView extends Backbone.View {
 
   className() {
     return 'notify__container';
@@ -115,7 +115,3 @@ class NotifyView extends Backbone.View {
   }
 
 }
-
-NotifyView.template = 'notify';
-
-export default NotifyView;
