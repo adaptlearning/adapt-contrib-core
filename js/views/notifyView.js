@@ -3,10 +3,10 @@ import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 import NotifyModel from 'core/js/models/notifyModel';
 
-export default class NotifyView extends Backbone.View {
+class NotifyView extends Backbone.View {
 
   className() {
-    return 'notify-container';
+    return 'notify__container';
   }
 
   initialize() {
@@ -31,7 +31,8 @@ export default class NotifyView extends Backbone.View {
   }
 
   render() {
-    this.$el.appendTo('#wrapper');
+    const notifyTemplate = Handlebars.templates.notify;
+    $(notifyTemplate()).appendTo('#wrapper');
   }
 
   create(notifyObject, defaults) {
@@ -110,12 +111,11 @@ export default class NotifyView extends Backbone.View {
    * @param {string} [notifyObject._classes] A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
    */
   push(notifyObject) {
-    this.$el.attr({
-      'aria-live': 'assertive',
-      'aria-atomic': true
-    });
-
     return this.create(notifyObject, { _type: 'push' });
   }
 
 }
+
+NotifyView.template = 'notify';
+
+export default NotifyView;

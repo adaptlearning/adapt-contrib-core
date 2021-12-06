@@ -45,7 +45,7 @@ export default class NotifyPushView extends Backbone.View {
   render() {
     const data = this.model.toJSON();
     const template = Handlebars.templates['notifyPush'];
-    this.$el.html(template(data)).appendTo('.notify-container');
+    this.$el.html(template(data)).appendTo('.notify__push-container');
 
     _.defer(this.postRender.bind(this));
 

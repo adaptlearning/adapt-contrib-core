@@ -57,11 +57,11 @@ export default class NotifyPopupView extends Backbone.View {
 
   render() {
     const data = this.model.toJSON();
-    const template = Handlebars.templates.notify;
+    const template = Handlebars.templates.notifyPopup;
     // hide notify container
     this.$el.css('visibility', 'hidden');
     // attach popup + shadow
-    this.$el.html(template(data)).appendTo('.notify-container');
+    this.$el.html(template(data)).appendTo('.notify__popup-container');
     // hide popup
     this.$('.notify__popup').css('visibility', 'hidden');
     // show notify container
