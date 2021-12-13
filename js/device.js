@@ -4,15 +4,16 @@ import Bowser from 'bowser';
 class Device extends Backbone.Controller {
 
   initialize() {
+    this.bowser = Bowser.parse(window.navigator.userAgent);
     this.$html = $('html');
     this.$window = $(window);
     this.touch = Modernizr.touchevents;
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
-    this.browser = (Bowser.name || '').toLowerCase();
-    this.version = (Bowser.version || '').toLowerCase();
+    this.browser = (this.bowser.browser.name || '').toLowerCase();
+    this.version = (this.bowser.browser.version || '').toLowerCase();
     this.OS = this.getOperatingSystem().toLowerCase();
-    this.osVersion = Bowser.osversion || '';
+    this.osVersion = this.bowser.os.version || '';
     this.renderingEngine = this.getRenderingEngine();
     this.onWindowResize = _.debounce(this.onWindowResize.bind(this), 100);
     this.listenTo(Adapt, {
@@ -22,7 +23,9 @@ class Device extends Backbone.Controller {
     // Convert 'msie' and 'internet explorer' to 'ie'.
     let browserString = browser.replace(/msie|internet explorer/, 'ie');
     browserString += ` version-${this.version} OS-${this.OS} ${this.getAppleDeviceType()}`;
+    // Legacy bad code, missing space after getAppleDevice and string replace is not global
     browserString += browserString.replace('.', '-').toLowerCase();
+    browserString += ` ${browserString.replace(/\./g, '-').toLowerCase()}`;
     browserString += ` pixel-density-${this.pixelDensity()}`;
     this.$html.addClass(browserString);
   }
@@ -97,9 +100,7 @@ class Device extends Backbone.Controller {
   }
 
   getOperatingSystem() {
-    const flags = ['windows', 'mac', 'linux', 'windowsphone', 'chromeos', 'android',
-      'ios', 'blackberry', 'firefoxos', 'webos', 'bada', 'tizen', 'sailfish'];
-    let os = flags.find(name => Bowser[name]) || '';
+    let os = this.bowser.os.name.toLowerCase() || '';
 
     if (os === '') {
       // Fall back to using navigator.platform in case Bowser can't detect the OS.
@@ -108,15 +109,16 @@ class Device extends Backbone.Controller {
       if (match) os = match[0];
       // Set consistency with the Bowser flags.
       if (os === 'win') os = 'windows';
-      if (!os) os = 'PlatformUnknown';
+      if (!os) os = '';
     }
+
+    if (!os) os = 'platformunknown';
 
     return os;
   }
 
   getRenderingEngine() {
-    const flags = ['webkit', 'blink', 'gecko', 'msie', 'msedge'];
-    return flags.find(name => Bowser[name]) || '';
+    return this.bowser.engine.name || '';
   }
 
   onWindowResize() {
@@ -163,8 +165,13 @@ class Device extends Backbone.Controller {
   }
 
   getAppleDeviceType() {
-    const flags = ['iphone', 'ipad', 'ipod'];
-    return flags.find(name => Bowser[name]) || '';
+    const platformType = this.bowser.platform.type?.toLowerCase() || '';
+    const browerName = this.bowser.browser.name?.toLowerCase() || '';
+    const isIPhone = (platformType === 'mobile' && browerName === 'safari');
+    const isIPad = (platformType === 'tablet' && browerName === 'safari');
+    if (isIPhone) return 'iphone';
+    if (isIPad) return 'ipad';
+    return '';
   }
 
   pixelDensity() {
