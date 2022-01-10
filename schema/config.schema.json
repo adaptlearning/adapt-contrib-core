@@ -52,6 +52,12 @@
           "type": "boolean",
           "title": "Require all assessments to be completed",
           "default": false
+        },
+        "_shouldSubmitScore": {
+          "type": "boolean",
+          "title": "Submit score to LMS",
+          "description": "If enabled, the score attained in any assessment will be reported (regardless of whether the user passes or fails the assessment)",
+          "default": false
         }
       }
     },

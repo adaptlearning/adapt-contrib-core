@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 import COMPLETION_STATE from 'core/js/enums/completionStateEnum';
 
 class Tracking extends Backbone.Controller {
@@ -6,7 +7,8 @@ class Tracking extends Backbone.Controller {
   initialize() {
     this._config = {
       _requireContentCompleted: true,
-      _requireAssessmentCompleted: false
+      _requireAssessmentCompleted: false,
+      _shouldSubmitScore: false
     };
     this._assessmentState = null;
 
@@ -42,12 +44,12 @@ class Tracking extends Backbone.Controller {
 
   submitScore() {
     if (!this._config._shouldSubmitScore) return;
-  
+
     if (this._assessmentState.isPercentageBased) {
       Adapt.offlineStorage.set('score', this._assessmentState.scoreAsPercent, 0, 100);
       return;
     }
-  
+
     Adapt.offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
   }
 
@@ -113,9 +115,12 @@ class Tracking extends Backbone.Controller {
    * Set the _config object to the values retrieved from config.json.
    */
   loadConfig() {
-    if (Adapt.config.has('_completionCriteria')) {
-      this._config = Adapt.config.get('_completionCriteria');
-    }
+    this._config = Adapt.config.get('_completionCriteria') ?? this._config;
+    const newShouldSubmitScore = this._config._shouldSubmitScore;
+    const legacyShouldSubmitScore = Adapt.config.get('_spoor')?._tracking?._shouldSubmitScore;
+    // If the legacy property exists, use it for backward compatibility but warn in the console
+    if (legacyShouldSubmitScore !== undefined) logging.deprecated('config.json:_spoor._tracking._shouldSubmitScore, please use only config.json:_completionCriteria._shouldSubmitScore');
+    this._config._shouldSubmitScore = legacyShouldSubmitScore ?? newShouldSubmitScore ?? true;
   }
 
 }
