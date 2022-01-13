@@ -166,9 +166,9 @@ class Device extends Backbone.Controller {
 
   getAppleDeviceType() {
     const platformType = this.bowser.platform.type?.toLowerCase() || '';
-    const browerName = this.bowser.browser.name?.toLowerCase() || '';
-    const isIPhone = (platformType === 'mobile' && browerName === 'safari');
-    const isIPad = (platformType === 'tablet' && browerName === 'safari');
+    const browserName = this.bowser.browser.name?.toLowerCase() || '';
+    const isIPhone = (platformType === 'mobile' && browserName === 'safari');
+    const isIPad = (platformType === 'tablet' && browserName === 'safari');
     if (isIPhone) return 'iphone';
     if (isIPad) return 'ipad';
     return '';
