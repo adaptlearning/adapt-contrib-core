@@ -17,13 +17,10 @@ class Tracking extends Backbone.Controller {
   }
 
   setupEventListeners() {
-    // Check if completion requires passing an assessment.
-    if (this._config._requireAssessmentCompleted) {
-      this.listenTo(Adapt, {
-        'assessment:complete': this.onAssessmentComplete,
-        'assessment:restored': this.onAssessmentRestored
-      });
-    }
+    this.listenTo(Adapt, {
+      'assessment:complete': this.onAssessmentComplete,
+      'assessment:restored': this.onAssessmentRestored
+    });
 
     // Check if completion requires completing all content.
     if (this._config._requireContentCompleted) {
@@ -39,7 +36,10 @@ class Tracking extends Backbone.Controller {
     this._assessmentState = assessmentState;
 
     this.submitScore();
-    this.checkCompletion();
+    // Check if completion requires passing an assessment.
+    if (this._config._requireAssessmentCompleted) {
+      this.checkCompletion();
+    }
   }
 
   submitScore() {
