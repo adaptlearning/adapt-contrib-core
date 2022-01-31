@@ -182,10 +182,6 @@ class QuestionView extends ComponentView {
     // Also adds a class of submitted
     this._runModelCompatibleFunction('setQuestionAsSubmitted');
 
-    // Used to remove instruction error that is set when
-    // the user has interacted in the wrong way
-    this.removeInstructionError();
-
     // Used to store the users answer for later
     // This is a blank method given to the question
     this._runModelCompatibleFunction('storeUserAnswer');
@@ -245,11 +241,6 @@ class QuestionView extends ComponentView {
   setQuestionAsSubmitted() {
     this.model.setQuestionAsSubmitted();
     this.$('.component__widget').addClass('is-submitted');
-  }
-
-  // Removes validation error class when the user canSubmit
-  removeInstructionError() {
-    this.$('.component__instruction-inner').removeClass('validation-error');
   }
 
   // This is important and should give the user feedback on how they answered the question
