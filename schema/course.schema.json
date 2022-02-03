@@ -316,7 +316,7 @@
                     "visited": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "default": 50
+                      "default": 0
                     }
                   }
                 }
