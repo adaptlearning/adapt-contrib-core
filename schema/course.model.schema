@@ -333,6 +333,25 @@
               }
             }
           }
+        },
+        "_extensions": {
+          "type": "object",
+          "title": "Extensions",
+          "default": {},
+          "properties": {
+            "_drawer": {
+              "type": "object",
+              "title": "Drawer",
+              "default": {},
+              "properties": {
+                "_navOrder": {
+                  "type": "number",
+                  "title": "Navigation bar order",
+                  "default": 50
+                }
+              }
+            }
+          }
         }
       }
     },
