@@ -1,20 +1,20 @@
 (function() {
 
-  var isProduction = (window.ADAPT_BUILD_TYPE !== 'development');
+  const isProduction = (window.ADAPT_BUILD_TYPE !== 'development');
 
   // Change location of Adapt CSS if incorrect
   (function () {
-    var oldHRef = 'adapt/css/adapt.css';
-    var newHRef = 'adapt.css';
+    const oldHRef = 'adapt/css/adapt.css';
+    const newHRef = 'adapt.css';
     function fixCSSLocation() {
-      var oldLinkElement = findOldLink();
+      const oldLinkElement = findOldLink();
       if (!oldLinkElement) return;
       replaceOldLink(oldLinkElement);
     }
     function findOldLink() {
-      var nodeList = document.querySelectorAll('link');
-      for (var i = 0, l = nodeList.length; i < l; i++) {
-        var linkElement = nodeList[i];
+      const nodeList = document.querySelectorAll('link');
+      for (let i = 0, l = nodeList.length; i < l; i++) {
+        const linkElement = nodeList[i];
         if (linkElement.href.substr(-oldHRef.length) !== oldHRef) continue;
         return linkElement;
       }
@@ -24,9 +24,9 @@
      */
     function replaceOldLink(oldLinkElement) {
       console.warn('WARN: DEPRECATED - CSS location needs updating from', oldHRef, 'to', newHRef);
-      var parent = oldLinkElement.parentNode;
+      const parent = oldLinkElement.parentNode;
       parent.removeChild(oldLinkElement);
-      var newLinkElement = document.createElement('link');
+      const newLinkElement = document.createElement('link');
       newLinkElement.href = newHRef;
       newLinkElement.rel = 'stylesheet';
       parent.appendChild(newLinkElement);
@@ -43,7 +43,7 @@
 
   function loadScript(url, callback) {
     if (!url || typeof url !== 'string') return;
-    var script = document.createElement('script');
+    const script = document.createElement('script');
     script.onload = callback;
     script.src = url;
     document.getElementsByTagName('head')[0].appendChild(script);
@@ -79,11 +79,10 @@
         inview: 'libraries/inview',
         scrollTo: 'libraries/scrollTo.min',
         bowser: 'libraries/bowser',
-        'enum': 'libraries/enum',
+        enum: 'libraries/enum',
         jqueryMobile: 'libraries/jquery.mobile.custom.min',
         react: isProduction ? 'libraries/react.production.min' : 'libraries/react.development',
         'react-dom': isProduction ? 'libraries/react-dom.production.min' : 'libraries/react-dom.development',
-        'object.assign': 'libraries/object.assign',
         'html-react-parser': 'libraries/html-react-parser.min',
         semver: 'libraries/semver'
       }
@@ -108,7 +107,7 @@
   // 5. Backward compatibility for Modernizr
   function setupModernizr() {
     Modernizr.touch = Modernizr.touchevents;
-    var touchClass = Modernizr.touch ? 'touch' : 'no-touch';
+    const touchClass = Modernizr.touch ? 'touch' : 'no-touch';
     $('html').addClass(touchClass);
     loadFoundationLibraries();
   }
@@ -135,7 +134,6 @@
       'enum',
       'react',
       'react-dom',
-      'object.assign',
       'html-react-parser',
       'semver'
     ], loadGlobals);

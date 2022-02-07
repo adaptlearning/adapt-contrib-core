@@ -161,9 +161,10 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   }
 
   setupIndividualFeedback(selectedItem) {
+    const json = this.toJSON();
     this.set({
-      feedbackTitle: this.getFeedbackTitle(this.get('_feedback')),
-      feedbackMessage: selectedItem.get('feedback')
+      feedbackTitle: Handlebars.compile(this.getFeedbackTitle(this.get('_feedback')))(json),
+      feedbackMessage: Handlebars.compile(selectedItem.get('feedback'))(json)
     });
   }
 
