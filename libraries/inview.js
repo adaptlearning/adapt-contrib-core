@@ -496,9 +496,11 @@
             break;
           }
 
-          // check if child is out of bounds inside its parent
+          // check if child is out of bounds inside its parent, unless fullscreen
           var isOutOfBounds = measurements.isOutOfBounds(el, parent);
-          if (isOutOfBounds) {
+          var isElementFullscreen = el === document.fullscreenElement;
+
+          if (isOutOfBounds && !isElementFullscreen) {
             onscreen = false;
             break;
           }
