@@ -128,7 +128,8 @@ class QuestionModel extends ComponentModel {
   setQuestionAsSubmitted() {
     this.set({
       _isEnabled: false,
-      _isSubmitted: true
+      _isSubmitted: true,
+      _shouldShowMarking: this.shouldShowMarking
     });
   }
 
@@ -318,7 +319,8 @@ class QuestionModel extends ComponentModel {
   setQuestionAsReset() {
     this.set({
       _isEnabled: true,
-      _isSubmitted: false
+      _isSubmitted: false,
+      _shouldShowMarking: this.shouldShowMarking
     });
     this.resetQuestion();
   }
