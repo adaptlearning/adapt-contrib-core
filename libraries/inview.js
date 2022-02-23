@@ -127,10 +127,10 @@
 
     processInView: function(item, measure) {
 
-      var isTopOnScreen = (measure.percentFromTop >= 0 && measure.percentFromTop <= 100);
-      var isBottomOnScreen = (measure.percentFromBottom >= 0 && measure.percentFromBottom <= 100);
-      var isLeftOnScreen = (measure.percentFromLeft >= 0 && measure.percentFromLeft <= 100);
-      var isRightOnScreen = (measure.percentFromRight >= 0 && measure.percentFromRight <= 100);
+      var isTopOnScreen = (measure.percentFromTop >= 0 && measure.percentFromTop < 100);
+      var isBottomOnScreen = (measure.percentFromBottom >= 0 && measure.percentFromBottom < 100);
+      var isLeftOnScreen = (measure.percentFromLeft >= 0 && measure.percentFromLeft < 100);
+      var isRightOnScreen = (measure.percentFromRight >= 0 && measure.percentFromRight < 100);
 
       var visiblePartY;
       if (isTopOnScreen && isBottomOnScreen) visiblePartY = handlers.INVIEW_STATES.both.string;
@@ -469,7 +469,7 @@
       var inviewArea = inviewVertical * inviewHorizontal;
       var percentInview = Math.round((100 / elementArea) * inviewArea);
 
-      var onscreen = true;
+      var onscreen = percentInview > 0;
       var offScreenSide = (percentFromRight > 100 || percentFromLeft > 100 || percentFromBottom > 100 || percentFromTop > 100);
       if (offScreenSide) onscreen = false;
 
