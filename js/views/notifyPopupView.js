@@ -113,8 +113,8 @@ export default class NotifyPopupView extends Backbone.View {
     const notifyHeight = this.$('.notify__popup-inner').outerHeight();
     const isFullWindow = (notifyHeight >= windowHeight);
     this.$('.notify__popup').css({
-      'height': isFullWindow ? '100%' : 'auto',
-      'top': isFullWindow ? 0 : '',
+      height: isFullWindow ? '100%' : 'auto',
+      top: isFullWindow ? 0 : '',
       'margin-top': isFullWindow ? '' : -(notifyHeight / 2),
       'overflow-y': isFullWindow ? 'scroll' : '',
       '-webkit-overflow-scrolling': isFullWindow ? 'touch' : ''
