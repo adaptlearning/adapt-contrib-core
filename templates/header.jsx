@@ -39,6 +39,7 @@ export default function Header(props) {
   if (!isSet) return null;
   const _globals = Adapt.course.get('_globals');
   const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
+  const isIOSDevice = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
   return (
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
@@ -49,7 +50,7 @@ export default function Header(props) {
           <div className="js-heading" ref={jsxHeading}></div>
           }
 
-          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState}>
+          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={isIOSDevice ? false : !_disableAccessibilityState}>
             {html(compile(displayTitle, props))}
           </div>
 
