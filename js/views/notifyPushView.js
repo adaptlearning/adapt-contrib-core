@@ -10,7 +10,7 @@ export default class NotifyPushView extends Backbone.View {
 
   attributes() {
     return {
-      'role': 'dialog',
+      role: 'dialog',
       'aria-labelledby': 'notify-push-heading',
       'aria-modal': 'false'
     };
@@ -19,11 +19,11 @@ export default class NotifyPushView extends Backbone.View {
   initialize() {
     this.listenTo(Adapt, {
       'notify:pushShown notify:pushRemoved': this.updateIndexPosition,
-      'remove': this.remove
+      remove: this.remove
     });
 
     this.listenTo(this.model.collection, {
-      'remove': this.updateIndexPosition,
+      remove: this.updateIndexPosition,
       'change:_index': this.updatePushPosition
     });
 
@@ -44,8 +44,8 @@ export default class NotifyPushView extends Backbone.View {
 
   render() {
     const data = this.model.toJSON();
-    const template = Handlebars.templates['notifyPush'];
-    this.$el.html(template(data)).appendTo('#wrapper');
+    const template = Handlebars.templates.notifyPush;
+    this.$el.html(template(data)).appendTo('.notify__push-container');
 
     _.defer(this.postRender.bind(this));
 
