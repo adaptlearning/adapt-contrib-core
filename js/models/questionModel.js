@@ -149,8 +149,16 @@ class QuestionModel extends ComponentModel {
   // Should return a boolean based upon whether to question is correct or not
   isCorrect() {}
 
-  // Used to set the score based upon the _questionWeight
-  setScore() {}
+  /**
+   * Used to set the legacy _score property based upon the _questionWeight and correctness
+   * @deprecated Please use get score, get maxScore and get minScore instead
+   */
+  setScore() {
+    const questionWeight = this.get('_questionWeight');
+    const answeredCorrectly = this.get('_isCorrect');
+    const score = answeredCorrectly ? questionWeight : 0;
+    this.set('_score', score);
+  }
 
   updateRawScore() {
     this.set({
@@ -160,14 +168,24 @@ class QuestionModel extends ComponentModel {
     });
   }
 
+  /**
+   * Returns a numerical value between maxScore and minScore
+   * @type {number}
+   */
   get score() {
     return this.get('_isCorrect') ? this.maxScore : 0;
   }
 
+  /**
+   * @type {number}
+   */
   get maxScore() {
     return this.get('_questionWeight');
   }
 
+  /**
+   * @type {number}
+   */
   get minScore() {
     return 0;
   }
