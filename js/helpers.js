@@ -112,15 +112,9 @@ const helpers = {
    * Allow JSON to be a template i.e. you can use handlebars {{expressions}} within your JSON
    */
   compile(template, context) {
-    if (!template) {
-      return '';
-    }
+    if (!template) return '';
     if (template instanceof Object) template = template.toString();
-    let data = this;
-    if (context) {
-      // choose between a passed argument context or the default handlebars helper context
-      data = (context.data?.root ?? context);
-    }
+    const data = (context?.data?.root ? this : context);
     return Handlebars.compile(template)(data);
   },
 
