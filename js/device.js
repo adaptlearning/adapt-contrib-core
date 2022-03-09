@@ -153,7 +153,7 @@ class Device extends Backbone.Controller {
   }
 
   isAppleDevice() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    return (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || (navigator.userAgent.match(/Mac/) && navigator?.maxTouchPoints > 2);
   }
 
   getAppleScreenWidth() {
