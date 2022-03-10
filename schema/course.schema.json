@@ -313,7 +313,7 @@
                   "title": "Drawer",
                   "default": {},
                   "properties": {
-                    "visited": {
+                    "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
                       "default": 0
