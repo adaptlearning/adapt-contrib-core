@@ -36,7 +36,7 @@ export default class NotifyPopupView extends Backbone.View {
 
   setupEventListeners() {
     this.listenTo(Adapt, {
-      'remove page:scrollTo': this.closeNotify,
+      remove: this.closeNotify,
       'notify:resize': this.resetNotifySize,
       'notify:cancel': this.cancelNotify,
       'notify:close': this.closeNotify,
