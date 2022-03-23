@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import offlineStorage from 'core/js/offlineStorage';
 import logging from 'core/js/logging';
 import COMPLETION_STATE from 'core/js/enums/completionStateEnum';
 
@@ -46,11 +47,11 @@ class Tracking extends Backbone.Controller {
     if (!this._config._shouldSubmitScore) return;
 
     if (this._assessmentState.isPercentageBased) {
-      Adapt.offlineStorage.set('score', this._assessmentState.scoreAsPercent, 0, 100);
+      offlineStorage.set('score', this._assessmentState.scoreAsPercent, 0, 100);
       return;
     }
 
-    Adapt.offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
+    offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
   }
 
   /**
@@ -72,7 +73,7 @@ class Tracking extends Backbone.Controller {
     }
 
     Adapt.trigger('tracking:complete', completionData);
-    Adapt.log.debug('tracking:complete', completionData);
+    logging.debug('tracking:complete', completionData);
   }
 
   /**
@@ -125,6 +126,13 @@ class Tracking extends Backbone.Controller {
 
 }
 
-Adapt.tracking = new Tracking();
+const tracking = new Tracking();
 
-export default Adapt.tracking;
+Object.defineProperty(Adapt, 'tracking', {
+  get() {
+    logging.deprecated('Adapt.tracking, please use core/js/tracking directly');
+    return tracking;
+  }
+});
+
+export default tracking;

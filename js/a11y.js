@@ -1,4 +1,7 @@
 import Adapt from 'core/js/adapt';
+import offlineStorage from 'core/js/offlineStorage';
+import device from 'core/js/device';
+import location from 'core/js/location';
 import BrowserFocus from 'core/js/a11y/browserFocus';
 import FocusOptions from 'core/js/a11y/focusOptions';
 import KeyboardFocusOutline from 'core/js/a11y/keyboardFocusOutline';
@@ -6,9 +9,9 @@ import Log from 'core/js/a11y/log';
 import Scroll from 'core/js/a11y/scroll';
 import WrapFocus from 'core/js/a11y/wrapFocus';
 import Popup from 'core/js/a11y/popup';
-import defaultAriaLevels from './enums/defaultAriaLevels';
-
-import 'core/js/a11y/deprecated';
+import defaultAriaLevels from 'core/js/enums/defaultAriaLevels';
+import deprecated from 'core/js/a11y/deprecated';
+import logging from 'core/js/logging';
 
 class A11y extends Backbone.Controller {
 
@@ -70,12 +73,13 @@ class A11y extends Backbone.Controller {
     this._htmlCharRegex = /&.*;/g;
     /** @type {Object} */
     this.config = null;
-    this._browserFocus = new BrowserFocus();
-    this._keyboardFocusOutline = new KeyboardFocusOutline();
-    this._wrapFocus = new WrapFocus();
-    this._popup = new Popup();
-    this._scroll = new Scroll();
-    this.log = new Log();
+    this._browserFocus = new BrowserFocus({ a11y: this });
+    this._keyboardFocusOutline = new KeyboardFocusOutline({ a11y: this });
+    this._wrapFocus = new WrapFocus({ a11y: this });
+    this._popup = new Popup({ a11y: this });
+    this._scroll = new Scroll({ a11y: this });
+    this.log = new Log({ a11y: this });
+    deprecated(this);
 
     this._removeLegacyElements();
     this.listenToOnce(Adapt, {
@@ -93,7 +97,7 @@ class A11y extends Backbone.Controller {
     this.config = Adapt.config.get('_accessibility');
     this.config._isActive = false;
     this.config._options = _.defaults(this.config._options || {}, this.defaults());
-    Adapt.offlineStorage.set('a11y', false);
+    offlineStorage.set('a11y', false);
     this.$html.toggleClass('has-accessibility', this.isEnabled());
     this._setupNoSelect();
     this._addFocuserDiv();
@@ -126,7 +130,7 @@ class A11y extends Backbone.Controller {
     if (!$legacyElements.length && !$navigationElements.length) {
       return;
     }
-    Adapt.log.warn('REMOVED: #accessibility-toggle and #accessibility-instructions have been removed. Please remove them from all of your .html files.');
+    logging.warn('REMOVED: #accessibility-toggle and #accessibility-instructions have been removed. Please remove them from all of your .html files.');
     $legacyElements.remove();
     $navigationElements.remove();
   }
@@ -141,7 +145,7 @@ class A11y extends Backbone.Controller {
 
   _onNavigationEnd(view) {
     // Prevent sub-menu items provoking behaviour
-    if ((view?.model?.get('_id') !== Adapt.location._currentId) || !this.isEnabled()) {
+    if ((view?.model?.get('_id') !== location._currentId) || !this.isEnabled()) {
       return;
     }
     // Allow document to be read
@@ -667,7 +671,7 @@ class A11y extends Backbone.Controller {
           // Drop focus errors as only happens when the element
           // isn't attached to the DOM.
         }
-        switch (Adapt.device.browser) {
+        switch (device.browser) {
           case 'internet explorer':
           case 'microsoft edge':
           case 'safari':
@@ -792,4 +796,13 @@ class A11y extends Backbone.Controller {
 
 }
 
-export default (Adapt.a11y = new A11y());
+const a11y = new A11y();
+
+Object.defineProperty(Adapt, 'a11y', {
+  get() {
+    logging.deprecated('Adapt.a11y, please use core/js/a11y directly');
+    return a11y;
+  }
+});
+
+export default a11y;

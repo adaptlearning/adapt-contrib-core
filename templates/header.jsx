@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import device from 'core/js/device';
 import React, { useRef } from 'react';
 import { prefixClasses, compile } from 'core/js/reactHelpers';
 
@@ -32,7 +33,7 @@ export default function Header(props) {
       _component && _component.toLowerCase()
     ].filter(Boolean)
   } = props;
-  const sizedInstruction = (mobileInstruction && Adapt.device.screenSize !== 'large') ?
+  const sizedInstruction = (mobileInstruction && device.screenSize !== 'large') ?
     mobileInstruction :
     instruction;
   const isSet = (displayTitle || body || sizedInstruction);

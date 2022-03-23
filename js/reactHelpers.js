@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
-import TemplateRenderEvent from './templateRenderEvent';
+import TemplateRenderEvent from 'core/js/templateRenderEvent';
 import React from 'react';
-import logging from './logging';
+import logging from 'core/js/logging';
 
 /**
  * Used by babel plugin babel-plugin-transform-react-templates to inject react templates

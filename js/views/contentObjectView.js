@@ -1,11 +1,13 @@
 import Adapt from 'core/js/adapt';
+import wait from 'core/js/wait';
 import AdaptView from 'core/js/views/adaptView';
+import ReactDOM from 'react-dom';
 
 export default class ContentObjectView extends AdaptView {
 
   attributes() {
     return AdaptView.resultExtend('attributes', {
-      'role': 'main',
+      role: 'main',
       'aria-labelledby': `${this.model.get('_id')}-heading`
     }, this);
   }
@@ -63,7 +65,7 @@ export default class ContentObjectView extends AdaptView {
     const type = this.constructor.type;
     const performIsReady = async () => {
       Adapt.trigger(`${type}View:preReady contentObjectView:preReady view:preReady`, this);
-      await Adapt.wait.queue();
+      await wait.queue();
       $('.js-loading').hide();
       if (Adapt.get('_shouldContentObjectScrollTop') !== false) {
         $(window).scrollTop(0);
@@ -142,7 +144,7 @@ export default class ContentObjectView extends AdaptView {
     Adapt.trigger(`${type}View:remove contentObjectView:remove view:remove`, this);
     this._isRemoved = true;
 
-    Adapt.wait.for(end => {
+    wait.for(end => {
       if (this.isReact) {
         ReactDOM.unmountComponentAtNode(this.el);
       }

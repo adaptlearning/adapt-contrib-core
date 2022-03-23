@@ -6,7 +6,8 @@ import Adapt from 'core/js/adapt';
  */
 export default class BrowserFocus extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this.a11y = a11y;
     this._onBlur = this._onBlur.bind(this);
     this._onClick = this._onClick.bind(this);
     this.$body = $('body');
@@ -32,7 +33,7 @@ export default class BrowserFocus extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onBlur(event) {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isFocusNextOnDisabled) {
       return;
     }
@@ -50,7 +51,7 @@ export default class BrowserFocus extends Backbone.Controller {
       return;
     }
     // Move focus to next readable element
-    Adapt.a11y.focusNext($element);
+    this.a11y.focusNext($element);
   }
 
   /**
@@ -68,7 +69,7 @@ export default class BrowserFocus extends Backbone.Controller {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isFocusOnClickEnabled) {
       return;
     }

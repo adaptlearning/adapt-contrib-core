@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import a11y from 'core/js/a11y';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
 
 // convert BUTTON_STATE to property name
@@ -57,7 +58,7 @@ export default class ButtonsView extends Backbone.View {
     this.$('.js-btn-marking').removeClass('is-incorrect is-correct').addClass('u-display-none');
     this.$el.removeClass('is-submitted');
     this.model.set('feedbackMessage', undefined);
-    Adapt.a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
+    a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
   }
 
   onActionClicked() {
@@ -83,11 +84,11 @@ export default class ButtonsView extends Backbone.View {
   onFeedbackMessageChanged(model, changedAttribute) {
     if (changedAttribute && this.model.get('_canShowFeedback')) {
       // enable feedback button
-      Adapt.a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
+      a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
       return;
     }
     // disable feedback button
-    Adapt.a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
+    a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
   }
 
   onCanSubmitChange() {
@@ -103,7 +104,7 @@ export default class ButtonsView extends Backbone.View {
     const buttonState = BUTTON_STATE(changedAttribute);
     if (changedAttribute === BUTTON_STATE.CORRECT || changedAttribute === BUTTON_STATE.INCORRECT) {
       // Both 'correct' and 'incorrect' states have no model answer, so disable the submit button
-      Adapt.a11y.toggleEnabled($buttonsAction, false);
+      a11y.toggleEnabled($buttonsAction, false);
       return;
     }
 
@@ -112,7 +113,7 @@ export default class ButtonsView extends Backbone.View {
     const buttonText = this.model.get('_buttons')['_' + propertyName].buttonText;
 
     // Enable the button, make accessible and update aria labels and text
-    Adapt.a11y.toggleEnabled($buttonsAction, this.model.get('_canSubmit'));
+    a11y.toggleEnabled($buttonsAction, this.model.get('_canSubmit'));
     $buttonsAction.html(buttonText).attr('aria-label', ariaLabel);
   }
 

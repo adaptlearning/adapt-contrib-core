@@ -1,10 +1,11 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
+import logging from 'core/js/logging';
 import ContentObjectModel from 'core/js/models/contentObjectModel';
 
 class PageModel extends ContentObjectModel {
 
   get _children() {
-    Adapt.log.deprecated('pageModel._children, use menuModel.hasManagedChildren instead, child models are defined by the JSON');
+    logging.deprecated('pageModel._children, use menuModel.hasManagedChildren instead, child models are defined by the JSON');
     return 'articles';
   }
 
@@ -18,6 +19,6 @@ class PageModel extends ContentObjectModel {
 
 }
 
-Adapt.register('page', { model: PageModel });
+components.register('page', { model: PageModel });
 
 export default PageModel;

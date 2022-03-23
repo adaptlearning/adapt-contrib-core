@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
 
 export default class ConfigModel extends LockingModel {
@@ -45,7 +46,7 @@ export default class ConfigModel extends LockingModel {
         this.setValuesFromURLParams();
 
         Adapt.trigger('offlineStorage:prepare');
-        Adapt.wait.queue(() => {
+        wait.queue(() => {
           Adapt.trigger('configModel:dataLoaded');
           if (!this.get('_canLoadData')) return;
           Adapt.trigger('configModel:loadCourseData');

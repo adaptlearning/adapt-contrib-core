@@ -1,16 +1,18 @@
 import Adapt from 'core/js/adapt';
+import offlineStorage from 'core/js/offlineStorage';
+import wait from 'core/js/wait';
+import components from 'core/js/components';
 import AdaptCollection from 'core/js/collections/adaptCollection';
 import BuildModel from 'core/js/models/buildModel';
 import ConfigModel from 'core/js/models/configModel';
 import LockingModel from 'core/js/models/lockingModel';
-
-import 'core/js/models/courseModel';
-import 'core/js/startController';
+import logging from 'core/js/logging';
+import location from 'core/js/location';
 
 class Data extends AdaptCollection {
 
   model(json) {
-    const ModelClass = Adapt.getModelClass(json);
+    const ModelClass = components.getModelClass(json);
     if (!ModelClass) {
       return new LockingModel(json);
     }
@@ -72,7 +74,7 @@ class Data extends AdaptCollection {
   }
 
   onLanguageChange(model, language) {
-    Adapt.offlineStorage.set('lang', language);
+    offlineStorage.set('lang', language);
     // set `_isStarted` back to `false` when changing language so that the learner's answers
     // to questions get restored in the new language when `_restoreStateOnLanguageChange: true`
     // see https://github.com/adaptlearning/adapt_framework/issues/2977
@@ -117,7 +119,7 @@ class Data extends AdaptCollection {
       manifest = await this.getJSON(manifestPath);
     } catch (err) {
       manifest = ['course.json', 'contentObjects.json', 'articles.json', 'blocks.json', 'components.json'];
-      Adapt.log.warnOnce(`Manifest path '${manifestPath} not found. Using traditional files: ${manifest.join(', ')}`);
+      logging.warnOnce(`Manifest path '${manifestPath} not found. Using traditional files: ${manifest.join(', ')}`);
     }
     const allFileData = await Promise.all(manifest.map(filePath => {
       return this.getJSON(`${languagePath}${filePath}`);
@@ -129,7 +131,7 @@ class Data extends AdaptCollection {
       } else if (fileData instanceof Object) {
         result.push(fileData);
       } else {
-        Adapt.log.warnOnce(`File data isn't an array or object: ${fileData.__path__}`);
+        logging.warnOnce(`File data isn't an array or object: ${fileData.__path__}`);
       }
       return result;
     }, []);
@@ -150,39 +152,33 @@ class Data extends AdaptCollection {
     });
     this.trigger('reset');
     this.trigger('loaded');
-    await Adapt.wait.queue();
+    await wait.queue();
   }
 
   async triggerDataLoaded() {
-    Adapt.log.debug('Firing app:dataLoaded');
+    logging.debug('Firing app:dataLoaded');
     try {
       // Setup the newly added models
       this.forEach(model => model.setupModel?.());
       Adapt.trigger('app:dataLoaded');
     } catch (e) {
-      Adapt.log.error('Error during app:dataLoading trigger', e);
+      logging.error('Error during app:dataLoading trigger', e);
     }
-    await Adapt.wait.queue();
+    await wait.queue();
   }
 
   async triggerDataReady(newLanguage) {
     if (newLanguage) {
       Adapt.trigger('app:languageChanged', newLanguage);
-      this.performStartController();
+      await wait.queue();
     }
-    Adapt.log.debug('Firing app:dataReady');
+    logging.debug('Firing app:dataReady');
     try {
       Adapt.trigger('app:dataReady');
     } catch (e) {
-      Adapt.log.error('Error during app:dataReady trigger', e);
+      logging.error('Error during app:dataReady trigger', e);
     }
-    await Adapt.wait.queue();
-  }
-
-  performStartController() {
-    Adapt.startController.loadCourseData();
-    const hash = Adapt.startController.isEnabled() ? Adapt.startController.getStartHash(false) : '#/';
-    Adapt.router.navigate(hash, { trigger: true, replace: true });
+    await wait.queue();
   }
 
   triggerInit() {
@@ -205,10 +201,43 @@ class Data extends AdaptCollection {
   findById(id) {
     const model = this._byAdaptID[id];
     if (!model) {
-      console.warn(`Adapt.findById() unable to find id: ${id}`);
+      console.warn(`data.findById() unable to find id: ${id}`);
       return;
     }
     return model;
+  }
+
+  /**
+   * Looks up a view by its model `_id` property
+   * @param {string} id The id of the item e.g. "co-05"
+   * @return {Backbone.View}
+   */
+  findViewByModelId(id) {
+    const model = this.findById(id);
+    if (!model) return;
+
+    if (model === Adapt.parentView.model) return Adapt.parentView;
+
+    const idPathToView = [id];
+    const currentLocationId = location._currentId;
+    const currentLocationModel = model.getAncestorModels().find(model => {
+      const modelId = model.get('_id');
+      if (modelId === currentLocationId) return true;
+      idPathToView.unshift(modelId);
+      return false;
+    });
+
+    if (!currentLocationModel) {
+      return console.warn(`data.findViewByModelId() unable to find view for model id: ${id}`);
+    }
+
+    const foundView = idPathToView.reduce((view, currentId) => {
+      if (!view) return null;
+      const childViews = view.getChildViews();
+      return childViews?.find(view => view.model.get('_id') === currentId);
+    }, Adapt.parentView);
+
+    return foundView;
   }
 
   /**
@@ -220,7 +249,7 @@ class Data extends AdaptCollection {
     const [ trackingId, indexInTrackingIdDescendants ] = trackingPosition;
     const trackingIdModel = this.find(model => model.get('_trackingId') === trackingId);
     if (!trackingIdModel) {
-      console.warn(`Adapt.findByTrackingPosition() unable to find trackingPosition: ${trackingPosition}`);
+      console.warn(`data.findByTrackingPosition() unable to find trackingPosition: ${trackingPosition}`);
       return;
     }
     if (indexInTrackingIdDescendants >= 0) {
@@ -236,4 +265,37 @@ class Data extends AdaptCollection {
 
 }
 
-export default (Adapt.data = new Data());
+const data = new Data();
+
+data.findById = data.findById.bind(data);
+data.findViewByModelId = data.findViewByModelId.bind(data);
+data.findByTrackingPosition = data.findByTrackingPosition.bind(data);
+
+Object.defineProperties(Adapt, {
+  data: {
+    get() {
+      logging.deprecated('Adapt.data, please use core/js/data directly');
+      return data;
+    }
+  },
+  findById: {
+    get() {
+      logging.deprecated('Adapt.findById, please use data.findById directly');
+      return data.findById;
+    }
+  },
+  findViewByModelId: {
+    get() {
+      logging.deprecated('Adapt.findViewByModelId, data.findViewByModelId directly');
+      return data.findViewByModelId;
+    }
+  },
+  findByTrackingPosition: {
+    get() {
+      logging.deprecated('Adapt.findByTrackingPosition, please use data.findByTrackingPosition directly');
+      return data.findByTrackingPosition;
+    }
+  }
+});
+
+export default data;

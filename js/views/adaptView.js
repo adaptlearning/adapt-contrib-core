@@ -1,8 +1,12 @@
 import Adapt from 'core/js/adapt';
+import wait from 'core/js/wait';
+import components from 'core/js/components';
 import ChildEvent from 'core/js/childEvent';
 import { templates } from 'core/js/reactHelpers';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import location from 'core/js/location';
+import logging from 'core/js/logging';
 
 class AdaptView extends Backbone.View {
 
@@ -33,7 +37,7 @@ class AdaptView extends Backbone.View {
     });
     this._isRemoved = false;
 
-    if (Adapt.location._currentId === this.model.get('_id')) {
+    if (location._currentId === this.model.get('_id')) {
       Adapt.parentView = this;
     }
 
@@ -158,7 +162,7 @@ class AdaptView extends Backbone.View {
         _nthChild: ++this.nthChild
       });
       // Create child view
-      const ChildView = this.constructor.childView || Adapt.getViewClass(model);
+      const ChildView = this.constructor.childView || components.getViewClass(model);
       if (!ChildView) {
         throw new Error(`The component '${model.attributes._id}' ('${model.attributes._component}') has not been installed, and so is not available in your project.`);
       }
@@ -338,7 +342,7 @@ class AdaptView extends Backbone.View {
     this._isRemoved = true;
     this.stopListening();
 
-    Adapt.wait.for(end => {
+    wait.for(end => {
       if (this.isJSX) {
         ReactDOM.unmountComponentAtNode(this.el);
       }
@@ -395,7 +399,7 @@ class AdaptView extends Backbone.View {
    * @returns {{<string, AdaptView}}
    */
   get childViews() {
-    Adapt.log.deprecated('view.childViews use view.getChildViews() and view.setChildViews([])');
+    logging.deprecated('view.childViews use view.getChildViews() and view.setChildViews([])');
     if (Array.isArray(this._childViews)) {
       return _.indexBy(this._childViews, view => view.model.get('_id'));
     }
@@ -407,7 +411,7 @@ class AdaptView extends Backbone.View {
    * @deprecated since 5.7.0
    */
   set childViews(value) {
-    Adapt.log.deprecated('view.childViews use view.getChildViews() and view.setChildViews([])');
+    logging.deprecated('view.childViews use view.getChildViews() and view.setChildViews([])');
     this.setChildViews(value);
   }
 

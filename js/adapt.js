@@ -1,13 +1,10 @@
-import Wait from 'core/js/wait';
+import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
 
 class AdaptSingleton extends LockingModel {
 
   initialize() {
     this.loadScript = window.__loadScript;
-    this.location = {};
-    this.store = {};
-    this.setupWait();
   }
 
   defaults() {
@@ -26,26 +23,18 @@ class AdaptSingleton extends LockingModel {
     };
   }
 
-  /**
-   * @deprecated since v6.0.0 - please use `Adapt.store` instead
-   */
-  get componentStore() {
-    this.log.deprecated('Adapt.componentStore, please use Adapt.store instead');
-    return this.store;
-  }
-
   async init() {
     this.addDirection();
     this.disableAnimation();
     this.trigger('adapt:preInitialize');
-    await this.wait.queue();
+    await wait.queue();
 
     // wait until no more completion checking
     this.deferUntilCompletionChecked(async () => {
 
       // start adapt in a full restored state
       this.trigger('adapt:start');
-      await this.wait.queue();
+      await wait.queue();
 
       if (!Backbone.History.started) {
         Backbone.history.start();
@@ -54,7 +43,7 @@ class AdaptSingleton extends LockingModel {
       this.set('_isStarted', true);
 
       this.trigger('adapt:initialize');
-      await this.wait.queue();
+      await wait.queue();
 
     });
   }
@@ -92,270 +81,17 @@ class AdaptSingleton extends LockingModel {
     });
   }
 
-  setupWait() {
-
-    this.wait = new Wait();
-
-    // Setup legacy events and handlers
-    const beginWait = () => {
-      this.log.deprecated('Use Adapt.wait.begin() as Adapt.trigger(\'plugin:beginWait\') may be removed in the future');
-      this.wait.begin();
-    };
-
-    const endWait = () => {
-      this.log.deprecated('Use Adapt.wait.end() as Adapt.trigger(\'plugin:endWait\') may be removed in the future');
-      this.wait.end();
-    };
-
-    const ready = () => {
-      if (this.wait.isWaiting()) {
-        return;
-      }
-      const isEventListening = (this._events['plugins:ready']);
-      if (!isEventListening) {
-        return;
-      }
-      this.log.deprecated("Use Adapt.wait.queue(callback) as Adapt.on('plugins:ready', callback) may be removed in the future");
-      this.trigger('plugins:ready');
-    };
-
-    this.listenTo(this.wait, 'ready', ready);
-    this.listenTo(this, {
-      'plugin:beginWait': beginWait,
-      'plugin:endWait': endWait
-    });
-
-  }
-
   isWaitingForPlugins() {
-    this.log.deprecated('Use Adapt.wait.isWaiting() as Adapt.isWaitingForPlugins() may be removed in the future');
-    return this.wait.isWaiting();
+    this.log.deprecated('Use wait.isWaiting() as Adapt.isWaitingForPlugins() will be removed in the future');
+    return wait.isWaiting();
   }
 
   checkPluginsReady() {
-    this.log.deprecated('Use Adapt.wait.isWaiting() as Adapt.checkPluginsReady() may be removed in the future');
+    this.log.deprecated('Use wait.isWaiting() as Adapt.checkPluginsReady() will be removed in the future');
     if (this.isWaitingForPlugins()) {
       return;
     }
     this.trigger('plugins:ready');
-  }
-
-  /**
-   * Allows a selector to be passed in and Adapt will navigate to this element. Resolves
-   * asynchronously when the element has been navigated to.
-   * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
-   * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
-   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
-   */
-  async navigateToElement() {}
-
-  /**
-   * Allows a selector to be passed in and Adapt will scroll to this element. Resolves
-   * asynchronously when the element has been navigated/scrolled to.
-   * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
-   * @param {Object} [settings={}] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
-   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
-   */
-  async scrollTo() {}
-
-  /**
-   * Used to register models and views with `Adapt.store`
-   * @param {string|Array} name The name(s) of the model/view to be registered
-   * @param {object} object Object containing properties `model` and `view` or (legacy) an object representing the view
-   */
-  register(name, object) {
-    if (Array.isArray(name)) {
-      // if an array is passed, iterate by recursive call
-      name.forEach(name => this.register(name, object));
-      return object;
-    }
-
-    if (name.split(' ').length > 1) {
-      // if name with spaces is passed, split and pass as array
-      this.register(name.split(' '), object);
-      return object;
-    }
-
-    if ((!object.view && !object.model) || object instanceof Backbone.View) {
-      this.log.deprecated('View-only registrations are no longer supported');
-      object = { view: object };
-    }
-
-    if (object.view && !object.view.template) {
-      object.view.template = name;
-    }
-
-    const isModelSetAndInvalid = (object.model &&
-      !(object.model.prototype instanceof Backbone.Model) &&
-      !(object.model instanceof Function));
-    if (isModelSetAndInvalid) {
-      throw new Error('The registered model is not a Backbone.Model or Function');
-    }
-
-    const isViewSetAndInvalid = (object.view &&
-      !(object.view.prototype instanceof Backbone.View) &&
-      !(object.view instanceof Function));
-    if (isViewSetAndInvalid) {
-      throw new Error('The registered view is not a Backbone.View or Function');
-    }
-
-    this.store[name] = Object.assign({}, this.store[name], object);
-
-    return object;
-  }
-
-  /**
-   * Parses a view class name.
-   * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
-   */
-  getViewName(nameModelViewOrData) {
-    if (typeof nameModelViewOrData === 'string') {
-      return nameModelViewOrData;
-    }
-    if (nameModelViewOrData instanceof Backbone.Model) {
-      nameModelViewOrData = nameModelViewOrData.toJSON();
-    }
-    if (nameModelViewOrData instanceof Backbone.View) {
-      let foundName;
-      Object.entries(this.store).forEach(([key, entry]) => {
-        if (!entry?.view) return;
-        if (!(nameModelViewOrData instanceof entry.view)) return;
-        foundName = key;
-        return true;
-      });
-      return foundName;
-    }
-    if (nameModelViewOrData instanceof Object) {
-      const names = [
-        typeof nameModelViewOrData._view === 'string' && nameModelViewOrData._view,
-        typeof nameModelViewOrData._component === 'string' && nameModelViewOrData._component,
-        typeof nameModelViewOrData._type === 'string' && nameModelViewOrData._type
-      ].filter(Boolean);
-      if (names.length) {
-        // find first fitting view name
-        const name = names.find(name => this.store[name]?.view);
-        return name || names.pop(); // return last available if none found
-      }
-    }
-    throw new Error('Cannot derive view class name from input');
-  }
-
-  /**
-   * Fetches a view class from the store. For a usage example, see either HotGraphic or Narrative
-   * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
-   * @returns {Backbone.View} Reference to the view class
-   */
-  getViewClass(nameModelViewOrData) {
-    const name = this.getViewName(nameModelViewOrData);
-    const object = this.store[name];
-    if (!object) {
-      this.log.warnOnce(`A view for '${name}' isn't registered in your project`);
-      return;
-    }
-    const isBackboneView = (object.view?.prototype instanceof Backbone.View);
-    if (!isBackboneView && object.view instanceof Function) {
-      return object.view();
-    }
-    return object.view;
-  }
-
-  /**
-   * Parses a model class name.
-   * @param {string|Backbone.Model|object} name The name of the model you want to fetch e.g. `"hotgraphic"`, the model to process or its json data
-   */
-  getModelName(nameModelOrData) {
-    if (typeof nameModelOrData === 'string') {
-      return nameModelOrData;
-    }
-    if (nameModelOrData instanceof Backbone.Model) {
-      nameModelOrData = nameModelOrData.toJSON();
-    }
-    if (nameModelOrData instanceof Object) {
-      const name = nameModelOrData._component;
-      const entry = this.store[name];
-      const isViewOnlyQuestion = entry && !entry.model && entry.view?._isQuestionType;
-      if (isViewOnlyQuestion) {
-        // Use question model by default
-        this.log.deprecated(`Assuming a question model for a view-only question: ${name}`);
-        return 'question';
-      }
-      const names = [
-        typeof nameModelOrData._model === 'string' && nameModelOrData._model,
-        typeof nameModelOrData._component === 'string' && nameModelOrData._component,
-        typeof nameModelOrData._type === 'string' && nameModelOrData._type
-      ].filter(Boolean);
-      if (names.length) {
-        // find first fitting model name
-        const name = names.find(name => this.store[name]?.model);
-        return name || names.pop(); // return last available if none found
-      }
-    }
-    throw new Error('Cannot derive model class name from input');
-  }
-
-  /**
-   * Fetches a model class from the store. For a usage example, see either HotGraphic or Narrative
-   * @param {string|Backbone.Model|object} name The name of the model you want to fetch e.g. `"hotgraphic"` or its json data
-   * @returns {Backbone.Model} Reference to the view class
-   */
-  getModelClass(nameModelOrData) {
-    const name = this.getModelName(nameModelOrData);
-    const object = this.store[name];
-    if (!object) {
-      this.log.warnOnce(`A model for '${name}' isn't registered in your project`);
-      return;
-    }
-    const isBackboneModel = (object.model?.prototype instanceof Backbone.Model);
-    if (!isBackboneModel && object.model instanceof Function) {
-      return object.model();
-    }
-    return object.model;
-  }
-
-  /**
-   * Looks up a model by its `_id` property
-   * @param {string} id The id of the item e.g. "co-05"
-   * @return {Backbone.Model}
-   */
-  findById(id) {
-    return this.data.findById(id);
-  }
-
-  findViewByModelId(id) {
-    const model = this.data.findById(id);
-    if (!model) return;
-
-    if (model === this.parentView.model) return this.parentView;
-
-    const idPathToView = [id];
-    const currentLocationId = this.location._currentId;
-    const currentLocationModel = model.getAncestorModels().find(model => {
-      const modelId = model.get('_id');
-      if (modelId === currentLocationId) return true;
-      idPathToView.unshift(modelId);
-      return false;
-    });
-
-    if (!currentLocationModel) {
-      return console.warn(`Adapt.findViewByModelId() unable to find view for model id: ${id}`);
-    }
-
-    const foundView = idPathToView.reduce((view, currentId) => {
-      if (!view) return null;
-      const childViews = view.getChildViews();
-      return childViews?.find(view => view.model.get('_id') === currentId);
-    }, this.parentView);
-
-    return foundView;
-  }
-
-  /**
-   * Returns the model represented by the trackingPosition.
-   * @param {Array<Number, Number>} trackingPosition Represents the relative location of a model to a _trackingId
-   * @returns {Backbone.Model}
-   */
-  findByTrackingPosition(trackingPosition) {
-    return this.data.findByTrackingPosition(trackingPosition);
   }
 
   /**
@@ -414,7 +150,7 @@ class AdaptSingleton extends LockingModel {
       });
     }
     this.trigger('preRemove', currentView);
-    await this.wait.queue();
+    await wait.queue();
     // Facilitate contentObject transitions
     if (currentView && this.get('_shouldDestroyContentObjects')) {
       currentView.destroy();
@@ -423,6 +159,150 @@ class AdaptSingleton extends LockingModel {
     _.defer(this.trigger.bind(this), 'postRemove', currentView);
   }
 
+  /**
+   * @deprecated Please use core/js/a11y instead
+   */
+  get a11y() {}
+
+  /**
+   * @deprecated Please use core/js/components instead
+   */
+  get componentStore() {}
+
+  /**
+   * @deprecated Please use core/js/data instead
+   */
+  get data() {}
+
+  /**
+   * @deprecated Please use core/js/device instead
+   */
+  get device() {}
+
+  /**
+   * @deprecated Please use core/js/drawer instead
+   */
+  get drawer() {}
+
+  /**
+   * @deprecated Please use core/js/location instead
+   */
+  get location() {}
+
+  /**
+   * @deprecated Please use core/js/notify instead
+   */
+  get notify() {}
+
+  /**
+   * @deprecated Please use core/js/offlineStorage instead
+   */
+  get offlineStorage() {}
+
+  /**
+   * @deprecated Please use core/js/router instead
+   */
+  get router() {}
+
+  /**
+   * @deprecated Please use core/js/scrolling instead
+   */
+  get scrolling() {}
+
+  /**
+   * @deprecated Please use core/js/components instead
+   */
+  get store() {}
+
+  /**
+   * @deprecated Please use core/js/wait instead
+   */
+  get wait() {}
+
+  /**
+   * Allows a selector to be passed in and Adapt will navigate to this element. Resolves
+   * asynchronously when the element has been navigated to.  /**
+   * @deprecated Please use router.navigateToElement instead.
+   * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
+   * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
+   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
+   */
+  async navigateToElement() {}
+
+  /**
+   * Allows a selector to be passed in and Adapt will scroll to this element. Resolves
+   * asynchronously when the element has been navigated/scrolled to.
+   * @deprecated Please use router.navigateToElement instead.
+   * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
+   * @param {Object} [settings={}] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
+   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
+   */
+  async scrollTo() {}
+
+  /**
+   * Used to register models and views with `store`
+   * @deprecated Please use store.register instead.
+   * @param {string|Array} name The name(s) of the model/view to be registered
+   * @param {object} object Object containing properties `model` and `view` or (legacy) an object representing the view
+   */
+  register(name, object) {}
+
+  /**
+   * Parses a view class name.
+   * @deprecated Please use store.getViewName instead.
+   * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
+   */
+  getViewName() {}
+
+  /**
+   * Fetches a view class from the store. For a usage example, see either HotGraphic or Narrative
+   * @deprecated Please use store.getViewClass instead.
+   * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
+   * @returns {Backbone.View} Reference to the view class
+   */
+  getViewClass() {}
+
+  /**
+   * Parses a model class name.
+   * @deprecated Please use store.getModelName instead.
+   * @param {string|Backbone.Model|object} name The name of the model you want to fetch e.g. `"hotgraphic"`, the model to process or its json data
+   */
+  getModelName() {}
+
+  /**
+   * Fetches a model class from the store. For a usage example, see either HotGraphic or Narrative
+   * @deprecated Please use store.getModelClass instead.
+   * @param {string|Backbone.Model|object} name The name of the model you want to fetch e.g. `"hotgraphic"` or its json data
+   * @returns {Backbone.Model} Reference to the view class
+   */
+  getModelClass() {}
+
+  /**
+   * Looks up a model by its `_id` property
+   * @deprecated Please use data.findById instead.
+   * @param {string} id The id of the item e.g. "co-05"
+   * @return {Backbone.Model}
+   */
+  findById() {}
+
+  /**
+   * Looks up a view by its model `_id` property
+   * @deprecated Please use data.findViewByModelId instead.
+   * @param {string} id The id of the item e.g. "co-05"
+   * @return {Backbone.View}
+   */
+  findViewByModelId() {}
+
+  /**
+   * Returns the model represented by the trackingPosition.
+   * @deprecated Please use data.findByTrackingPosition instead.
+   * @param {Array<Number, Number>} trackingPosition Represents the relative location of a model to a _trackingId
+   * @returns {Backbone.Model}
+   */
+  findByTrackingPosition() {}
+
 }
 
-export default new AdaptSingleton();
+const Adapt = new AdaptSingleton();
+
+export default Adapt;

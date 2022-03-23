@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
 import AdaptView from 'core/js/views/adaptView';
 
 class ArticleView extends AdaptView {
@@ -23,6 +23,6 @@ Object.assign(ArticleView, {
   template: 'article'
 });
 
-Adapt.register('article', { view: ArticleView });
+components.register('article', { view: ArticleView });
 
 export default ArticleView;

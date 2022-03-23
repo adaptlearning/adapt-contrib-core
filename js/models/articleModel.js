@@ -1,20 +1,21 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
+import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
 class ArticleModel extends AdaptModel {
 
   get _parent() {
-    Adapt.log.deprecated('articleModel._parent, use articleModel.getParent() instead, parent models are defined by the JSON');
+    logging.deprecated('articleModel._parent, use articleModel.getParent() instead, parent models are defined by the JSON');
     return 'contentObjects';
   }
 
   get _siblings() {
-    Adapt.log.deprecated('articleModel._siblings, use articleModel.getSiblings() instead, sibling models are defined by the JSON');
+    logging.deprecated('articleModel._siblings, use articleModel.getSiblings() instead, sibling models are defined by the JSON');
     return 'articles';
   }
 
   get _children() {
-    Adapt.log.deprecated('articleModel._children, use articleModel.hasManagedChildren instead, child models are defined by the JSON');
+    logging.deprecated('articleModel._children, use articleModel.hasManagedChildren instead, child models are defined by the JSON');
     return 'blocks';
   }
 
@@ -28,6 +29,6 @@ class ArticleModel extends AdaptModel {
 
 }
 
-Adapt.register('article', { model: ArticleModel });
+components.register('article', { model: ArticleModel });
 
 export default ArticleModel;

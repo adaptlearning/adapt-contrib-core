@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
 import AdaptView from 'core/js/views/adaptView';
 
 class BlockView extends AdaptView {
@@ -23,6 +23,6 @@ Object.assign(BlockView, {
   template: 'block'
 });
 
-Adapt.register('block', { view: BlockView });
+components.register('block', { view: BlockView });
 
 export default BlockView;

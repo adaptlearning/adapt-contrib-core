@@ -1,7 +1,8 @@
 import Adapt from 'core/js/adapt';
+import data from 'core/js/data';
 import ModelEvent from 'core/js/modelEvent';
 import LockingModel from 'core/js/models/lockingModel';
-import 'core/js/logging';
+import logging from 'core/js/logging';
 
 export default class AdaptModel extends LockingModel {
 
@@ -19,7 +20,7 @@ export default class AdaptModel extends LockingModel {
     switch (name) {
       case '_parent':
       case '_children':
-        Adapt.log.deprecated('Use model.getChildren() or model.getParent() instead of model.get(\'_children\') or model.get(\'_parent\')');
+        logging.deprecated('Use model.getChildren() or model.getParent() instead of model.get(\'_children\') or model.get(\'_parent\')');
     }
     return super.get(name);
   }
@@ -344,7 +345,7 @@ export default class AdaptModel extends LockingModel {
     const singular = isPluralized && lowerCased.slice(0, -1); // remove pluralization if ending in s
     const singularLowerCased = (singular || lowerCased).toLowerCase();
     if (isPluralized || hasUpperCase) {
-      Adapt.log.deprecated(`'${typeGroup}' appears pluralized or contains uppercase characters, suggest using the singular, lowercase type group '${singularLowerCased}'.`);
+      logging.deprecated(`'${typeGroup}' appears pluralized or contains uppercase characters, suggest using the singular, lowercase type group '${singularLowerCased}'.`);
     }
     const pluralizedLowerCaseTypes = [
       singularLowerCased,
@@ -491,7 +492,7 @@ export default class AdaptModel extends LockingModel {
   findRelativeModel(relativeString, options = {}) {
     // return a model relative to the specified one if opinionated
     const rootModel = options.limitParentId ?
-      Adapt.findById(options.limitParentId) :
+      data.findById(options.limitParentId) :
       Adapt.course;
 
     const relativeDescriptor = Adapt.parseRelativeString(relativeString);
@@ -555,7 +556,7 @@ export default class AdaptModel extends LockingModel {
         break;
       }
       if (movementCount === moveBy) {
-        return Adapt.findById(descendant.get('_id'));
+        return data.findById(descendant.get('_id'));
       }
       movementCount++;
     }
@@ -577,8 +578,8 @@ export default class AdaptModel extends LockingModel {
       childrenCollection = new Backbone.Collection();
     } else {
       const id = this.get('_id');
-      // Look up child by _parentId from Adapt.data
-      const children = Adapt.data.filter(model => model.get('_parentId') === id);
+      // Look up child by _parentId from data
+      const children = data.filter(model => model.get('_parentId') === id);
       childrenCollection = new Backbone.Collection(children);
     }
 
@@ -614,8 +615,8 @@ export default class AdaptModel extends LockingModel {
     }
     const parentId = this.get('_parentId');
     if (!parentId) return;
-    // Look up parent by id from Adapt.data
-    this.setParent(Adapt.findById(parentId));
+    // Look up parent by id from data
+    this.setParent(data.findById(parentId));
     return this._parentModel;
   }
 
@@ -649,7 +650,7 @@ export default class AdaptModel extends LockingModel {
       if (this._hasSiblingsAndSelf === false) {
         return this.get('_siblings');
       }
-      siblings = Adapt.data.filter(model => {
+      siblings = data.filter(model => {
         return model.get('_parentId') === parentId &&
           model.get('_id') !== id;
       });
@@ -662,7 +663,7 @@ export default class AdaptModel extends LockingModel {
         return this.get('_siblings');
       }
 
-      siblings = Adapt.data.filter(model => {
+      siblings = data.filter(model => {
         return model.get('_parentId') === parentId;
       });
       this._hasSiblingsAndSelf = true;
@@ -693,7 +694,7 @@ export default class AdaptModel extends LockingModel {
    * @deprecated since v3.2.3 - please use `model.set('_isOptional', value)` instead
    */
   setOptional(value) {
-    Adapt.log.deprecated('Use model.set(\'_isOptional\', value) as setOptional() may be removed in the future');
+    logging.deprecated('Use model.set(\'_isOptional\', value) as setOptional() may be removed in the future');
     this.set({ _isOptional: value });
   }
 
@@ -759,7 +760,7 @@ export default class AdaptModel extends LockingModel {
     if (!lockedBy) return false;
     return lockedBy.some(id => {
       try {
-        const anotherModel = Adapt.findById(id);
+        const anotherModel = data.findById(id);
         return anotherModel.get('_isAvailable') &&
           (
             anotherModel.get('_isLocked') ||
@@ -814,9 +815,9 @@ export default class AdaptModel extends LockingModel {
       clonedId = `${clonedId}_${cid}`;
       clonedModel.set('_id', clonedId);
     }
-    // Add the cloned model to Adapt.data for Adapt.findById resolution
+    // Add the cloned model to data for data.findById resolution
     if (hasId) {
-      Adapt.data.add(clonedModel);
+      data.add(clonedModel);
     }
     // Clone any children
     if (this.hasManagedChildren) {

@@ -1,5 +1,5 @@
-import Adapt from './adapt';
-import HeadingView from './views/headingView';
+import Adapt from 'core/js/adapt';
+import HeadingView from 'core/js/views/headingView';
 
 class Headings extends Backbone.Controller {
 
