@@ -210,9 +210,19 @@ class AdaptSingleton extends LockingModel {
   get scrolling() {}
 
   /**
+   * @deprecated Please use core/js/startController instead
+   */
+  get startController() {}
+
+  /**
    * @deprecated Please use core/js/components instead
    */
   get store() {}
+
+  /**
+   * @deprecated Please use core/js/tracking instead
+   */
+  get tracking() {}
 
   /**
    * @deprecated Please use core/js/wait instead

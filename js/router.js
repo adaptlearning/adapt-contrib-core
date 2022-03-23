@@ -439,7 +439,7 @@ Object.defineProperties(Adapt, {
   },
   router: {
     get() {
-      logging.deprecated('router, please use core/js/router directly');
+      logging.deprecated('Adapt.router, please use core/js/router directly');
       return router;
     }
   }
