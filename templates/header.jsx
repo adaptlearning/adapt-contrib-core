@@ -35,10 +35,19 @@ export default function Header(props) {
   const sizedInstruction = (mobileInstruction && Adapt.device.screenSize !== 'large') ?
     mobileInstruction :
     instruction;
-  const isSet = (displayTitle || body || sizedInstruction);
-  if (!isSet) return null;
   const _globals = Adapt.course.get('_globals');
   const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
+  const isSet = (displayTitle || body || sizedInstruction);
+  if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
+    // If no title, displaytitle, body or instruction is specified
+    // Output only the component description
+    return (
+      <div className="aria-label">
+        {html(compile(ariaRegion))}
+      </div>
+    );
+  }
+  if (!isSet) return null;
   return (
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
