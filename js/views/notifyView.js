@@ -32,7 +32,8 @@ export default class NotifyView extends Backbone.View {
 
   render() {
     const notifyTemplate = Handlebars.templates.notify;
-    $(notifyTemplate()).appendTo('#wrapper');
+    this.$el.html(notifyTemplate());
+    this.$el.appendTo('body');
   }
 
   create(notifyObject, defaults) {
