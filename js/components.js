@@ -186,7 +186,7 @@ Object.defineProperties(Adapt, {
   },
   register: {
     get() {
-      logging.deprecated('components.register, please use components.register instead');
+      logging.deprecated('Adapt.register, please use components.register instead');
       return components.register;
     }
   },
