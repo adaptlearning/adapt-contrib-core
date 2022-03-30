@@ -251,7 +251,7 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Used to register models and views with `store`
-   * @deprecated Please use store.register instead.
+   * @deprecated Please use components.register instead.
    * @param {string|Array} name The name(s) of the model/view to be registered
    * @param {object} object Object containing properties `model` and `view` or (legacy) an object representing the view
    */
