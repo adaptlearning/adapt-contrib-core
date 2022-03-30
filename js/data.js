@@ -286,7 +286,7 @@ Object.defineProperties(Adapt, {
   },
   findViewByModelId: {
     get() {
-      logging.deprecated('Adapt.findViewByModelId, data.findViewByModelId directly');
+      logging.deprecated('Adapt.findViewByModelId, please use data.findViewByModelId directly');
       return data.findViewByModelId;
     }
   },
