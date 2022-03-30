@@ -9,7 +9,7 @@ class Components extends Backbone.Controller {
   }
 
   /**
-   * Used to register models and views with `Adapt.store`
+   * Used to register models and views
    * @param {string|Array} name The name(s) of the model/view to be registered
    * @param {object} object Object containing properties `model` and `view` or (legacy) an object representing the view
    */
