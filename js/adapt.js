@@ -266,7 +266,7 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Fetches a view class from the store. For a usage example, see either HotGraphic or Narrative
-   * @deprecated Please use store.getViewClass instead.
+   * @deprecated Please use components.getViewClass instead.
    * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
    * @returns {Backbone.View} Reference to the view class
    */
