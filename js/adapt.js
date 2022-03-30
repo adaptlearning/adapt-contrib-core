@@ -259,7 +259,7 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Parses a view class name.
-   * @deprecated Please use store.getViewName instead.
+   * @deprecated Please use components.getViewName instead.
    * @param {string|Backbone.Model|Backbone.View|object} nameModelViewOrData The name of the view class you want to fetch e.g. `"hotgraphic"` or its model or its json data
    */
   getViewName() {}
