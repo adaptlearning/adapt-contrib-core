@@ -274,7 +274,7 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Parses a model class name.
-   * @deprecated Please use store.getModelName instead.
+   * @deprecated Please use components.getModelName instead.
    * @param {string|Backbone.Model|object} name The name of the model you want to fetch e.g. `"hotgraphic"`, the model to process or its json data
    */
   getModelName() {}
