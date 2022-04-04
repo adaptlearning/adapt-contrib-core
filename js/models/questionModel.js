@@ -326,6 +326,7 @@ class QuestionModel extends ComponentModel {
     this.set({
       _attemptsLeft: attempts,
       _isCorrect: undefined,
+      _isCorrectAnswerShown: false,
       _isSubmitted: false,
       _buttonState: BUTTON_STATE.SUBMIT,
       _shouldShowMarking: this.shouldShowMarking
