@@ -1,7 +1,6 @@
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
-import logging from 'core/js/logging';
 import router from 'core/js/router';
 import data from 'core/js/data';
 
@@ -111,12 +110,4 @@ Adapt.on('app:languageChanged', () => {
 });
 
 const startController = new StartController();
-
-Object.defineProperty(Adapt, 'startController', {
-  get() {
-    logging.deprecated('Adapt.startController, please use core/js/startController directly');
-    return startController;
-  }
-});
-
 export default startController;

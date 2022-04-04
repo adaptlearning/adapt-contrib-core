@@ -21,6 +21,9 @@ class Data extends AdaptCollection {
 
   initialize() {
     super.initialize();
+    this.findById = this.findById.bind(this);
+    this.findViewByModelId = this.findViewByModelId.bind(this);
+    this.findByTrackingPosition = this.findByTrackingPosition.bind(this);
     this.on({
       add: this.onAdded,
       remove: this.onRemoved
@@ -266,36 +269,4 @@ class Data extends AdaptCollection {
 }
 
 const data = new Data();
-
-data.findById = data.findById.bind(data);
-data.findViewByModelId = data.findViewByModelId.bind(data);
-data.findByTrackingPosition = data.findByTrackingPosition.bind(data);
-
-Object.defineProperties(Adapt, {
-  data: {
-    get() {
-      logging.deprecated('Adapt.data, please use core/js/data directly');
-      return data;
-    }
-  },
-  findById: {
-    get() {
-      logging.deprecated('Adapt.findById, please use data.findById directly');
-      return data.findById;
-    }
-  },
-  findViewByModelId: {
-    get() {
-      logging.deprecated('Adapt.findViewByModelId, please use data.findViewByModelId directly');
-      return data.findViewByModelId;
-    }
-  },
-  findByTrackingPosition: {
-    get() {
-      logging.deprecated('Adapt.findByTrackingPosition, please use data.findByTrackingPosition directly');
-      return data.findByTrackingPosition;
-    }
-  }
-});
-
 export default data;

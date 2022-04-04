@@ -134,12 +134,4 @@ class Logging extends Backbone.Controller {
 }
 
 const logging = new Logging();
-
-Object.defineProperty(Adapt, 'log', {
-  get() {
-    logging.deprecated('Adapt.log, please use core/js/logging directly');
-    return logging;
-  }
-});
-
 export default logging;

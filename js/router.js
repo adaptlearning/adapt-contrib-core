@@ -18,6 +18,7 @@ class Router extends Backbone.Router {
   }
 
   initialize({ model }) {
+    this.navigateToElement = this.navigateToElement.bind(this);
     this._isBackward = false;
     this.model = model;
     this._navigationRoot = null;
@@ -427,22 +428,4 @@ class Router extends Backbone.Router {
 const router = new Router({
   model: new RouterModel(null, { reset: true })
 });
-
-router.navigateToElement = router.navigateToElement.bind(router);
-
-Object.defineProperties(Adapt, {
-  navigateToElement: {
-    get() {
-      logging.deprecated('Adapt.navigateToElement, please use router.navigateToElement');
-      return router.navigateToElement;
-    }
-  },
-  router: {
-    get() {
-      logging.deprecated('Adapt.router, please use core/js/router directly');
-      return router;
-    }
-  }
-});
-
 export default router;

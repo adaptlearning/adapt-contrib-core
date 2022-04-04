@@ -6,7 +6,6 @@ import ContentObjectModel from 'core/js/models/contentObjectModel';
 import ArticleModel from 'core/js/models/articleModel';
 import BlockModel from 'core/js/models/blockModel';
 import ComponentModel from 'core/js/models/componentModel';
-import logging from 'core/js/logging';
 
 import 'core/js/models/courseModel';
 import 'core/js/models/menuModel';
@@ -46,12 +45,4 @@ class MPABC extends Backbone.Controller {
 }
 
 const mpabc = new MPABC();
-
-Object.defineProperty(Adapt, 'mpabc', {
-  get() {
-    logging.deprecated('Adapt.mpabc, please use core/js/mpabc directly');
-    return mpabc;
-  }
-});
-
 export default mpabc;

@@ -127,12 +127,4 @@ class Tracking extends Backbone.Controller {
 }
 
 const tracking = new Tracking();
-
-Object.defineProperty(Adapt, 'tracking', {
-  get() {
-    logging.deprecated('Adapt.tracking, please use core/js/tracking directly');
-    return tracking;
-  }
-});
-
 export default tracking;
