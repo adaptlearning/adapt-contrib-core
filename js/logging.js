@@ -137,7 +137,7 @@ const logging = new Logging();
 
 Object.defineProperty(Adapt, 'log', {
   get() {
-    logging.deprecated('logging, please use core/js/logging directly');
+    logging.deprecated('Adapt.log, please use core/js/logging directly');
     return logging;
   }
 });
