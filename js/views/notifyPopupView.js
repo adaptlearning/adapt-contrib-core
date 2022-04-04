@@ -1,4 +1,7 @@
 import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
+import data from 'core/js/data';
+import a11y from 'core/js/a11y';
 import AdaptView from 'core/js/views/adaptView';
 import Backbone from 'backbone';
 
@@ -25,7 +28,8 @@ export default class NotifyPopupView extends Backbone.View {
     };
   }
 
-  initialize() {
+  initialize({ notify }) {
+    this.notify = notify;
     _.bindAll(this, 'resetNotifySize', 'onKeyUp');
     this.disableAnimation = Adapt.config.get('_disableAnimation') || false;
     this.isOpen = false;
@@ -125,7 +129,7 @@ export default class NotifyPopupView extends Backbone.View {
     this.isOpen = true;
     await this.addSubView();
     // Add to the list of open popups
-    Adapt.notify.stack.push(this);
+    this.notify.stack.push(this);
     // Keep focus from previous action
     this.$previousActiveElement = $(document.activeElement);
     Adapt.trigger('notify:opened', this);
@@ -164,19 +168,19 @@ export default class NotifyPopupView extends Backbone.View {
     $.inview();
     this.hasOpened = true;
     // Allows popup manager to control focus
-    Adapt.a11y.popupOpened(this.$('.notify__popup'));
-    Adapt.a11y.scrollDisable('body');
+    a11y.popupOpened(this.$('.notify__popup'));
+    a11y.scrollDisable('body');
     $('html').addClass('notify');
     // Set focus to first accessible element
-    Adapt.a11y.focusFirst(this.$('.notify__popup'), { defer: false });
+    a11y.focusFirst(this.$('.notify__popup'), { defer: false });
   }
 
   async addSubView() {
     this.subView = this.model.get('_view');
     if (this.model.get('_id')) {
       // Automatically render the specified id
-      const model = Adapt.findById(this.model.get('_id'));
-      const View = Adapt.getViewClass(model);
+      const model = data.findById(this.model.get('_id'));
+      const View = components.getViewClass(model);
       this.subView = new View({ model });
     }
     if (!this.subView) return;
@@ -196,9 +200,9 @@ export default class NotifyPopupView extends Backbone.View {
 
   closeNotify() {
     // Make sure that only the top most notify is closed
-    const stackItem = Adapt.notify.stack[Adapt.notify.stack.length - 1];
+    const stackItem = this.notify.stack[this.notify.stack.length - 1];
     if (this !== stackItem) return;
-    Adapt.notify.stack.pop();
+    this.notify.stack.pop();
     // Prevent from being invoked multiple times - see https://github.com/adaptlearning/adapt_framework/issues/1659
     if (!this.isOpen) return;
     this.isOpen = false;
@@ -234,10 +238,10 @@ export default class NotifyPopupView extends Backbone.View {
         }
       });
     }
-    Adapt.a11y.scrollEnable('body');
+    a11y.scrollEnable('body');
     $('html').removeClass('notify');
     // Return focus to previous active element
-    Adapt.a11y.popupClosed(this.$previousActiveElement);
+    a11y.popupClosed(this.$previousActiveElement);
     // Return reference to the notify view
     Adapt.trigger('notify:closed', this);
   }

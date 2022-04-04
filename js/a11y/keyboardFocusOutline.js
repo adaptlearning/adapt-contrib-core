@@ -7,7 +7,8 @@ import Adapt from 'core/js/adapt';
  */
 export default class KeyboardFocusOutline extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this.a11y = a11y;
     this._onKeyDown = this._onKeyDown.bind(this);
     this.$html = $('html');
     this.showOnKeys = {
@@ -33,7 +34,7 @@ export default class KeyboardFocusOutline extends Backbone.Controller {
    * Add styling classes if required.
    */
   _start() {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (config._options._isFocusOutlineDisabled) {
       this.$html.addClass('a11y-disable-focusoutline');
       return;
@@ -50,7 +51,7 @@ export default class KeyboardFocusOutline extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onKeyDown(event) {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (config._options._isFocusOutlineDisabled) {
       this.$html.addClass('a11y-disable-focusoutline');
       return;

@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 
 /**
  * Event object triggered for controlling child view rendering.
@@ -44,11 +44,11 @@ export default class ChildEvent extends Backbone.Controller {
    */
   set model(model) {
     if (this.type !== 'requestChild') {
-      Adapt.log.warn(`Cannot change model in ${this.type} event.`);
+      logging.warn(`Cannot change model in ${this.type} event.`);
       return;
     }
     if (this._model) {
-      Adapt.log.warn(`Cannot inject two models in one sitting. ${model.get('_id')} attempts to overwrite ${this._model.get('_id')}`);
+      logging.warn(`Cannot inject two models in one sitting. ${model.get('_id')} attempts to overwrite ${this._model.get('_id')}`);
       return;
     }
     this._model = model;

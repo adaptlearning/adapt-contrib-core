@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 
 /**
  * Controller for managing accessibilty logging, specifically used for
@@ -6,12 +6,13 @@ import Adapt from 'core/js/adapt';
  */
 export default class Log extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this.a11y = a11y;
     this._warned = {};
   }
 
   _hasWarned(args) {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._options._warnFirstOnly) {
       return false;
     }
@@ -24,7 +25,7 @@ export default class Log extends Backbone.Controller {
   }
 
   _canWarn() {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     return Boolean(config._options._warn);
   }
 
@@ -36,7 +37,7 @@ export default class Log extends Backbone.Controller {
     if (this._hasWarned(args)) {
       return;
     }
-    Adapt.log.removed(...args);
+    logging.removed(...args);
     return this;
   }
 
@@ -48,7 +49,7 @@ export default class Log extends Backbone.Controller {
     if (this._hasWarned(args)) {
       return;
     }
-    Adapt.log.deprecated(...args);
+    logging.deprecated(...args);
     return this;
   }
 

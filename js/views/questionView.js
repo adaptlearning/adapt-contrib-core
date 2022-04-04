@@ -2,8 +2,10 @@ import Adapt from 'core/js/adapt';
 import ComponentView from 'core/js/views/componentView';
 import ButtonsView from 'core/js/views/buttonsView';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
-import a11y from '../a11y';
-import log from '../logging';
+import a11y from 'core/js/a11y';
+import log from 'core/js/logging';
+import data from 'core/js/data';
+import location from 'core/js/location';
 import 'core/js/models/questionModel';
 
 class QuestionView extends ComponentView {
@@ -290,7 +292,7 @@ class QuestionView extends ComponentView {
     // then the button was clicked, focus on the first tabbable element
     if (!this.model.get('_isReady')) return;
     // Attempt to get the current page location
-    const currentModel = Adapt.findById(Adapt.location._currentId);
+    const currentModel = data.findById(location._currentId);
     // Make sure the page is ready
     if (!currentModel?.get('_isReady')) return;
     // Focus on the first readable item in this element

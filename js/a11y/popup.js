@@ -6,7 +6,8 @@ import Adapt from 'core/js/adapt';
  */
 export default class Popup extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this.a11y = a11y;
     /**
      * List of elements which form the base at which elements are generally tabbale
      * and aria-hidden='false'.
@@ -42,14 +43,14 @@ export default class Popup extends Backbone.Controller {
         if (ignoreInternalTrigger) {
           return;
         }
-        Adapt.a11y.log.deprecated('Adapt.trigger("popup:opened", $element) is replaced with Adapt.a11y.popupOpened($element);');
+        this.a11y.log.deprecated('Adapt.trigger("popup:opened", $element) is replaced with a11y.popupOpened($element);');
         this.opened($element, true);
       },
       'popup:closed'($target, ignoreInternalTrigger) {
         if (ignoreInternalTrigger) {
           return;
         }
-        Adapt.a11y.log.deprecated('Adapt.trigger("popup:closed", $target) is replaced with Adapt.a11y.popupClosed($target);');
+        this.a11y.log.deprecated('Adapt.trigger("popup:closed", $target) is replaced with a11y.popupClosed($target);');
         this.closed($target, true);
       }
     });
@@ -60,7 +61,7 @@ export default class Popup extends Backbone.Controller {
    * restrict user interaction to the element specified.
    *
    * @param {Object} [$popupElement] Element encapulating the popup.
-   * @returns {Object} Returns `Adapt.a11y._popup`.
+   * @returns {Object} Returns `a11y._popup`.
    */
   opened($popupElement, silent) {
     // Capture currently active element or element specified
@@ -79,7 +80,7 @@ export default class Popup extends Backbone.Controller {
    */
   _addPopupLayer($popupElement) {
     $popupElement = $($popupElement);
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled || $popupElement.length === 0) {
       return $popupElement;
     }
@@ -91,11 +92,10 @@ export default class Popup extends Backbone.Controller {
     $elements = $elements.add($siblings);
     $elements.each((index, item) => {
       const $item = $(item);
-      let elementUID;
       if (typeof item.a11y_uid === 'undefined') {
         item.a11y_uid = 'UID' + ++this._elementUIDIndex;
       }
-      elementUID = item.a11y_uid;
+      const elementUID = item.a11y_uid;
       if (this._tabIndexes[elementUID] === undefined) {
         this._tabIndexes[elementUID] = [];
       }
@@ -132,7 +132,7 @@ export default class Popup extends Backbone.Controller {
    * attributes.
    *
    * @param {Object} [$focusElement] Element at which to move focus.
-   * @returns {Object} Returns `Adapt.a11y._popup`.
+   * @returns {Object} Returns `a11y._popup`.
    */
   closed($focusElement, silent) {
     const $previousFocusElement = this._removeLastPopupLayer();
@@ -140,7 +140,7 @@ export default class Popup extends Backbone.Controller {
     if (!silent) {
       Adapt.trigger('popup:closed', $focusElement, true);
     }
-    Adapt.a11y.focusFirst($($focusElement), { preventScroll: true });
+    this.a11y.focusFirst($($focusElement), { preventScroll: true });
     return this;
   }
 
@@ -151,7 +151,7 @@ export default class Popup extends Backbone.Controller {
    * @returns {Object} Returns previously active element.
    */
   _removeLastPopupLayer() {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) {
       return $(document.activeElement);
     }
@@ -164,12 +164,11 @@ export default class Popup extends Backbone.Controller {
       const $item = $(item);
       let previousTabIndex = '';
       let previousAriaHidden = '';
-      let elementUID;
       if (typeof item.a11y_uid === 'undefined') {
         // assign element a unique id
         item.a11y_uid = 'UID' + ++this._elementUIDIndex;
       }
-      elementUID = item.a11y_uid;
+      const elementUID = item.a11y_uid;
       if (this._tabIndexes[elementUID]?.length) {
         // get previous tabindex if saved
         previousTabIndex = this._tabIndexes[elementUID].pop();
@@ -185,7 +184,7 @@ export default class Popup extends Backbone.Controller {
           $item.removeAttr('tabindex');
         } else {
           $item.attr({
-            'tabindex': previousTabIndex
+            tabindex: previousTabIndex
           });
         }
       }

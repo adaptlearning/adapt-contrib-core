@@ -1,4 +1,5 @@
-import Adapt from 'core/js/adapt';
+import device from 'core/js/device';
+import a11y from 'core/js/a11y';
 import React from 'react';
 import { html, classes, prefixClasses } from 'core/js/reactHelpers';
 
@@ -11,8 +12,8 @@ import { html, classes, prefixClasses } from 'core/js/reactHelpers';
 export default function Image(props) {
   const hasMediumSetting = (Object.prototype.hasOwnProperty.call(props, '_medium') || Object.prototype.hasOwnProperty.call(props, 'medium'));
   const screenSize = hasMediumSetting
-    ? Adapt.device.screenSize
-    : (Adapt.device.screenSize === 'large' ? 'large' : 'small');
+    ? device.screenSize
+    : (device.screenSize === 'large' ? 'large' : 'small');
   const src = (
     props[`_${screenSize}`] ||
     props[`${screenSize}`] ||
@@ -31,7 +32,7 @@ export default function Image(props) {
       <img
         className={prefixClasses(props.classNamePrefixes, ['__image'])}
         src={src}
-        aria-label={Adapt.a11y.normalize(props.alt)}
+        aria-label={a11y.normalize(props.alt)}
         aria-hidden={!props.alt}
         loading='eager'
       />

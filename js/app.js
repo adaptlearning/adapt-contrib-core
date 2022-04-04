@@ -1,10 +1,14 @@
 import Adapt from 'core/js/adapt';
+import 'core/js/wait';
+import 'core/js/deprecated.js';
+import 'core/js/components';
+import 'core/js/location';
 import 'core/js/templates';
 import 'core/js/fixes';
 import 'core/js/accessibility';
-import 'core/js/data';
+import data from 'core/js/data';
 import 'core/js/offlineStorage';
-import 'core/js/logging';
+import logging from 'core/js/logging';
 import 'core/js/tracking';
 import 'core/js/device';
 import 'core/js/drawer';
@@ -16,14 +20,13 @@ import 'core/js/helpers';
 import 'core/js/scrolling';
 import 'core/js/headings';
 import 'core/js/navigation';
+import 'core/js/startController';
 import 'plugins';
 
 $('body').append(Handlebars.templates.loading());
 
-Adapt.data.on('ready', function triggerInit() {
-  Adapt.log.debug('Calling Adapt.init');
-
+data.on('ready', () => {
+  logging.debug('Calling Adapt.init');
   Adapt.init();
-
   Adapt.off('adaptCollection:dataLoaded courseModel:dataLoaded');
 }).init();

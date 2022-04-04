@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import HTMLReactParser from 'html-react-parser';
 import 'core/js/templates';
-import logging from '../logging';
+import logging from 'core/js/logging';
 
 /**
  * 27 October 2021 https://github.com/adaptlearning/adapt_authoring/issues/2570

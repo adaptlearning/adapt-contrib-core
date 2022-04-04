@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import a11y from 'core/js/a11y';
 import DrawerItemView from 'core/js/views/drawerItemView';
 
 class DrawerView extends Backbone.View {
@@ -9,7 +10,7 @@ class DrawerView extends Backbone.View {
 
   attributes() {
     return {
-      'role': 'dialog',
+      role: 'dialog',
       'aria-modal': 'true',
       'aria-labelledby': 'drawer-heading',
       'aria-hidden': 'true'
@@ -30,7 +31,7 @@ class DrawerView extends Backbone.View {
       'navigation:toggleDrawer': this.toggleDrawer,
       'drawer:triggerCustomView': this.openCustomView,
       'drawer:closeDrawer': this.onCloseDrawer,
-      'remove': this.onRemove,
+      remove: this.onRemove,
       'drawer:remove': this.remove
     });
 
@@ -117,8 +118,8 @@ class DrawerView extends Backbone.View {
     this.$el.removeClass('u-display-none').removeAttr('aria-hidden');
     // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
     if (!this._isVisible) {
-      Adapt.a11y.popupOpened(this.$el);
-      Adapt.a11y.scrollDisable('body');
+      a11y.popupOpened(this.$el);
+      a11y.scrollDisable('body');
       this._isVisible = true;
     }
 
@@ -152,7 +153,7 @@ class DrawerView extends Backbone.View {
       Adapt.trigger('drawer:opened');
 
       // focus on first tabbable element in drawer
-      Adapt.a11y.focusFirst(this.$el, { defer: true });
+      a11y.focusFirst(this.$el, { defer: true });
     };
 
     // delay drawer animation until after background fadeout animation is complete
@@ -195,9 +196,9 @@ class DrawerView extends Backbone.View {
     if (!this._isVisible) return;
 
     const direction = {};
-    Adapt.a11y.popupClosed($toElement);
+    a11y.popupClosed($toElement);
     this._isVisible = false;
-    Adapt.a11y.scrollEnable('body');
+    a11y.scrollEnable('body');
 
     if (this.disableAnimation) {
 
@@ -223,7 +224,8 @@ class DrawerView extends Backbone.View {
         Adapt.trigger('drawer:closed');
       });
 
-      $('.js-shadow').velocity({ opacity: 0 }, { duration: this.drawerDuration,
+      $('.js-shadow').velocity({ opacity: 0 }, {
+        duration: this.drawerDuration,
         complete() {
           $('.js-shadow').addClass('u-display-none');
         }

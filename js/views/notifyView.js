@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 import NotifyModel from 'core/js/models/notifyModel';
@@ -26,7 +27,7 @@ export default class NotifyView extends Backbone.View {
   }
 
   _deprecated(type, notifyObject) {
-    Adapt.log.deprecated(`NOTIFY DEPRECATED: Adapt.trigger('notify:${type}', notifyObject); is no longer supported, please use Adapt.notify.${type}(notifyObject);`);
+    logging.deprecated(`NOTIFY DEPRECATED: Adapt.trigger('notify:${type}', notifyObject); is no longer supported, please use notify.${type}(notifyObject);`);
     return this.create(notifyObject, { _type: type });
   }
 
@@ -50,7 +51,8 @@ export default class NotifyView extends Backbone.View {
     }
 
     return new NotifyPopupView({
-      model: new NotifyModel(notifyObject)
+      model: new NotifyModel(notifyObject),
+      notify: this
     });
   }
 

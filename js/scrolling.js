@@ -1,4 +1,6 @@
 import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
+import router from 'core/js/router';
 
 /**
  * This allows Adapt to:
@@ -119,20 +121,34 @@ class Scrolling extends Backbone.Controller {
   /**
    * Allows a selector to be passed in and Adapt will scroll to this element. Resolves
    * asynchronously when the element has been navigated/scrolled to.
-   * Backend for Adapt.scrollTo
    * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
    * @param {Object} [settings={}] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
    * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
    */
   async scrollTo(selector, settings = {}) {
-    Adapt.log.deprecated('Adapt.scrollTo and Adapt.scrolling.scrollTo, use Adapt.navigateToElement instead.');
-    return Adapt.router.navigateToElement(selector, settings);
+    logging.deprecated('Adapt.scrollTo and Adapt.scrolling.scrollTo, use router.navigateToElement instead.');
+    return router.navigateToElement(selector, settings);
   }
 
 }
 
-Adapt.scrolling = new Scrolling();
+const scrolling = new Scrolling();
 
-Adapt.scrollTo = Adapt.scrolling.scrollTo.bind(Adapt.scrolling);
+scrolling.scrollTo = scrolling.scrollTo.bind(scrolling);
 
-export default Adapt.scrolling;
+Object.defineProperties(Adapt, {
+  scrolling: {
+    get() {
+      logging.deprecated('Adapt.scrolling, please use core/js/scrolling directly');
+      return scrolling;
+    }
+  },
+  scrollTo: {
+    get() {
+      logging.deprecated('Adapt.scrollTo, please use router.navigateToElement');
+      return scrolling.scrollTo;
+    }
+  }
+});
+
+export default scrolling;
