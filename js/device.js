@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import Bowser from 'bowser';
+import logging from 'core/js/logging';
 
 class Device extends Backbone.Controller {
 
@@ -190,4 +191,13 @@ class Device extends Backbone.Controller {
 
 }
 
-export default (Adapt.device = new Device());
+const device = new Device();
+
+Object.defineProperty(Adapt, 'device', {
+  get() {
+    logging.deprecated('device, please use core/js/device directly');
+    return device;
+  }
+});
+
+export default device;

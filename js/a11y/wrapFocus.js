@@ -6,7 +6,8 @@ import Adapt from 'core/js/adapt';
  */
 export default class WrapFocus extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this.a11y = a11y;
     _.bindAll(this, '_onWrapAround');
     this.listenTo(Adapt, {
       'accessibility:ready': this._attachEventListeners
@@ -14,7 +15,7 @@ export default class WrapFocus extends Backbone.Controller {
   }
 
   _attachEventListeners() {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     $('body').on('click focus', config._options._focusguard, this._onWrapAround);
   }
 
@@ -25,13 +26,13 @@ export default class WrapFocus extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onWrapAround(event) {
-    const config = Adapt.a11y.config;
+    const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupWrapFocusEnabled) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
-    Adapt.a11y.focusFirst('body', { defer: false });
+    this.a11y.focusFirst('body', { defer: false });
   }
 
 }

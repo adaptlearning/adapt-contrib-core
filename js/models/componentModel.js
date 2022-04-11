@@ -1,15 +1,17 @@
+import components from 'core/js/components';
 import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
 class ComponentModel extends AdaptModel {
 
   get _parent() {
-    Adapt.log.deprecated('componentModel._parent, use componentModel.getParent() instead, parent models are defined by the JSON');
+    logging.deprecated('componentModel._parent, use componentModel.getParent() instead, parent models are defined by the JSON');
     return 'blocks';
   }
 
   get _siblings() {
-    Adapt.log.deprecated('componentModel._siblings, use componentModel.getSiblings() instead, sibling models are defined by the JSON');
+    logging.deprecated('componentModel._siblings, use componentModel.getSiblings() instead, sibling models are defined by the JSON');
     return 'components';
   }
 
@@ -99,7 +101,7 @@ class ComponentModel extends AdaptModel {
     const types = this.trackableType();
     trackables.find((name, index) => {
       // Exclude _attemptStates as it's trackable but isn't needed here
-      if (name !== '_attemptStates') return;
+      if (name !== '_attemptStates') return false;
       trackables.splice(index, 1);
       types.splice(index, 1);
       return true;
@@ -125,7 +127,7 @@ class ComponentModel extends AdaptModel {
     const types = this.trackableType();
     trackables.find((name, index) => {
       // Exclude _attemptStates as it's trackable but isn't needed here
-      if (name !== '_attemptStates') return;
+      if (name !== '_attemptStates') return false;
       trackables.splice(index, 1);
       types.splice(index, 1);
       return true;
@@ -183,6 +185,6 @@ class ComponentModel extends AdaptModel {
 }
 
 // This abstract model needs to registered to support deprecated view-only components
-Adapt.register('component', { model: ComponentModel });
+components.register('component', { model: ComponentModel });
 
 export default ComponentModel;

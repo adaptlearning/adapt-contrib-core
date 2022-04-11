@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
 import ComponentModel from 'core/js/models/componentModel';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
 
@@ -326,6 +327,7 @@ class QuestionModel extends ComponentModel {
     this.set({
       _attemptsLeft: attempts,
       _isCorrect: undefined,
+      _isCorrectAnswerShown: false,
       _isSubmitted: false,
       _buttonState: BUTTON_STATE.SUBMIT,
       _shouldShowMarking: this.shouldShowMarking
@@ -396,6 +398,6 @@ class QuestionModel extends ComponentModel {
 }
 
 // This abstract model needs to registered to support deprecated view-only questions
-Adapt.register('question', { model: QuestionModel });
+components.register('question', { model: QuestionModel });
 
 export default QuestionModel;

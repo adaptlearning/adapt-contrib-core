@@ -2,45 +2,6 @@
 
   const isProduction = (window.ADAPT_BUILD_TYPE !== 'development');
 
-  // Change location of Adapt CSS if incorrect
-  (function () {
-    const oldHRef = 'adapt/css/adapt.css';
-    const newHRef = 'adapt.css';
-    function fixCSSLocation() {
-      const oldLinkElement = findOldLink();
-      if (!oldLinkElement) return;
-      replaceOldLink(oldLinkElement);
-    }
-    function findOldLink() {
-      const nodeList = document.querySelectorAll('link');
-      for (let i = 0, l = nodeList.length; i < l; i++) {
-        const linkElement = nodeList[i];
-        if (linkElement.href.substr(-oldHRef.length) !== oldHRef) continue;
-        return linkElement;
-      }
-    }
-    /**
-     * replace link tag, otherwise issues with Google Chrome sourcemaps
-     */
-    function replaceOldLink(oldLinkElement) {
-      console.warn('WARN: DEPRECATED - CSS location needs updating from', oldHRef, 'to', newHRef);
-      const parent = oldLinkElement.parentNode;
-      parent.removeChild(oldLinkElement);
-      const newLinkElement = document.createElement('link');
-      newLinkElement.href = newHRef;
-      newLinkElement.rel = 'stylesheet';
-      parent.appendChild(newLinkElement);
-    }
-    /**
-     * wait for document to load otherwise link tag isn't available
-     */
-    if (!document.body) {
-      document.addEventListener('DOMContentLoaded', fixCSSLocation);
-    } else {
-      fixCSSLocation();
-    }
-  })();
-
   function loadScript(url, callback) {
     if (!url || typeof url !== 'string') return;
     const script = document.createElement('script');

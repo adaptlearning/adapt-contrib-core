@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 import AdaptView from 'core/js/views/adaptView';
 
 class ComponentView extends AdaptView {
@@ -9,7 +9,7 @@ class ComponentView extends AdaptView {
     }
     return AdaptView.resultExtend('attributes', {
       'aria-labelledby': this.model.get('_id') + '-heading',
-      'role': 'region'
+      role: 'region'
     }, this);
   }
 
@@ -28,7 +28,7 @@ class ComponentView extends AdaptView {
   }
 
   renderState() {
-    Adapt.log.removed('renderState is removed and moved to item title');
+    logging.removed('renderState is removed and moved to item title');
   }
 
   /**

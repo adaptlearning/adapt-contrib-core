@@ -1,5 +1,14 @@
-import Backbone from 'backbone';
 import Adapt from 'core/js/adapt';
-import NotifyView from './views/notifyView';
+import NotifyView from 'core/js/views/notifyView';
+import logging from 'core/js/logging';
 
-export default (Adapt.notify = new NotifyView());
+const notify = new NotifyView();
+
+Object.defineProperty(Adapt, 'notify', {
+  get() {
+    logging.deprecated('Adapt.notify, please use core/js/notify directly');
+    return notify;
+  }
+});
+
+export default notify;

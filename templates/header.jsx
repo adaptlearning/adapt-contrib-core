@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
+import device from 'core/js/device';
 import React, { useRef } from 'react';
-import { html, prefixClasses, compile } from 'core/js/reactHelpers';
+import { prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
@@ -32,13 +33,22 @@ export default function Header(props) {
       _component && _component.toLowerCase()
     ].filter(Boolean)
   } = props;
-  const sizedInstruction = (mobileInstruction && Adapt.device.screenSize !== 'large') ?
+  const sizedInstruction = (mobileInstruction && device.screenSize !== 'large') ?
     mobileInstruction :
     instruction;
-  const isSet = (displayTitle || body || sizedInstruction);
-  if (!isSet) return null;
   const _globals = Adapt.course.get('_globals');
   const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
+  const isSet = (displayTitle || body || sizedInstruction);
+  if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
+    // If no title, displaytitle, body or instruction is specified
+    // Output only the component description
+    return (
+      <div className="aria-label">
+        {html(compile(ariaRegion))}
+      </div>
+    );
+  }
+  if (!isSet) return null;
   return (
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
@@ -49,31 +59,27 @@ export default function Header(props) {
           <div className="js-heading" ref={jsxHeading}></div>
           }
 
-          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState}>
-            {html(compile(displayTitle, props))}
+          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
           </div>
 
         </div>
         }
 
         {_isA11yComponentDescriptionEnabled && ariaRegion &&
-        <div className="aria-label">
-          {html(compile(ariaRegion))}
+        <div className="aria-label" dangerouslySetInnerHTML={{ __html: compile(ariaRegion, props) }}>
         </div>
         }
 
         {body &&
         <div className={prefixClasses(classNamePrefixes, ['__body'])}>
-          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])}>
-            {html(compile(body, props))}
+          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(body, props) }}>
           </div>
         </div>
         }
 
         {sizedInstruction &&
         <div className={prefixClasses(classNamePrefixes, ['__instruction'])}>
-          <div className={prefixClasses(classNamePrefixes, ['__instruction-inner'])}>
-            {html(compile(sizedInstruction, props))}
+          <div className={prefixClasses(classNamePrefixes, ['__instruction-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedInstruction, props) }}>
           </div>
         </div>
         }

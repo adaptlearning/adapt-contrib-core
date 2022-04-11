@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import logging from 'core/js/logging';
 
 // Basic API for setting and getting name+value pairs
 // Allows registration of a single handler.
@@ -91,6 +92,13 @@ class OfflineStorage extends Backbone.Controller {
 
 }
 
-Adapt.offlineStorage = new OfflineStorage();
+const offlineStorage = new OfflineStorage();
 
-export default Adapt.offlineStorage;
+Object.defineProperty(Adapt, 'offlineStorage', {
+  get() {
+    logging.deprecated('offlineStorage, please use src/core/offlineStorage instead');
+    return offlineStorage;
+  }
+});
+
+export default offlineStorage;

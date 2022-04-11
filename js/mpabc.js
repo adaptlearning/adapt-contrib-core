@@ -1,10 +1,12 @@
 import Adapt from 'core/js/adapt';
+import wait from 'core/js/wait';
 import Data from 'core/js/data';
 import AdaptSubsetCollection from 'core/js/collections/adaptSubsetCollection';
 import ContentObjectModel from 'core/js/models/contentObjectModel';
 import ArticleModel from 'core/js/models/articleModel';
 import BlockModel from 'core/js/models/blockModel';
 import ComponentModel from 'core/js/models/componentModel';
+import logging from 'core/js/logging';
 
 import 'core/js/models/courseModel';
 import 'core/js/models/menuModel';
@@ -26,12 +28,12 @@ class MPABC extends Backbone.Controller {
 
   waitForDataLoaded() {
     // Tell the data loader to wait
-    Adapt.wait.begin();
+    wait.begin();
   }
 
   onDataLoaded() {
     // Tell the data loader that we have finished
-    Adapt.wait.end();
+    wait.end();
   }
 
   setupSubsetCollections() {
@@ -43,4 +45,13 @@ class MPABC extends Backbone.Controller {
 
 }
 
-export default (Adapt.mpabc = new MPABC());
+const mpabc = new MPABC();
+
+Object.defineProperty(Adapt, 'mpabc', {
+  get() {
+    logging.deprecated('Adapt.mpabc, please use core/js/mpabc directly');
+    return mpabc;
+  }
+});
+
+export default mpabc;

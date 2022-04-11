@@ -1,4 +1,4 @@
-export default class Wait extends Backbone.Controller {
+class Wait extends Backbone.Controller {
 
   initialize() {
     this._waitCount = 0;
@@ -90,3 +90,7 @@ export default class Wait extends Backbone.Controller {
   }
 
 }
+
+const wait = new Wait();
+
+export default wait;

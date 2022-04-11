@@ -1,4 +1,8 @@
 import Adapt from 'core/js/adapt';
+import a11y from 'core/js/a11y';
+import location from 'core/js/location';
+import router from 'core/js/router';
+import startController from 'core/js/startController';
 
 class NavigationView extends Backbone.View {
 
@@ -52,25 +56,25 @@ class NavigationView extends Backbone.View {
     Adapt.trigger('navigation:' + currentEvent);
     switch (currentEvent) {
       case 'backButton':
-        Adapt.router.navigateToPreviousRoute();
+        router.navigateToPreviousRoute();
         break;
       case 'homeButton':
-        Adapt.router.navigateToHomeRoute();
+        router.navigateToHomeRoute();
         break;
       case 'parentButton':
-        Adapt.router.navigateToParent();
+        router.navigateToParent();
         break;
       case 'skipNavigation':
         this.skipNavigation();
         break;
       case 'returnToStart':
-        Adapt.startController.returnToStartLocation();
+        startController.returnToStartLocation();
         break;
     }
   }
 
   skipNavigation() {
-    Adapt.a11y.focusFirst('.' + Adapt.location._contentType);
+    a11y.focusFirst('.' + location._contentType);
   }
 
   onNavigate(model) {

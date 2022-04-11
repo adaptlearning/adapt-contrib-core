@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import DrawerView from 'core/js/views/drawerView';
+import logging from 'core/js/logging';
 
 const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrder' });
 const Drawer = {};
@@ -25,4 +26,11 @@ Adapt.on({
   }
 });
 
-export default (Adapt.drawer = Drawer);
+Object.defineProperty(Adapt, 'drawer', {
+  get() {
+    logging.deprecated('Adapt.drawer, please use core/js/drawer directly');
+    return Drawer;
+  }
+});
+
+export default Drawer;

@@ -1,4 +1,4 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
 import ContentObjectView from 'core/js/views/contentObjectView';
 
 class PageView extends ContentObjectView {
@@ -18,6 +18,6 @@ Object.assign(PageView, {
   template: 'page'
 });
 
-Adapt.register('page', { view: PageView });
+components.register('page', { view: PageView });
 
 export default PageView;

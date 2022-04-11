@@ -1,5 +1,5 @@
 import Adapt from 'core/js/adapt';
-import a11y from './a11y';
+import a11y from 'core/js/a11y';
 
 const helpers = {
 

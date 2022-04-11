@@ -1,10 +1,11 @@
-import Adapt from 'core/js/adapt';
+import components from 'core/js/components';
+import logging from 'core/js/logging';
 import ContentObjectModel from 'core/js/models/contentObjectModel';
 
 class MenuModel extends ContentObjectModel {
 
   get _children() {
-    Adapt.log.deprecated('menuModel._children, use menuModel.hasManagedChildren instead, child models are defined by the JSON');
+    logging.deprecated('menuModel._children, use menuModel.hasManagedChildren instead, child models are defined by the JSON');
     return 'contentObjects';
   }
 
@@ -27,6 +28,6 @@ class MenuModel extends ContentObjectModel {
 
 }
 
-Adapt.register('menu', { model: MenuModel });
+components.register('menu', { model: MenuModel });
 
 export default MenuModel;
