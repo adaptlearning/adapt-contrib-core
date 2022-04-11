@@ -343,10 +343,10 @@ class Router extends Backbone.Router {
    */
   async navigateToElement(selector, settings = {}) {
     const currentModelId = selector.replace(/\./g, '').split(' ')[0];
-    const currentModel = Adapt.findById(currentModelId);
+    const currentModel = data.findById(currentModelId);
     const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
     const contentObjectId = contentObject.get('_id');
-    const isNotInCurrentContentObject = (contentObjectId !== Adapt.location._currentId);
+    const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
 
     if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
       const shouldReplace = settings.replace || false;
