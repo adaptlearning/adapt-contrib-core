@@ -241,7 +241,8 @@ class A11y extends Backbone.Controller {
     }
     if (!isReadable) {
       $elements.attr({
-        tabindex: '-1',
+        // JAWS reads better with 0, do not use -1
+        tabindex: '0',
         'aria-hidden': 'true'
       }).addClass('aria-hidden');
     } else {
