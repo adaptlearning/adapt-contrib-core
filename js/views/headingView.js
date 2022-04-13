@@ -13,6 +13,7 @@ class HeadingView extends Backbone.View {
     const data = this.model.toJSON();
     const customHeadingType = this.$el.attr('data-a11y-heading-type');
     if (customHeadingType) data._type = customHeadingType;
+    if (data._type === 'course') data._type = 'menu';
     this.$el.html(template(data));
     this.checkCompletion();
   }
