@@ -379,8 +379,11 @@ class A11y extends Backbone.Controller {
 
     // check that the component is natively tabbable or
     // will be knowingly read by a screen reader
-    const hasNativeFocusOrIsScreenReadable = $element.is(config._options._focusableElements) ||
-      $element.is(config._options._readableElements);
+    const hasReadableContent = (!/^\s*$/.test($element.text()) ||
+      !/^\s*$/.test($element.attr('aria-label') ?? '') ||
+      !/^\s*$/.test($element.attr('aria-labelledby') ?? ''));
+    const hasNativeFocusOrIsScreenReadable = ($element.is(config._options._focusableElements) ||
+      $element.is(config._options._readableElements)) && hasReadableContent;
     if (hasNativeFocusOrIsScreenReadable) {
       return true;
     }
