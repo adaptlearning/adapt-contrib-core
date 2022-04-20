@@ -344,12 +344,12 @@ class Router extends Backbone.Router {
   async navigateToElement(selector, settings = {}) {
     const currentModelId = selector.replace(/\./g, '').split(' ')[0];
     const currentModel = data.findById(currentModelId);
+    const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
+    const contentObjectId = contentObject.get('_id');
+    const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
 
-    if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady'))) {
+    if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
       const shouldReplace = settings.replace || false;
-      const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
-      const contentObjectId = contentObject.get('_id');
-      const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
       if (isNotInCurrentContentObject) {
         this.isScrolling = true;
         this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
