@@ -43,6 +43,7 @@ export default class AdaptModel extends LockingModel {
       _isRendered: false,
       _isReady: false,
       _isVisible: true,
+      _isVisited: false,
       _isLocked: false,
       _isHidden: false
     };
@@ -85,13 +86,15 @@ export default class AdaptModel extends LockingModel {
     return [
       '_id',
       '_isComplete',
-      '_isInteractionComplete'
+      '_isInteractionComplete',
+      '_isVisited'
     ];
   }
 
   trackableType() {
     return [
       String,
+      Boolean,
       Boolean,
       Boolean
     ];
@@ -101,7 +104,8 @@ export default class AdaptModel extends LockingModel {
     return [
       'change:_isComplete',
       'change:_isInteractionComplete',
-      'change:_isActive'
+      'change:_isActive',
+      'change:_isVisited'
     ];
   }
 
@@ -109,22 +113,15 @@ export default class AdaptModel extends LockingModel {
     if (this.hasManagedChildren) {
       this.setupChildListeners();
     }
-
     this.init();
-
     _.defer(() => {
       if (this.hasManagedChildren) {
         this.checkCompletionStatus();
-
         this.checkInteractionCompletionStatus();
-
         this.checkLocking();
       }
-
       this.setupTrackables();
-
     });
-
   }
 
   setupTrackables() {
@@ -180,6 +177,7 @@ export default class AdaptModel extends LockingModel {
     this.listenTo(children, {
       all: this.onAll,
       bubble: this.bubble,
+      'change:_isVisited': this.checkVisitedStatus,
       'change:_isReady': this.checkReadyStatus,
       'change:_isComplete': this.onIsComplete,
       'change:_isInteractionComplete': this.checkInteractionCompletionStatus
@@ -273,12 +271,29 @@ export default class AdaptModel extends LockingModel {
     return true;
   }
 
+  setReadyStatus() {
+    this.set('_isReady', true);
+  }
+
+  checkVisitedStatus() {
+    const children = this.getAvailableChildModels();
+    const isVisited = children.some(child => child.get('_isVisited') || child.get('_isComplete') || child.get('_isInteractionComplete'));
+    if (isVisited) this.setVisitedStatus();
+    return isVisited;
+  }
+
+  setVisitedStatus() {
+    if (!this.get('_isReady') || !this.get('_isRendered')) return;
+    this.set('_isVisited', true);
+  }
+
   setCompletionStatus() {
     if (!this.get('_isVisible')) return;
 
     this.set({
       _isComplete: true,
-      _isInteractionComplete: true
+      _isInteractionComplete: true,
+      _isVisited: true
     });
   }
 
