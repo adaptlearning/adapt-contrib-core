@@ -119,6 +119,7 @@ export default class AdaptModel extends LockingModel {
         this.checkCompletionStatus();
         this.checkInteractionCompletionStatus();
         this.checkLocking();
+        this.checkVisitedStatus();
       }
       this.setupTrackables();
     });
@@ -278,7 +279,7 @@ export default class AdaptModel extends LockingModel {
   checkVisitedStatus() {
     const children = this.getAvailableChildModels();
     const isVisited = children.some(child => child.get('_isVisited') || child.get('_isComplete') || child.get('_isInteractionComplete'));
-    if (isVisited) this.setVisitedStatus();
+    if (isVisited) this.set('_isVisited', true);
     return isVisited;
   }
 
