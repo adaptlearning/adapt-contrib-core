@@ -273,6 +273,34 @@ class A11y extends Backbone.Controller {
     }
     return this;
   }
+  
+  /**
+   * Toggles tabindexes off and on all tabbable descendants.
+   * @param {Object|string|Array} $element
+   * @param {boolean} isTabbable
+   */
+  export function toggleTabbableDescendants($element, isTabbable = true) {
+    const $tabbable = a11y.findTabbable($element);
+    if (!isTabbable) {
+      $tabbable.each((index, element) => {
+        if (element.isAdaptTabHidden) return;
+        const $element = $(element);
+        element.isAdaptTabHidden = true;
+        element.adaptPreviousTabIndex = $element.attr('tabindex') ?? null;
+        $element.attr('tabindex', -1);
+      });
+      return this;
+    }
+    $tabbable.each((index, element) => {
+      if (!element.isAdaptTabHidden) return;
+      const $element = $(element);
+      if (element.adaptPreviousTabIndex === null) $element.removeAttr('tabindex');
+      else $element.attr('tabindex', element.adaptPreviousTabIndex);
+      delete element.isAdaptTabHidden;
+      delete element.adaptPreviousTabIndex;
+    });
+    return this;
+  }
 
   /**
    * Find the first tabbable element after the specified element.
