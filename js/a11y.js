@@ -656,8 +656,9 @@ class A11y extends Backbone.Controller {
     }
     function perform() {
       if ($element.attr('tabindex') === undefined) {
-        $element.attr({
-          tabindex: '-1',
+        $element.attr({        
+          // JAWS reads better with 0, do not use -1
+          tabindex: '0',
           'data-a11y-force-focus': 'true'
         });
       }
