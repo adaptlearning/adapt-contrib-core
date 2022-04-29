@@ -278,6 +278,7 @@ class A11y extends Backbone.Controller {
    * Toggles tabindexes off and on all tabbable descendants.
    * @param {Object|string|Array} $element
    * @param {boolean} isTabbable
+   * @returns {Object} Chainable
    */
   export function toggleTabbableDescendants($element, isTabbable = true) {
     const $tabbable = a11y.findTabbable($element);
