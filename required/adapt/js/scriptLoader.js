@@ -46,7 +46,8 @@
         'react-dom': isProduction ? 'libraries/react-dom.production.min' : 'libraries/react-dom.development',
         'html-react-parser': 'libraries/html-react-parser.min',
         semver: 'libraries/semver'
-      }
+      },
+      waitSeconds: 0
     });
     loadJQuery();
   }
