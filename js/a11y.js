@@ -280,8 +280,8 @@ class A11y extends Backbone.Controller {
    * @param {boolean} isTabbable
    * @returns {Object} Chainable
    */
-  export function toggleTabbableDescendants($element, isTabbable = true) {
-    const $tabbable = a11y.findTabbable($element);
+  toggleTabbableDescendants($element, isTabbable = true) {
+    const $tabbable = this.findTabbable($element);
     if (!isTabbable) {
       $tabbable.each((index, element) => {
         if (element.isAdaptTabHidden) return;
