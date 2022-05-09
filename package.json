@@ -1,7 +1,7 @@
 {
   "name": "adapt-contrib-core",
-  "version": "6.6.1",
-  "framework": ">=5.19.2",
+  "version": "6.6.2",
+  "framework": ">=5.19.3",
   "description": "Adapt Framework kernel. Responsible for boot loading, data loading and core APIs.",
   "repository": {
     "type": "git",
