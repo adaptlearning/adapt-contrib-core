@@ -116,5 +116,9 @@ export default class NotifyView extends Backbone.View {
   push(notifyObject) {
     return this.create(notifyObject, { _type: 'push' });
   }
+  
+  get isOpen() {
+    return (this.stack.length > 0);
+  }
 
 }
