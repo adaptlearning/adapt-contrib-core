@@ -25,6 +25,10 @@ export default class NotifyView extends Backbone.View {
   get stack() {
     return this._stack;
   }
+  
+  get isOpen() {
+    return (this.stack.length > 0);
+  }
 
   _deprecated(type, notifyObject) {
     logging.deprecated(`NOTIFY DEPRECATED: Adapt.trigger('notify:${type}', notifyObject); is no longer supported, please use notify.${type}(notifyObject);`);
@@ -115,10 +119,6 @@ export default class NotifyView extends Backbone.View {
    */
   push(notifyObject) {
     return this.create(notifyObject, { _type: 'push' });
-  }
-  
-  get isOpen() {
-    return (this.stack.length > 0);
   }
 
 }
