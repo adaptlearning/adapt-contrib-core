@@ -39,7 +39,7 @@ class OfflineStorage extends Backbone.Controller {
    */
   save() {
     Adapt.trigger('tracking:save');
-    return this._handler?.save?.apply(this._handler, arguments);
+    return this._handler?.save?.(...arguments);
   }
 
   /**
@@ -49,7 +49,7 @@ class OfflineStorage extends Backbone.Controller {
    */
   serialize(value) {
     if (this._handler?.serialize) {
-      return this._handler.serialize.apply(this._handler, arguments);
+      return this._handler.serialize(...arguments);
     }
     return JSON.stringify(value);
   }
@@ -61,14 +61,14 @@ class OfflineStorage extends Backbone.Controller {
    */
   deserialize(value) {
     if (this._handler?.deserialize) {
-      return this._handler.deserialize.apply(this._handler, arguments);
+      return this._handler.deserialize(...arguments);
     }
     return JSON.parse(value);
   }
 
   set(name, value) {
     if (this._handler?.set) {
-      return this._handler.set.apply(this._handler, arguments);
+      return this._handler.set(...arguments);
     }
     // if no handler has been defined, just store the data locally
     this[name] = value;
@@ -76,10 +76,17 @@ class OfflineStorage extends Backbone.Controller {
 
   get(name) {
     if (this._handler?.get) {
-      return this._handler.get.apply(this._handler, arguments);
+      return this._handler.get(...arguments);
     }
     // if no handler has been defined, check local data store
     return this[name];
+  }
+
+  clear() {
+    if (this._handler?.clear) {
+      return this._handler.clear(...arguments);
+    }
+    return false;
   }
 
   /**

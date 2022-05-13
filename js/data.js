@@ -73,7 +73,8 @@ class Data extends AdaptCollection {
     this.loadCourseData();
   }
 
-  onLanguageChange(model, language) {
+  async onLanguageChange(model, language) {
+    await wait.queue();
     offlineStorage.set('lang', language);
     // set `_isStarted` back to `false` when changing language so that the learner's answers
     // to questions get restored in the new language when `_restoreStateOnLanguageChange: true`
