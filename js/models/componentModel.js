@@ -26,6 +26,7 @@ class ComponentModel extends AdaptModel {
   defaults() {
     return AdaptModel.resultExtend('defaults', {
       _isA11yComponentDescriptionEnabled: true,
+      _shouldStoreAttempts: true,
       _userAnswer: null,
       _attemptStates: null
     });
