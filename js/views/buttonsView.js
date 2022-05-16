@@ -55,7 +55,7 @@ export default class ButtonsView extends Backbone.View {
       return;
     }
 
-    this.$('.js-btn-marking').removeClass('is-incorrect is-correct').addClass('u-display-none');
+    this.$('.js-btn-marking, .js-btn-marking-label').removeClass('is-incorrect is-correct').addClass('u-display-none');
     this.$el.removeClass('is-submitted');
     this.model.set('feedbackMessage', undefined);
     a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
@@ -122,7 +122,7 @@ export default class ButtonsView extends Backbone.View {
 
     this.$('.js-btn-action').toggleClass('is-full-width', !canShowFeedback);
     this.$('.js-btn-feedback').toggleClass('u-display-none', !canShowFeedback);
-    this.$('.js-btn-marking').toggleClass('is-full-width u-display-none', !canShowFeedback);
+    this.$('.js-btn-marking, .js-btn-marking-label').toggleClass('is-full-width u-display-none', !canShowFeedback);
   }
 
   updateAttemptsCount() {
@@ -165,10 +165,19 @@ export default class ButtonsView extends Backbone.View {
     const isCorrect = this.model.get('_isCorrect');
     const ariaLabels = Adapt.course.get('_globals')._accessibility._ariaLabels;
 
-    this.$('.js-btn-marking')
+    const $marking = this.$('.js-btn-marking, .js-btn-marking-label')
       .removeClass('u-display-none')
-      .addClass(isCorrect ? 'is-correct' : 'is-incorrect')
-      .attr('aria-label', isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+      .addClass(isCorrect ? 'is-correct' : 'is-incorrect');
+
+    const $ariaLabel = this.$('.js-btn-marking-label');
+    const hasSpanAriaLabel = Boolean($ariaLabel.length);
+    if (!hasSpanAriaLabel) {
+      // Backward compability
+      $marking.attr('aria-label', isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+      return;
+    }
+
+    $ariaLabel.html(isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
   }
 
   refresh() {

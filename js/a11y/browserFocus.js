@@ -47,7 +47,7 @@ export default class BrowserFocus extends Backbone.Controller {
     }
     // Check if element losing focus is losing focus
     // due to the addition of a disabled class
-    if (!$element.is('[disabled]')) {
+    if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden') {
       return;
     }
     // Move focus to next readable element
