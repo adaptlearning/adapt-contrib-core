@@ -43,8 +43,7 @@ export default function Header(props) {
     // If no title, displaytitle, body or instruction is specified
     // Output only the component description
     return (
-      <div className="aria-label">
-        {html(compile(ariaRegion))}
+      <div className="aria-label" dangerouslySetInnerHTML={{ __html: compile(ariaRegion) }}>
       </div>
     );
   }
