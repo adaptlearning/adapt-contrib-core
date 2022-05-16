@@ -5,7 +5,6 @@ import 'core/js/components';
 import 'core/js/location';
 import 'core/js/templates';
 import 'core/js/fixes';
-import 'core/js/accessibility';
 import data from 'core/js/data';
 import 'core/js/offlineStorage';
 import logging from 'core/js/logging';
