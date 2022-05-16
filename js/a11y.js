@@ -801,12 +801,4 @@ class A11y extends Backbone.Controller {
 }
 
 const a11y = new A11y();
-
-Object.defineProperty(Adapt, 'a11y', {
-  get() {
-    logging.deprecated('Adapt.a11y, please use core/js/a11y directly');
-    return a11y;
-  }
-});
-
 export default a11y;

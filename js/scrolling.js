@@ -16,6 +16,7 @@ import router from 'core/js/router';
 class Scrolling extends Backbone.Controller {
 
   initialize() {
+    this.scrollTo = this.scrollTo.bind(this);
     this.$html = $('html');
     this.isLegacyScrolling = true;
     Adapt.once('configModel:dataLoaded', this._loadConfig.bind(this));
@@ -133,22 +134,4 @@ class Scrolling extends Backbone.Controller {
 }
 
 const scrolling = new Scrolling();
-
-scrolling.scrollTo = scrolling.scrollTo.bind(scrolling);
-
-Object.defineProperties(Adapt, {
-  scrolling: {
-    get() {
-      logging.deprecated('Adapt.scrolling, please use core/js/scrolling directly');
-      return scrolling;
-    }
-  },
-  scrollTo: {
-    get() {
-      logging.deprecated('Adapt.scrollTo, please use router.navigateToElement');
-      return scrolling.scrollTo;
-    }
-  }
-});
-
 export default scrolling;
