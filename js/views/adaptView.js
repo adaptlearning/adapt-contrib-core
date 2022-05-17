@@ -308,15 +308,11 @@ class AdaptView extends Backbone.View {
   }
 
   setReadyStatus() {
-    this.model.set('_isReady', true);
+    this.model.setReadyStatus();
   }
 
   setCompletionStatus() {
-    if (!this.model.get('_isVisible')) return;
-    this.model.set({
-      _isComplete: true,
-      _isInteractionComplete: true
-    });
+    this.model.setCompletionStatus();
   }
 
   resetCompletionStatus(type) {
