@@ -71,6 +71,11 @@ class Tracking extends Backbone.Controller {
     if (completionData.status === COMPLETION_STATE.INCOMPLETE) {
       return;
     }
+    
+    const canRetry = (completionData.assessment?.canRetry === true);
+    if (completionData.status === COMPLETION_STATE.FAILED && canRetry) {
+      return;
+    }
 
     Adapt.trigger('tracking:complete', completionData);
     logging.debug('tracking:complete', completionData);
