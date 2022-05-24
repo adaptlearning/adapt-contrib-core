@@ -715,7 +715,9 @@ export default class AdaptModel extends LockingModel {
   }
 
   checkLocking() {
-    const lockType = this.get('_lockType');
+    const lockType = (this.get('_type') !== 'course')
+      ? this.findAncestor().get('_lockType')
+      : this.get('_lockType');
 
     if (!lockType) return;
 
@@ -738,7 +740,9 @@ export default class AdaptModel extends LockingModel {
   }
 
   setSequentialLocking() {
-    const children = this.getAvailableChildModels();
+    const children = (this.get('_type') !== 'course')
+      ? this.findAncestor().findDescendantModels('pages', { where: { _isAvailable: true } })
+      : this.findDescendantModels('pages', { where: { _isAvailable: true } });
     // Start from second child
     children.slice(1).forEach((child, index) => {
       const previousChild = children[index];
@@ -753,21 +757,27 @@ export default class AdaptModel extends LockingModel {
   }
 
   setUnlockFirstLocking() {
-    const children = this.getAvailableChildModels();
+    const children = (this.get('_type') !== 'course')
+      ? this.findAncestor().findDescendantModels('pages', { where: { _isAvailable: true } })
+      : this.findDescendantModels('pages', { where: { _isAvailable: true } });
     const firstChild = children.shift();
     const isLockedByFirstChild = (!firstChild.get('_isComplete') && !firstChild.get('_isOptional'));
     children.forEach(child => child.set('_isLocked', isLockedByFirstChild));
   }
 
   setLockLastLocking() {
-    const children = this.getAvailableChildModels();
+    const children = (this.get('_type') !== 'course')
+      ? this.findAncestor().findDescendantModels('pages', { where: { _isAvailable: true } })
+      : this.findDescendantModels('pages', { where: { _isAvailable: true } });
     const lastChild = children.pop();
     const isLockedByChildren = children.some(child => (!child.get('_isComplete') && !child.get('_isOptional')));
     lastChild.set('_isLocked', isLockedByChildren);
   }
 
   setCustomLocking() {
-    const children = this.getAvailableChildModels();
+    const children = (this.get('_type') !== 'course')
+      ? this.findAncestor().findDescendantModels('pages', { where: { _isAvailable: true } })
+      : this.findDescendantModels('pages', { where: { _isAvailable: true } });
     children.forEach(child => child.set('_isLocked', this.shouldLock(child)));
   }
 

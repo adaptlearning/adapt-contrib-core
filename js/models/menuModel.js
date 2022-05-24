@@ -18,7 +18,9 @@ class MenuModel extends ContentObjectModel {
   }
 
   setCustomLocking() {
-    const children = this.getAvailableChildModels();
+    const children = (this.get('_type') !== 'course')
+      ? this.findAncestor().findDescendantModels('pages', { where: { _isAvailable: true } })
+      : this.findDescendantModels('pages', { where: { _isAvailable: true } });
     children.forEach(child => {
       child.set('_isLocked', this.shouldLock(child));
       if (!(child instanceof MenuModel)) return;
