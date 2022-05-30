@@ -344,29 +344,39 @@ class Router extends Backbone.Router {
    */
   async navigateToElement(selector, settings = {}) {
     const currentModelId = selector.replace(/\./g, '').split(' ')[0];
-    const currentModel = data.findById(currentModelId);
-    const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
-    const contentObjectId = contentObject.get('_id');
-    const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
+    const isSelectorAnId = data.hasId(currentModelId);
 
-    if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
-      const shouldReplace = settings.replace || false;
-      if (isNotInCurrentContentObject) {
-        this.isScrolling = true;
-        this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
-        this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
-        await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
-          this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
-          resolve();
-        }, 1)));
-        this.isScrolling = false;
+    if (isSelectorAnId) {
+      const currentModel = data.findById(currentModelId);
+      const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
+      const contentObjectId = contentObject.get('_id');
+      const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
+
+      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
+        const shouldReplace = settings.replace || false;
+        if (isNotInCurrentContentObject) {
+          this.isScrolling = true;
+          this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
+          this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
+          await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
+            this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
+            resolve();
+          }, 1)));
+          this.isScrolling = false;
+        }
+        await Adapt.parentView.renderTo(currentModelId);
       }
-      await Adapt.parentView.renderTo(currentModelId);
+
+      // Correct selector when passed a pure id
+      if (currentModel && selector === currentModel.get('_id')) {
+        selector = `.${selector}`;
+      }
     }
 
-    // Correct selector when passed a pure id
-    if (currentModel && selector === currentModel.get('_id')) {
-      selector = `.${selector}`;
+    const isElementUnavailable = !$(selector).length;
+    if (isElementUnavailable) {
+      logging.warn(`router.navigateToElement, selector not found in document: ${selector}`);
+      return;
     }
 
     // Get the current location - this is set in the router

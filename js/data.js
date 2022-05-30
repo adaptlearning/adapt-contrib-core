@@ -197,6 +197,15 @@ class Data extends AdaptCollection {
   }
 
   /**
+   * Checks if a model _id exists
+   * @param {string} id The id of the item e.g. "co-05"
+   * @returns {boolean}
+   */
+  hasId(id) {
+    return Boolean(this._byAdaptID[id]);
+  }
+
+  /**
    * Looks up a model by its `_id` property
    * @param {string} id The id of the item e.g. "co-05"
    * @return {Backbone.Model}
