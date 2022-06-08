@@ -386,7 +386,7 @@ class QuestionModel extends ComponentModel {
    */
   onSubmitted() {
     // Stores the current attempt state
-    this.addAttemptObject();
+    if (this.get('_shouldStoreAttempts')) this.addAttemptObject();
     this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
