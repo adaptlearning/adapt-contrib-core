@@ -71,7 +71,7 @@ class Device extends Backbone.Controller {
       : screenSizeConfig.small;
 
     const fontSize = parseFloat($('html').css('font-size'));
-    const screenSizeEmWidth = (this.screenWidth / fontSize);
+    const screenSizeEmWidth = (window.innerWidth / fontSize);
 
     // Check to see if client screen width is larger than medium em breakpoint
     // If so apply large, otherwise check to see if client screen width is
