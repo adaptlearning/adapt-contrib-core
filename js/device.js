@@ -71,7 +71,7 @@ class Device extends Backbone.Controller {
       : screenSizeConfig.small;
 
     const fontSize = parseFloat($('html').css('font-size'));
-    const screenSizeEmWidth = (this.screenWidth / fontSize);
+    const screenSizeEmWidth = (window.innerWidth / fontSize);
 
     // Check to see if client screen width is larger than medium em breakpoint
     // If so apply large, otherwise check to see if client screen width is
@@ -133,18 +133,15 @@ class Device extends Backbone.Controller {
       // Do not trigger a change if the viewport hasn't actually changed.  Scrolling on iOS will trigger a resize.
       return;
     }
+    
+    if (this.orientation) {
+      this.$html.removeClass('orientation-landscape orientation-portrait').addClass('orientation-' + this.orientation);
+    }
 
     const newScreenSize = this.checkScreenSize();
-
     if (newScreenSize !== this.screenSize) {
       this.screenSize = newScreenSize;
-
       this.$html.removeClass('size-small size-medium size-large').addClass('size-' + this.screenSize);
-
-      if (this.orientation) {
-        this.$html.removeClass('orientation-landscape orientation-portrait').addClass('orientation-' + this.orientation);
-      }
-
       Adapt.trigger('device:changed', this.screenSize);
     }
 
@@ -155,13 +152,22 @@ class Device extends Backbone.Controller {
   isAppleDevice() {
     return (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || (navigator.userAgent.match(/Mac/) && navigator?.maxTouchPoints > 2);
   }
+  
+  get shouldReportInvertedAppleScreenSize() {
+    const windowRatio = (window.innerWidth / window.innerHeight);
+    const screenRatio = (window.screen.width / window.screen.height);
+    const isWindowPortrait = (windowRatio < 1);
+    const isScreenPortrait = (screenRatio < 1);
+    const isDeviceBadlyReportingScreenOrientation = (isWindowPortrait !== isScreenPortrait);
+    return isDeviceBadlyReportingScreenOrientation;
+  }
 
   getAppleScreenWidth() {
-    return (Math.abs(window.orientation) === 90) ? window.screen.height : window.screen.width;
+    return this.shouldReportInvertedAppleScreenSize ? window.screen.height : window.screen.width;
   }
 
   getAppleScreenHeight() {
-    return (Math.abs(window.orientation) === 90) ? window.screen.width : window.screen.height;
+    return this.shouldReportInvertedAppleScreenSize ? window.screen.width : window.screen.height;
   }
 
   getAppleDeviceType() {
