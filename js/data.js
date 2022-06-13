@@ -268,7 +268,7 @@ class Data extends AdaptCollection {
     if (indexInTrackingIdDescendants >= 0) {
       // Model is either the trackingId model or a descendant
       let trackingIdDescendants = [trackingIdModel].concat(trackingIdModel.getAllDescendantModels(true));
-      trackingIdDescendants = trackingIdDescendants.filter(model => model.get('_isTrackable') !== false);
+      trackingIdDescendants = trackingIdDescendants.filter(model => !(model.isTypeGroup('component') && model.get('_isTrackable') === false));
       return trackingIdDescendants[indexInTrackingIdDescendants];
     }
     // Model is an ancestor of the trackingId model
