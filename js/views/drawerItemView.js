@@ -8,7 +8,7 @@ class DrawerItemView extends Backbone.View {
 
   attributes() {
     return {
-      role: 'list'
+      role: 'listitem'
     };
   }
 
