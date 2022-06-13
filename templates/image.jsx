@@ -24,7 +24,7 @@ export default function Image(props) {
   if (!hasSource) return null;
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
   return (
-    <div
+    <span
       id={props.id}
       className={classes([
         prefixClasses(props.classNamePrefixes, ['__image-container']),
@@ -43,13 +43,13 @@ export default function Image(props) {
       />
 
       {props.attribution &&
-      <div className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <div className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
+      <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
+        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
           {html(props.attribution)}
-        </div>
-      </div>
+        </span>
+      </span>
       }
 
-    </div>
+    </span>
   );
 }
