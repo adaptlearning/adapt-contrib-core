@@ -48,7 +48,7 @@ class Data extends AdaptCollection {
   }
 
   loadConfigData() {
-    Adapt.config = new ConfigModel(null, { url: 'course/config.' + Adapt.build.get('jsonext'), reset: true });
+    Adapt.config = new ConfigModel(null, { url: Adapt.build.get('coursedir') + '/config.' + Adapt.build.get('jsonext'), reset: true });
     this.listenToOnce(Adapt, 'configModel:loadCourseData', this.onLoadCourseData);
     this.listenTo(Adapt.config, {
       'change:_activeLanguage': this.onLanguageChange,
@@ -93,7 +93,7 @@ class Data extends AdaptCollection {
     // All code that needs to run before adapt starts should go here
     const language = Adapt.config.get('_activeLanguage');
 
-    const courseFolder = 'course/' + language + '/';
+    const courseFolder = Adapt.build.get('coursedir') + '/' + language + '/';
 
     $('html').attr('lang', language);
 
