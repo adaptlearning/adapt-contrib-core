@@ -200,7 +200,7 @@ class A11y extends Backbone.Controller {
       const isNumber =  !isNaN(level);
       const isTypeName = /[a-zA-z]/.test(level);
       if (!isTypeName && isNumber) {
-        // if an absolute value is found, use it, adding the accumilated offset
+        // if an absolute value is found, use it, adding the accumulated offset
         return parseInt(level) + offset;
       }
       // parse the level value as a relative string
@@ -209,7 +209,7 @@ class A11y extends Backbone.Controller {
       const nextLevel = ariaLevels?.['_' + relativeDescriptor.type];
       const hasModelId = Boolean(id);
       if (!hasModelId) {
-        logging.warnOnce('Cannot calculate appropraite heading level, no model id was specified');
+        logging.warnOnce('Cannot calculate appropriate heading level, no model id was specified');
         return calculateLevel(id, nextLevel, offset + relativeDescriptor.offset);
       }
       // try to find the next relevant ancestor, or use the specified model
@@ -218,10 +218,10 @@ class A11y extends Backbone.Controller {
       // check overrides, check title existence, adjust offset accordingly
       const hasNextTitle = Boolean(nextModel.get('displayTitle'));
       const nextModelOverride = nextModel.get('_ariaLevel');
-      const accumilatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
+      const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
       const resolvedLevel = nextModelOverride ?? nextLevel;
       // move towards the parents until an absolute value is found
-      return calculateLevel(nextModelId, resolvedLevel, accumilatedOffset);
+      return calculateLevel(nextModelId, resolvedLevel, accumulatedOffset);
     }
     return calculateLevel(id, override ?? level)
   }
