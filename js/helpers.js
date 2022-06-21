@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
+import logging from './logging';
 
 const helpers = {
 
@@ -122,7 +123,7 @@ const helpers = {
    * Allow JSON to be a template and accessible text
    */
   compile_a11y_text(template, context) {
-    a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
+    logging.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
     return helpers.compile.call(this, template, context);
   },
 
@@ -231,7 +232,7 @@ const helpers = {
   },
 
   a11y_text(text) {
-    a11y.log.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
+    logging.deprecated('a11y_text is no longer required. https://tink.uk/understanding-screen-reader-interaction-modes/');
     return text;
   },
 
@@ -318,16 +319,35 @@ const helpers = {
    * context if specified, a number if given as the `levelOrType` parameter,
    * or a name from the configured aria levels hash.
    *
-   * @param {number|string} levelOrType
+   * @param {number|string} level
+   * @returns {string}
+   * @deprecated Please use a11y_aria_level or a11y.ariaLevel accordingly
+   */
+  a11y_attrs_heading(level) {
+    logging.deprecated('a11y_attrs_heading, please use a11y_aria_level or a11y.ariaLevel');
+    const resolvedLevel = a11y.ariaLevel({
+      id: this._id ?? Array.from(arguments).lastItem?.data?.root?._id,
+      level,
+      override: this._ariaLevel
+    });
+    return new Handlebars.SafeString(' role="heading" aria-level="' + resolvedLevel + '" ');
+  },
+
+  /**
+   * Creates the value of the aria-level attribute for a subject heading text.
+   *
+   * @param {number|string} id The originating model id
+   * @param {number|string} level An explicit level number ("1"), a relative increment ("@block+1") or a default type name ("menu").
+   * @param {number|string} [override=null] An explicit level number ("1"), a relative increment ("@block+1") or a default type name ("menu"), usually passed through from the config to override the default.
    * @returns {string}
    */
-  a11y_attrs_heading(levelOrType) {
-    const level = a11y.ariaLevel(levelOrType, this._ariaLevel);
-    return new Handlebars.SafeString(' role="heading" aria-level="' + level + '" ');
+  a11y_aria_level(id, level, override = null) {
+    const resolvedLevel = a11y.ariaLevel({ id, level, override });
+    return resolvedLevel;
   },
 
   a11y_attrs_tabbable() {
-    a11y.log.deprecated('a11y_attrs_tabbable should not be used. tabbable elements should be natively tabbable.');
+    logging.deprecated('a11y_attrs_tabbable should not be used. tabbable elements should be natively tabbable.');
     return new Handlebars.SafeString(' role="region" tabindex="0" ');
   },
 
@@ -349,17 +369,17 @@ const helpers = {
 Object.assign(helpers, {
 
   if_value_equals() {
-    a11y.log.deprecated('if_value_equals, use equals instead.');
+    logging.deprecated('if_value_equals, use equals instead.');
     return helpers.equals.apply(this, arguments);
   },
 
   numbers() {
-    a11y.log.deprecated('numbers, use inc instead.');
+    logging.deprecated('numbers, use inc instead.');
     return helpers.inc.apply(this, arguments);
   },
 
   lowerCase() {
-    a11y.log.deprecated('lowerCase, use lowercase instead.');
+    logging.deprecated('lowerCase, use lowercase instead.');
     return helpers.lowercase.apply(this, arguments);
   }
 
