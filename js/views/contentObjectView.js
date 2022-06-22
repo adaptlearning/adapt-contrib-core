@@ -7,8 +7,7 @@ export default class ContentObjectView extends AdaptView {
 
   attributes() {
     return AdaptView.resultExtend('attributes', {
-      role: 'main',
-      'aria-labelledby': `${this.model.get('_id')}-heading`
+      role: 'main'
     }, this);
   }
 
