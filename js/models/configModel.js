@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
+import logging from '../logging';
 
 export default class ConfigModel extends LockingModel {
 
@@ -52,7 +53,7 @@ export default class ConfigModel extends LockingModel {
           Adapt.trigger('configModel:loadCourseData');
         });
       },
-      error: () => console.log('Unable to load course/config.json')
+      error: () => logging.error('Unable to load course/config.json')
     });
   }
 
