@@ -181,7 +181,7 @@ class A11y extends Backbone.Controller {
     level = "1",
     override = null
   } = {}) {
-    if (arguments.length > 1) {
+    if (arguments.length === 2) {
       // backward compatibility
       level = arguments[0];
       override =  arguments[1];
