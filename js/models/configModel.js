@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
-import logging from '../logging';
+import logging from 'core/js/logging';
 
 export default class ConfigModel extends LockingModel {
 
