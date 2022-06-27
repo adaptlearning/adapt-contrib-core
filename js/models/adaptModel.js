@@ -58,7 +58,8 @@ export default class AdaptModel extends LockingModel {
     const nearestTrackingIdModel = [firstDescendant].concat(firstDescendant.getAncestorModels()).find(model => model.has('_trackingId'));
     if (!nearestTrackingIdModel) return;
     const trackingId = nearestTrackingIdModel.get('_trackingId');
-    const trackingIdDescendants = [nearestTrackingIdModel].concat(nearestTrackingIdModel.getAllDescendantModels(true));
+    let trackingIdDescendants = [nearestTrackingIdModel].concat(nearestTrackingIdModel.getAllDescendantModels(true));
+    trackingIdDescendants = trackingIdDescendants.filter(model => !(model.isTypeGroup('component') && model.get('_isTrackable') === false));
     const indexInTrackingIdDescendants = trackingIdDescendants.findIndex(descendant => descendant === this);
     if (indexInTrackingIdDescendants >= 0) {
       // Is either the nearestTrackingIdModel (0) or one of its flattened descendants (>0)
