@@ -31,7 +31,7 @@ export default class ContentObjectView extends AdaptView {
     this.disableAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
     this.$el.css('opacity', 0);
     this.listenTo(this.model, 'change:_isReady', this.isReady);
-    this._loadingErrorTimeout = setTimeout(() => data .logReadyError(this), 10000);
+    this._loadingErrorTimeout = setTimeout(() => data.logReadyError(this), 10000);
   }
 
   render() {
