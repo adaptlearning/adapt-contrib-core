@@ -431,6 +431,12 @@
     "_themePreset": {
       "type": "objectid",
       "required": false
+    },
+    "targets": {
+      "type": "string",
+      "title": "Supported browsers override",
+      "description": "Set the browsers that are supported. Overrides the framework defaults if not empty",
+      "default": ""
     }
   }
 }
