@@ -406,6 +406,20 @@
       "isObjectId": true,
       "title": "Theme preset"
     },
+    "build": {
+      "type": "object",
+      "title": "Support for setting the course build type",
+      "properties" : {
+        "strictMode": {
+          "type": "boolean",
+          "default": true,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Use strict mode?"
+        }
+      }
+    },
     "targets": {
       "type": "string",
       "title": "Supported browsers override",
