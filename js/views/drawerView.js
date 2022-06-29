@@ -73,6 +73,7 @@ class DrawerView extends Backbone.View {
   }
 
   openCustomView(view, hasBackButton) {
+    this.$('.js-drawer-holder').removeAttr('role');
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
     Adapt.trigger('drawer:empty');
