@@ -140,7 +140,11 @@ class AdaptView extends Backbone.View {
     // Iterate through existing available children and/or request new children
     // if required and allowed
     while (true) {
-      const models = this.model.getAvailableChildModels();
+      const models = this.model.getAvailableChildModels().filter(model => {
+        // Filter out any containers with no children
+        const isManagedWithNoChildren = (model.hasManagedChildren && !model.getAvailableChildModels().length);
+        return !isManagedWithNoChildren;
+      });
       const event = this._getAddChildEvent(models[this.nthChild]);
       if (!event) {
         break;
