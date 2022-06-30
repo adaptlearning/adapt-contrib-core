@@ -443,14 +443,14 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Use strict mode?"
+        },
+        "targets": {
+          "type": "string",
+          "title": "Supported browsers override",
+          "help": "Set the browsers that are supported. Overwrites the framework defaults if not empty. Current defaults are: 'last 2 chrome versions, last 2 firefox versions, last 2 safari versions, last 2 edge versions, last 2 ios_saf versions, last 2 and_chr versions, firefox esr'",
+          "default": ""
         }
       }
-    },
-    "targets": {
-      "type": "string",
-      "title": "Supported browsers override",
-      "description": "Set the browsers that are supported. Overrides the framework defaults if not empty",
-      "default": ""
     }
   }
 }
