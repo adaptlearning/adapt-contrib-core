@@ -185,7 +185,7 @@ export default class NotifyPopupView extends Backbone.View {
     }
     if (!this.subView) return;
     this.subView.$el.on('resize', this.resetNotifySize);
-    this.$('.notify__content-inner').prepend(this.subView.$el);
+    this.$('.notify__content-inner').append(this.subView.$el);
     if (!(this.subView instanceof AdaptView) || this.subView.model.get('_isReady')) return;
     // Wait for the AdaptView subview to be ready
     return new Promise(resolve => {
