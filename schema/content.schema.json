@@ -10,6 +10,11 @@
       "type": "string",
       "title": "Type"
     },
+    "_friendlyId": {
+      "type": "string",
+      "title": "Friendly id",
+      "description": "A human-readable ID for this content object which will replace the standard _id field on course build (useful in instances where the _id must be specified in the config of an extension). Must be unique to this course."
+    },
     "_parentId": {
       "type": "string",
       "isObjectId": true,
