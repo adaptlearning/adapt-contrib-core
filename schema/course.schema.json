@@ -328,11 +328,6 @@
           "type": "object",
           "title": "Buttons",
           "default": {},
-          "required": [
-            "remainingAttemptsText",
-            "remainingAttemptText",
-            "disabledAriaLabel"
-          ],
           "properties": {
             "_submit": {
               "type": "object",

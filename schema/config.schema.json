@@ -2,11 +2,6 @@
   "$anchor": "config",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "required": [
-    "_defaultLanguage",
-    "_defaultDirection",
-    "_questionWeight"
-  ],
   "properties": {
     "_type": {
       "type": "string",
@@ -97,17 +92,6 @@
           "title": "Default ARIA levels",
           "description": "Defines what value to assign to the aria-level attribute for the various elements of Adapt",
           "default": {},
-          "required": [
-            "_menu",
-            "_menuGroup",
-            "_menuItem",
-            "_page",
-            "_article",
-            "_block",
-            "_component",
-            "_componentItem",
-            "_notify"
-          ],
           "properties": {
             "_menu": {
               "type": "number",
@@ -185,11 +169,6 @@
       "type": "object",
       "title": "Device breakpoints",
       "default": {},
-      "required": [
-        "small",
-        "medium",
-        "large"
-      ],
       "properties": {
         "small": {
           "type": "number",
@@ -223,11 +202,6 @@
       "type": "object",
       "title": "Drawer animation",
       "default": {},
-      "required": [
-        "_showEasing",
-        "_hideEasing",
-        "_duration"
-      ],
       "properties": {
         "_showEasing": {
           "type": "string",
