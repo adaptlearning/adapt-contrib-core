@@ -2,19 +2,19 @@
   <button class="drawer__menu-btn drawer__item-btn{{#if className}} {{className}}{{/if}}">
 
     {{#if title}}
-    <div class="drawer__menu-title drawer__item-title">
-      <div class="drawer__menu-title-inner drawer__item-title-inner">
+    <span class="drawer__menu-title drawer__item-title">
+      <span class="drawer__menu-title-inner drawer__item-title-inner">
         {{{title}}}
-      </div>
-    </div>
+      </span>
+    </span>
     {{/if}}
 
     {{#if description}}
-    <div class="drawer__menu-body drawer__item-body">
-      <div class="drawer__menu-body-inner drawer__item-body-inner">
+    <span class="drawer__menu-body drawer__item-body">
+      <span class="drawer__menu-body-inner drawer__item-body-inner">
         {{{description}}}
-      </div>
-    </div>
+      </span>
+    </span>
     {{/if}}
 
   </button>
