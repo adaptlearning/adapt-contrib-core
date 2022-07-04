@@ -383,14 +383,14 @@
     "build": {
       "type": "object",
       "title": "Support for setting the course build type",
+      "required": ["strictMode"],
       "properties" : {
         "strictMode": {
           "type": "boolean",
           "default": true,
-          "required": true,
           "inputType": "Checkbox",
-          "validators": [],
-          "title": "Use strict mode?"
+          "title": "Use strict mode?",
+          "description": "Uses ES6 modules. If AMD-style module definitions are required for plugins, turn this off"
         },
         "targets": {
           "type": "string",

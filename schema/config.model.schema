@@ -442,7 +442,8 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Use strict mode?"
+          "title": "Use strict mode?",
+          "help": "Uses ES6 modules. If AMD-style module definitions are required for plugins, turn this off"
         },
         "targets": {
           "type": "string",
