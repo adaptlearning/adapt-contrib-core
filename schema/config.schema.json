@@ -390,7 +390,7 @@
           "default": true,
           "inputType": "Checkbox",
           "title": "Use strict mode?",
-          "description": "Uses ES6 modules. If AMD-style module definitions are required for plugins, turn this off"
+          "description": "Strict mode drops suport for AMD-style module definitions. If these are still required for any plugins, turn this setting off"
         },
         "targets": {
           "type": "string",
