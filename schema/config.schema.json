@@ -383,7 +383,6 @@
     "build": {
       "type": "object",
       "title": "Support for setting the course build type",
-      "required": ["strictMode"],
       "properties" : {
         "strictMode": {
           "type": "boolean",

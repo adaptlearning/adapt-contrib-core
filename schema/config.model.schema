@@ -439,7 +439,7 @@
         "strictMode": {
           "type": "boolean",
           "default": true,
-          "required": true,
+          "required": false,
           "inputType": "Checkbox",
           "validators": [],
           "title": "Use strict mode?",
