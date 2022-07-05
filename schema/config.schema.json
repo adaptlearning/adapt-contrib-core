@@ -390,7 +390,7 @@
           "default": true,
           "inputType": "Checkbox",
           "title": "Use strict mode?",
-          "description": "Strict mode drops suport for AMD-style module definitions. If these are still required for any plugins, turn this setting off"
+          "description": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
         },
         "targets": {
           "type": "string",

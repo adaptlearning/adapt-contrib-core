@@ -443,7 +443,7 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Use strict mode?",
-          "help": "Strict mode drops suport for AMD-style module definitions. If these are still required for any plugins, turn this setting off"
+          "help": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
         },
         "targets": {
           "type": "string",
