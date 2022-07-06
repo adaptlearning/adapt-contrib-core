@@ -541,7 +541,7 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Disabled default navigation bar?"
+          "title": "Disable default navigation bar?"
         },
         "_bottomOnSelector": {
           "type": "string",
@@ -550,7 +550,7 @@
           "title": "Bottom on selector",
           "inputType": "Text",
           "validators": [],
-          "help": "CSS selector to match against the HTML element when determining whether the navigation bar should be displayed at the top or bottom"
+          "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
         }
       }
     },
