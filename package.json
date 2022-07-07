@@ -15,8 +15,9 @@
   "bugs": "https://github.com/adaptlearning/adapt-contrib-core/issues",
   "private": true,
   "devDependencies": {
-    "semantic-release": "^19.0.3",
-    "@semantic-release/git": "^10.0.1"
+    "@semantic-release/git": "^10.0.1",
+    "conventional-changelog-eslint": "^3.0.9",
+    "semantic-release": "^19.0.3"
   },
   "release": {
     "plugins": [
