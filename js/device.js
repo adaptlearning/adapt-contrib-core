@@ -10,6 +10,7 @@ class Device extends Backbone.Controller {
     this.touch = Modernizr.touchevents;
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
+    this.setViewportHeight();
     this.browser = (this.bowser.browser.name || '').toLowerCase();
     this.version = (this.bowser.browser.version || '').toLowerCase();
     this.OS = this.getOperatingSystem().toLowerCase();
@@ -99,6 +100,10 @@ class Device extends Backbone.Controller {
       : window.innerHeight || this.$window.height();
   }
 
+  setViewportHeight() {
+    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+  }
+
   getOperatingSystem() {
     let os = this.bowser.os.name.toLowerCase() || '';
 
@@ -125,15 +130,15 @@ class Device extends Backbone.Controller {
     // Calculate the screen properties.
     const previousWidth = this.screenWidth;
     const previousHeight = this.screenHeight;
-
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
+    this.setViewportHeight();
 
     if (previousWidth === this.screenWidth && previousHeight === this.screenHeight) {
       // Do not trigger a change if the viewport hasn't actually changed.  Scrolling on iOS will trigger a resize.
       return;
     }
-    
+
     if (this.orientation) {
       this.$html.removeClass('orientation-landscape orientation-portrait').addClass('orientation-' + this.orientation);
     }
@@ -152,7 +157,7 @@ class Device extends Backbone.Controller {
   isAppleDevice() {
     return (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || (navigator.userAgent.match(/Mac/) && navigator?.maxTouchPoints > 2);
   }
-  
+
   get shouldReportInvertedAppleScreenSize() {
     const windowRatio = (window.innerWidth / window.innerHeight);
     const screenRatio = (window.screen.width / window.screen.height);
