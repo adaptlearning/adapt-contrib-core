@@ -73,6 +73,7 @@ class DrawerView extends Backbone.View {
   }
 
   openCustomView(view, hasBackButton) {
+    this.$('.js-drawer-holder').removeAttr('role');
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
     Adapt.trigger('drawer:empty');
@@ -189,6 +190,9 @@ class DrawerView extends Backbone.View {
   renderItems() {
     Adapt.trigger('drawer:empty');
     this.emptyDrawer();
+    const isList = (this.collection.length > 1);
+    if (isList) this.$('.js-drawer-holder').attr('role', 'list');
+    else this.$('.js-drawer-holder').removeAttr('role');
     this.collection.forEach(model => new DrawerItemView({ model }));
   }
 
@@ -209,7 +213,7 @@ class DrawerView extends Backbone.View {
         .attr('aria-hidden', 'true');
 
       $('.js-shadow').addClass('u-display-none');
-
+      this.$('.js-drawer-holder').removeAttr('role');
       Adapt.trigger('drawer:closed');
 
     } else {
@@ -220,7 +224,7 @@ class DrawerView extends Backbone.View {
         this.$el
           .addClass('u-display-none')
           .attr('aria-hidden', 'true');
-
+        this.$('.js-drawer-holder').removeAttr('role');
         Adapt.trigger('drawer:closed');
       });
 
