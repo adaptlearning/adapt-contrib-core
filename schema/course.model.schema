@@ -531,6 +531,29 @@
         }
       }
     },
+    "_navigation": {
+      "type": "object",
+      "title": "Navigation settings",
+      "properties" : {
+        "_isDefaultNavigationDisabled": {
+          "type": "boolean",
+          "default": false,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Disable default navigation bar?"
+        },
+        "_bottomOnSelector": {
+          "type": "string",
+          "required": false,
+          "default": "",
+          "title": "Bottom on selector",
+          "inputType": "Text",
+          "validators": [],
+          "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
+        }
+      }
+    },
     "tags": {
       "type": "array",
       "inputType": "Tags",
