@@ -101,7 +101,7 @@ class Device extends Backbone.Controller {
   }
 
   setViewportHeight() {
-    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+    document.documentElement.style.setProperty('--adapt-viewport-height', `${window.innerHeight}px`);
   }
 
   getOperatingSystem() {
