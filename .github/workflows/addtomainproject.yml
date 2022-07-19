@@ -15,5 +15,5 @@ jobs:
     steps:
       - uses: actions/add-to-project@v0.1.0
         with:
-          project-url: https://github.com/orgs/adaptlearning/projects/1
+          project-url: https://github.com/orgs/adaptlearning/projects/2
           github-token: ${{ secrets.ADDTOPROJECT_TOKEN }}
