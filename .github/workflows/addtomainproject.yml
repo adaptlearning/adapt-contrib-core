@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/add-to-project@v0.1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.ADDTOPROJECT_TOKEN }}
         with:
           project-url: https://github.com/orgs/adaptlearning/projects/1
-          github_token: ${{ secrets.ADDTOPROJECT_TOKEN }}
+          github-token: ${{ secrets.ADDTOPROJECT_TOKEN }}
