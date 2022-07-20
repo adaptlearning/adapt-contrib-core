@@ -103,7 +103,7 @@ class Components extends Backbone.Controller {
     const name = this.getViewName(nameModelViewOrData);
     const object = this._register[name];
     if (!object) {
-      logging.warnOnce(`A view for '${name}' isn't registered in your project`);
+      logging.error(`A view for '${name}' isn't registered in your project`);
       return;
     }
     const isBackboneView = (object.view?.prototype instanceof Backbone.View);
@@ -156,7 +156,7 @@ class Components extends Backbone.Controller {
     const name = this.getModelName(nameModelOrData);
     const object = this._register[name];
     if (!object) {
-      logging.warnOnce(`A model for '${name}' isn't registered in your project`);
+      logging.error(`A model for '${name}' isn't registered in your project`);
       return;
     }
     const isBackboneModel = (object.model?.prototype instanceof Backbone.Model);
