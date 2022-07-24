@@ -431,6 +431,30 @@
     "_themePreset": {
       "type": "objectid",
       "required": false
+    },
+    "build": {
+      "type": "object",
+      "title": "Support for setting the course build type",
+      "properties" : {
+        "strictMode": {
+          "type": "boolean",
+          "default": true,
+          "required": false,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Use strict mode?",
+          "help": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
+        },
+        "targets": {
+          "type": "string",
+          "required": false,
+          "default": "",
+          "inputType": "Text",
+          "title": "Supported browsers override",
+          "validators": [],
+          "help": "Set the browsers that are supported. Overwrites the framework defaults if not empty. Current defaults are: 'last 2 chrome versions, last 2 firefox versions, last 2 safari versions, last 2 edge versions, last 2 ios_saf versions, last 2 and_chr versions, firefox esr'"
+        }
+      }
     }
   }
 }
