@@ -287,9 +287,14 @@ class QuestionModel extends ComponentModel {
     const body = (this.get('_attemptsLeft') && feedback.notFinal) || feedback.final;
 
     this.set({
+      altFeedbackTitle: this.getAltFeedbackTitle(),
       feedbackTitle: this.getFeedbackTitle(),
       feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });
+  }
+
+  getAltFeedbackTitle() {
+    return this.get('_feedback').altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
   }
 
   getFeedbackTitle() {
