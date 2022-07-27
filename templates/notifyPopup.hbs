@@ -20,11 +20,13 @@
           </div>
         </div>
         {{else}}
-        <div class="notify__title aria-label" id="notify-heading">
-          <div class="notify__title-inner" {{{a11y_attrs_heading 'notify'}}}>
-            {{{compile altTitle}}}
+          {{#if altTitle}}
+          <div class="notify__title aria-label" id="notify-heading">
+            <div class="notify__title-inner" {{{a11y_attrs_heading 'notify'}}}>
+              {{{compile altTitle}}}
+            </div>
           </div>
-        </div>
+          {{/if}}
         {{/if}}
 
         {{#if body}}
