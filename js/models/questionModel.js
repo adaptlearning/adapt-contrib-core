@@ -136,15 +136,11 @@ class QuestionModel extends ComponentModel {
 
   // Sets _isCorrect:true/false based upon isCorrect method below
   markQuestion() {
-
-    if (this.isCorrect()) {
-      this.set('_isCorrect', true);
-    } else {
-      this.set('_isCorrect', false);
-    }
-
+    this.set({
+      _isCorrect: this.isCorrect(),
+      _isPartlyCorrect: this.isPartlyCorrect()
+    });
     this.updateRawScore();
-
   }
 
   // Should return a boolean based upon whether to question is correct or not
@@ -327,6 +323,7 @@ class QuestionModel extends ComponentModel {
     this.set({
       _attemptsLeft: attempts,
       _isCorrect: undefined,
+      _isPartlyCorrect: undefined,
       _isCorrectAnswerShown: false,
       _isSubmitted: false,
       _buttonState: BUTTON_STATE.SUBMIT,
