@@ -507,11 +507,16 @@
                 "editorOnly": true
               }
             },
-            "_bottomOnSelector": {
+            "_navigationAlignment": {
               "type": "string",
-              "title": "Bottom on selector",
-              "description": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element",
-              "default": "",
+              "title": "Navigation alignment",
+              "description": "The CSS selector that determines where the navigation bar is displayed. Must be a selector targeting the HTML element.",
+              "default": "top",
+              "enum": [
+                "top",
+                "bottom"
+              ],
+              "_backboneForms": "Select",
               "_adapt": {
                 "editorOnly": true
               }
