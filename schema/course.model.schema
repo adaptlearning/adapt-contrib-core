@@ -543,13 +543,19 @@
           "validators": [],
           "title": "Disable default navigation bar?"
         },
-        "_bottomOnSelector": {
+        "_navigationAlignment": {
           "type": "string",
-          "required": false,
-          "default": "",
-          "title": "Bottom on selector",
-          "inputType": "Text",
-          "validators": [],
+          "required": true,
+          "default": "top",
+          "title": "Navigation alignment",
+          "inputType": {
+            "type": "Select",
+            "options": [
+              "top",
+              "bottom"
+            ]
+          },
+          "validators": ["required"],
           "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
         }
       }
