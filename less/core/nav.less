@@ -1,6 +1,6 @@
 // Add top padding equal to the height of the navigation bar
 // --------------------------------------------------
-html:not(.is-nav-bottom) #wrapper {
+html.is-nav-top #wrapper {
   padding-top: @navigation-height;
 }
 
@@ -14,7 +14,7 @@ html.is-nav-bottom #wrapper {
   z-index: 80;
   background-color: red;
 
-  html:not(.is-nav-bottom) & {
+  html.is-nav-top & {
     top: 0;
   }
 
