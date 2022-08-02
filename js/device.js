@@ -123,13 +123,13 @@ class Device extends Backbone.Controller {
   }
 
   onWindowResize() {
-    if (this.hasResized) return;
+    if (this.hasWindowResized) return;
     requestAnimationFrame(this.calculateResize);
-    this.hasResized = true;
+    this.hasWindowResized = true;
   }
 
   calculateResize() {
-    this.hasResized = false;
+    this.hasWindowResized = false;
     // Calculate the screen properties.
     const previousWidth = this.screenWidth;
     const previousHeight = this.screenHeight;
