@@ -177,7 +177,7 @@ export default class NotifyPopupView extends Backbone.View {
 
   async addSubView() {
     this.subView = this.model.get('_view');
-    if (this.model.get('_id')) {
+    if (this.model.get('_id') && this.model.get('_shouldRenderId') !== false) {
       // Automatically render the specified id
       const model = data.findById(this.model.get('_id'));
       const View = components.getViewClass(model);
