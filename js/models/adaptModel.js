@@ -468,6 +468,8 @@ export default class AdaptModel extends LockingModel {
 
     children.models.forEach(child => {
 
+      if (!child) return;
+
       if (!child.hasManagedChildren) {
         descendants.push(child);
         return;
