@@ -76,7 +76,6 @@ class TooltipController extends Backbone.Controller {
    * @param {boolean} tooltipData._isEnabled
    * @param {string} tooltipData._id Id of registered tooltip text
    * @param {string} tooltipData.text Text to be displayed
-   * @returns
    */
   register(tooltipData) {
     if (!tooltipData._id) return logging.warn('Tooltip cannot be registered with no id');
