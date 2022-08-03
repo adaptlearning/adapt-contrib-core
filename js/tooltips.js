@@ -21,15 +21,15 @@ class TooltipController extends Backbone.Controller {
     $(document).on('mouseover', '*', this.onMouseOver);
   }
 
+  getConfig() {
+    return Adapt.course.get('_tooltips');
+  }
+
   attachToBody() {
     this.tooltipsView = this.tooltipsView || new TooltipView();
     const $el = this.tooltipsView.$el;
     if ($el[0].parentNode && $el.is(':last-child')) return;
     $el.appendTo('body');
-  }
-
-  getConfig() {
-    return Adapt.course.get('_tooltips');
   }
 
   /**
