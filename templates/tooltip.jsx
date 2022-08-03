@@ -3,16 +3,27 @@ import { classes, compile } from 'core/js/reactHelpers';
 
 export default function Tooltip(props) {
   const {
-    text
+    _id,
+    _classes,
+    text,
+    top,
+    left
   } = props;
 
   return (
     <div
       className={classes([
+        `tooltip-${_id}`,
+        _classes,
         'tooltip'
       ])}
-      dangerouslySetInnerHTML={{ __html: compile(text) }}
+      style={{ top, left }}
     >
+      <div
+        className='tooltip-inner'
+        dangerouslySetInnerHTML={{ __html: compile(text) }}
+      >
+      </div>
     </div>
   );
 }
