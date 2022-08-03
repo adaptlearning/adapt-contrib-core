@@ -67,8 +67,8 @@ export default class TooltipView extends Backbone.View {
     // calculate optimum position
     const availableWidth = $('html')[0].clientWidth;
     const availableHeight = $('html')[0].clientHeight;
-    let tooltipsWidth = this.$el.width();
-    let tooltipsHeight = this.$el.height();
+    const tooltipsWidth = this.$el.width();
+    const tooltipsHeight = this.$el.height();
     const scrollTop = $(window).scrollTop();
     const scrollLeft = $(window).scrollLeft();
     const canAlignTop = targetBoundingRect.top - tooltipsHeight >= 0;
