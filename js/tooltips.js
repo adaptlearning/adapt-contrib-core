@@ -11,8 +11,14 @@ class TooltipController extends Backbone.Controller {
     _.bindAll(this, 'onMouseOver');
     this._tooltipData = {};
     this._currentId = null;
-    this.attachToBody();
     this.listenTo(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+  }
+
+  onAdaptPreInitialize() {
+    const config = this.getConfig();
+    if (config?._isEnabled === false) return;
+    this.attachToBody();
+    $(document).on('mouseover', '*', this.onMouseOver);
   }
 
   attachToBody() {
@@ -20,12 +26,6 @@ class TooltipController extends Backbone.Controller {
     const $el = this.tooltipsView.$el;
     if ($el[0].parentNode && $el.is(':last-child')) return;
     $el.appendTo('body');
-  }
-
-  onAdaptPreInitialize() {
-    const config = this.getConfig();
-    if (config?._isEnabled === false) return;
-    $(document).off('mouseover', '*', this.onMouseOver);
   }
 
   getConfig() {
