@@ -72,9 +72,9 @@ export default class TooltipView extends Backbone.View {
     const scrollTop = $(window).scrollTop();
     const scrollLeft = $(window).scrollLeft();
     const canAlignTop = targetBoundingRect.top - tooltipsHeight >= 0;
-    const canAlignBottom = targetBoundingRect.bottom + tooltipsHeight + scrollTop < availableHeight;
+    const canAlignBottom = targetBoundingRect.bottom + tooltipsHeight < availableHeight;
     const canAlignLeft = targetBoundingRect.left - tooltipsWidth >= 0;
-    const canAlignRight = targetBoundingRect.right + tooltipsWidth + scrollLeft < availableWidth;
+    const canAlignRight = targetBoundingRect.right + tooltipsWidth < availableWidth;
     const canAlignBottomRight = canAlignBottom && canAlignRight;
     const canAlignTopRight = canAlignTop && canAlignRight;
     const canAlignBottomLeft = canAlignBottom && canAlignLeft;

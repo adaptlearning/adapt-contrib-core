@@ -126,11 +126,11 @@ class TooltipController extends Backbone.Controller {
 }
 
 class TooltipContainerView extends Backbone.View {
-    attributes() {
-      return {
-        'aria-live':  'assertive'
-      };
-    }
+  attributes() {
+    return {
+      'aria-live':  'assertive'
+    };
+  }
 }
 
 export default new TooltipController();
