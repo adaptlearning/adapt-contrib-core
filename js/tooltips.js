@@ -3,12 +3,15 @@ import _ from 'underscore';
 import logging from './logging';
 import TooltipView from './views/tooltipView';
 import TooltipModel from './models/TooltipModel';
+import Backbone from 'backbone';
 
 class TooltipController extends Backbone.Controller {
 
   initialize() {
     _.bindAll(this, 'onMouseOver', 'onMouseOut');
     this._tooltipData = [];
+    this._containerView = new TooltipContainerView();
+    this._containerView.$el.appendTo('body');
     this.listenTo(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
   }
 
@@ -49,7 +52,11 @@ class TooltipController extends Backbone.Controller {
 
     console.log('show tooltip', tooltip.get('_id'));
     this.tooltipsView = new TooltipView({model:tooltip, target:this.$mouseoverEl});
-    this.tooltipsView.attach('appendTo', $('body'));
+    this.tooltipsView.attach('appendTo', this._containerView.$el);
+
+    if (!this._containerView.$el.is(':last-child')) {
+      this._containerView.$el.appendTo('body');
+    }
   }
 
   hide() {
@@ -116,6 +123,14 @@ class TooltipController extends Backbone.Controller {
   onMouseOut(e) {
     _.defer(() => this.checkShouldHide());
   }
+}
+
+class TooltipContainerView extends Backbone.View {
+    attributes() {
+      return {
+        'aria-live':  'assertive'
+      };
+    }
 }
 
 export default new TooltipController();
