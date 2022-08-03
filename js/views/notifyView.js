@@ -25,7 +25,7 @@ export default class NotifyView extends Backbone.View {
   get stack() {
     return this._stack;
   }
-  
+
   get isOpen() {
     return (this.stack.length > 0);
   }
@@ -44,6 +44,7 @@ export default class NotifyView extends Backbone.View {
   create(notifyObject, defaults) {
     notifyObject = _.defaults({}, notifyObject, defaults, {
       _type: 'popup',
+      _shouldRenderId: false,
       _isCancellable: true,
       _showCloseButton: true,
       _closeOnShadowClick: true
