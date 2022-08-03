@@ -10,7 +10,19 @@ class TooltipController extends Backbone.Controller {
     _.bindAll(this, 'onMouseOver', 'onMouseOut');
     this._tooltipData = [];
     this.listenTo(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+  }
+
+  removeListener() {
+    $(document).off('mouseover', '[data-tooltip-id]', this.onMouseOver);
+  }
+
+  addListener() {
+    this.removeListener();
     $(document).on('mouseover', '[data-tooltip-id]', this.onMouseOver);
+  }
+
+  getConfig() {
+    return Adapt.course.get('_tooltips');
   }
 
   registerGlobalTooltips() {
@@ -67,6 +79,12 @@ class TooltipController extends Backbone.Controller {
 
   onAdaptPreInitialize() {
     this.registerGlobalTooltips();
+
+    const config = this.getConfig();
+
+    if (!config || config._isEnabled !== false) {
+      this.addListener();
+    }
   }
 
   onMouseOver(e) {
