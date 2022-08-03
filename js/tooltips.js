@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import _ from 'underscore';
 import logging from './logging';
-import TooltipView from './views/tooltipView';
+import TooltipView from './views/TooltipView';
 import TooltipModel from './models/TooltipModel';
 import Backbone from 'backbone';
 
