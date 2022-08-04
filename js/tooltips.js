@@ -36,7 +36,7 @@ class TooltipController extends Backbone.Controller {
    * @param {jQuery} event
    */
   onMouseOver(event) {
-    // Ignore bubbled events
+    // Ignore propagated events
     if (event.currentTarget !== event.target) return;
     // Fetch first found tooltip element from target, through parents to html
     const $mouseoverEl = $(event.currentTarget).parents().add(event.currentTarget).filter('[data-tooltip-id]').last();
