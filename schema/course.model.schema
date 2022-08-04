@@ -348,6 +348,28 @@
                   "type": "number",
                   "title": "Navigation bar order",
                   "default": 0
+                },
+                "_navTooltip": {
+                  "type": "object",
+                  "title": "Navigation tooltip",
+                  "default": {},
+                  "properties": {
+                    "_isEnabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "inputType": "Checkbox",
+                      "validators": [],
+                      "title": "Enabled?"
+                    },
+                    "text": {
+                      "type": "string",
+                      "title": "",
+                      "default": "Drawer button",
+                      "inputType": "Text",
+                      "required": true,
+                      "translatable": true
+                    }
+                  }
                 }
               }
             }

@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import DrawerView from 'core/js/views/drawerView';
+import tooltips from './tooltips';
 
 const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrder' });
 const Drawer = {};
@@ -18,6 +19,10 @@ Drawer.triggerCustomView = function(view, hasBackButton) {
 
 Adapt.on({
   'adapt:start'() {
+    tooltips.register({
+      _id: 'drawer',
+      ...Adapt.course.get('_globals')?._extensions?._drawer?._navTooltip || {}
+    });
     new DrawerView({ collection: DrawerCollection });
   },
   'app:languageChanged'() {
