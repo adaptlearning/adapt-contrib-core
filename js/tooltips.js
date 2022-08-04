@@ -79,7 +79,7 @@ class TooltipController extends Backbone.Controller {
    */
   register(tooltipData) {
     if (!tooltipData._id) return logging.warn('Tooltip cannot be registered with no id');
-    const existingTooltip = Boolean(this.getTooltip(tooltipData._id));
+    const existingTooltip = this.getTooltip(tooltipData._id);
     if (existingTooltip) return logging.warn(`Tooltip with id ${existingTooltip._id} already registered`);
     this._tooltipData[tooltipData._id] = new TooltipModel(tooltipData);
   }
