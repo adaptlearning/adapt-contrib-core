@@ -4,7 +4,9 @@ export default class TooltipModel extends Backbone.Model {
 
   defaults() {
     return {
-      text:''
+      _id: null,
+      _isEnabled: true,
+      text: ''
     };
   }
 }
