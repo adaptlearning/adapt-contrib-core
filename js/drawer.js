@@ -19,13 +19,13 @@ Drawer.triggerCustomView = function(view, hasBackButton) {
 
 Adapt.on({
   'adapt:start'() {
+    new DrawerView({ collection: DrawerCollection });
+  },
+  'app:languageChanged'() {
     tooltips.register({
       _id: 'drawer',
       ...Adapt.course.get('_globals')?._extensions?._drawer?._navTooltip || {}
     });
-    new DrawerView({ collection: DrawerCollection });
-  },
-  'app:languageChanged'() {
     Adapt.trigger('drawer:remove');
   }
 });
