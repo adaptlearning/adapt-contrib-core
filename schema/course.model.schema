@@ -372,6 +372,40 @@
                   }
                 }
               }
+            },
+            "_navigation": {
+              "type": "object",
+              "title": "Navigation",
+              "default": {},
+              "properties": {
+                "_navOrder": {
+                  "type": "number",
+                  "title": "Navigation bar order",
+                  "default": 0
+                },
+                "_backTooltip": {
+                  "type": "object",
+                  "title": "Navigation back tooltip",
+                  "default": {},
+                  "properties": {
+                    "_isEnabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "inputType": "Checkbox",
+                      "validators": [],
+                      "title": "Enabled?"
+                    },
+                    "text": {
+                      "type": "string",
+                      "title": "",
+                      "default": "Back button",
+                      "inputType": "Text",
+                      "required": true,
+                      "translatable": true
+                    }
+                  }
+                }
+              }
             }
           }
         }
