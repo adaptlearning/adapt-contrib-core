@@ -7,7 +7,8 @@ export default function Tooltip(props) {
     _classes,
     text,
     top,
-    left
+    left,
+    _isFixedPosition
   } = props;
 
   return (
@@ -15,7 +16,8 @@ export default function Tooltip(props) {
       className={classes([
         `tooltip-${_id}`,
         _classes,
-        'tooltip'
+        'tooltip',
+        _isFixedPosition && 'tooltip-fixed'
       ])}
       style={{ top, left }}
     >
