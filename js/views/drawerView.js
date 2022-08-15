@@ -1,11 +1,16 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
 import DrawerItemView from 'core/js/views/drawerItemView';
+import Backbone from 'backbone';
 
 class DrawerView extends Backbone.View {
 
   className() {
-    return 'drawer u-display-none';
+    return [
+      'drawer',
+      'u-display-none',
+      `is-position-${this.drawerPosition}`
+    ].filter(Boolean).join(' ');
   }
 
   attributes() {
@@ -17,37 +22,28 @@ class DrawerView extends Backbone.View {
     };
   }
 
+  get drawerPosition() {
+    return Adapt.config.get('_drawer')?._position ?? 'auto';
+  }
+
   initialize() {
     this._isVisible = false;
     this.disableAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
-    this.drawerDir = Adapt.config.get('_defaultDirection') === 'rtl' ? 'left' : 'right';
+    this.drawerAnimationDir = (Adapt.config.get('_defaultDirection') === 'rtl' || this.drawerPosition === 'left') ? 'left' : 'right';
     this.drawerDuration = Adapt.config.get('_drawer')?._duration ?? 400;
     this.setupEventListeners();
     this.render();
   }
 
   setupEventListeners() {
-    this.listenTo(Adapt, {
-      'navigation:toggleDrawer': this.toggleDrawer,
-      'drawer:triggerCustomView': this.openCustomView,
-      'drawer:closeDrawer': this.onCloseDrawer,
-      remove: this.onRemove,
-      'drawer:remove': this.remove
-    });
-
     this.onKeyUp = this.onKeyUp.bind(this);
-    this.setupEscapeKey();
-  }
-
-  setupEscapeKey() {
     $(window).on('keyup', this.onKeyUp);
   }
 
   onKeyUp(event) {
     if (event.which !== 27) return;
     event.preventDefault();
-
-    this.onCloseDrawer();
+    this.hideDrawer();
   }
 
   events() {
@@ -76,9 +72,10 @@ class DrawerView extends Backbone.View {
     this.$('.js-drawer-holder').removeAttr('role');
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
+    this._customView = view;
     Adapt.trigger('drawer:empty');
     this.showDrawer();
-    this.$('.drawer__holder').html(view);
+    this.$('.drawer__holder').html(view instanceof Backbone.View ? view.$el : view);
   }
 
   checkIfDrawerIsAvailable() {
@@ -99,20 +96,8 @@ class DrawerView extends Backbone.View {
     this.hideDrawer();
   }
 
-  onCloseDrawer($toElement) {
-    this.hideDrawer($toElement);
-  }
-
-  onRemove() {
-    this.hideDrawer();
-  }
-
-  toggleDrawer() {
-    if (this._isVisible && this._isCustomViewVisible === false) {
-      this.hideDrawer();
-      return;
-    }
-    this.showDrawer(true);
+  get isOpen() {
+    return (this._isVisible && this._isCustomViewVisible === false);
   }
 
   showDrawer(emptyDrawer) {
@@ -163,7 +148,7 @@ class DrawerView extends Backbone.View {
       $('.js-shadow').removeClass('u-display-none');
       $('.js-drawer-holder').scrollTop(0);
 
-      direction[this.drawerDir] = 0;
+      direction[this.drawerAnimationDir] = 0;
       this.$el.css(direction);
       complete();
     } else {
@@ -177,7 +162,7 @@ class DrawerView extends Backbone.View {
       });
 
       const easing = Adapt.config.get('_drawer')?._showEasing || 'easeOutQuart';
-      direction[this.drawerDir] = 0;
+      direction[this.drawerAnimationDir] = 0;
       this.$el.velocity(direction, this.drawerDuration, easing);
     }
 
@@ -206,7 +191,7 @@ class DrawerView extends Backbone.View {
 
     if (this.disableAnimation) {
 
-      direction[this.drawerDir] = -this.$el.width();
+      direction[this.drawerAnimationDir] = -this.$el.width();
       this.$el
         .css(direction)
         .addClass('u-display-none')
@@ -214,17 +199,19 @@ class DrawerView extends Backbone.View {
 
       $('.js-shadow').addClass('u-display-none');
       this.$('.js-drawer-holder').removeAttr('role');
+      this._customView = null;
       Adapt.trigger('drawer:closed');
 
     } else {
       const easing = Adapt.config.get('_drawer')?._hideEasing || 'easeInQuart';
 
-      direction[this.drawerDir] = -this.$el.width();
+      direction[this.drawerAnimationDir] = -this.$el.width();
       this.$el.velocity(direction, this.drawerDuration, easing, () => {
         this.$el
           .addClass('u-display-none')
           .attr('aria-hidden', 'true');
         this.$('.js-drawer-holder').removeAttr('role');
+        this._customView = null;
         Adapt.trigger('drawer:closed');
       });
 
@@ -243,7 +230,7 @@ class DrawerView extends Backbone.View {
   }
 
   addShadowEvent() {
-    $('.js-shadow').one('click touchstart', () => this.onCloseDrawer());
+    $('.js-shadow').one('click touchstart', () => this.hideDrawer());
   }
 
   removeShadowEvent() {
@@ -251,9 +238,9 @@ class DrawerView extends Backbone.View {
   }
 
   remove() {
+    this.hideDrawer();
     super.remove();
     $(window).off('keyup', this.onKeyUp);
-
     Adapt.trigger('drawer:empty');
     this.collection.reset();
     $('.js-shadow').remove();
