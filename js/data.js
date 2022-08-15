@@ -228,7 +228,6 @@ class Data extends AdaptCollection {
   findViewByModelId(id) {
     const model = this.findById(id);
     if (!model || !Adapt.parentView) return;
-    if (model === Adapt?.parentView?.model) return Adapt.parentView;
     const idPathToView = [id];
     const currentLocationId = location._currentId;
     const currentLocationModel = model.getAncestorModels().find(model => {
