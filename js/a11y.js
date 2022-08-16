@@ -300,11 +300,10 @@ class A11y extends Backbone.Controller {
     }
     if (!isEnabled) {
       $elements.attr({
-        tabindex: '-1',
         'aria-disabled': 'true'
       }).addClass('is-disabled');
     } else {
-      $elements.removeAttr('aria-disabled tabindex').removeClass('is-disabled');
+      $elements.removeAttr('aria-disabled').removeClass('is-disabled');
     }
     return this;
   }
