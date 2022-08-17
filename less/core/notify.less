@@ -29,6 +29,28 @@
     .icon-warning;
   }
 
+  &__popup.has-graphic {
+    .notify__section-inner {
+      display: flex;
+    }
+
+    &.is-graphic-top .notify__section-inner,
+    &.is-graphic-bottom .notify__section-inner {
+      flex-direction: column;
+      row-gap: 1rem;
+    }
+
+    &.is-graphic-left .notify__section-inner,
+    &.is-graphic-right .notify__section-inner {
+      flex-direction: row;
+      column-gap: 1rem;
+      .notify__body,
+      .notify__image-container {
+        width: 50%;
+      }
+    }
+  }
+
   // Sets up full width title and 50/50 text/image split below
   // --------------------------------------------------
   @media (min-width: @device-width-medium) {

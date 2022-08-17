@@ -150,6 +150,10 @@ class QuestionModel extends ComponentModel {
   // Should return a boolean based upon whether to question is correct or not
   isCorrect() {}
 
+  // Used by the question to determine if the question is incorrect or partly correct
+  // Should return a boolean
+  isPartlyCorrect() {}
+
   /**
    * Used to set the legacy _score property based upon the _questionWeight and correctness
    * @deprecated Please use get score, get maxScore and get minScore instead
@@ -245,61 +249,104 @@ class QuestionModel extends ComponentModel {
 
   }
 
+  getFeedback (_feedback = this.get('_feedback')) {
+    if (!_feedback) return {};
+    const isFinal = (this.get('_attemptsLeft') === 0);
+    const correctness = this.get('_isCorrect')
+      ? 'correct'
+      : this.isPartlyCorrect()
+        ? 'partlyCorrect'
+        : 'incorrect';
+
+    // global feedback title / _classes
+    const {
+      altTitle = Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '',
+      title,
+      _classes
+    } = _feedback;
+
+    switch (correctness) {
+      case 'correct': {
+        if (typeof _feedback.correct === 'string') {
+          // old style
+          return {
+            // add higher values
+            altTitle,
+            title,
+            _classes,
+            body: _feedback.correct
+          };
+        }
+        // new style
+        const feedbackCorrect = _feedback._correct;
+        return {
+          // add higher values
+          ...feedbackCorrect,
+          altTitle: feedbackCorrect.altTitle || altTitle,
+          title: feedbackCorrect.title || title,
+          _classes: feedbackCorrect._classes || _classes
+        };
+      }
+
+      case 'partlyCorrect': {
+        if (typeof _feedback._partlyCorrect === 'object') {
+          // old style
+          return {
+            // add higher values
+            altTitle,
+            title,
+            _classes,
+            body: !isFinal
+              ? _feedback._partlyCorrect.notFinal
+              : _feedback._partlyCorrect.final
+          };
+        }
+        // new style
+        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal : _feedback._partlyCorrectFinal;
+        return {
+          // add higher values
+          ...feedbackPartlyCorrect,
+          altTitle: feedbackPartlyCorrect.altTitle || altTitle,
+          title: feedbackPartlyCorrect.title || title,
+          _classes: feedbackPartlyCorrect._classes || _classes
+        };
+      }
+      case 'incorrect': {
+        if (typeof _feedback._incorrect === 'object') {
+          // old style
+          return {
+            // add higher values
+            altTitle,
+            title,
+            _classes,
+            body: !isFinal
+              ? _feedback._incorrect.notFinal
+              : _feedback._incorrect.final
+          };
+        }
+        // new style
+        const feedbackIncorrect = !isFinal ? _feedback._incorrectNotFinal : _feedback._incorrectFinal;
+        return {
+          // add higher values
+          ...feedbackIncorrect,
+          altTitle: feedbackIncorrect.altTitle || altTitle,
+          title: feedbackIncorrect.title || title,
+          _classes: feedbackIncorrect._classes || _classes
+        };
+      }
+    }
+    return {};
+  }
+
   // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
     if (!this.has('_feedback')) return;
-
-    if (this.get('_isCorrect')) {
-      this.setupCorrectFeedback();
-    } else if (this.isPartlyCorrect()) {
-      this.setupPartlyCorrectFeedback();
-    } else {
-      this.setupIncorrectFeedback();
-    }
-  }
-
-  // Used by the question to determine if the question is incorrect or partly correct
-  // Should return a boolean
-  isPartlyCorrect() {}
-
-  setupCorrectFeedback() {
+    const { altTitle = '', title = '', body = '' } = this.getFeedback();
     this.set({
-      feedbackTitle: this.getFeedbackTitle(),
-      feedbackMessage: Handlebars.compile(this.get('_feedback').correct)(this.toJSON())
-    });
-  }
-
-  setupPartlyCorrectFeedback() {
-    const feedback = this.get('_feedback')._partlyCorrect;
-
-    if (feedback?.final) {
-      this.setAttemptSpecificFeedback(feedback);
-    } else {
-      this.setupIncorrectFeedback();
-    }
-  }
-
-  setupIncorrectFeedback() {
-    this.setAttemptSpecificFeedback(this.get('_feedback')._incorrect);
-  }
-
-  setAttemptSpecificFeedback(feedback) {
-    const body = (this.get('_attemptsLeft') && feedback.notFinal) || feedback.final;
-
-    this.set({
-      altFeedbackTitle: this.getAltFeedbackTitle(),
-      feedbackTitle: this.getFeedbackTitle(),
+      altFeedbackTitle: Handlebars.compile(altTitle)(this.toJSON()),
+      feedbackTitle: Handlebars.compile(title)(this.toJSON()),
       feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });
-  }
-
-  getAltFeedbackTitle() {
-    return this.get('_feedback').altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
-  }
-
-  getFeedbackTitle() {
-    const title = this.get('_feedback').title || this.get('displayTitle') || this.get('title') || '';
-    return Handlebars.compile(title)(this.toJSON());
   }
 
   /**
