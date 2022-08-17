@@ -281,10 +281,10 @@ class QuestionModel extends ComponentModel {
         const feedbackCorrect = _feedback._correct;
         return {
           // add higher values
-          ...feedbackCorrect,
-          altTitle: feedbackCorrect.altTitle || altTitle,
-          title: feedbackCorrect.title || title,
-          _classes: feedbackCorrect._classes || _classes
+          ...feedbackCorrect || {},
+          altTitle: feedbackCorrect?.altTitle || altTitle,
+          title: feedbackCorrect?.title || title,
+          _classes: feedbackCorrect?._classes || _classes
         };
       }
 
@@ -305,10 +305,10 @@ class QuestionModel extends ComponentModel {
         const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal : _feedback._partlyCorrectFinal;
         return {
           // add higher values
-          ...feedbackPartlyCorrect,
-          altTitle: feedbackPartlyCorrect.altTitle || altTitle,
-          title: feedbackPartlyCorrect.title || title,
-          _classes: feedbackPartlyCorrect._classes || _classes
+          ...feedbackPartlyCorrect || {},
+          altTitle: feedbackPartlyCorrect?.altTitle || altTitle,
+          title: feedbackPartlyCorrect?.title || title,
+          _classes: feedbackPartlyCorrect?._classes || _classes
         };
       }
       case 'incorrect': {
@@ -328,10 +328,10 @@ class QuestionModel extends ComponentModel {
         const feedbackIncorrect = !isFinal ? _feedback._incorrectNotFinal : _feedback._incorrectFinal;
         return {
           // add higher values
-          ...feedbackIncorrect,
-          altTitle: feedbackIncorrect.altTitle || altTitle,
-          title: feedbackIncorrect.title || title,
-          _classes: feedbackIncorrect._classes || _classes
+          ...feedbackIncorrect || {},
+          altTitle: feedbackIncorrect?.altTitle || altTitle,
+          title: feedbackIncorrect?.title || title,
+          _classes: feedbackIncorrect?._classes || _classes
         };
       }
     }
