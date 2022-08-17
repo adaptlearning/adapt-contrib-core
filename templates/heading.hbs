@@ -7,9 +7,9 @@
     {{#if _isOptional}}
       {{{compile title}}}
       {{else if _isComplete}}
-      {{#equals _type "menu"}}{{_globals._accessibility._ariaLabels.course}} {{/equals}}{{#equals _type "page"}}{{_globals._accessibility._ariaLabels.contentObject}} {{/equals}}{{#equals _type "article"}}{{_globals._accessibility._ariaLabels.article}} {{/equals}}{{#equals _type "block"}}{{_globals._accessibility._ariaLabels.block}} {{/equals}}{{#equals _type "component"}}{{_globals._accessibility._ariaLabels.component}} {{/equals}}{{_globals._accessibility._ariaLabels.complete}}. {{{compile title}}}
+      {{_globals._accessibility._ariaLabels.complete}}. {{{compile title}}}
       {{else}}
-      {{#equals _type "menu"}}{{_globals._accessibility._ariaLabels.course}} {{/equals}}{{#equals _type "page"}}{{_globals._accessibility._ariaLabels.contentObject}} {{/equals}}{{#equals _type "article"}}{{_globals._accessibility._ariaLabels.article}} {{/equals}}{{#equals _type "block"}}{{_globals._accessibility._ariaLabels.block}} {{/equals}}{{#equals _type "component"}}{{_globals._accessibility._ariaLabels.component}} {{/equals}}{{_globals._accessibility._ariaLabels.incomplete}}. {{{compile title}}}
+      {{_globals._accessibility._ariaLabels.incomplete}}. {{{compile title}}}
     {{/if}}
     {{else}}
     {{{compile title}}}
