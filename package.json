@@ -1,19 +1,33 @@
 {
-  "name": "adapt-contrib-core",
-  "version": "6.17.0",
-  "framework": ">=5.20.2",
-  "description": "Adapt Framework kernel. Responsible for boot loading, data loading and core APIs.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/adaptlearning/adapt-contrib-core.git"
+  "_from": "adapt-contrib-core@*",
+  "_id": "adapt-contrib-core@6.17.0",
+  "_inBundle": false,
+  "_integrity": "sha512-nzefbnPohcmi6nNlHdibI6nMDCUuBGJwgGk0eTcxwt/DwWFFclkdkhMKjBsCtNMn+spelhz7VGRopcdIVU2vxw==",
+  "_location": "/adapt-contrib-core",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "adapt-contrib-core@*",
+    "name": "adapt-contrib-core",
+    "escapedName": "adapt-contrib-core",
+    "rawSpec": "*",
+    "saveSpec": null,
+    "fetchSpec": "*"
   },
-  "keywords": [
-    "adapt-plugin",
-    "adapt-core"
+  "_requiredBy": [
+    "/"
   ],
-  "license": "GPL-3.0",
-  "bugs": "https://github.com/adaptlearning/adapt-contrib-core/issues",
-  "private": true,
+  "_resolved": "https://api.github.com/repos/adaptlearning/adapt-contrib-core/tarball/v6.17.0",
+  "_shasum": "8cb966d29b287b6aa7ab5754af714a9c4ec3933d",
+  "_spec": "adapt-contrib-core@*",
+  "_where": "C:\\working\\adaptlearning\\npm\\src",
+  "bugs": {
+    "url": "https://github.com/adaptlearning/adapt-contrib-core/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Adapt Framework kernel. Responsible for boot loading, data loading and core APIs.",
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
@@ -23,6 +37,44 @@
     "conventional-changelog-eslint": "^3.0.9",
     "semantic-release": "^19.0.3"
   },
+  "framework": ">=5.20.2",
+  "homepage": "https://github.com/adaptlearning/adapt-contrib-core#readme",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-core"
+  ],
+  "license": "GPL-3.0",
+  "name": "adapt-contrib-core",
+  "main": "/js/app.js",
+  "adapt_framework": {
+    "compilationMap": {
+      "components/": "",
+      "extensions/": "",
+      "theme/": "",
+      "menu/": "",
+      "core/": "adapt-contrib-core/",
+      "core/js/enums/completionStateEnum": "adapt-contrib-core/js/COMPLETION_STATE",
+      "core/js/enums/logLevelEnum": "adapt-contrib-core/js/LOG_LEVEL",
+      "core/js/models/lockingModel": "adapt-contrib-core/js/LockingModel"
+    },
+    "externalPaths": {
+      "jquery": "libraries/jquery.min",
+      "underscore": "libraries/underscore.min",
+      "underscore.results": "libraries/underscore.results",
+      "backbone": "libraries/backbone.min",
+      "backbone.controller": "libraries/backbone.controller",
+      "backbone.controller.results": "libraries/backbone.controller.results",
+      "backbone.es6": "libraries/backbone.es6",
+      "handlebars": "libraries/handlebars.min",
+      "velocity": "libraries/velocity.min",
+      "imageReady": "libraries/imageReady",
+      "inview": "libraries/inview",
+      "enum": "libraries/enum",
+      "jqueryMobile": "libraries/jquery.mobile.custom.min",
+      "scrollTo": "libraries/scrollTo.min"
+    }
+  },
+  "private": true,
   "release": {
     "plugins": [
       [
@@ -49,5 +101,10 @@
         }
       ]
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adaptlearning/adapt-contrib-core.git"
+  },
+  "version": "6.17.0"
 }

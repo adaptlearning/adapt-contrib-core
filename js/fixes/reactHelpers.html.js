@@ -1,5 +1,4 @@
 import Adapt from 'core/js/adapt';
-import HTMLReactParser from 'html-react-parser';
 import 'core/js/templates';
 import logging from 'core/js/logging';
 
@@ -33,8 +32,7 @@ function applyReactHelpersHTML() {
       event.args = event.args.map(child => {
         if (!child || !child.__html) return child;
         const attributes = Object.entries(props).map(([name, value]) => `${name}="${value}"`).join(' ');
-        logging.warnOnce(`html() call should be the only child in its parent <${tagName} ${attributes}>`);
-        return child.__html ? HTMLReactParser(child.__html) : undefined;
+        throw new Error(`html() call should be the only child in its parent <${tagName} ${attributes}>`);
       });
       return;
     }
