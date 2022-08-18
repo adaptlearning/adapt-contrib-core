@@ -28,6 +28,14 @@
   "bundleDependencies": false,
   "deprecated": false,
   "description": "Adapt Framework kernel. Responsible for boot loading, data loading and core APIs.",
+  "dependencies": {
+    "bowser": "^2.11.0",
+    "core-js": "^3.24.1",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "semver": "^6.3.0"
+  },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
