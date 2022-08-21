@@ -42,18 +42,17 @@ export default class TooltipView extends Backbone.View {
 
   position($mouseoverEl) {
     const targetBoundingRect = this.$target[0].getBoundingClientRect();
-    
+
     const availableWidth = $('html')[0].clientWidth;
     const availableHeight = $('html')[0].clientHeight;
     const tooltipsWidth = this.$('.tooltip').width();
     const tooltipsHeight = this.$('.tooltip').height();
-    
+
     const canAlignBottom = targetBoundingRect.bottom + tooltipsHeight < availableHeight;
     const canAlignRight = targetBoundingRect.right + tooltipsWidth < availableWidth;
     const canAlignBottomRight = canAlignBottom && canAlignRight;
 
-    const isFixedPosition = Boolean($mouseoverEl.parents().add($mouseoverEl).filter((index, el) => $(el).css
-    ('position') === 'fixed').length);
+    const isFixedPosition = Boolean($mouseoverEl.parents().add($mouseoverEl).filter((index, el) => $(el).css('position') === 'fixed').length);
     const scrollOffsetTop = isFixedPosition ? 0 : $(window).scrollTop();
     const scrollOffsetLeft = isFixedPosition ? 0 : $(window).scrollLeft();
 
