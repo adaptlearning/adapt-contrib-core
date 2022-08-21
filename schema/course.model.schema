@@ -364,7 +364,7 @@
                     "text": {
                       "type": "string",
                       "title": "",
-                      "default": "Drawer button",
+                      "default": "Drawer",
                       "inputType": "Text",
                       "required": true,
                       "translatable": true
@@ -378,14 +378,14 @@
               "title": "Navigation",
               "default": {},
               "properties": {
-                "_navOrder": {
+                "_backNavOrder": {
                   "type": "number",
-                  "title": "Navigation bar order",
+                  "title": "Back button navigation bar order",
                   "default": 0
                 },
-                "_backTooltip": {
+                "_backNavTooltip": {
                   "type": "object",
-                  "title": "Navigation back tooltip",
+                  "title": "Back tooltip",
                   "default": {},
                   "properties": {
                     "_isEnabled": {
@@ -398,7 +398,7 @@
                     "text": {
                       "type": "string",
                       "title": "",
-                      "default": "Back button",
+                      "default": "Back",
                       "inputType": "Text",
                       "required": true,
                       "translatable": true

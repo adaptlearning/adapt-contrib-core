@@ -317,6 +317,58 @@
                       "type": "number",
                       "title": "Navigation bar order",
                       "default": 0
+                    },
+                    "_navTooltip": {
+                      "type": "object",
+                      "title": "Navigation tooltip",
+                      "default": {},
+                      "properties": {
+                        "_isEnabled": {
+                          "type": "boolean",
+                          "title": "Enabled",
+                          "default": true
+                        },
+                        "text": {
+                          "type": "string",
+                          "title": "",
+                          "default": "Drawer",
+                          "_adapt": {
+                            "translatable": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "_navigation": {
+                  "type": "object",
+                  "title": "Navigation",
+                  "default": {},
+                  "properties": {
+                    "_backNavOrder": {
+                      "type": "number",
+                      "title": "Back button navigation bar order",
+                      "default": 0
+                    },
+                    "_backNavTooltip": {
+                      "type": "object",
+                      "title": "Back tooltip",
+                      "default": {},
+                      "properties": {
+                        "_isEnabled": {
+                          "type": "boolean",
+                          "title": "Enabled",
+                          "default": true
+                        },
+                        "text": {
+                          "type": "string",
+                          "title": "",
+                          "default": "Back",
+                          "_adapt": {
+                            "translatable": true
+                          }
+                        }
+                      }
                     }
                   }
                 }
