@@ -107,8 +107,8 @@ class AdaptSingleton extends LockingModel {
    * }
    * "@component+1" returns the next component outside this container, or undefined
    * "@component-1" returns the previous component outside of this container, or undefined
-   * "@block+0" returns this block, the first ancestor block, or undefined
-   * "@type+0" returns this of type, the first ancestor of type, or undefined
+   * "@block+0" or "@block" returns this block, the first ancestor block, or undefined
+   * "@type+0" or "@type" returns this of type, the first ancestor of type, or undefined
    * This function would return the following for a single inset directive:
    * {
    *     type: "component",
@@ -133,6 +133,8 @@ class AdaptSingleton extends LockingModel {
    * ]
    * "@block+2 @component=0" move two blocks forward and return its first component
    * "@block-1 @component=-2" move one block backward and return its second to last component
+   * "@article+2 @block=1 @component=-1" move two articles forward, find the second block and return its last component
+   * "@article @component=-1" find the first ancestor article and return its last component
    */
   parseRelativeString(relativeString) {
     const parts = relativeString
