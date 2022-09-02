@@ -519,8 +519,8 @@ export default class AdaptModel extends LockingModel {
       const rootModel = options.limitParentId
         ? data.findById(options.limitParentId)
         : isInset
-          ? this // For inside, the default parent constrains is this model
-          : Adapt.course; // For outside, the default parent constrains is the course
+          ? this // For insets, the default parent constraint is this model
+          : Adapt.course; // For offsets, the default parent constraint is the course
 
       const increment = isOffset
         ? offset
@@ -550,11 +550,10 @@ export default class AdaptModel extends LockingModel {
         // Children first [c1,c2,b1,a1,c3,c4,b2,a2,p1,c6,c7,b3,a3,c8,c9,b4,a4,p2]
         : [...rootModel.getAllDescendantModels(false), rootModel];
 
-      // Find the index of this model in the searchDescendants array
       const modelId = this.get('_id');
+      // Find the index of this model in the searchDescendants array
       const searchFromIndex = isInset
-        // On inset, this model will always be the first model in searchDescendants
-        ? 0
+        ? 0 // On inset, this model will always be the first model in searchDescendants
         : searchDescendants.findIndex(searchDescendant => (searchDescendant.get('_id') === modelId));
 
       const hasFilterFunction = (typeof options.filter === 'function');
