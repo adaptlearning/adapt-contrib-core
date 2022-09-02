@@ -589,15 +589,14 @@ export default class AdaptModel extends LockingModel {
       }
     };
 
+    // Join the remaining descriptors together to pass to the next model
     const nextDescriptor = relativeDescriptorObjects
       .slice(1)
       .reduce((output, { type, offset, inset }) => {
-        if (offset !== null) {
-          return `${output}@${type}${offset < 0 ? offset : `+${offset}`}`;
-        }
-        if (inset !== null) {
-          return `${output}@${type}=${inset}`;
-        }
+        const isInset = (inset !== null);
+        const isOffset = (offset !== null);
+        if (isOffset) return `${output}@${type}${offset < 0 ? offset : `+${offset}`}`;
+        if (isInset) return `${output}@${type}=${inset}`;
         return `${output}@${type}`;
       }, '');
 
