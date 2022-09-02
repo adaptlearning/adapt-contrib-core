@@ -591,12 +591,12 @@ export default class AdaptModel extends LockingModel {
 
     const nextDescriptor = relativeDescriptorObjects
       .slice(1)
-      .reduce((output, { type, offset, absolute }) => {
+      .reduce((output, { type, offset, inset }) => {
         if (offset !== null) {
           return `${output}@${type}${offset < 0 ? offset : `+${offset}`}`;
         }
-        if (absolute !== null) {
-          return `${output}@${type}=${absolute}`;
+        if (inset !== null) {
+          return `${output}@${type}=${inset}`;
         }
         return `${output}@${type}`;
       }, '');
