@@ -96,23 +96,73 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Relative strings describe the number and type of hops in the model hierarchy
-   * @param {string} relativeString "@component +1" means to move one component forward from the current model
-   * This function would return the following:
+   * @param {string} relativeString
+   * Trickle uses this function to determine where it should scrollTo after it unlocks.
+   * Branching uses this function to determine where it should branch to.
+   * This function would return the following for a single offset directive:
    * {
    *     type: "component",
-   *     offset: 1
+   *     offset: 1,
+   *     inset: null
    * }
-   * Trickle uses this function to determine where it should scrollTo after it unlocks
+   * "@component+1" returns the next component outside this container, or undefined
+   * "@component-1" returns the previous component outside of this container, or undefined
+   * "@block+0" returns this block, the first ancestor block, or undefined
+   * "@type+0" returns this of type, the first ancestor of type, or undefined
+   * This function would return the following for a single inset directive:
+   * {
+   *     type: "component",
+   *     offset: null,
+   *     inset: 0
+   * }
+   * "@article=0" returns the first article inside this container, or undefined
+   * "@article=-1" returns the last article inside this container, or undefined
+   * "@type=n" returns the relatively positioned of type inside this container, or undefined
+   * This function would return the following for multiple inset and offset directives:
+   * [
+   *   {
+   *     type: "block",
+   *     offset: 2,
+   *     inset: null
+   *   },
+   *   {
+   *     type: "component",
+   *     offset: null,
+   *     inset: 0
+   *   }
+   * ]
+   * "@block+2 @component=0" move two blocks forward and return its first component
+   * "@block-1 @component=-2" move one block backward and return its second to last component
    */
   parseRelativeString(relativeString) {
-    let splitIndex = relativeString.search(/[ +\-\d]{1}/);
-    if (splitIndex === -1) splitIndex = relativeString.length;
-    const type = relativeString.slice(0, splitIndex).replace(/^@/, '');
-    const offset = parseInt(relativeString.slice(splitIndex).trim() || 0);
-    return {
-      type: type,
-      offset: offset
-    };
+    const parts = relativeString
+      .replace(/\s*([+\-=]+\d+){1}/g, '$1') // Remove whitespace before symbol +/-/=
+      .split(/[@ ]/) // Find all sections
+      .filter(Boolean); // Remove empty sections
+    const parsed = parts.map(part => {
+      let splitIndex = part.search(/[+\-=\d]{1}/);
+      if (splitIndex === -1) splitIndex = part.length;
+      const symbol = part.slice(splitIndex, splitIndex + 1);
+      const type = part.slice(0, splitIndex).replace(/^@/, '');
+      let offset = null;
+      let inset = null;
+      switch (symbol) {
+        case '=':
+          inset = parseInt(part.slice(splitIndex + 1).trim() || 0);
+          break;
+        default:
+          offset = parseInt(part.slice(splitIndex).trim() || 0);
+          break;
+      }
+      return {
+        type,
+        offset,
+        inset
+      };
+    });
+    return parsed.length === 1
+      ? parsed[0]
+      : parsed;
   }
 
   addDirection() {
