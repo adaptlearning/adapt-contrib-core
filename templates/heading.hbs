@@ -7,9 +7,9 @@
     {{#if _isOptional}}
       {{{compile title}}}
       {{else if _isComplete}}
-      {{{compile title}}} ({{_globals._accessibility._ariaLabels.complete}})
+      {{_globals._accessibility._ariaLabels.complete}}. {{{compile title}}}
       {{else}}
-      {{{compile title}}} ({{_globals._accessibility._ariaLabels.incomplete}})
+      {{_globals._accessibility._ariaLabels.incomplete}}. {{{compile title}}}
     {{/if}}
     {{else}}
     {{{compile title}}}
