@@ -330,7 +330,7 @@ const helpers = {
       level,
       override: this._ariaLevel
     });
-    return new Handlebars.SafeString(' role="heading" aria-level="${resolvedLevel}" ');
+    return new Handlebars.SafeString(` role="heading" aria-level="${resolvedLevel}" `);
   },
 
   /**
