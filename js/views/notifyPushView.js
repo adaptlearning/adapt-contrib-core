@@ -3,8 +3,11 @@ import Adapt from 'core/js/adapt';
 export default class NotifyPushView extends Backbone.View {
 
   className() {
-    let classes = 'notify-push ';
-    classes += (this.model.get('_classes') || '');
+    const classes = [
+      'notify-push',
+      this.model.get('_classes'),
+      this.model.get('_type') === 'a11y-push' && 'aria-label'
+    ].filter(Boolean).join('.');
     return classes;
   }
 
