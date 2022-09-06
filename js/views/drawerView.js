@@ -151,6 +151,7 @@ class DrawerView extends Backbone.View {
 
     const complete = () => {
       this.addShadowEvent();
+      $('.js-nav-drawer-btn').attr('aria-expanded', true);
       Adapt.trigger('drawer:opened');
 
       // focus on first tabbable element in drawer
@@ -215,6 +216,7 @@ class DrawerView extends Backbone.View {
       $('.js-shadow').addClass('u-display-none');
       this.$('.js-drawer-holder').removeAttr('role');
       Adapt.trigger('drawer:closed');
+      $('.js-nav-drawer-btn').attr('aria-expanded', false);
 
     } else {
       const easing = Adapt.config.get('_drawer')?._hideEasing || 'easeInQuart';
@@ -225,6 +227,7 @@ class DrawerView extends Backbone.View {
           .addClass('u-display-none')
           .attr('aria-hidden', 'true');
         this.$('.js-drawer-holder').removeAttr('role');
+        $('.js-nav-drawer-btn').attr('aria-expanded', false);
         Adapt.trigger('drawer:closed');
       });
 
