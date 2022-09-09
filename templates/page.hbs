@@ -8,16 +8,8 @@
     <div class="page__header-inner">
 
       {{#if displayTitle}}
-      <div class="page__title">
-
-        {{#unless _disableAccessibilityState}}
-        <div class="js-heading"></div>
-        {{~/unless~}}
-
-        <div class="page__title-inner" {{#unless _disableAccessibilityState}}aria-hidden="true"{{/unless}}>
-          {{{compile displayTitle}}}
-        </div>
-
+      <div class="page__title js-heading-container">
+        <div class="js-heading page__title-inner"></div>
       </div>
       {{/if}}
 
