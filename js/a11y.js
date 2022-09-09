@@ -219,11 +219,11 @@ class A11y extends Backbone.Controller {
       const hasNextTitle = Boolean(nextModel.get('displayTitle'));
       const nextModelOverride = nextModel.get('_ariaLevel');
       const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
-      const resolvedLevel = nextModelOverride ?? nextLevel;
+      const resolvedLevel = nextModelOverride || nextLevel;
       // move towards the parents until an absolute value is found
       return calculateLevel(nextModelId, resolvedLevel, accumulatedOffset);
     }
-    return calculateLevel(id, override ?? level);
+    return calculateLevel(id, override || level);
   }
 
   /**
