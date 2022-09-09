@@ -52,13 +52,8 @@ export default function Header(props) {
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
-        <div className={prefixClasses(classNamePrefixes, ['__title'])}>
-
-          {!_disableAccessibilityState &&
-          <div className="js-heading" ref={jsxHeading}></div>
-          }
-
-          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
+        <div className={prefixClasses(classNamePrefixes, ['__title']) + " js-heading-container"}>
+          <div className={"js-heading " + prefixClasses(classNamePrefixes, ['__title-inner'])} ref={jsxHeading} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
           </div>
 
         </div>
