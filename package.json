@@ -14,8 +14,7 @@
   "license": "GPL-3.0",
   "bugs": "https://github.com/adaptlearning/adapt-contrib-core/issues",
   "scripts": {
-    "test": "jest",
-    "test2": "mocha --require @babel/register"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/cli": "^7.18.10",
