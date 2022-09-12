@@ -197,6 +197,8 @@ class A11y extends Backbone.Controller {
      * @returns
      */
     function calculateLevel(id = null, level, offset = 0) {
+      // Fix for authoring tool schema _ariaLevel = 0 default
+      if (override === 0) override = null;
       const isNumber = !isNaN(level);
       const isTypeName = /[a-zA-z]/.test(level);
       if (!isTypeName && isNumber) {
@@ -218,12 +220,14 @@ class A11y extends Backbone.Controller {
       // check overrides, check title existence, adjust offset accordingly
       const hasNextTitle = Boolean(nextModel.get('displayTitle'));
       const nextModelOverride = nextModel.get('_ariaLevel');
+      // Fix for authoring tool schema _ariaLevel = 0 default
+      if (nextModelOverride === 0) nextModelOverride = null;
       const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
-      const resolvedLevel = nextModelOverride || nextLevel;
+      const resolvedLevel = nextModelOverride ?? nextLevel;
       // move towards the parents until an absolute value is found
       return calculateLevel(nextModelId, resolvedLevel, accumulatedOffset);
     }
-    return calculateLevel(id, override || level);
+    return calculateLevel(id, override ?? level);
   }
 
   /**
