@@ -1,7 +1,7 @@
 {{! make the _globals object in course.json available to this template}}
 {{import_globals}}
 
-<div {{#each _attributes}}{{@key}}="{{this}}" {{/each}} class="notify__popup notify__popup-type-{{_type}}{{#if _classes}} {{_classes}}{{/if}}{{#if _graphic._src}} has-graphic{{/if}}{{#if _imageAlignment}} is-graphic-{{_imageAlignment}}{{/if}}">
+<div {{#each _attributes}}{{@key}}="{{this}}" {{/each}} class="notify__popup notify__popup-type-{{_type}}{{#if _classes}} {{_classes}}{{/if}}{{#if _graphic._src}} has-image{{/if}}{{#if _imageAlignment}} align-image-{{_imageAlignment}}{{/if}}">
   <div class="notify__popup-inner">
 
     <div class="notify__content">
