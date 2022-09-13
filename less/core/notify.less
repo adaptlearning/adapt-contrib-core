@@ -32,49 +32,24 @@
   &__popup.has-graphic {
     .notify__section-inner {
       display: flex;
-    }
-
-    &.is-graphic-top .notify__section-inner,
-    &.is-graphic-bottom .notify__section-inner {
       flex-direction: column;
       row-gap: 1rem;
     }
 
-    &.is-graphic-left .notify__section-inner,
-    &.is-graphic-right .notify__section-inner {
-      flex-direction: row;
-      column-gap: 1rem;
-      .notify__body,
-      .notify__image-container {
-        width: 50%;
+    @media (min-width: @device-width-medium) {
+      &.align-image-left .notify__section-inner,
+      &.align-image-right .notify__section-inner {
+        flex-direction: row;
+        column-gap: 1rem;
+
+        .notify__body {
+          width: 60%;
+        }
+    
+        .notify__image-container {
+          width: 40%;
+        }
       }
-    }
-  }
-
-  // Sets up full width title and 50/50 text/image split below
-  // --------------------------------------------------
-  @media (min-width: @device-width-medium) {
-    &__content.has-image &__content-inner {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    &__content.has-image &__title {
-      width: 100%;
-    }
-
-    &__content.has-image &__body,
-    &__content.has-image &__image-container {
-      width: 50%;
-    }
-  }
-
-  // Left aligns image in notify pop up
-  // --------------------------------------------------
-  @media (min-width: @device-width-medium) {
-    &__content.align-image-left &__content-inner {
-      flex-direction: row-reverse;
     }
   }
 }
