@@ -5,14 +5,18 @@
 <div class="nav__inner u-clearfix">
 
   {{#if _accessibility._isSkipNavigationEnabled}}
-  <button class="btn-text nav__btn nav__skip-btn" data-event="skipNavigation" aria-label="{{_globals._accessibility._ariaLabels.skipNavigation}}">
+  <button class="btn-text nav__btn nav__skip-btn" data-event="skipNavigation" aria-label="{{_globals._accessibility._ariaLabels.skipNavigation}}" data-order="{{_globals._extensions._navigation._skipButton._navOrder}}">
     {{{_globals._accessibility.skipNavigationText}}}
   </button>
   {{/if}}
 
-  <button class="btn-icon nav__btn nav__back-btn js-nav-back-btn u-display-none" data-event="backButton" aria-label="{{_globals._accessibility._ariaLabels.previous}}" role="link">
+  <button class="btn-icon nav__btn nav__back-btn js-nav-back-btn u-display-none" data-event="backButton" aria-label="{{_globals._accessibility._ariaLabels.previous}}" role="link" data-order="{{_globals._extensions._navigation._backButton._navOrder}}">
     <span class="icon"></span>
   </button>
+  
+  {{#each _globals._extensions._navigation._spacers}}
+    <div class="nav__spacer" aria-hidden="true" data-order="{{_navOrder}}"></div>
+  {{/each}}
 
   <button class="btn-icon nav__btn nav__drawer-btn js-nav-drawer-btn" data-event="toggleDrawer" aria-expanded="false" aria-label="{{_globals._accessibility._ariaLabels.navigationDrawer}}" data-order="{{_globals._extensions._drawer._navOrder}}">
     <span class="icon"></span>

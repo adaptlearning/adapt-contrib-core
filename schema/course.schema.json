@@ -316,7 +316,57 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "default": 0
+                      "default": 100
+                    }
+                  }
+                },
+                "_navigation": {
+                  "type": "object",
+                  "title": "Navigation",
+                  "default": {},
+                  "properties": {
+                    "_skipButton": {
+                      "type": "object",
+                      "title": "Skip navigation button",
+                      "default": {},
+                      "properties": {
+                        "_navOrder": {
+                          "type": "number",
+                          "title": "Navigation bar order",
+                          "default": -100
+                        }
+                      }
+                    },
+                    "_backButton": {
+                      "type": "object",
+                      "title": "Back button",
+                      "default": {},
+                      "properties": {
+                        "_navOrder": {
+                          "type": "number",
+                          "title": "Navigation bar order",
+                          "default": 0
+                        }
+                      }
+                    },
+                    "_spacers": {
+                      "type": "array",
+                      "title": "Items",
+                      "default": [
+                        {
+                          "_navOrder": 0
+                        }
+                      ],
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_navOrder": {
+                            "type": "number",
+                            "title": "Navigation bar order",
+                            "default": 0
+                          }
+                        }
+                      }
                     }
                   }
                 }
