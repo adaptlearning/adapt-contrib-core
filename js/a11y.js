@@ -189,6 +189,8 @@ class A11y extends Backbone.Controller {
     }
     // get the global configuration from config.json
     const ariaLevels = Adapt.config.get('_accessibility')?._ariaLevels ?? defaultAriaLevels;
+    // Fix for authoring tool schema _ariaLevel = 0 default
+    if (override === 0) override = null;
     /**
      * Recursive function to calculate aria-level
      * @param {string} id Model id
@@ -197,8 +199,6 @@ class A11y extends Backbone.Controller {
      * @returns
      */
     function calculateLevel(id = null, level, offset = 0) {
-      // Fix for authoring tool schema _ariaLevel = 0 default
-      if (override === 0) override = null;
       const isNumber = !isNaN(level);
       const isTypeName = /[a-zA-z]/.test(level);
       if (!isTypeName && isNumber) {
