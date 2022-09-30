@@ -1,0 +1,28 @@
+name: Framework Pull Request
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  framework-pull-request:
+    name: Create FW PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch tag
+        uses: actions/checkout@v2
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      # "Test" step to be deleted
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+      - name: Make commit to .gitmodules
+        run: |
+          git add .gitmodules
+          git commit -m "Core version bump"
+          git commit -m "Core version bump"
+        # uses: actions/setup-node@v2
+        # with:
+        #   node-version: 'lts/*'
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
