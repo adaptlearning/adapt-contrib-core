@@ -52,9 +52,7 @@ export default function Header(props) {
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
-          <div className={'js-heading ' + prefixClasses(classNamePrefixes, ['__title-inner'])} ref={jsxHeading} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
-          </div>
-
+          <div className={'js-heading ' + prefixClasses(classNamePrefixes, ['__title-inner'])} ref={jsxHeading}></div>
         </div>
         }
 
