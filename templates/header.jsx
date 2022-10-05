@@ -26,7 +26,6 @@ export default function Header(props) {
     mobileInstruction,
     _type,
     _component,
-    _disableAccessibilityState,
     _isA11yComponentDescriptionEnabled,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
@@ -52,8 +51,8 @@ export default function Header(props) {
     <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
-        <div className={prefixClasses(classNamePrefixes, ['__title']) + " js-heading-container"}>
-          <div className={"js-heading " + prefixClasses(classNamePrefixes, ['__title-inner'])} ref={jsxHeading} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
+        <div className={prefixClasses(classNamePrefixes, ['__title'])}>
+          <div className={'js-heading ' + prefixClasses(classNamePrefixes, ['__title-inner'])} ref={jsxHeading} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
           </div>
 
         </div>
