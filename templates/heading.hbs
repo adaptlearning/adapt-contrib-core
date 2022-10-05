@@ -1,16 +1,21 @@
 {{import_globals}}
 
-<h{{a11y_aria_level _id _type _ariaLevel}} id="{{_id}}-heading" class="js-heading-inner">
+<div id="{{_id}}-heading" role="heading" aria-level="{{a11y_aria_level _id _type _ariaLevel}}">
   <span class="aria-label">
   {{#if _isA11yCompletionDescriptionEnabled}}
     {{#if _isOptional}}
       {{else if _isComplete}}
-      {{_globals._accessibility._ariaLabels.complete}}.
+      {{_globals._accessibility._ariaLabels.complete}}.&nbsp;
       {{else}}
-      {{_globals._accessibility._ariaLabels.incomplete}}.
+      {{_globals._accessibility._ariaLabels.incomplete}}.&nbsp;
     {{/if}}
     {{else}}
   {{/if}}
-  </span>
+  {{#if _isBackwardCompatible}}
   {{{compile displayTitle}}}
-</h{{a11y_aria_level _id _type _ariaLevel}}>
+  {{/if}}
+  </span>
+  {{#unless _isBackwardCompatible}}
+  {{{compile displayTitle}}}
+  {{/unless}}
+</div>
