@@ -8,7 +8,8 @@ class Logging extends Backbone.Controller {
       _isEnabled: true,
       _level: LOG_LEVEL.INFO.asLowerCase, // Default log level
       _console: true, // Log to console
-      _warnFirstOnly: true // Show only first of identical removed and deprecated warnings
+      _warnFirstOnly: true, // Show only first of identical removed and deprecated warnings
+      _showCallStack: false // Display the full call stack (console.trace)
     };
     this._warned = {};
     this.listenToOnce(Adapt, 'configModel:dataLoaded', this.onLoadConfigData);
@@ -117,6 +118,11 @@ class Logging extends Backbone.Controller {
     } else {
       console.log(...log);
     }
+
+    const shouldShowCallStack = (this._config._showCallStack);
+    if (!shouldShowCallStack) return;
+
+    console.trace();
   }
 
   _hasWarned(args) {

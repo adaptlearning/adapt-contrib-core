@@ -381,6 +381,13 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Show only first deprecated and removed warnings?"
+        },
+        "_showCallStack": {
+          "type": "boolean",
+          "default": false,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Display the full call stack (console.trace)?"
         }
       }
     },
