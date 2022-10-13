@@ -349,6 +349,11 @@
           "type": "boolean",
           "title": "Suppress subsequent deprecation warnings",
           "default": true
+        },
+        "_showCallStack": {
+          "type": "boolean",
+          "title": "Output console.trace()",
+          "default": false
         }
       }
     },
