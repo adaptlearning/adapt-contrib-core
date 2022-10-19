@@ -26,7 +26,6 @@ export default function Header(props) {
     mobileInstruction,
     _type,
     _component,
-    _disableAccessibilityState,
     _isA11yComponentDescriptionEnabled,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
@@ -53,14 +52,7 @@ export default function Header(props) {
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
-
-          {!_disableAccessibilityState &&
-          <div className="js-heading" ref={jsxHeading}></div>
-          }
-
-          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
-          </div>
-
+          <div className={prefixClasses(classNamePrefixes, ['__title-inner']) + ' js-heading'} ref={jsxHeading}></div>
         </div>
         }
 

@@ -226,6 +226,7 @@ class QuestionView extends ComponentView {
 
     this.model.onSubmitted();
     this.onSubmitted();
+    Adapt.trigger('questionView:submitted', this);
   }
 
   showInstructionError() {

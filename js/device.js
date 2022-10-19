@@ -1,21 +1,23 @@
 import Adapt from 'core/js/adapt';
 import Bowser from 'bowser';
+import _ from 'underscore';
 
 class Device extends Backbone.Controller {
 
   initialize() {
+    _.bindAll(this, 'onWindowResize', 'calculateResize');
     this.bowser = Bowser.parse(window.navigator.userAgent);
     this.$html = $('html');
     this.$window = $(window);
     this.touch = Modernizr.touchevents;
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
+    this.setViewportHeight();
     this.browser = (this.bowser.browser.name || '').toLowerCase();
     this.version = (this.bowser.browser.version || '').toLowerCase();
     this.OS = this.getOperatingSystem().toLowerCase();
     this.osVersion = this.bowser.os.version || '';
     this.renderingEngine = this.getRenderingEngine();
-    this.onWindowResize = _.debounce(this.onWindowResize.bind(this), 100);
     this.listenTo(Adapt, {
       'configModel:dataLoaded': this.onConfigDataLoaded
     });
@@ -99,6 +101,10 @@ class Device extends Backbone.Controller {
       : window.innerHeight || this.$window.height();
   }
 
+  setViewportHeight() {
+    document.documentElement.style.setProperty('--adapt-viewport-height', `${window.innerHeight}px`);
+  }
+
   getOperatingSystem() {
     let os = this.bowser.os.name.toLowerCase() || '';
 
@@ -122,37 +128,46 @@ class Device extends Backbone.Controller {
   }
 
   onWindowResize() {
+    if (this.hasWindowResized) return;
+    requestAnimationFrame(this.calculateResize);
+    this.hasWindowResized = true;
+  }
+
+  calculateResize() {
+    this.hasWindowResized = false;
     // Calculate the screen properties.
     const previousWidth = this.screenWidth;
     const previousHeight = this.screenHeight;
-
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
+    this.setViewportHeight();
 
     if (previousWidth === this.screenWidth && previousHeight === this.screenHeight) {
       // Do not trigger a change if the viewport hasn't actually changed.  Scrolling on iOS will trigger a resize.
       return;
     }
-    
+
     if (this.orientation) {
-      this.$html.removeClass('orientation-landscape orientation-portrait').addClass('orientation-' + this.orientation);
+      this.$html.toggleClass('orientation-landscape', this.orientation === 'landscape');
+      this.$html.toggleClass('orientation-portrait', this.orientation === 'portrait');
     }
 
     const newScreenSize = this.checkScreenSize();
     if (newScreenSize !== this.screenSize) {
       this.screenSize = newScreenSize;
-      this.$html.removeClass('size-small size-medium size-large').addClass('size-' + this.screenSize);
+      this.$html.toggleClass('size-small', this.screenSize === 'small');
+      this.$html.toggleClass('size-medium', this.screenSize === 'medium');
+      this.$html.toggleClass('size-large', this.screenSize === 'large');
       Adapt.trigger('device:changed', this.screenSize);
     }
 
     Adapt.trigger('device:preResize device:resize device:postResize', this.screenWidth);
-
   }
 
   isAppleDevice() {
     return (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || (navigator.userAgent.match(/Mac/) && navigator?.maxTouchPoints > 2);
   }
-  
+
   get shouldReportInvertedAppleScreenSize() {
     const windowRatio = (window.innerWidth / window.innerHeight);
     const screenRatio = (window.screen.width / window.screen.height);

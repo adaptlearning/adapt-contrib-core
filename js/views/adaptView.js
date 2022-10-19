@@ -12,7 +12,8 @@ class AdaptView extends Backbone.View {
 
   attributes() {
     return {
-      'data-adapt-id': this.model.get('_id')
+      'data-adapt-id': this.model.get('_id'),
+      role: 'presentation'
     };
   }
 
