@@ -338,12 +338,12 @@ class Router extends Backbone.Router {
   /**
    * Allows a selector or id to be passed in and Adapt will navigate to this element. Resolves
    * asynchronously when the element has been navigated to.
-   * @param {string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
+   * @param {JQuery|string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
    * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
    * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
    */
   async navigateToElement(selector, settings = {}) {
-    const currentModelId = selector.replace(/\./g, '').split(' ')[0];
+    const currentModelId = typeof selector === 'string' && selector.replace(/\./g, '').split(' ')[0];
     const isSelectorAnId = data.hasId(currentModelId);
 
     if (isSelectorAnId) {

@@ -94,50 +94,50 @@
           "default": {},
           "properties": {
             "_menu": {
-              "type": "number",
+              "type": "string",
               "title": "Menu",
-              "default": 1
+              "default": "1"
             },
             "_menuGroup": {
-              "type": "number",
+              "type": "string",
               "title": "Menu group",
-              "default": 2
+              "default": "@menu+1"
             },
             "_menuItem": {
-              "type": "number",
+              "type": "string",
               "title": "Menu item",
               "description": "This will need to be changed to 3 if menu groups are being used and A11Y support is required",
-              "default": 2
+              "default": "@menu+1"
             },
             "_page": {
-              "type": "number",
+              "type": "string",
               "title": "Page",
-              "default": 1
+              "default": "1"
             },
             "_article": {
-              "type": "number",
+              "type": "string",
               "title": "Article",
-              "default": 2
+              "default": "@page+1"
             },
             "_block": {
-              "type": "number",
+              "type": "string",
               "title": "Block",
-              "default": 3
+              "default": "@article+1"
             },
             "_component": {
-              "type": "number",
+              "type": "string",
               "title": "Component",
-              "default": 4
+              "default": "@block+1"
             },
             "_componentItem": {
-              "type": "number",
+              "type": "string",
               "title": "Component item",
-              "default": 5
+              "default": "@component+1"
             },
             "_notify": {
-              "type": "number",
+              "type": "string",
               "title": "Notify popup title",
-              "default": 1
+              "default": "1"
             }
           }
         },
@@ -379,6 +379,25 @@
       "type": "string",
       "isObjectId": true,
       "title": "Theme preset"
+    },
+    "build": {
+      "type": "object",
+      "title": "Support for setting the course build type",
+      "properties" : {
+        "strictMode": {
+          "type": "boolean",
+          "default": true,
+          "inputType": "Checkbox",
+          "title": "Use strict mode?",
+          "description": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
+        },
+        "targets": {
+          "type": "string",
+          "title": "Supported browsers override",
+          "description": "Set the browsers that are supported. Overwrites the framework defaults if not empty. Current defaults are: 'last 2 chrome versions, last 2 firefox versions, last 2 safari versions, last 2 edge versions, last 2 ios_saf versions, last 2 and_chr versions, firefox esr'",
+          "default": ""
+        }
+      }
     }
   }
 }
