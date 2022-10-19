@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import NavigationView from 'core/js/views/navigationView';
+import device from './device';
 
 class NavigationController extends Backbone.Controller {
 
@@ -26,7 +27,10 @@ class NavigationController extends Backbone.Controller {
     const $html = $('html');
     $html.addClass('is-nav-top');
     if (!adaptConfig?._navigationAlignment) return;
-    const navigationAlignment = adaptConfig._navigationAlignment;
+    let navigationAlignment = adaptConfig._navigationAlignment;
+    if (adaptConfig._isBottomOnTouchDevices && device.touch) {
+      navigationAlignment = 'bottom';
+    }
     $html.removeClass('is-nav-top').addClass('is-nav-' + navigationAlignment);
   }
 

@@ -520,6 +520,14 @@
               "_adapt": {
                 "editorOnly": true
               }
+            },
+            "_isBottomOnTouchDevices": {
+              "type": "boolean",
+              "title": "Is bottom on touch devices",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
             }
           }
         },

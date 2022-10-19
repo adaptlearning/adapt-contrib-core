@@ -557,6 +557,14 @@
           },
           "validators": ["required"],
           "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
+        },
+        "_isBottomOnTouchDevices": {
+          "type": "boolean",
+          "default": false,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Is bottom on touch devices?"
         }
       }
     },
