@@ -90,77 +90,59 @@
           "help": "Defines what value to assign to the aria-level attribute for the various elements of Adapt",
           "properties" : {
             "_menu": {
-              "type": "number",
-              "required": true,
-              "default": 1,
+              "type": "string",
+              "default": "1",
               "title": "Menu element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_menuGroup": {
-              "type": "number",
-              "required": true,
-              "default": 2,
+              "type": "string",
+              "default": "@menu+1",
               "title": "Menu Group element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_menuItem": {
-              "type": "number",
-              "required": true,
-              "default": 2,
+              "type": "string",
+              "default": "@menu+1",
               "title": "Menu Item element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"],
+              "inputType": "Text",
               "help": "The Menu Item element ARIA level will need to be changed to 3 if Menu Groups are being used and A11Y support is required."
             },
             "_page": {
-              "type": "number",
-              "required": true,
-              "default": 1,
+              "type": "string",
+              "default": "1",
               "title": "Page element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_article": {
-              "type": "number",
-              "required": true,
-              "default": 2,
+              "type": "string",
+              "default": "@page+1",
               "title": "Article element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_block": {
-              "type": "number",
-              "required": true,
-              "default": 3,
+              "type": "string",
+              "default": "@article+1",
               "title": "Block element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_component": {
-              "type": "number",
-              "required": true,
-              "default": 4,
+              "type": "string",
+              "default": "@block+1",
               "title": "Component element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_componentItem": {
-              "type": "number",
-              "required": true,
-              "default": 5,
+              "type": "string",
+              "default": "@component+1",
               "title": "Component Item element ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             },
             "_notify": {
-              "type": "number",
-              "required": true,
-              "default": 1,
+              "type": "string",
+              "default": "1",
               "title": "Notify popup title ARIA level",
-              "inputType": "Number",
-              "validators": ["required", "number"]
+              "inputType": "Text"
             }
           }
         },

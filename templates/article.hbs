@@ -9,15 +9,7 @@
 
       {{#if displayTitle}}
       <div class="article__title">
-
-        {{#unless _disableAccessibilityState}}
-        <div class="js-heading"></div>
-        {{~/unless~}}
-
-        <div class="article__title-inner"{{#unless _disableAccessibilityState}} aria-hidden="true"{{/unless}}>
-          {{{compile displayTitle}}}
-        </div>
-
+        <div class="article__title-inner js-heading"></div>
       </div>
       {{/if}}
 

@@ -178,17 +178,19 @@ class A11y extends Backbone.Controller {
    */
   ariaLevel({
     id = null,
-    level = "1",
+    level = '1',
     override = null
   } = {}) {
     if (arguments.length === 2) {
       // backward compatibility
       level = arguments[0];
-      override =  arguments[1];
+      override = arguments[1];
       id = null;
     }
     // get the global configuration from config.json
     const ariaLevels = Adapt.config.get('_accessibility')?._ariaLevels ?? defaultAriaLevels;
+    // Fix for authoring tool schema _ariaLevel = 0 default
+    if (override === 0) override = null;
     /**
      * Recursive function to calculate aria-level
      * @param {string} id Model id
@@ -197,7 +199,7 @@ class A11y extends Backbone.Controller {
      * @returns
      */
     function calculateLevel(id = null, level, offset = 0) {
-      const isNumber =  !isNaN(level);
+      const isNumber = !isNaN(level);
       const isTypeName = /[a-zA-z]/.test(level);
       if (!isTypeName && isNumber) {
         // if an absolute value is found, use it, adding the accumulated offset
@@ -213,17 +215,19 @@ class A11y extends Backbone.Controller {
         return calculateLevel(id, nextLevel, offset + relativeDescriptor.offset);
       }
       // try to find the next relevant ancestor, or use the specified model
-      const nextModel =  data.findById(id)?.findAncestor(relativeDescriptor.type?.toLowerCase()) ?? data.findById(id);
+      const nextModel = data.findById(id)?.findAncestor(relativeDescriptor.type?.toLowerCase()) ?? data.findById(id);
       const nextModelId = nextModel?.get('_id') ?? id;
       // check overrides, check title existence, adjust offset accordingly
       const hasNextTitle = Boolean(nextModel.get('displayTitle'));
-      const nextModelOverride = nextModel.get('_ariaLevel');
+      let nextModelOverride = nextModel.get('_ariaLevel');
+      // Fix for authoring tool schema _ariaLevel = 0 default
+      if (nextModelOverride === 0) nextModelOverride = null;
       const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
       const resolvedLevel = nextModelOverride ?? nextLevel;
       // move towards the parents until an absolute value is found
       return calculateLevel(nextModelId, resolvedLevel, accumulatedOffset);
     }
-    return calculateLevel(id, override ?? level)
+    return calculateLevel(id, override ?? level);
   }
 
   /**
@@ -300,11 +304,10 @@ class A11y extends Backbone.Controller {
     }
     if (!isEnabled) {
       $elements.attr({
-        tabindex: '-1',
         'aria-disabled': 'true'
       }).addClass('is-disabled');
     } else {
-      $elements.removeAttr('aria-disabled tabindex').removeClass('is-disabled');
+      $elements.removeAttr('aria-disabled').removeClass('is-disabled');
     }
     return this;
   }
@@ -658,8 +661,8 @@ class A11y extends Backbone.Controller {
         // item passed or readable, add to stack before any parent
         // siblings
         stack.splice(childIndexPosition++, 0, {
-          item: item,
-          value: value
+          item,
+          value
         });
       });
 

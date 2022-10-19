@@ -495,89 +495,117 @@ export default class AdaptModel extends LockingModel {
    * Such that in the tree:
    *  { a1: { b1: [ c1, c2 ], b2: [ c3, c4 ] }, a2: { b3: [ c5, c6 ] } }
    *
-   *  c1.findRelativeModel('@block +1') = b2;
-   *  c1.findRelativeModel('@component +4') = c5;
+   *  c1.findRelativeModel('@block+1') = b2;
+   *  c1.findRelativeModel('@component+4') = c5;
+   *  c1.findRelativeModel('@article+1 @component=-1') = c6;
    *
    * @see Adapt.parseRelativeString for a description of relativeStrings
    * @param {string} relativeString
    * @param {object} options Search configuration settings
-   * @param {boolean} options.limitParentId
-   * @param {function} options.filter
-   * @param {boolean} options.loop
+   * @param {boolean} options.limitParentId Constrain to a parent
+   * @param {function} options.filter Model filter
+   * @param {boolean} options.loop Allow offsets and insets to loop around to the beginning
    * @return {array}
    */
   findRelativeModel(relativeString, options = {}) {
-    // return a model relative to the specified one if opinionated
-    const rootModel = options.limitParentId ?
-      data.findById(options.limitParentId) :
-      Adapt.course;
+    if (!relativeString) return this;
 
-    const relativeDescriptor = Adapt.parseRelativeString(relativeString);
-    const searchBackwards = (relativeDescriptor.offset < 0);
-    let moveBy = Math.abs(relativeDescriptor.offset);
-    let movementCount = 0;
+    let relativeDescriptorObjects = Adapt.parseRelativeString(relativeString);
+    if (!Array.isArray(relativeDescriptorObjects)) relativeDescriptorObjects = [relativeDescriptorObjects];
 
-    const hasDescendantsOfType = Boolean(this.findDescendantModels(relativeDescriptor.type).length);
-    if (hasDescendantsOfType) {
-      // move by one less as first found is considered next
-      // will find descendants on either side but not inside
-      moveBy--;
-    }
+    const find = ({ type, offset, inset }) => {
+      const isInset = (inset !== null);
+      const isOffset = (offset !== null);
+      const rootModel = options.limitParentId
+        ? data.findById(options.limitParentId)
+        : isInset
+          ? this // For insets, the default parent constraint is this model
+          : Adapt.course; // For offsets, the default parent constraint is the course
 
-    let pageDescendants;
-    if (searchBackwards) {
-      // parents first [p1,a1,b1,c1,c2,a2,b2,c3,c4,p2,a3,b3,c6,c7,a4,b4,c8,c9]
-      pageDescendants = [rootModel];
-      pageDescendants.push(...rootModel.getAllDescendantModels(true));
+      const increment = isOffset
+        ? offset
+        : inset;
 
-      // reverse so that we don't need a forward and a backward iterating loop
-      // reversed [c9,c8,b4,a4,c7,c6,b3,a3,p2,c4,c3,b2,a2,c2,c1,b1,a1,p1]
-      pageDescendants.reverse();
-    } else {
-      // children first [c1,c2,b1,a1,c3,c4,b2,a2,p1,c6,c7,b3,a3,c8,c9,b4,a4,p2]
-      pageDescendants = rootModel.getAllDescendantModels(false);
-      pageDescendants.push(rootModel);
-    }
+      const searchBackwards = (increment < 0);
+      let moveBy = Math.abs(increment);
+      let movementCount = 0;
 
-    // find current index in array
-    const modelId = this.get('_id');
-    const modelIndex = pageDescendants.findIndex(pageDescendant => {
-      if (pageDescendant.get('_id') === modelId) {
-        return true;
+      const hasDescendantsOfType = Boolean(this.findDescendantModels(type).length);
+      if (isInset && !hasDescendantsOfType) return undefined;
+      if (isOffset && hasDescendantsOfType) {
+        // Move by one less as first found is considered next.
+        // Should find descendants on either side but not inside.
+        moveBy--;
       }
-      return false;
-    });
-    const isFilterFunction = (typeof options.filter === 'function');
-
-    if (options.loop) {
-      // normalize offset position to allow for overflow looping
-      const totalOfType = pageDescendants.reduce((count, model) => {
-        if (!model.isTypeGroup(relativeDescriptor.type)) return count;
-        return ++count;
-      }, 0);
-      // take the remainder after removing whole units of the type count
-      moveBy = moveBy % totalOfType;
-      // double up entries to allow for overflow looping
-      pageDescendants = pageDescendants.concat(pageDescendants.slice(0));
-    }
-
-    for (let i = modelIndex, l = pageDescendants.length; i < l; i++) {
-      const descendant = pageDescendants[i];
-      if (!descendant.isTypeGroup(relativeDescriptor.type)) continue;
-      const isSelf = (i === modelIndex);
-      // https://github.com/adaptlearning/adapt_framework/issues/3031
-      if (!isSelf && isFilterFunction && !options.filter(descendant)) continue;
-      if (movementCount > moveBy) {
-        // there is no descendant which matches this relativeString
-        // probably looking for the descendant 0 in a parent
-        break;
+      if (isInset && searchBackwards) {
+        // Move by one less as -1 should act like the last, -2 second from last
+        moveBy--;
       }
-      if (movementCount === moveBy) {
-        return data.findById(descendant.get('_id'));
-      }
-      movementCount++;
-    }
 
+      const searchDescendants = searchBackwards
+        // Parents first [p1,a1,b1,c1,c2,a2,b2,c3,c4,p2,a3,b3,c6,c7,a4,b4,c8,c9]
+        // Reverse so that we don't need a forward and a backward iterating loop
+        // Reversed [c9,c8,b4,a4,c7,c6,b3,a3,p2,c4,c3,b2,a2,c2,c1,b1,a1,p1]
+        ? [rootModel, ...rootModel.getAllDescendantModels(true)].reverse()
+        // Children first [c1,c2,b1,a1,c3,c4,b2,a2,p1,c6,c7,b3,a3,c8,c9,b4,a4,p2]
+        : [...rootModel.getAllDescendantModels(false), rootModel];
+
+      const modelId = this.get('_id');
+      // Find the index of this model in the searchDescendants array
+      const searchFromIndex = isInset
+        ? 0 // On inset, this model will always be the first model in searchDescendants
+        : searchDescendants.findIndex(searchDescendant => (searchDescendant.get('_id') === modelId));
+
+      const hasFilterFunction = (typeof options.filter === 'function');
+
+      // Normalize the moveBy position to allow for overflow looping
+      if (options.loop) {
+        const totalOfType = searchDescendants.reduce((count, model) => {
+          if (!model.isTypeGroup(type)) return count;
+          return ++count;
+        }, 0);
+        // Take the remainder of moveBy after removing whole units of the type count
+        moveBy = moveBy % totalOfType;
+        // Double up the searchDescendant entries to allow for overflow looping
+        searchDescendants.push(...searchDescendants.slice(0));
+      }
+
+      for (let i = searchFromIndex, l = searchDescendants.length; i < l; i++) {
+        const descendant = searchDescendants[i];
+        if (!descendant.isTypeGroup(type)) continue;
+        const isSelf = (i === searchFromIndex);
+        // https://github.com/adaptlearning/adapt_framework/issues/3031
+        if (!isSelf && hasFilterFunction && !options.filter(descendant)) continue;
+        if (movementCount > moveBy) {
+          // There is no descendant which matches this relativeString
+          // Probably looking for a descendant +/-0
+          break;
+        }
+        if (movementCount === moveBy) {
+          return descendant;
+        }
+        movementCount++;
+      }
+    };
+
+    // Join the remaining descriptors together to pass to the next model
+    const nextDescriptor = relativeDescriptorObjects
+      .slice(1)
+      .reduce((output, { type, offset, inset }) => {
+        const isInset = (inset !== null);
+        const isOffset = (offset !== null);
+        if (isOffset) return `${output}@${type}${offset < 0 ? offset : `+${offset}`}`;
+        if (isInset) return `${output}@${type}=${inset}`;
+        return `${output}@${type}`;
+      }, '');
+
+    const foundModel = find(relativeDescriptorObjects[0]);
+    if (nextDescriptor) {
+      // Perform the lookup of the next descriptor on the found model
+      // Defer to that model as it may have overridden the findRelativeModel function
+      return foundModel?.findRelativeModel(nextDescriptor);
+    }
+    return foundModel;
   }
 
   get hasManagedChildren() {
