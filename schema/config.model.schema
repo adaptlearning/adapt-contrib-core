@@ -312,7 +312,7 @@
           "validators": ["required", "number"]
         },
         "_position": {
-          type": "string",
+          "type": "string",
           "required": true,
           "default": "auto",
           "title": "Position",
