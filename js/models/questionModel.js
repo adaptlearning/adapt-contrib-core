@@ -279,13 +279,17 @@ class QuestionModel extends ComponentModel {
         }
         // new style
         const feedbackCorrect = _feedback._correct;
-        return {
+        const feedbackConfig = {
           // add higher values
           ...feedbackCorrect || {},
           altTitle: feedbackCorrect?.altTitle || altTitle,
           title: feedbackCorrect?.title || title,
           _classes: feedbackCorrect?._classes || _classes
         };
+        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+          feedbackConfig._imageAlignment = 'right';
+        }
+        return feedbackConfig;
       }
 
       case 'partlyCorrect': {
@@ -303,13 +307,17 @@ class QuestionModel extends ComponentModel {
         }
         // new style
         const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal : _feedback._partlyCorrectFinal;
-        return {
+        const feedbackConfig = {
           // add higher values
           ...feedbackPartlyCorrect || {},
           altTitle: feedbackPartlyCorrect?.altTitle || altTitle,
           title: feedbackPartlyCorrect?.title || title,
           _classes: feedbackPartlyCorrect?._classes || _classes
         };
+        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+          feedbackConfig._imageAlignment = 'right';
+        }
+        return feedbackConfig;
       }
       case 'incorrect': {
         if (typeof _feedback._incorrect === 'object') {
@@ -326,13 +334,17 @@ class QuestionModel extends ComponentModel {
         }
         // new style
         const feedbackIncorrect = !isFinal ? _feedback._incorrectNotFinal : _feedback._incorrectFinal;
-        return {
+        const feedbackConfig = {
           // add higher values
           ...feedbackIncorrect || {},
           altTitle: feedbackIncorrect?.altTitle || altTitle,
           title: feedbackIncorrect?.title || title,
           _classes: feedbackIncorrect?._classes || _classes
         };
+        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+          feedbackConfig._imageAlignment = 'right';
+        }
+        return feedbackConfig;
       }
     }
     return {};
