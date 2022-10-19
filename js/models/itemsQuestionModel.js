@@ -152,10 +152,14 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
       };
     }
     // new style
-    return {
+    const feedbackConfig = {
       ...feedback,
       ...activeItemFeedback
     };
+    if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+      feedbackConfig._imageAlignment = 'right';
+    }
+    return feedbackConfig;
   }
 
   isPartlyCorrect() {
