@@ -37,7 +37,7 @@ export default class ContentObjectView extends AdaptView {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRender contentObjectView:preRender view:preRender`, this);
 
-    if (this.isReact) {
+    if (this.isJSX) {
       this.changed();
     } else {
       const data = this.model.toJSON();
