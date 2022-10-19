@@ -32,26 +32,26 @@ const helpers = {
     // Comparison operators
     switch (operator) {
       case '===':
-        if (value === text) return block.fn(this);
+        if (value === text) return block.fn ? block.fn(this) : true;
         break;
       case '=': case '==':
         // eslint-disable-next-line eqeqeq
-        if (value == text) return block.fn(this);
+        if (value == text) return block.fn ? block.fn(this) : true;
         break;
       case '>=':
-        if (value >= text) return block.fn(this);
+        if (value >= text) return block.fn ? block.fn(this) : true;
         break;
       case '<=':
-        if (value <= text) return block.fn(this);
+        if (value <= text) return block.fn ? block.fn(this) : true;
         break;
       case '>':
-        if (value > text) return block.fn(this);
+        if (value > text) return block.fn ? block.fn(this) : true;
         break;
       case '<':
-        if (value < text) return block.fn(this);
+        if (value < text) return block.fn ? block.fn(this) : true;
         break;
     }
-    return block.inverse(this);
+    return block.inverse ? block.inverse(this) : false;
   },
 
   math(lvalue, operator, rvalue, options) {
