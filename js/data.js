@@ -235,7 +235,7 @@ class Data extends AdaptCollection {
   findById(id) {
     const model = this._byAdaptID[id];
     if (!model) {
-      console.warn(`data.findById() unable to find id: ${id}`);
+      logging.warn(`data.findById() unable to find id: ${id}`);
       return;
     }
     return model;
@@ -259,7 +259,7 @@ class Data extends AdaptCollection {
     });
 
     if (!currentLocationModel) {
-      return console.warn(`data.findViewByModelId() unable to find view for model id: ${id}`);
+      return logging.warn(`data.findViewByModelId() unable to find view for model id: ${id}`);
     }
 
     const foundView = idPathToView.reduce((view, currentId) => {
@@ -280,7 +280,7 @@ class Data extends AdaptCollection {
     const [ trackingId, indexInTrackingIdDescendants ] = trackingPosition;
     const trackingIdModel = this.find(model => model.get('_trackingId') === trackingId);
     if (!trackingIdModel) {
-      console.warn(`data.findByTrackingPosition() unable to find trackingPosition: ${trackingPosition}`);
+      logging.warn(`data.findByTrackingPosition() unable to find trackingPosition: ${trackingPosition}`);
       return;
     }
     if (indexInTrackingIdDescendants >= 0) {
