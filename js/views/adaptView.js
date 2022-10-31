@@ -18,6 +18,7 @@ class AdaptView extends Backbone.View {
   }
 
   initialize() {
+    this._jsxIgnoreChanges = 0;
     this.listenTo(this.model, {
       'change:_isVisible': this.toggleVisibility,
       'change:_isHidden': this.toggleHidden,
@@ -84,6 +85,7 @@ class AdaptView extends Backbone.View {
    * @param {string} eventName=null Backbone change event name
    */
   changed(eventName = null) {
+    if (this._jsxIgnoreChanges !== 0) return;
     if (!this.isJSX) {
       throw new Error('Cannot call changed on a non-react view');
     }
@@ -102,6 +104,17 @@ class AdaptView extends Backbone.View {
     const Template = templates[this.constructor.template.replace('.jsx', '')];
     this.updateViewProperties();
     ReactDOM.render(<Template {...props} />, this.el);
+  }
+
+  stopRendering() {
+    this._jsxIgnoreChanges++;
+  }
+
+  startRendering() {
+    this._jsxIgnoreChanges--;
+    if (this._jsxIgnoreChanges < 0) {
+      this._jsxIgnoreChanges = 0;
+    }
   }
 
   updateViewProperties() {

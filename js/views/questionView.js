@@ -177,6 +177,8 @@ class QuestionView extends ComponentView {
       return;
     }
 
+    this.stopRendering();
+
     // Used to update the amount of attempts the question has
     this._runModelCompatibleFunction('updateAttempts');
 
@@ -226,7 +228,9 @@ class QuestionView extends ComponentView {
 
     this.model.onSubmitted();
     this.onSubmitted();
-    Adapt.trigger('questionView:submitted', this);
+
+    this.startRendering();
+    this.changed();
   }
 
   showInstructionError() {
