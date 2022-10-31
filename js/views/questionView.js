@@ -226,11 +226,12 @@ class QuestionView extends ComponentView {
     // Update buttons happens before showFeedback to preserve tabindexes and after setupFeedback to allow buttons to use feedback attribute
     this._runModelCompatibleFunction('updateButtons');
 
-    this.model.onSubmitted();
-    this.onSubmitted();
-
     this.startRendering();
     this.changed();
+    
+    this.model.onSubmitted();
+    this.onSubmitted();
+    Adapt.trigger('questionView:submitted', this);
   }
 
   showInstructionError() {
