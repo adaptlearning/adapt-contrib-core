@@ -310,6 +310,20 @@
           "title": "Duration",
           "inputType": "Number",
           "validators": ["required", "number"]
+        },
+        "_position": {
+          "type": "string",
+          "required": true,
+          "default": "auto",
+          "title": "Position",
+          "inputType": {
+            "type": "Select",
+            "options": [
+              "auto",
+              "left",
+              "right"
+            ]
+          }
         }
       }
     },
