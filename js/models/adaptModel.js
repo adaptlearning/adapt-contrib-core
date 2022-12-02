@@ -661,7 +661,13 @@ export default class AdaptModel extends LockingModel {
     const parentId = this.get('_parentId');
     if (!parentId) return;
     // Look up parent by id from data
-    this.setParent(data.findById(parentId));
+    const parent = data.findById(parentId);
+    if (!parent) {
+      logging.warn('adaptModel.getParent(): parent is empty');
+      return;
+    }
+
+    this.setParent(parent);
     return this._parentModel;
   }
 
@@ -762,7 +768,7 @@ export default class AdaptModel extends LockingModel {
         this.setCustomLocking();
         break;
       default:
-        console.warn(`AdaptModel.checkLocking: unknown _lockType '${lockType}' found on ${this.get('_id')}`);
+        logging.warn(`AdaptModel.checkLocking: unknown _lockType '${lockType}' found on ${this.get('_id')}`);
     }
   }
 
@@ -815,7 +821,7 @@ export default class AdaptModel extends LockingModel {
             )
           );
       } catch (e) {
-        console.warn(`AdaptModel.shouldLock: unknown _lockedBy ID '${id}' found on ${child.get('_id')}`);
+        logging.warn(`AdaptModel.shouldLock: unknown _lockedBy ID '${id}' found on ${child.get('_id')}`);
         return false;
       }
     });

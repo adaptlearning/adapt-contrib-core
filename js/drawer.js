@@ -1,33 +1,75 @@
+import Backbone from 'backbone';
 import Adapt from 'core/js/adapt';
 import DrawerView from 'core/js/views/drawerView';
 import tooltips from './tooltips';
 
 const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrder' });
-const Drawer = {};
 
-Drawer.addItem = function(drawerObject, eventCallback) {
-  drawerObject.eventCallback = eventCallback;
-  DrawerCollection.add(drawerObject);
-};
+class Drawer extends Backbone.Controller {
 
-Drawer.triggerCustomView = function(view, hasBackButton) {
-  if (hasBackButton !== false) {
-    hasBackButton = true;
+  initialize() {
+    this.listenTo(Adapt, {
+      'adapt:start': this.onAdaptStart,
+      'app:languageChanged': this.onLanguageChanged,
+      'navigation:toggleDrawer': this.toggle
+    });
   }
-  Adapt.trigger('drawer:triggerCustomView', view, hasBackButton);
-};
-
-Adapt.on({
-  'adapt:start'() {
-    new DrawerView({ collection: DrawerCollection });
-  },
-  'app:languageChanged'() {
+  
+  onAdaptStart() {
+    const drawer = Adapt.config.get('_drawer');
+    drawer._position ??= 'auto';
+    this._drawerView = new DrawerView({ collection: DrawerCollection });
+  }
+  
+  onLanguageChanged() {
     tooltips.register({
       _id: 'drawer',
       ...Adapt.course.get('_globals')?._extensions?._drawer?._navTooltip || {}
     });
-    Adapt.trigger('drawer:remove');
+    this.remove();
   }
-});
 
-export default Drawer;
+  toggle() {
+    if (this.isOpen) return this._drawerView?.hideDrawer();
+    this._drawerView?.showDrawer(true);
+  }
+
+  get isOpen() {
+    return this._drawerView?.isOpen ?? false;
+  }
+
+  open() {
+    this._drawerView?.showDrawer(true);
+  }
+
+  openCustomView(view, hasBackButton) {
+    if (hasBackButton !== false) {
+      hasBackButton = true;
+    }
+    this._drawerView?.openCustomView(view, hasBackButton);
+  }
+
+  addItem(drawerObject, eventCallback) {
+    if (this.hasItem(eventCallback)) {
+      DrawerCollection.remove(DrawerCollection.find(item => item.eventCallback === eventCallback));
+    }
+    drawerObject.eventCallback = eventCallback;
+    DrawerCollection.add(drawerObject);
+  }
+
+  hasItem(eventCallback) {
+    return Boolean(DrawerCollection.find(item => item.eventCallback === eventCallback));
+  }
+
+  close($toElement = null) {
+    this._drawerView?.hideDrawer($toElement);
+  }
+
+  remove() {
+    this._drawerView?.remove();
+    this._drawerView = null;
+  }
+
+}
+
+export default new Drawer();

@@ -44,6 +44,7 @@ class NavigationView extends Backbone.View {
   render() {
     const template = Handlebars.templates[this.constructor.template];
     this.$el.html(template({
+      _config: Adapt.config.toJSON(),
       _globals: Adapt.course.get('_globals'),
       _accessibility: Adapt.config.get('_accessibility')
     })).insertBefore('#app');
