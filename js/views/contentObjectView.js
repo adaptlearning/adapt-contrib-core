@@ -147,7 +147,7 @@ export default class ContentObjectView extends AdaptView {
     this._isRemoved = true;
 
     wait.for(end => {
-      if (this.isReact) {
+      if (this.isJSX) {
         ReactDOM.unmountComponentAtNode(this.el);
       }
       this.$el.off('onscreen.adaptView');
