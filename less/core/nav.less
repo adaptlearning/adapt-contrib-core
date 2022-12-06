@@ -1,15 +1,25 @@
 // Add top padding equal to the height of the navigation bar
 // --------------------------------------------------
-#wrapper {
+html.is-nav-top #wrapper {
   padding-top: @navigation-height;
+}
+
+html.is-nav-bottom #wrapper {
+  padding-bottom: @navigation-height;
 }
 
 .nav {
   position: fixed;
-  top: 0;
   width: 100%;
   z-index: 80;
-  background-color: red;
+
+  html.is-nav-top & {
+    top: 0;
+  }
+
+  html.is-nav-bottom & {
+    bottom: 0;
+  }
 
   &__inner {
     .l-container-responsive(@max-width);
