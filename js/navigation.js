@@ -26,11 +26,9 @@ class NavigationController extends Backbone.Controller {
     const adaptConfig = Adapt.course.get('_navigation');
     const $html = $('html');
     $html.addClass('is-nav-top');
-    if (!adaptConfig?._navigationAlignment) return;
-    let navigationAlignment = adaptConfig._navigationAlignment;
-    if (adaptConfig._isBottomOnTouchDevices && device.touch) {
-      navigationAlignment = 'bottom';
-    }
+    let navigationAlignment = adaptConfig?._navigationAlignment ?? 'top';
+    const isBottomOnTouchDevices = (device.touch && adaptConfig?._isBottomOnTouchDevices);
+    if (isBottomOnTouchDevices) navigationAlignment = 'bottom';
     $html.removeClass('is-nav-top').addClass('is-nav-' + navigationAlignment);
   }
 
