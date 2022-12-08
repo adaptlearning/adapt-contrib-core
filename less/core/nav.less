@@ -17,6 +17,9 @@
     align-items: center;
   }
 
+  // Override floats on additional `nav__btn` elements part of plugins
+  // that haven't been updated to work with data-order yet.
+  // Can be removed in time.
   &__btn {
     float: none !important;
   }
@@ -43,16 +46,8 @@
     }
   }
 
-  &__back-btn {
-    .u-float-left;
-  }
-
   &__back-btn .icon {
     .icon-controls-small-left;
-  }
-
-  &__drawer-btn {
-    .u-float-right;
   }
 
   &__drawer-btn .icon {
