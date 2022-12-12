@@ -189,6 +189,8 @@ class A11y extends Backbone.Controller {
     }
     // get the global configuration from config.json
     const ariaLevels = Adapt.config.get('_accessibility')?._ariaLevels ?? defaultAriaLevels;
+    // Fix for authoring tool schema _ariaLevel = 0 default
+    if (override === 0) override = null;
     /**
      * Recursive function to calculate aria-level
      * @param {string} id Model id
@@ -217,7 +219,9 @@ class A11y extends Backbone.Controller {
       const nextModelId = nextModel?.get('_id') ?? id;
       // check overrides, check title existence, adjust offset accordingly
       const hasNextTitle = Boolean(nextModel.get('displayTitle'));
-      const nextModelOverride = nextModel.get('_ariaLevel');
+      let nextModelOverride = nextModel.get('_ariaLevel');
+      // Fix for authoring tool schema _ariaLevel = 0 default
+      if (nextModelOverride === 0) nextModelOverride = null;
       const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
       const resolvedLevel = nextModelOverride ?? nextLevel;
       // move towards the parents until an absolute value is found

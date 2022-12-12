@@ -1,4 +1,4 @@
-export default class TemplateRenderEvent extends Backbone.Controller {
+export default class TemplateRenderEvent {
 
   /**
    * Template render event
@@ -8,7 +8,7 @@ export default class TemplateRenderEvent extends Backbone.Controller {
    * @param {string} value Rendered template string
    * @param {[*]} args Arguments passed to template for render
    */
-  initialize(type, name, mode, value, args) {
+  constructor(type, name, mode, value, args) {
     /** @type {string} Event type */
     this.type = type;
     /** @type {string} Template name */

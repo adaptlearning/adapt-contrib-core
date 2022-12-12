@@ -37,7 +37,7 @@ export default class ContentObjectView extends AdaptView {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRender contentObjectView:preRender view:preRender`, this);
 
-    if (this.isReact) {
+    if (this.isJSX) {
       this.changed();
     } else {
       const data = this.model.toJSON();
@@ -147,7 +147,7 @@ export default class ContentObjectView extends AdaptView {
     this._isRemoved = true;
 
     wait.for(end => {
-      if (this.isReact) {
+      if (this.isJSX) {
         ReactDOM.unmountComponentAtNode(this.el);
       }
       this.$el.off('onscreen.adaptView');

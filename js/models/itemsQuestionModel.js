@@ -137,35 +137,29 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return scores.slice(0, this.get('_selectable')).filter(score => score < 0).reduce((minScore, score) => (minScore += score), 0);
   }
 
-  setupFeedback() {
-    if (!this.has('_feedback')) return;
-
-    if (this.get('_isCorrect')) {
-      this.setupCorrectFeedback();
-      return;
-    }
-
-    if (this.isPartlyCorrect()) {
-      this.setupPartlyCorrectFeedback();
-      return;
-    }
-
-    // apply individual item feedback
+  getFeedback (_feedback = this.get('_feedback')) {
+    if (!_feedback) return {};
     const activeItem = this.getActiveItem();
-    if (this.isSingleSelect() && activeItem.get('feedback')) {
-      this.setupIndividualFeedback(activeItem);
-      return;
+    const activeItemFeedback = activeItem.get('feedback');
+    const isIndividualFeedback = (!this.isCorrect() && !this.isPartlyCorrect() && this.isSingleSelect() && activeItemFeedback);
+    const feedback = super.getFeedback(_feedback);
+    if (!isIndividualFeedback) return feedback;
+    if (typeof activeItemFeedback === 'string') {
+      // old style
+      return {
+        ...feedback,
+        body: activeItemFeedback || ''
+      };
     }
-
-    this.setupIncorrectFeedback();
-  }
-
-  setupIndividualFeedback(selectedItem) {
-    const json = this.toJSON();
-    this.set({
-      feedbackTitle: Handlebars.compile(this.getFeedbackTitle(this.get('_feedback')))(json),
-      feedbackMessage: Handlebars.compile(selectedItem.get('feedback'))(json)
-    });
+    // new style
+    const feedbackConfig = {
+      ...feedback,
+      ...activeItemFeedback
+    };
+    if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+      feedbackConfig._imageAlignment = 'right';
+    }
+    return feedbackConfig;
   }
 
   isPartlyCorrect() {

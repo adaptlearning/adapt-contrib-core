@@ -543,6 +543,44 @@
             "isSetting": false
           }
         },
+        "_navigation": {
+          "type": "object",
+          "title": "Navigation settings",
+          "description": "The navigation settings allow you to control the behaviour of the navigation bar.",
+          "default": {},
+          "properties": {
+            "_isDefaultNavigationDisabled": {
+              "type": "boolean",
+              "title": "Disable default navigation bar",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_navigationAlignment": {
+              "type": "string",
+              "title": "Navigation alignment",
+              "description": "The CSS selector that determines where the navigation bar is displayed. Must be a selector targeting the HTML element.",
+              "default": "top",
+              "enum": [
+                "top",
+                "bottom"
+              ],
+              "_backboneForms": "Select",
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_isBottomOnTouchDevices": {
+              "type": "boolean",
+              "title": "Is bottom on touch devices",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
+            }
+          }
+        },
         "tags": {
           "type": "array",
           "title": "Tags",

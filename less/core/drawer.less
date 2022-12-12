@@ -8,7 +8,8 @@
   width: @drawer-width;
   z-index: 100;
 
-  .dir-rtl & {
+  .dir-rtl &:not(.is-position-right),
+  &.is-position-left {
     right: inherit;
     left: -@drawer-width;
   }
