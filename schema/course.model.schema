@@ -347,7 +347,60 @@
                 "_navOrder": {
                   "type": "number",
                   "title": "Navigation bar order",
-                  "default": 0
+                  "default": 100
+                }
+              }
+            },
+            "_navigation": {
+              "type": "object",
+              "title": "Navigation",
+              "default": {},
+              "properties": {
+                "_skipButton": {
+                  "type": "object",
+                  "title": "Skip navigation button",
+                  "default": {},
+                  "properties": {
+                    "_navOrder": {
+                      "type": "number",
+                      "title": "Navigation bar order",
+                      "default": -100
+                    }
+                  }
+                },
+                "_backButton": {
+                  "type": "object",
+                  "title": "Back button",
+                  "default": {},
+                  "properties": {
+                    "_navOrder": {
+                      "type": "number",
+                      "title": "Navigation bar order",
+                      "default": 0
+                    }
+                  }
+                },
+                "_spacers": {
+                  "type": "array",
+                  "required": false,
+                  "title": "Spacers",
+                  "default": [
+                    {
+                      "_navOrder": 0
+                    }
+                  ],
+                  "items": {
+                    "type": "object",
+                    "required": false,
+                    "title": "",
+                    "properties": {
+                      "_navOrder": {
+                        "type": "number",
+                        "title": "Navigation bar order",
+                        "default": 0
+                      }
+                    }
+                  }
                 }
               }
             }
