@@ -64,22 +64,19 @@ class DrawerView extends Backbone.View {
   }
 
   setDrawerPosition(position) {
+    const isGlobalPositionAuto = this._globalDrawerPosition === 'auto';
+    const isRTL = Adapt.config.get('_defaultDirection') === 'rtl';
+    if (position && isGlobalPositionAuto && isRTL) position = (position === 'left') ? 'right' : 'left';
+    if (!isGlobalPositionAuto || !position) position = this._globalDrawerPosition;
     this.$el
       .removeClass(`is-position-${this.drawerPosition}`)
       .addClass(`is-position-${position}`);
     this.drawerPosition = position;
-    this.drawerAnimationDir = (position === 'auto') ? ((Adapt.config.get('_defaultDirection') === 'rtl') ? 'left' : 'right') : position;
-  }
-
-  getInversePosition(position) {
-    if (position === 'auto') return (Adapt.config.get('_defaultDirection') === 'rtl') ? 'left' : 'right';
-    return (position === 'left') ? 'right' : 'left';
+    this.drawerAnimationDir = (position === 'auto') ? (isRTL ? 'left' : 'right') : position;
   }
 
   openCustomView(view, hasBackButton = true, position) {
     this.$('.js-drawer-holder').removeAttr('role');
-    if (position && this._globalDrawerPosition === 'auto' && Adapt.config.get('_defaultDirection') === 'rtl') position = this.getInversePosition(position);
-    if (this._globalDrawerPosition !== 'auto' || !position) position = this._globalDrawerPosition;
     this.setDrawerPosition(position);
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
