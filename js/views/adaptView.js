@@ -193,11 +193,13 @@ class AdaptView extends Backbone.View {
    * @returns {AdaptView} Returns this childView
    */
   addChildView(childView) {
+    const childModel = childView.model;
+    const type = childModel.get('_type')
     const childViews = this.getChildViews() || [];
     childViews.push(childView);
     this.setChildViews(childViews);
     const $parentContainer = this.$(this.constructor.childContainer);
-    switch (childView.model.get('_renderPosition')) {
+    switch (childModel.get('_renderPosition')) {
       case 'outer-append':
         // Useful for trickle buttons, inline feedback etc
         this.$el.append(childView.$el);
@@ -208,7 +210,7 @@ class AdaptView extends Backbone.View {
         break;
     }
     // Signify that a child has been added to the view to enable updates to status bars
-    Adapt.trigger('view:childAdded', this, childView);
+    Adapt.trigger(`${type}View:childAdded view:childAdded`, this, childView);
     return childView;
   }
 
@@ -283,9 +285,10 @@ class AdaptView extends Backbone.View {
       }
       // A new model has been supplied for the end of the list.
     }
+    const type = model.get('_type');
     // Trigger an event to signify that a new model is to be added
     event.type = 'addChild';
-    Adapt.trigger('view:addChild', event);
+    Adapt.trigger(`${type}View:addChild view:addChild`, event);
     // Close the event so that the final state can be scrutinized
     event.close();
     return event;
