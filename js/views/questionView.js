@@ -177,6 +177,8 @@ class QuestionView extends ComponentView {
       return;
     }
 
+    this.stopRendering();
+
     // Used to update the amount of attempts the question has
     this._runModelCompatibleFunction('updateAttempts');
 
@@ -224,6 +226,9 @@ class QuestionView extends ComponentView {
     // Update buttons happens before showFeedback to preserve tabindexes and after setupFeedback to allow buttons to use feedback attribute
     this._runModelCompatibleFunction('updateButtons');
 
+    this.startRendering();
+    this.changed();
+    
     this.model.onSubmitted();
     this.onSubmitted();
     Adapt.trigger('questionView:submitted', this);
