@@ -347,7 +347,8 @@
                 "_navOrder": {
                   "type": "number",
                   "title": "Navigation bar order",
-                  "default": 100
+                  "default": 100,
+                  "inputType": "Number"
                 }
               }
             },
@@ -364,7 +365,8 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "default": -100
+                      "default": -100,
+                      "inputType": "Number"
                     }
                   }
                 },
@@ -376,7 +378,8 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "default": 0
+                      "default": 0,
+                      "inputType": "Number"
                     }
                   }
                 },
@@ -397,7 +400,8 @@
                       "_navOrder": {
                         "type": "number",
                         "title": "Navigation bar order",
-                        "default": 0
+                        "default": 0,
+                        "inputType": "Number"
                       }
                     }
                   }
