@@ -316,6 +316,7 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
+                      "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                       "default": 100
                     }
                   }
@@ -333,6 +334,7 @@
                         "_navOrder": {
                           "type": "number",
                           "title": "Navigation bar order",
+                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                           "default": -100
                         }
                       }
@@ -345,6 +347,7 @@
                         "_navOrder": {
                           "type": "number",
                           "title": "Navigation bar order",
+                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                           "default": 0
                         }
                       }
@@ -363,6 +366,7 @@
                           "_navOrder": {
                             "type": "number",
                             "title": "Navigation bar order",
+                            "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                             "default": 0
                           }
                         }
