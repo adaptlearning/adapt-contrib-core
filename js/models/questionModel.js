@@ -294,8 +294,8 @@ class QuestionModel extends ComponentModel {
             title,
             _classes,
             body: !isFinal
-              ? _feedback._partlyCorrect.notFinal || _feedback._incorrect?.notFinal || ''
-              : _feedback._partlyCorrect.final || _feedback._incorrect?.final || ''
+              ? _feedback._partlyCorrect?.notFinal || _feedback._incorrect?.notFinal || ''
+              : _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
           };
         }
         // new style
