@@ -22,6 +22,7 @@ export default class ButtonsView extends Backbone.View {
     this.listenTo(this.model, {
       'change:_buttonState': this.onButtonStateChanged,
       'change:feedbackMessage': this.onFeedbackMessageChanged,
+      'change:feedbackTitle': this.onFeedbackMessageChanged,
       'change:_attemptsLeft': this.onAttemptsChanged,
       'change:_canSubmit': this.onCanSubmitChange
     });
@@ -59,7 +60,7 @@ export default class ButtonsView extends Backbone.View {
     this.$('.js-btn-marking, .js-btn-marking-label').removeClass('is-incorrect is-correct').addClass('u-display-none');
     this.$el.removeClass('is-submitted');
     this.model.set('feedbackMessage', undefined);
-    a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
+    this.disableFeedbackButton();
   }
 
   onActionClicked() {
@@ -83,12 +84,18 @@ export default class ButtonsView extends Backbone.View {
   }
 
   onFeedbackMessageChanged(model, changedAttribute) {
-    if (changedAttribute && this.model.get('_canShowFeedback')) {
-      // enable feedback button
-      a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
-      return;
+    if (!this.model.get('_canShowFeedback')) return;
+
+    if (changedAttribute) {
+      this.enableFeedbackButton();
     }
-    // disable feedback button
+  }
+
+  enableFeedbackButton() {
+    a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
+  }
+
+  disableFeedbackButton() {
     a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
   }
 
@@ -191,7 +198,7 @@ export default class ButtonsView extends Backbone.View {
     this.checkResetSubmittedState();
     this.checkFeedbackState();
     this.onButtonStateChanged(null, this.model.get('_buttonState'));
-    this.onFeedbackMessageChanged(null, this.model.get('feedbackMessage'));
+    this.disableFeedbackButton();
   }
 
 }
