@@ -107,8 +107,7 @@ class QuestionView extends ComponentView {
    * @private
    */
   ensureLegacyLifecycleState() {
-    const isInteractionComplete = this.model.get('_isInteractionComplete');
-    if (isInteractionComplete) {
+    if (this.model.get('_isSubmitted')) {
       this.onHideCorrectAnswerClicked();
       return;
     }
