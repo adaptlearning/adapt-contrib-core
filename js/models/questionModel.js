@@ -194,7 +194,6 @@ class QuestionModel extends ComponentModel {
   // Checks if the question should be set to complete
   // Calls setCompletionStatus and adds complete classes
   checkQuestionCompletion() {
-
     const isComplete = (this.get('_isCorrect') || this.get('_attemptsLeft') === 0);
 
     if (isComplete) {
@@ -202,13 +201,11 @@ class QuestionModel extends ComponentModel {
     }
 
     return isComplete;
-
   }
 
   // Updates buttons based upon question state by setting
   // _buttonState on the model which buttonsView listens to
   updateButtons() {
-
     const isInteractionComplete = this.get('_isInteractionComplete');
     const isCorrect = this.get('_isCorrect');
     const isEnabled = this.get('_isEnabled');
@@ -297,12 +294,12 @@ class QuestionModel extends ComponentModel {
             title,
             _classes,
             body: !isFinal
-              ? _feedback._partlyCorrect.notFinal
-              : _feedback._partlyCorrect.final
+              ? _feedback._partlyCorrect?.notFinal || _feedback._incorrect?.notFinal || ''
+              : _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
           };
         }
         // new style
-        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal : _feedback._partlyCorrectFinal;
+        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || _feedback._incorrectNotFinal : _feedback._partlyCorrectFinal || _feedback._incorrectFinal;
         const feedbackConfig = {
           // add higher values
           ...feedbackPartlyCorrect || {},
