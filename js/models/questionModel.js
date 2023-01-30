@@ -254,7 +254,7 @@ class QuestionModel extends ComponentModel {
     // global feedback title / _classes
     const {
       altTitle = Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '',
-      title,
+      title = this.get('displayTitle') || this.get('title') || '',
       _classes
     } = _feedback;
 
