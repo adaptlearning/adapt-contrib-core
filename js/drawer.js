@@ -15,8 +15,6 @@ class Drawer extends Backbone.Controller {
   }
 
   onAdaptStart() {
-    const drawer = Adapt.config.get('_drawer');
-    drawer._position ??= 'auto';
     this._drawerView = new DrawerView({ collection: DrawerCollection });
   }
 
@@ -33,11 +31,8 @@ class Drawer extends Backbone.Controller {
     this._drawerView?.showDrawer(true);
   }
 
-  openCustomView(view, hasBackButton) {
-    if (hasBackButton !== false) {
-      hasBackButton = true;
-    }
-    this._drawerView?.openCustomView(view, hasBackButton);
+  openCustomView(view, hasBackButton, position) {
+    this._drawerView?.openCustomView(view, hasBackButton, position);
   }
 
   addItem(drawerObject, eventCallback) {
