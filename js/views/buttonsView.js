@@ -198,7 +198,7 @@ export default class ButtonsView extends Backbone.View {
     this.checkResetSubmittedState();
     this.checkFeedbackState();
     this.onButtonStateChanged(null, this.model.get('_buttonState'));
-    this.disableFeedbackButton();
+    this.onFeedbackMessageChanged(null, this.model.get('_isSubmitted'));
   }
 
 }
