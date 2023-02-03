@@ -15,6 +15,19 @@
           "type": "string",
           "title": "Component"
         },
+        "_supportedLayout": {
+          "type": "string",
+          "title": "Supported layout",
+          "default": "both",
+          "enum": [
+            "full-width",
+            "half-width",
+            "both"
+          ],
+          "_adapt": {
+            "editorOnly": true
+          }
+        },
         "_layout": {
           "type": "string",
           "title": "Layout",
@@ -44,10 +57,11 @@
             "isSetting": true
           }
         },
-        "properties": {
-          "type": "object",
-          "title": "Properties",
-          "default": {}
+        "tags": {
+          "type": "string",
+          "_backboneForms": {
+            "showInUi": false
+          }
         }
       }
     }
