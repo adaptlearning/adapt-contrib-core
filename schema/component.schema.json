@@ -58,7 +58,7 @@
           }
         },
         "tags": {
-          "type": "string",
+          "type": "array",
           "_backboneForms": {
             "showInUi": false
           }
