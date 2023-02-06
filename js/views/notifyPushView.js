@@ -7,7 +7,7 @@ export default class NotifyPushView extends Backbone.View {
       'notify-push',
       this.model.get('_classes'),
       this.model.get('_type') === 'a11y-push' && 'aria-label'
-    ].filter(Boolean).join('.');
+    ].filter(Boolean).join(' ');
     return classes;
   }
 

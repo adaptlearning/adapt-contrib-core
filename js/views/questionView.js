@@ -107,8 +107,7 @@ class QuestionView extends ComponentView {
    * @private
    */
   ensureLegacyLifecycleState() {
-    const isInteractionComplete = this.model.get('_isInteractionComplete');
-    if (isInteractionComplete) {
+    if (this.model.get('_isSubmitted')) {
       this.onHideCorrectAnswerClicked();
       return;
     }
@@ -177,6 +176,8 @@ class QuestionView extends ComponentView {
       return;
     }
 
+    this.stopRendering();
+
     // Used to update the amount of attempts the question has
     this._runModelCompatibleFunction('updateAttempts');
 
@@ -224,6 +225,9 @@ class QuestionView extends ComponentView {
     // Update buttons happens before showFeedback to preserve tabindexes and after setupFeedback to allow buttons to use feedback attribute
     this._runModelCompatibleFunction('updateButtons');
 
+    this.startRendering();
+    this.changed();
+    
     this.model.onSubmitted();
     this.onSubmitted();
     Adapt.trigger('questionView:submitted', this);

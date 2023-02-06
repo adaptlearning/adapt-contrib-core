@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
+import logging from 'core/js/logging'
 
 // convert BUTTON_STATE to property name
 const textPropertyName = {
@@ -102,6 +103,11 @@ export default class ButtonsView extends Backbone.View {
     // Use 'correct' instead of 'complete' to signify button state
     const $buttonsAction = this.$('.js-btn-action');
     const buttonState = BUTTON_STATE(changedAttribute);
+
+    if (!buttonState) {
+      return logging.error(`No button state found for '${changedAttribute}'`);
+    }
+
     if (changedAttribute === BUTTON_STATE.CORRECT || changedAttribute === BUTTON_STATE.INCORRECT) {
       // Both 'correct' and 'incorrect' states have no model answer, so disable the submit button
       a11y.toggleEnabled($buttonsAction, false);

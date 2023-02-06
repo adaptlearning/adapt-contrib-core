@@ -283,6 +283,16 @@
           "type": "number",
           "title": "Duration",
           "default": 400
+        },
+        "_position": {
+          "type": "string",
+          "title": "Position",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "left",
+            "right"
+          ]
         }
       },
       "_adapt": {

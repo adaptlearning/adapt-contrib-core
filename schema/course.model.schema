@@ -347,7 +347,68 @@
                 "_navOrder": {
                   "type": "number",
                   "title": "Navigation bar order",
-                  "default": 0
+                  "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                  "default": 100,
+                  "inputType": "Number"
+                }
+              }
+            },
+            "_navigation": {
+              "type": "object",
+              "title": "Navigation",
+              "default": {},
+              "properties": {
+                "_skipButton": {
+                  "type": "object",
+                  "title": "Skip navigation button",
+                  "default": {},
+                  "properties": {
+                    "_navOrder": {
+                      "type": "number",
+                      "title": "Navigation bar order",
+                      "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                      "default": -100,
+                      "inputType": "Number"
+                    }
+                  }
+                },
+                "_backButton": {
+                  "type": "object",
+                  "title": "Back button",
+                  "default": {},
+                  "properties": {
+                    "_navOrder": {
+                      "type": "number",
+                      "title": "Navigation bar order",
+                      "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                      "default": 0,
+                      "inputType": "Number"
+                    }
+                  }
+                },
+                "_spacers": {
+                  "type": "array",
+                  "required": false,
+                  "title": "Spacers",
+                  "default": [
+                    {
+                      "_navOrder": 0
+                    }
+                  ],
+                  "items": {
+                    "type": "object",
+                    "required": false,
+                    "title": "",
+                    "properties": {
+                      "_navOrder": {
+                        "type": "number",
+                        "title": "Navigation bar order",
+                        "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                        "default": 0,
+                        "inputType": "Number"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -528,6 +589,43 @@
             "required"
           ],
           "translatable": true
+        }
+      }
+    },
+    "_navigation": {
+      "type": "object",
+      "title": "Navigation settings",
+      "properties" : {
+        "_isDefaultNavigationDisabled": {
+          "type": "boolean",
+          "default": false,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Disable default navigation bar?"
+        },
+        "_navigationAlignment": {
+          "type": "string",
+          "required": true,
+          "default": "top",
+          "title": "Navigation alignment",
+          "inputType": {
+            "type": "Select",
+            "options": [
+              "top",
+              "bottom"
+            ]
+          },
+          "validators": ["required"],
+          "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
+        },
+        "_isBottomOnTouchDevices": {
+          "type": "boolean",
+          "default": false,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Is bottom on touch devices?"
         }
       }
     },
