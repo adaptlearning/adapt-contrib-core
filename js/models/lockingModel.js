@@ -1,5 +1,14 @@
 export default class LockingModel extends Backbone.Model {
 
+  lockedAttributes() {
+    return {
+      // _name: false/true for the default locked position
+      // _canScroll: false
+      // _canNavigate: true,
+      // _shouldNavigateFocus: true
+    };
+  }
+
   set(...args) {
     if (typeof args[0] !== 'object') {
       const [name, value] = args.splice(0, 2);
@@ -26,19 +35,20 @@ export default class LockingModel extends Backbone.Model {
       }
 
       const pluginName = options.pluginName;
-      if (this.defaults[attrName] !== undefined) {
-        this._lockedAttributes[attrName] = !this.defaults[attrName];
+      const defaults = _.result(this, 'defaults');
+      if (defaults[attrName] !== undefined) {
+        this._lockedAttributes[attrName] = !defaults[attrName];
       }
       const lockingValue = this._lockedAttributes[attrName];
       const isAttemptingToLock = (lockingValue === attrVal);
 
       if (isAttemptingToLock) {
-        this.setLockState(attrName, true, { pluginName: pluginName, skipcheck: true });
+        this.setLockState(attrName, true, { pluginName, skipcheck: true });
         newValues[attrName] = lockingValue;
         continue;
       }
 
-      this.setLockState(attrName, false, { pluginName: pluginName, skipcheck: true });
+      this.setLockState(attrName, false, { pluginName, skipcheck: true });
 
       const totalLockValue = this.getLockCount(attrName, { skipcheck: true });
       if (totalLockValue === 0) {
