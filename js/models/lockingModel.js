@@ -1,12 +1,13 @@
 export default class LockingModel extends Backbone.Model {
 
   lockedAttributes() {
-    return {
-      // _name: false/true for the default locked position
-      // _canScroll: false
-      // _canNavigate: true,
-      // _shouldNavigateFocus: true
-    };
+    return null;
+    // return {
+    // _name: false/true for the default locked position
+    // _canScroll: false
+    // _canNavigate: true,
+    // _shouldNavigateFocus: true
+    // };
   }
 
   set(...args) {
@@ -84,17 +85,20 @@ export default class LockingModel extends Backbone.Model {
 
   isLocking(attrName) {
     const isCheckingGeneralLockingState = (attrName === undefined);
-    const isUsingLockedAttributes = Boolean(this.lockedAttributes || this._lockedAttributes);
+    let hasDerivedLockedAttributes = Object.prototype.hasOwnProperty.call(this, '_lockedAttributes');
+
+    if (!hasDerivedLockedAttributes) {
+      this._lockedAttributes = _.result(this, 'lockedAttributes');
+      hasDerivedLockedAttributes = true;
+    }
+
+    const isUsingLockedAttributes = Boolean(this._lockedAttributes);
 
     if (isCheckingGeneralLockingState) {
       return isUsingLockedAttributes;
     }
 
     if (!isUsingLockedAttributes) return false;
-
-    if (!this._lockedAttributes) {
-      this._lockedAttributes = _.result(this, 'lockedAttributes');
-    }
 
     const isAttributeALockingAttribute = Object.prototype.hasOwnProperty.call(this._lockedAttributes, attrName);
     if (!isAttributeALockingAttribute) return false;
