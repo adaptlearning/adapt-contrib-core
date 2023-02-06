@@ -86,9 +86,8 @@ export default class ButtonsView extends Backbone.View {
   onFeedbackMessageChanged(model, changedAttribute) {
     if (!this.model.get('_canShowFeedback')) return;
 
-    if (changedAttribute) {
-      this.enableFeedbackButton();
-    }
+    if (!changedAttribute) return;
+    this.enableFeedbackButton();
   }
 
   enableFeedbackButton() {
