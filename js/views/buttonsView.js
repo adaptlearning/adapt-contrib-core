@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
-import logging from 'core/js/logging'
+import logging from 'core/js/logging';
 
 // convert BUTTON_STATE to property name
 const textPropertyName = {
@@ -84,13 +84,14 @@ export default class ButtonsView extends Backbone.View {
   }
 
   onFeedbackMessageChanged(model, changedAttribute) {
-    if (!this.model.get('_canShowFeedback')) return;
-
     if (!changedAttribute) return;
+
     this.enableFeedbackButton();
   }
 
   enableFeedbackButton() {
+    if (!this.model.get('_canShowFeedback')) return;
+
     a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
   }
 
