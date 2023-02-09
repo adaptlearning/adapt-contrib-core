@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
-import logging from 'core/js/logging'
+import logging from 'core/js/logging';
 
 // convert BUTTON_STATE to property name
 const textPropertyName = {
@@ -22,6 +22,7 @@ export default class ButtonsView extends Backbone.View {
     this.listenTo(this.model, {
       'change:_buttonState': this.onButtonStateChanged,
       'change:feedbackMessage': this.onFeedbackMessageChanged,
+      'change:feedbackTitle': this.onFeedbackMessageChanged,
       'change:_attemptsLeft': this.onAttemptsChanged,
       'change:_canSubmit': this.onCanSubmitChange
     });
@@ -59,7 +60,7 @@ export default class ButtonsView extends Backbone.View {
     this.$('.js-btn-marking, .js-btn-marking-label').removeClass('is-incorrect is-correct').addClass('u-display-none');
     this.$el.removeClass('is-submitted');
     this.model.set('feedbackMessage', undefined);
-    a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
+    this.disableFeedbackButton();
   }
 
   onActionClicked() {
@@ -83,12 +84,18 @@ export default class ButtonsView extends Backbone.View {
   }
 
   onFeedbackMessageChanged(model, changedAttribute) {
-    if (changedAttribute && this.model.get('_canShowFeedback')) {
-      // enable feedback button
-      a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
-      return;
-    }
-    // disable feedback button
+    if (!changedAttribute) return;
+
+    this.enableFeedbackButton();
+  }
+
+  enableFeedbackButton() {
+    if (!this.model.get('_canShowFeedback')) return;
+
+    a11y.toggleEnabled(this.$('.js-btn-feedback'), true);
+  }
+
+  disableFeedbackButton() {
     a11y.toggleEnabled(this.$('.js-btn-feedback'), false);
   }
 
@@ -191,7 +198,7 @@ export default class ButtonsView extends Backbone.View {
     this.checkResetSubmittedState();
     this.checkFeedbackState();
     this.onButtonStateChanged(null, this.model.get('_buttonState'));
-    this.onFeedbackMessageChanged(null, this.model.get('feedbackMessage'));
+    this.onFeedbackMessageChanged(null, this.model.get('_isSubmitted'));
   }
 
 }
