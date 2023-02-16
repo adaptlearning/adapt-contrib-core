@@ -9,7 +9,7 @@
 
         {{#if _showIcon}}
         <div class="notify__icon">
-          <div class="icon{{#equals _type "prompt"}} is-prompt{{/equals}}{{#equals _type "alert"}} is-alert{{/equals}}"></div>
+          <div class="icon{{#equals _type "prompt"}} is-prompt{{/equals}}{{#equals _type "alert"}} is-alert{{/equals}}" aria-hidden="true"></div>
         </div>
         {{/if}}
 
@@ -96,7 +96,7 @@
     {{#all _isCancellable _showCloseButton}}
     {{#equals _type "popup"}}
     <button class="btn-icon notify__btn-icon notify__close-btn js-notify-close-btn" aria-label="{{_globals._accessibility._ariaLabels.closePopup}}">
-      <span class="icon"></span>
+      <span class="icon" aria-hidden="true"></span>
     </button>
     {{/equals}}
     {{/all}}
