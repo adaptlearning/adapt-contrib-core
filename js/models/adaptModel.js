@@ -321,7 +321,7 @@ export default class AdaptModel extends LockingModel {
     let completed = false;
     const children = this.getAvailableChildModels();
     const requireCompletionOf = this.get('_requireCompletionOf');
-    const isParentOptional = this.get('_isOptional');
+    const isOptional = this.get('_isOptional');
     const isEveryChildOptional = children.every(child => child.get('_isOptional'));
 
     if (isParentOptional && isEveryChildOptional) {
