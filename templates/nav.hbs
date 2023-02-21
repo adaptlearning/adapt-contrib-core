@@ -11,7 +11,7 @@
   {{/if}}
 
   <button class="btn-icon nav__btn nav__back-btn js-nav-back-btn u-display-none" data-event="backButton" aria-label="{{_globals._accessibility._ariaLabels.previous}}" role="link" data-order="{{_globals._extensions._navigation._backButton._navOrder}}">
-    <span class="icon"></span>
+    <span class="icon" aria-hidden="true"></span>
   </button>
 
   {{#each _globals._extensions._navigation._spacers}}
@@ -19,7 +19,7 @@
   {{/each}}
 
   <button class="btn-icon nav__btn nav__drawer-btn js-nav-drawer-btn is-position-{{_config._drawer._position}}" data-event="toggleDrawer" aria-expanded="false" aria-label="{{_globals._accessibility._ariaLabels.navigationDrawer}}" data-order="{{_globals._extensions._drawer._navOrder}}">
-    <span class="icon"></span>
+    <span class="icon" aria-hidden="true"></span>
   </button>
 
 </div>
