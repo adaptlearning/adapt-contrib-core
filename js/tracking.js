@@ -45,12 +45,6 @@ class Tracking extends Backbone.Controller {
 
   submitScore() {
     if (!this._config._shouldSubmitScore) return;
-
-    if (this._assessmentState.isPercentageBased) {
-      offlineStorage.set('score', this._assessmentState.scoreAsPercent, 0, 100);
-      return;
-    }
-
     offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore);
   }
 
@@ -71,7 +65,7 @@ class Tracking extends Backbone.Controller {
     if (completionData.status === COMPLETION_STATE.INCOMPLETE) {
       return;
     }
-    
+
     const canRetry = (completionData.assessment?.canRetry === true);
     if (completionData.status === COMPLETION_STATE.FAILED && canRetry) {
       return;
