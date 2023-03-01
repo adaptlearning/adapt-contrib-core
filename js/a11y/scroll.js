@@ -295,9 +295,9 @@ export default class Scroll extends Backbone.Controller {
       // Touch: delta calculated from touchstart pos vs touchmove pos
       deltaY = currentY - previousY;
     } else if (isKeyDownEvent) {
-      deltaY = (event.which === 38 || event.which === 36 || event.which === 33)
+      deltaY = [33, 36, 38].includes(event.which)
         ? 1
-        : (event.which === 40 || event.which === 35 || event.which === 34)
+        : [34, 35, 40].includes(event.which)
           ? -1
           : 0;
     } else {
