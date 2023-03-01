@@ -132,14 +132,14 @@ export default class Scroll extends Backbone.Controller {
       return;
     }
     if (this._a11y.isPopupOpen && !this._isScrollable($(event.target))) {
-      const openPopup = this._a11y.popupStack[this._a11y.popupStack.length - 1];
-      const firstScrollable = this._isScrollable(openPopup)
-        ? openPopup
-        : this._a11y._findFirstForwardDescendant(openPopup, this._isScrollable);
-      if (firstScrollable.length) {
-        event.target = firstScrollable;
+      const $openPopup = this._a11y.popupStack[this._a11y.popupStack.length - 1];
+      const $firstScrollable = this._isScrollable($openPopup)
+        ? $openPopup
+        : this._a11y._findFirstForwardDescendant($openPopup, this._isScrollable);
+      if ($firstScrollable.length) {
+        // Correct the keydown event to the first scrollable region in the popup
+        event.target = $firstScrollable;
       }
-
     }
     const $target = $(event.target);
     if ($target.is(this._ignoreKeysOnElementsMatching)) {
