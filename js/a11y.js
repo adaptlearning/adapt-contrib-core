@@ -434,7 +434,7 @@ class A11y extends Backbone.Controller {
       : $element;
 
     const isNotVisible = $branch.toArray().some(item => {
-      const style = window.getComputedStyle(item)
+      const style = window.getComputedStyle(item);
       // make sure item is not explicitly invisible
       return item.display === 'none' ||
         item.visibility === 'hidden' ||
