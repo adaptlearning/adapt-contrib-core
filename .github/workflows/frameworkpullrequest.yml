@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch tag
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       # "Test" step to be deleted
       - name: Test
@@ -21,7 +21,7 @@ jobs:
           git add .gitmodules
           git commit -m "Core version bump"
           git commit -m "Core version bump"
-        # uses: actions/setup-node@v2
+        # uses: actions/setup-node@v3
         # with:
         #   node-version: 'lts/*'
       - name: Create PR
