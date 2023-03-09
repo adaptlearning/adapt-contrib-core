@@ -251,12 +251,15 @@ class QuestionModel extends ComponentModel {
         ? 'partlyCorrect'
         : 'incorrect';
 
-    // global feedback title / _classes
-    const {
-      altTitle = Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '',
-      title = this.get('displayTitle') || this.get('title') || '',
+    // global feedback altTitle / title / _classes
+    let {
+      altTitle
+      title
       _classes
     } = _feedback;
+
+    altTitle = altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
+    title = title || this.get('displayTitle') || this.get('title') || '',
 
     switch (correctness) {
       case 'correct': {
