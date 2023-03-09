@@ -77,12 +77,11 @@ class DrawerView extends Backbone.View {
 
   openCustomView(view, hasBackButton = true, position) {
     this.$('.js-drawer-holder').removeAttr('role');
-    this.setDrawerPosition(position);
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
     this._customView = view;
     Adapt.trigger('drawer:empty');
-    this.showDrawer();
+    this.showDrawer(null, position);
     this.$('.drawer__holder').html(view instanceof Backbone.View ? view.$el : view);
   }
 
@@ -108,8 +107,8 @@ class DrawerView extends Backbone.View {
     return (this._isVisible && this._isCustomViewVisible === false);
   }
 
-  showDrawer(emptyDrawer) {
-    this.setDrawerPosition();
+  showDrawer(emptyDrawer, position = null) {
+    this.setDrawerPosition(position);
     this.$el.removeClass('u-display-none').removeAttr('aria-hidden');
     // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
     if (!this._isVisible) {
