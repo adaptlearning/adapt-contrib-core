@@ -17,18 +17,14 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       # "Test" step to be deleted
       - name: Test
-        run: |
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
-          echo "Core version = ${{ env.RELEASE_VERSION }}"
-          echo ${{ env }}
+        run: echo "Core version = ${{ env.RELEASE_VERSION }}"
+        # uses: actions/setup-node@v3
+        # with:
+        #   node-version: 'lts/*'
       # - name: Make changes to .gitmodules
       #   run: |
       #     git add .gitmodules
       #     git commit -m "Core version bump"
-        # uses: actions/setup-node@v3
-        # with:
-        #   node-version: 'lts/*'
       - name: Commit to new branch
         uses: devops-infra/action-commit-push@master
         with:
