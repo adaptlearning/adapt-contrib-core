@@ -64,6 +64,7 @@ class DrawerView extends Backbone.View {
   }
 
   setDrawerPosition(position) {
+    if (this._useMenuPosition) position = null;
     const isGlobalPositionAuto = this._globalDrawerPosition === 'auto';
     const isRTL = Adapt.config.get('_defaultDirection') === 'rtl';
     if (position && isGlobalPositionAuto && isRTL) position = (position === 'left') ? 'right' : 'left';
@@ -133,6 +134,7 @@ class DrawerView extends Backbone.View {
         // the drawer and fix the toggle functionality on toggle button press
         this._isCustomViewVisible = false;
       } else {
+        this._useMenuPosition = true;
         this.renderItems();
         Adapt.trigger('drawer:openedItemView');
       }
@@ -187,6 +189,7 @@ class DrawerView extends Backbone.View {
 
   hideDrawer($toElement) {
     if (!this._isVisible) return;
+    this._useMenuPosition = false;
     const direction = {};
     a11y.popupClosed($toElement);
     this._isVisible = false;
