@@ -33,23 +33,15 @@ jobs:
             url = https://github.com/adaptlearning/adapt-contrib-core
             installBranch = ${{ env.RELEASE_VERSION }}" > .gitmodules
       - name: Commit to new branch
+        shell: bash
         working-directory: "fw"
         run: |
-          git add .
           git checkout -b core-bump-${{ env.RELEASE_VERSION }}
+          git add .
           git status
           git config --global user.name "Github Action Commit"
           git config --global user.email "${{ secrets.BOT_EMAIL }}"
           git commit -m "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
           git push --set-upstream origin core-bump-${{ env.RELEASE_VERSION }}
-
-        # uses: devops-infra/action-commit-push@master
-        # with:
-        #   github_token: "${{ secrets.GITHUB_TOKEN }}"
-        #   add_timestamp: true
-        #   commit_prefix: "Fix: "
-        #   commit_message: "Bumping core version automatically via 'frameworkpullrequest' Github action"
-        #   force: false
-        #   target_branch: "core-bump-${{ env.RELEASE_VERSION }}"
       # - name: Create" PR
       #   uses: peter-"evans/create-pull-request@v4
