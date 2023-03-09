@@ -35,14 +35,13 @@ jobs:
       - name: Commit to new branch
         working-directory: "fw"
         run: |
-          git status
+          git add .
           git checkout -b core-bump-${{ env.RELEASE_VERSION }}
           git status
-        # git add .
-        # git config --global user.name "Github Action Commit"
-        # git config --global user.email "${{ secrets.BOT_EMAIL }}"
-        # git commit -m "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
-        # git push --set-upstream origin core-bump-${{ env.RELEASE_VERSION }}
+          git config --global user.name "Github Action Commit"
+          git config --global user.email "${{ secrets.BOT_EMAIL }}"
+          git commit -m "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
+          git push --set-upstream origin core-bump-${{ env.RELEASE_VERSION }}
 
         # uses: devops-infra/action-commit-push@master
         # with:
