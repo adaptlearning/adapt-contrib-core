@@ -26,18 +26,20 @@ export default function Header(props) {
     mobileInstruction,
     _type,
     _component,
-    _disableAccessibilityState,
+    _extension,
     _isA11yComponentDescriptionEnabled,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
-      _component && _component.toLowerCase()
+      _component && _component.toLowerCase(),
+      _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
   const sizedInstruction = (mobileInstruction && device.screenSize !== 'large') ?
     mobileInstruction :
     instruction;
   const _globals = Adapt.course.get('_globals');
-  const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
+  const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion ??
+                     _globals?._extensions?.[`_${_extension}`]?.ariaRegion;
   const isSet = (displayTitle || body || sizedInstruction);
   if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
     // If no title, displaytitle, body or instruction is specified
@@ -53,14 +55,7 @@ export default function Header(props) {
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
-
-          {!_disableAccessibilityState &&
-          <div className="js-heading" ref={jsxHeading}></div>
-          }
-
-          <div className={prefixClasses(classNamePrefixes, ['__title-inner'])} aria-hidden={!_disableAccessibilityState} dangerouslySetInnerHTML={{ __html: compile(displayTitle, props) }} >
-          </div>
-
+          <div className={prefixClasses(classNamePrefixes, ['__title-inner']) + ' js-heading'} ref={jsxHeading}></div>
         </div>
         }
 

@@ -45,6 +45,32 @@ Adapt.on({
 });
 /** END REDUNDANT ADAPT WAIT BEHAVIOUR */
 
+/** START REDUNDANT DRAWER BEHAVIOUR */
+Adapt.on({
+  'drawer:remove'() {
+    logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
+    drawer.remove();
+  },
+  'drawer:closeDrawer'() {
+    logging.deprecated('Use drawer.close, Adapt.trigger(\'drawer:closeDrawer\') will be removed in the future');
+    drawer.close();
+  },
+  'drawer:triggerCustomView'() {
+    logging.deprecated('Use drawer.triggerCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
+    drawer.triggerCustomView();
+  }
+});
+
+Object.defineProperties(drawer, {
+  triggerCustomView: {
+    get() {
+      a11y.log.deprecated('drawer.triggerCustomView has moved to drawer.openCustomView');
+      return drawer.openCustomView;
+    }
+  }
+});
+/** END REDUNDANT DRAWER BEHAVIOUR */
+
 Object.defineProperties(Adapt, {
   accessibility: {
     get() {

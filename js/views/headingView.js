@@ -12,6 +12,8 @@ class HeadingView extends Backbone.View {
     const template = Handlebars.templates[this.constructor.template];
     const data = this.model.toJSON();
     const customHeadingType = this.$el.attr('data-a11y-heading-type');
+    const isBackwardCompatible = [...this.$el[0].classList].every(name => !name.includes('-inner'));
+    data._isBackwardCompatible = isBackwardCompatible;
     if (customHeadingType) data._type = customHeadingType;
     if (data._type === 'course') data._type = 'menu';
     this.$el.html(template(data));
@@ -28,6 +30,7 @@ class HeadingView extends Backbone.View {
 
   checkCompletion() {
     const isComplete = this.model.get('_isComplete');
+    if (isComplete === undefined) return;
     this.$el
       .toggleClass('is-complete', isComplete)
       .toggleClass('is-incomplete', !isComplete);

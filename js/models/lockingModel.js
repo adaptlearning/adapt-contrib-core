@@ -1,33 +1,66 @@
 export default class LockingModel extends Backbone.Model {
 
-  set(attrName, attrVal, options = {}) {
-    const stopProcessing = (typeof attrName === 'object' || typeof attrVal !== 'boolean' || !this.isLocking(attrName));
-    if (stopProcessing) return super.set(...arguments);
+  lockedAttributes() {
+    return null;
+    // return {
+    // _name: false/true for the default locked position
+    // _canScroll: false
+    // _canNavigate: true,
+    // _shouldNavigateFocus: true
+    // };
+  }
 
-    const isSettingValueForSpecificPlugin = options?.pluginName;
-    if (!isSettingValueForSpecificPlugin) {
-      console.error('Must supply a pluginName to change a locked attribute');
-      options.pluginName = 'compatibility';
+  set(...args) {
+    if (typeof args[0] !== 'object') {
+      const [name, value] = args.splice(0, 2);
+      args.unshift({ [name]: value });
+    }
+    const options = args[1] ?? {};
+    const attrValues = args[0];
+    const newValues = {};
+    for (const attrName in attrValues) {
+      const attrVal = attrValues[attrName];
+      const willChange = (this.attributes[attrName] !== attrValues[attrName]);
+      if (!willChange) continue;
+
+      const isNotLocking = (typeof attrVal !== 'boolean' || !this.isLocking(attrName));
+      if (isNotLocking) {
+        newValues[attrName] = attrVal;
+        continue;
+      }
+
+      const isSettingValueForSpecificPlugin = options?.pluginName;
+      if (!isSettingValueForSpecificPlugin) {
+        console.error('Must supply a pluginName to change a locked attribute');
+        options.pluginName = 'compatibility';
+      }
+
+      const pluginName = options.pluginName;
+      const defaults = _.result(this, 'defaults');
+      if (defaults[attrName] !== undefined) {
+        this._lockedAttributes[attrName] = !defaults[attrName];
+      }
+      const lockingValue = this._lockedAttributes[attrName];
+      const isAttemptingToLock = (lockingValue === attrVal);
+
+      if (isAttemptingToLock) {
+        this.setLockState(attrName, true, { pluginName, skipcheck: true });
+        newValues[attrName] = lockingValue;
+        continue;
+      }
+
+      this.setLockState(attrName, false, { pluginName, skipcheck: true });
+
+      const totalLockValue = this.getLockCount(attrName, { skipcheck: true });
+      if (totalLockValue === 0) {
+        newValues[attrName] = !lockingValue;
+        continue;
+      }
     }
 
-    const pluginName = options.pluginName;
-    if (this.defaults[attrName] !== undefined) {
-      this._lockedAttributes[attrName] = !this.defaults[attrName];
-    }
-    const lockingValue = this._lockedAttributes[attrName];
-    const isAttemptingToLock = (lockingValue === attrVal);
+    if (!Object.keys(newValues)) return this;
 
-    if (isAttemptingToLock) {
-      this.setLockState(attrName, true, { pluginName: pluginName, skipcheck: true });
-      return super.set(attrName, lockingValue);
-    }
-
-    this.setLockState(attrName, false, { pluginName: pluginName, skipcheck: true });
-
-    const totalLockValue = this.getLockCount(attrName, { skipcheck: true });
-    if (totalLockValue === 0) {
-      return super.set(attrName, !lockingValue);
-    }
+    super.set(newValues, options);
 
     return this;
 
@@ -52,7 +85,14 @@ export default class LockingModel extends Backbone.Model {
 
   isLocking(attrName) {
     const isCheckingGeneralLockingState = (attrName === undefined);
-    const isUsingLockedAttributes = Boolean(this.lockedAttributes || this._lockedAttributes);
+    let hasDerivedLockedAttributes = Object.prototype.hasOwnProperty.call(this, '_lockedAttributes');
+
+    if (!hasDerivedLockedAttributes) {
+      this._lockedAttributes = _.result(this, 'lockedAttributes');
+      hasDerivedLockedAttributes = true;
+    }
+
+    const isUsingLockedAttributes = Boolean(this._lockedAttributes);
 
     if (isCheckingGeneralLockingState) {
       return isUsingLockedAttributes;
@@ -60,11 +100,7 @@ export default class LockingModel extends Backbone.Model {
 
     if (!isUsingLockedAttributes) return false;
 
-    if (!this._lockedAttributes) {
-      this._lockedAttributes = _.result(this, 'lockedAttributes');
-    }
-
-    const isAttributeALockingAttribute = this._lockedAttributes.hasOwnProperty(attrName);
+    const isAttributeALockingAttribute = Object.prototype.hasOwnProperty.call(this._lockedAttributes, attrName);
     if (!isAttributeALockingAttribute) return false;
 
     if (!this._lockedAttributesValues) {

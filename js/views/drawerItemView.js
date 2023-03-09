@@ -25,7 +25,7 @@ class DrawerItemView extends Backbone.View {
 
   render() {
     const data = this.model.toJSON();
-    const template = Handlebars.templates['drawerItem'];
+    const template = Handlebars.templates.drawerItem;
     $(this.el).html(template(data)).appendTo('.drawer__holder');
     return this;
   }

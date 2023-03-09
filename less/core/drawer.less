@@ -1,14 +1,20 @@
 .drawer {
   position: fixed;
   top: 0;
-  right: -@drawer-width;
   // Update JS to set start point
   // Update animation to be css rather than js
   height: 100%;
   width: @drawer-width;
   z-index: 100;
 
-  .dir-rtl & {
+  &.is-position-auto,
+  &.is-position-right {
+    left: inherit;
+    right: -@drawer-width;
+  }
+
+  .dir-rtl &:not(.is-position-right),
+  &.is-position-left {
     right: inherit;
     left: -@drawer-width;
   }
