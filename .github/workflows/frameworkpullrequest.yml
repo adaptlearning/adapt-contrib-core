@@ -21,8 +21,7 @@ jobs:
           path: "fw"
           ref: "master"
           repository: "adaptlearning/adapt_framework"
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
-          token: "${{ secrets.BOT_TOKEN }}"
+          token: "${{ secrets.GITHUB_TOKEN }}"
           fetch-depth: 0
           persist-credentials: true
       - name: Make changes to .gitmodules
