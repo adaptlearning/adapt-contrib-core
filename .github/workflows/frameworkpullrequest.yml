@@ -6,6 +6,8 @@ on:
     # Below for testing only
     branches:
       - cahir.autoFWPR
+permissions:
+  contents: write
 jobs:
   framework-pull-request:
     name: Create FW PR
@@ -28,11 +30,11 @@ jobs:
         shell: bash
         working-directory: "fw"
         run: |
-          echo -e '[submodule "src/core"]
-          \tpath = src/core
-          \tbranch = master
-          \turl = https://github.com/adaptlearning/adapt-contrib-core
-          \tinstallBranch = ${{ env.RELEASE_VERSION }}' >> .gitmodules
+          echo '[submodule "src/core"]
+            path = src/core
+            branch = master
+            url = https://github.com/adaptlearning/adapt-contrib-core
+            installBranch = ${{ env.RELEASE_VERSION }}' >> .gitmodules
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:
