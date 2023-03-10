@@ -6,8 +6,6 @@ on:
     # Below for testing only
     branches:
       - cahir.autoFWPR
-permissions:
-  contents: write
 jobs:
   framework-pull-request:
     name: Create FW PR
