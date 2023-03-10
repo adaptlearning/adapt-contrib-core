@@ -42,10 +42,7 @@ jobs:
         shell: bash
         working-directory: "fw"
         run: |
-          pwd
           git checkout -b core-bump-${{ env.RELEASE_VERSION }}
-          git config --global user.name "Github Commit"
-          git config --global user.email "secrets.BOT_EMAIL@needed.com"
           cat .git/config
           git add .
           git status
