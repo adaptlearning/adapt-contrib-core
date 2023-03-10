@@ -19,8 +19,7 @@ class Drawer extends Backbone.Controller {
   }
 
   toggle() {
-    if (this.isOpen) return this._drawerView?.hideDrawer();
-    this._drawerView?.showDrawer(true);
+    (this.isOpen) ? this.close() : this.open();
   }
 
   get isOpen() {
