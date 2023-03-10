@@ -28,11 +28,12 @@ jobs:
         shell: bash
         working-directory: "fw"
         run: |
+          cat .gitmodules
           echo "[submodule "src/core"]
             path = src/core
             branch = master
             url = https://github.com/adaptlearning/adapt-contrib-core
-            installBranch = ${{ env.RELEASE_VERSION }}" > .gitmodules
+            installBranch = ${{ env.RELEASE_VERSION }}" >> .gitmodules
           cat .gitmodules
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
