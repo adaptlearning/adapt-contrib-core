@@ -33,6 +33,7 @@ jobs:
             branch = master
             url = https://github.com/adaptlearning/adapt-contrib-core
             installBranch = ${{ env.RELEASE_VERSION }}" > .gitmodules
+          cat .gitmodules
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:
