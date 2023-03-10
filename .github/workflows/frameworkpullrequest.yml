@@ -14,9 +14,7 @@ jobs:
       - name: Fetch tag
         uses: actions/checkout@v3
       - name: Set Core version
-        run: |
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          pwd
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Checkout FW
         uses: actions/checkout@v3
         with:
@@ -30,23 +28,14 @@ jobs:
         shell: bash
         working-directory: "fw"
         run: |
-          pwd
           echo "[submodule "src/core"]
             path = src/core
             branch = master
             url = https://github.com/adaptlearning/adapt-contrib-core
             installBranch = ${{ env.RELEASE_VERSION }}" > .gitmodules
-      - name: Create test file
-        run: date +%s > test.txt
-      - name: Commit to new branch
-        shell: bash
-        working-directory: "fw"
-        run: |
-          git checkout -b core-bump-${{ env.RELEASE_VERSION }}
-          cat .git/config
-          git add .
-          git status
-          git commit -m "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
-          git push --set-upstream origin core-bump-${{ env.RELEASE_VERSION }}
-      # - name: Create" PR
-      #   uses: peter-"evans/create-pull-request@v4
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          path: "fw"
+          branch: core-bump-${{ env.RELEASE_VERSION }}
+          commit-message: "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
