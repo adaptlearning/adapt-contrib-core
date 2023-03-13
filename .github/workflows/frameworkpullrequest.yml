@@ -39,4 +39,4 @@ jobs:
           path: "fw"
           branch: core-bump-${{ env.RELEASE_VERSION }}
           commit-message: "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
-          token: "${{ secrets.COREBUMPPR_TOKEN }}"
+          token: "${{ secrets.COREBUMPPPR_TOKEN }}"
