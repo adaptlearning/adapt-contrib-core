@@ -73,6 +73,7 @@ export default function Header(props) {
 
         {sizedInstruction &&
         <div className={prefixClasses(classNamePrefixes, ['__instruction'])}>
+          <span className="icon" aria-hidden="true" />
           <div className={prefixClasses(classNamePrefixes, ['__instruction-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedInstruction, props) }}>
           </div>
         </div>
