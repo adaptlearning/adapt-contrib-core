@@ -64,6 +64,7 @@ class DrawerView extends Backbone.View {
   }
 
   setDrawerPosition(position) {
+    if (this._useMenuPosition) position = null;
     const isGlobalPositionAuto = this._globalDrawerPosition === 'auto';
     const isRTL = Adapt.config.get('_defaultDirection') === 'rtl';
     if (position && isGlobalPositionAuto && isRTL) position = (position === 'left') ? 'right' : 'left';
@@ -77,12 +78,11 @@ class DrawerView extends Backbone.View {
 
   openCustomView(view, hasBackButton = true, position) {
     this.$('.js-drawer-holder').removeAttr('role');
-    this.setDrawerPosition(position);
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
     this._customView = view;
     Adapt.trigger('drawer:empty');
-    this.showDrawer();
+    this.showDrawer(null, position);
     this.$('.drawer__holder').html(view instanceof Backbone.View ? view.$el : view);
   }
 
@@ -108,8 +108,8 @@ class DrawerView extends Backbone.View {
     return (this._isVisible && this._isCustomViewVisible === false);
   }
 
-  showDrawer(emptyDrawer) {
-    this.setDrawerPosition();
+  showDrawer(emptyDrawer, position = null) {
+    this.setDrawerPosition(position);
     this.$el.removeClass('u-display-none').removeAttr('aria-hidden');
     // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
     if (!this._isVisible) {
@@ -134,6 +134,7 @@ class DrawerView extends Backbone.View {
         // the drawer and fix the toggle functionality on toggle button press
         this._isCustomViewVisible = false;
       } else {
+        this._useMenuPosition = true;
         this.renderItems();
         Adapt.trigger('drawer:openedItemView');
       }
@@ -188,6 +189,7 @@ class DrawerView extends Backbone.View {
 
   hideDrawer($toElement) {
     if (!this._isVisible) return;
+    this._useMenuPosition = false;
     const direction = {};
     a11y.popupClosed($toElement);
     this._isVisible = false;

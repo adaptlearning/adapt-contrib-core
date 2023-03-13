@@ -86,9 +86,7 @@ class AdaptView extends Backbone.View {
    */
   changed(eventName = null) {
     if (this._jsxIgnoreChanges !== 0) return;
-    if (!this.isJSX) {
-      throw new Error('Cannot call changed on a non-react view');
-    }
+    if (!this.isJSX) return;
     if (typeof eventName === 'string' && eventName.startsWith('bubble')) {
       // Ignore bubbling events as they are outside of this view's scope
       return;

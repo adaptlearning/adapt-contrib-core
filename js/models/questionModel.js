@@ -253,13 +253,13 @@ class QuestionModel extends ComponentModel {
 
     // global feedback altTitle / title / _classes
     let {
-      altTitle
-      title
+      altTitle,
+      title,
       _classes
     } = _feedback;
 
     altTitle = altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
-    title = title || this.get('displayTitle') || this.get('title') || '',
+    title = title || this.get('displayTitle') || this.get('title') || '';
 
     switch (correctness) {
       case 'correct': {
