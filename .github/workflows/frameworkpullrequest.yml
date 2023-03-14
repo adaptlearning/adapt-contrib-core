@@ -1,0 +1,39 @@
+name: Create AdaptFramework Pull Request
+on:
+  push:
+    tags:
+      - "*"
+jobs:
+  framework-pull-request:
+    name: Create FW PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch tag
+        uses: actions/checkout@v3
+      - name: Set Core version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Checkout FW
+        uses: actions/checkout@v3
+        with:
+          path: "fw"
+          ref: "master"
+          repository: "adaptlearning/adapt_framework"
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Make changes to .gitmodules
+        shell: bash
+        working-directory: "fw"
+        run: |
+          echo '[submodule "src/core"]
+            path = src/core
+            branch = master
+            url = https://github.com/adaptlearning/adapt-contrib-core
+            installBranch = ${{ env.RELEASE_VERSION }}' >> .gitmodules
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          path: "fw"
+          branch: core-bump-${{ env.RELEASE_VERSION }}
+          commit-message: "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
+          token: "${{ secrets.COREBUMPPPR_TOKEN }}"
