@@ -865,6 +865,14 @@ class A11y extends Backbone.Controller {
     return this._popup.setCloseTo($focusElement);
   }
 
+  get isPopupOpen() {
+    return this._popup.isOpen;
+  }
+
+  get popupStack() {
+    return this._popup.stack;
+  }
+
 }
 
 const a11y = new A11y();

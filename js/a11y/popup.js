@@ -56,6 +56,14 @@ export default class Popup extends Backbone.Controller {
     });
   }
 
+  get isOpen() {
+    return (this._floorStack.length > 1);
+  }
+
+  get stack() {
+    return this._floorStack.slice(1);
+  }
+
   /**
    * Reorganise the tabindex and aria-hidden attributes in the document to
    * restrict user interaction to the element specified.
