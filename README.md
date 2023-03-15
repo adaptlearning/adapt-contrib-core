@@ -5,3 +5,4 @@ Note: In order to facilitate a move away from bower to npm, `src/core` has been 
 
 ----------------------------
 **Author / maintainer:** Adapt Core Team with [contributors](https://github.com/adaptlearning/adapt-contrib-core/graphs/contributors)
+ 
