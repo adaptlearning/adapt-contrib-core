@@ -28,11 +28,12 @@ jobs:
             path = src/core
             branch = master
             url = https://github.com/adaptlearning/adapt-contrib-core
-            installBranch = ${{ env.RELEASE_VERSION }}' >> .gitmodules
+            installBranch = ${{ env.RELEASE_VERSION }}' > .gitmodules
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:
           path: "fw"
           branch: core-bump-${{ env.RELEASE_VERSION }}
+          title: "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
           commit-message: "Fix: Bumping core version automatically via 'frameworkpullrequest' Github action"
           token: "${{ secrets.COREBUMPPPR_TOKEN }}"
