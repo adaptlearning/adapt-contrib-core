@@ -1,8 +1,7 @@
 name: Create AdaptFramework Pull Request
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 jobs:
   framework-pull-request:
     name: Create FW PR
