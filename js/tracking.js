@@ -9,6 +9,7 @@ class Tracking extends Backbone.Controller {
     this._config = {
       _requireContentCompleted: true,
       _requireAssessmentCompleted: false,
+      _submitOnEveryAssessmentAttempt: false,
       _shouldSubmitScore: false
     };
     this._assessmentState = null;
@@ -42,7 +43,7 @@ class Tracking extends Backbone.Controller {
     const completionData = this.getCompletionData();
     if (completionData.status === COMPLETION_STATE.INCOMPLETE) return;
     const canRetry = completionData.assessment?.canRetry;
-    if (completionData.status === COMPLETION_STATE.FAILED && canRetry) return;
+    if (!this._config._submitOnEveryAssessmentAttempt && completionData.status === COMPLETION_STATE.FAILED && canRetry) return;
     Adapt.trigger('tracking:complete', completionData);
     logging.debug('tracking:complete', completionData);
   }
@@ -73,7 +74,7 @@ class Tracking extends Backbone.Controller {
    * Set the _config object to the values retrieved from config.json
    */
   loadConfig() {
-    this._config = Adapt.config.get('_completionCriteria') ?? this._config;
+    Object.assign(this._config, Adapt.config.get('_completionCriteria'));
     const newShouldSubmitScore = this._config._shouldSubmitScore;
     const legacyShouldSubmitScore = Adapt.config.get('_spoor')?._tracking?._shouldSubmitScore;
     // If the legacy property exists, use it for backward compatibility but warn in the console
