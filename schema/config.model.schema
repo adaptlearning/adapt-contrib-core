@@ -39,7 +39,15 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Require assessment completion",
-          "help": "Specifies that all assessments on the course must be completed"
+          "help": "Specifies that the assessment must be completed"
+        },
+        "_submitOnEveryAssessmentAttempt": {
+          "type": "boolean",
+          "default": false,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Submit completion on every assessment attempt",
+          "help": "Specifies that the completion status will be reported every time the assessment is completed (regardless of whether the user passes or fails), assuming the course completion criteria is met"
         }
       }
     },
