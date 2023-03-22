@@ -312,19 +312,23 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Function for checking whether the supplied completion attribute should be set to true or false.
-   * It iterates over our immediate children, checking the same completion attribute on any mandatory child
-   * to see if enough/all of them them have been completed. If enough/all have, we set our attribute to true;
-   * if not, we set it to false.
+   * Checks whether the supplied completion attribute should be set to true or false.
+   * Iterates over immediate children, checking if enough/all mandatory models have been completed.
+   * If all children are optional, they must all be completed - https://github.com/adaptlearning/adapt-contrib-core/issues/279
    * @param {string} [completionAttribute] Either '_isComplete' or '_isInteractionComplete'. Defaults to '_isComplete' if not supplied.
    */
-
   checkCompletionStatusFor(completionAttribute = '_isComplete') {
     let completed = false;
     const children = this.getAvailableChildModels();
     const requireCompletionOf = this.get('_requireCompletionOf');
+    const isOptional = this.get('_isOptional');
+    const isEveryChildOptional = children.every(child => child.get('_isOptional'));
 
-    if (requireCompletionOf === -1) { // a value of -1 indicates that ALL mandatory children must be completed
+    if (isOptional && isEveryChildOptional) {
+      // As model is optional, its completion is only used for plp
+      // wait for the children to complete before completing
+      completed = children.every(child => child.get(completionAttribute));
+    } else if (requireCompletionOf === -1) { // a value of -1 indicates that ALL mandatory children must be completed
       completed = children.every(child => {
         return child.get(completionAttribute) || child.get('_isOptional');
       });
@@ -335,7 +339,6 @@ export default class AdaptModel extends LockingModel {
     }
 
     this.set(completionAttribute, completed);
-
     Adapt.checkedCompletion();
   }
 

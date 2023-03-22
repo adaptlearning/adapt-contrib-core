@@ -4,7 +4,8 @@
  */
 export default class Scroll extends Backbone.Controller {
 
-  initialize() {
+  initialize({ a11y }) {
+    this._a11y = a11y;
     this._onTouchStart = this._onTouchStart.bind(this);
     this._onTouchEnd = this._onTouchEnd.bind(this);
     this._onScrollEvent = this._onScrollEvent.bind(this);
@@ -13,6 +14,10 @@ export default class Scroll extends Backbone.Controller {
     this.$window = $(window);
     this.$body = $('body');
     this._preventScrollOnKeys = {
+      33: true, // page up
+      34: true, // page down
+      35: true, // end
+      36: true, // home
       37: true, // left
       38: true, // up
       39: true, // right
@@ -123,8 +128,18 @@ export default class Scroll extends Backbone.Controller {
    */
   _onKeyDown(event) {
     event = $.event.fix(event);
-    if (!this._preventScrollOnKeys[event.keyCode]) {
+    if (!this._preventScrollOnKeys[event.which]) {
       return;
+    }
+    if (this._a11y.isPopupOpen && !this._isScrollable($(event.target))) {
+      const $openPopup = this._a11y.popupStack[this._a11y.popupStack.length - 1];
+      const $firstScrollable = this._isScrollable($openPopup)
+        ? $openPopup
+        : this._a11y._findFirstForwardDescendant($openPopup, this._isScrollable);
+      if ($firstScrollable.length) {
+        // Correct the keydown event to the first scrollable region in the popup
+        event.target = $firstScrollable;
+      }
     }
     const $target = $(event.target);
     if ($target.is(this._ignoreKeysOnElementsMatching)) {
@@ -166,8 +181,9 @@ export default class Scroll extends Backbone.Controller {
    */
   _getScrollingParent(event, $target) {
     const isTouchEvent = event.type === 'touchmove';
+    const isKeyDownEvent = event.type === 'keydown';
     const hasTouchStartEvent = this._touchStartEventObject?.originalEvent;
-    if (isTouchEvent && !hasTouchStartEvent) {
+    if ((isTouchEvent && !hasTouchStartEvent) || !isKeyDownEvent) {
       return $target;
     }
     const directionY = this._getScrollDirection(event);
@@ -263,6 +279,7 @@ export default class Scroll extends Backbone.Controller {
   _getScrollDelta(event) {
     let deltaY = 0;
     const isTouchEvent = event.type === 'touchmove';
+    const isKeyDownEvent = event.type === 'keydown';
     const originalEvent = event.originalEvent;
     if (isTouchEvent) {
       // Touch events
@@ -277,6 +294,12 @@ export default class Scroll extends Backbone.Controller {
       }
       // Touch: delta calculated from touchstart pos vs touchmove pos
       deltaY = currentY - previousY;
+    } else if (isKeyDownEvent) {
+      deltaY = [33, 36, 38].includes(event.which)
+        ? 1
+        : [34, 35, 40].includes(event.which)
+          ? -1
+          : 0;
     } else {
       // Mouse events
       const hasDeltaY = (originalEvent.wheelDeltaY || originalEvent.deltaY !== undefined);

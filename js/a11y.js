@@ -434,11 +434,11 @@ class A11y extends Backbone.Controller {
       : $element;
 
     const isNotVisible = $branch.toArray().some(item => {
-      const $item = $(item);
+      const style = window.getComputedStyle(item);
       // make sure item is not explicitly invisible
-      return $item.css('display') === 'none' ||
-        $item.css('visibility') === 'hidden' ||
-        $item.attr('aria-hidden') === 'true';
+      return style.display === 'none' ||
+        style.visibility === 'hidden' ||
+        item.getAttribute('aria-hidden') === 'true';
     });
     if (isNotVisible) {
       return false;
@@ -863,6 +863,14 @@ class A11y extends Backbone.Controller {
    */
   setPopupCloseTo($focusElement) {
     return this._popup.setCloseTo($focusElement);
+  }
+
+  get isPopupOpen() {
+    return this._popup.isOpen;
+  }
+
+  get popupStack() {
+    return this._popup.stack;
   }
 
 }

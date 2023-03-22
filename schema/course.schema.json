@@ -316,7 +316,8 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "default": 0
+                      "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                      "default": 100
                     },
                     "_navTooltip": {
                       "type": "object",
@@ -345,10 +346,31 @@
                   "title": "Navigation",
                   "default": {},
                   "properties": {
-                    "_backNavOrder": {
-                      "type": "number",
-                      "title": "Back button navigation bar order",
-                      "default": 0
+                    "_skipButton": {
+                      "type": "object",
+                      "title": "Skip navigation button",
+                      "default": {},
+                      "properties": {
+                        "_navOrder": {
+                          "type": "number",
+                          "title": "Navigation bar order",
+                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                          "default": -100
+                        }
+                      }
+                    },
+                    "_backButton": {
+                      "type": "object",
+                      "title": "Back button",
+                      "default": {},
+                      "properties": {
+                        "_navOrder": {
+                          "type": "number",
+                          "title": "Navigation bar order",
+                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                          "default": 0
+                        }
+                      }
                     },
                     "_backNavTooltip": {
                       "type": "object",
@@ -366,6 +388,26 @@
                           "default": "Back",
                           "_adapt": {
                             "translatable": true
+                          }
+                        }
+                      }
+                    },
+                    "_spacers": {
+                      "type": "array",
+                      "title": "Items",
+                      "default": [
+                        {
+                          "_navOrder": 0
+                        }
+                      ],
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_navOrder": {
+                            "type": "number",
+                            "title": "Navigation bar order",
+                            "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                            "default": 0
                           }
                         }
                       }
@@ -543,6 +585,44 @@
           },
           "_adapt": {
             "isSetting": false
+          }
+        },
+        "_navigation": {
+          "type": "object",
+          "title": "Navigation settings",
+          "description": "The navigation settings allow you to control the behaviour of the navigation bar.",
+          "default": {},
+          "properties": {
+            "_isDefaultNavigationDisabled": {
+              "type": "boolean",
+              "title": "Disable default navigation bar",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_navigationAlignment": {
+              "type": "string",
+              "title": "Navigation alignment",
+              "description": "The CSS selector that determines where the navigation bar is displayed. Must be a selector targeting the HTML element.",
+              "default": "top",
+              "enum": [
+                "top",
+                "bottom"
+              ],
+              "_backboneForms": "Select",
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_isBottomOnTouchDevices": {
+              "type": "boolean",
+              "title": "Is bottom on touch devices",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
+            }
           }
         },
         "tags": {

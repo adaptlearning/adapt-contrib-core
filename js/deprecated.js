@@ -48,15 +48,15 @@ Adapt.on({
 /** START REDUNDANT DRAWER BEHAVIOUR */
 Adapt.on({
   'drawer:remove'() {
-    logging.log.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
+    logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
     drawer.remove();
   },
   'drawer:closeDrawer'() {
-    logging.log.deprecated('Use drawer.close, Adapt.trigger(\'drawer:closeDrawer\') will be removed in the future');
+    logging.deprecated('Use drawer.close, Adapt.trigger(\'drawer:closeDrawer\') will be removed in the future');
     drawer.close();
   },
   'drawer:triggerCustomView'() {
-    logging.log.deprecated('Use drawer.triggerCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
+    logging.deprecated('Use drawer.triggerCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
     drawer.triggerCustomView();
   }
 });

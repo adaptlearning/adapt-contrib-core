@@ -26,17 +26,20 @@ export default function Header(props) {
     mobileInstruction,
     _type,
     _component,
+    _extension,
     _isA11yComponentDescriptionEnabled,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
-      _component && _component.toLowerCase()
+      _component && _component.toLowerCase(),
+      _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
   const sizedInstruction = (mobileInstruction && device.screenSize !== 'large') ?
     mobileInstruction :
     instruction;
   const _globals = Adapt.course.get('_globals');
-  const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion;
+  const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion ??
+                     _globals?._extensions?.[`_${_extension}`]?.ariaRegion;
   const isSet = (displayTitle || body || sizedInstruction);
   if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
     // If no title, displaytitle, body or instruction is specified
@@ -70,6 +73,7 @@ export default function Header(props) {
 
         {sizedInstruction &&
         <div className={prefixClasses(classNamePrefixes, ['__instruction'])}>
+          <span className="icon" aria-hidden="true" />
           <div className={prefixClasses(classNamePrefixes, ['__instruction-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedInstruction, props) }}>
           </div>
         </div>

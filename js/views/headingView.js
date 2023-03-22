@@ -30,6 +30,7 @@ class HeadingView extends Backbone.View {
 
   checkCompletion() {
     const isComplete = this.model.get('_isComplete');
+    if (isComplete === undefined) return;
     this.$el
       .toggleClass('is-complete', isComplete)
       .toggleClass('is-incomplete', !isComplete);

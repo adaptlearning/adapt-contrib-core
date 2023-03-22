@@ -120,6 +120,7 @@ class Data extends AdaptCollection {
   async loadManifestFiles(languagePath) {
     this.trigger('loading');
     this.reset();
+    this._byAdaptID = {};
     const manifestPath = languagePath + 'language_data_manifest.js';
     let manifest;
     try {
