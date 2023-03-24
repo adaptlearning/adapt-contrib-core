@@ -5,7 +5,7 @@ import TooltipView from './views/TooltipView';
 import TooltipModel from './models/TooltipModel';
 import Backbone from 'backbone';
 
-class TooltipController extends Backbone.Controller {
+export default new class TooltipController extends Backbone.Controller {
 
   initialize() {
     _.bindAll(this, 'onMouseOver');
@@ -18,7 +18,10 @@ class TooltipController extends Backbone.Controller {
     const config = this.getConfig();
     if (config?._isEnabled === false) return;
     this.attachToBody();
-    $(document).on('mouseover', '*', this.onMouseOver);
+    $(document).on('keydown', this.onKeyDown.bind(this));
+    this.onMouseOver = _.debounce(this.onMouseOver.bind(this), 500);
+    $(document).on('mouseenter focus', '[data-tooltip-id]', this.onMouseOver);
+    $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut.bind(this));
   }
 
   getConfig() {
@@ -35,18 +38,34 @@ class TooltipController extends Backbone.Controller {
   /**
    * @param {jQuery} event
    */
+  onKeyDown(event) {
+    if (event.key !== 'Escape') return;
+    this.hide();
+  }
+
+  /**
+   * @param {jQuery} event
+   */
   onMouseOver(event) {
     // Ignore propagated events
-    if (event.currentTarget !== event.target) return;
-    // Fetch first found tooltip element from target, through parents to html
-    const $mouseoverEl = $(event.currentTarget).parents().add(event.currentTarget).filter('[data-tooltip-id]').last();
+    // if (event.currentTarget !== event.target) return;
+    const $mouseoverEl = $(event.currentTarget);
     const id = $mouseoverEl.data('tooltip-id');
-    // Cancel if id is already displayed
-    if (this._currentId === id) return;
+    // Cancel if id is already tabbed to and gets focused again (from notify etc)
+    if (this._currentId === id && event.type === 'focusin') return;
     this._currentId = id;
     const tooltip = this.getTooltip(id);
     if (!tooltip?.get('_isEnabled')) return this.hide();
     this.show(tooltip, $mouseoverEl);
+    $(document).on('scroll', this.hide.bind(this));
+  }
+
+  /**
+   * @param {jQuery} event
+   */
+  onMouseOut(event) {
+    this.onMouseOver.cancel();
+    this.hide();
   }
 
   /**
@@ -57,11 +76,6 @@ class TooltipController extends Backbone.Controller {
     return this._tooltipData[id];
   }
 
-  hide() {
-    this._currentId = null;
-    this.tooltipsView.hide();
-  }
-
   /**
    * @param {TooltipModel} tooltip
    * @param {jQuery} $mouseoverEl
@@ -69,6 +83,11 @@ class TooltipController extends Backbone.Controller {
   show(tooltip, $mouseoverEl) {
     this.attachToBody();
     this.tooltipsView.show(tooltip, $mouseoverEl);
+  }
+
+  hide() {
+    $(document).off('scroll');
+    this.tooltipsView.hide();
   }
 
   /**
@@ -81,7 +100,4 @@ class TooltipController extends Backbone.Controller {
     if (!tooltipData._id) return logging.warn('Tooltip cannot be registered with no id');
     this._tooltipData[tooltipData._id] = new TooltipModel(tooltipData);
   }
-
-}
-
-export default new TooltipController();
+}();

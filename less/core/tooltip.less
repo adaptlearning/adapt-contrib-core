@@ -1,25 +1,177 @@
+@tooltip-color: rgba(0,0,0,0.85);
+@tooltip-radius: 0.35rem; // max 1rem
+@tooltip-offset: 0.35rem; // max 1rem
+@tooltip-arrow: true;
+@tooltip-arrow-width: 0.7rem; // max 1rem
+@tooltip-arrow-height: 0.35rem;
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: max-content;
+  min-width: 3rem;
+  max-width: 20rem;
+  @media (min-width: @device-width-medium) {
+     max-width: 30rem;
+  }
+  
+  color: white;
+  font-size: 0.9rem;
+  line-height: 1.5;  
+
+  padding: 0.5rem 0.75rem 0.55rem;
+
+  background-color: @tooltip-color;
+  border-radius: @tooltip-radius;  
+ 
+  z-index: 100;
+  pointer-events: none;  
+  
+  &__arrow {
+    position: absolute;
+    top: 0;
+    left: @tooltip-offset;
+    
+    width: @tooltip-arrow-width;
+	height: (@tooltip-arrow-height);
+	
+	&.is-left {
+	  // default position of the arrow relative to the tooltip
+	}
+	&.is-middle {
+	  left: 50%;
+	  transform: translateX(-50%);
+	}
+	&.is-right {
+	  left: auto;
+	  right: @tooltip-offset;
+	}
+	&.is-top {
+	  // default position of the arrow relative to the tooltip
+	}
+	&.is-bottom {
+	  top: auto;
+	  bottom: 0;
+	}
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      border-width: 0 (@tooltip-arrow-width/2) (@tooltip-arrow-height);      
+      border-style: solid;
+      border-color: transparent;
+      border-bottom-color: @tooltip-color;
+      
+      transform: translate(0, -100%);
+    }
+    &.is-top{
+	  // default position of the arrow relative to the tooltip
+	} 
+    &.is-bottom {
+      &:before {
+        border-width: (@tooltip-arrow-height) (@tooltip-arrow-width/2) 0;
+        border-color: transparent;
+        border-top-color: @tooltip-color;
+        
+        transform: translate(0, 100%);
+      }
+	}  
+  }
+}
+
+// functional 
+
 .tooltip {
   display: none;
-  position: absolute;
-  top:0;
-  left:0;
-  background-color: black;
-  color: white;
-  overflow: visible;
-  min-width: 100px;
-  max-width: 200px;
-  z-index: 100;
-
+  width: max-content;
   &__container.is-loading & {
     visibility: hidden;
   }
-
   &__container.is-shown & {
     display: block;
+    &.tooltip-fixed {
+      position: fixed !important;
+    }
+    &.is-full-width {
+      width: calc(~'100% - 1rem');
+      &.is-top {
+        animation: toolTip--fadeIn 0.4s;
+        transform: translate(0, -100%);
+      }
+      &.is-bottom {
+        animation: toolTip--fadeIn 0.4s;
+      }
+    }
+    &__arrow {
+      & when (@tooltip-arrow = false) {
+        display: none;
+      }    
+    }
   }
-
 }
 
-.tooltip-fixed {
-  position: fixed;
+// animations - transitions wont work due to display:none/block
+
+.tooltip {
+  &__container.is-shown & {
+	animation: toolTip--fadeInDown 0.4s forwards;
+	transform-origin: calc(0% + @tooltip-offset + (@tooltip-arrow-width/2)) -@tooltip-arrow-height;
+    &.is-top {
+      animation: toolTip--fadeInUp 0.4s forwards;
+    }    
+    &.is-bottom {
+      // default position of the tooltip
+    }
+    &.is-top.is-left {
+	  transform-origin: calc(100% - @tooltip-offset - (@tooltip-arrow-width/2)) calc(100% + @tooltip-arrow-height);
+	}
+	&.is-top.is-middle {
+	  transform-origin: 50% calc(100% + @tooltip-arrow-height);;
+	}
+	&.is-top.is-right {
+	  transform-origin: calc(0% + @tooltip-offset + (@tooltip-arrow-width/2)) calc(100% + @tooltip-arrow-height);
+	}
+    &.is-bottom.is-left {
+	  transform-origin: calc(100% - @tooltip-offset - (@tooltip-arrow-width/2)) -@tooltip-arrow-height;
+	}
+	&.is-bottom.is-middle {
+	  transform-origin: 50% -@tooltip-arrow-height;
+	}
+	&.is-bottom.is-right {
+	  // default position of the tooltip
+	}	
+  }
+  @media (prefers-reduced-motion) {
+    &__container.is-shown & {
+      animation: toolTip--fadeIn 0.25s;
+      &.is-bottom {
+        animation: toolTip--fadeIn 0.25s;
+      }
+    }
+  }
 }
+
+@keyframes toolTip--fadeInUp {
+      0% { opacity: 0; transform: translate(0,0.3rem) scale(0.95)}
+     40% { opacity: 1; }
+    100% { opacity: 1; transform: translate(0,0) scale(1)}
+}
+@keyframes toolTip--fadeIn {
+      0% { opacity: 0; }
+     40% { opacity: 1; }
+    100% { opacity: 1; }
+}
+@keyframes toolTip--fadeInDown {
+      0% { opacity: 0; transform: translate(0,-0.3rem) scale(0.95)}
+     40% { opacity: 1; }
+    100% { opacity: 1; transform: translate(0,0) scale(1)}
+}
+@keyframes toolTip--fadeIn-full {
+      0% { opacity: 0; transform: translate(0, -100%)}
+     40% { opacity: 1; }
+    100% { opacity: 1; }
+}  
