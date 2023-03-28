@@ -119,7 +119,6 @@
 
   // tooltip text positioning
   .is-outside.is-vertical-axis &__body {
-
     .is-top& {
       bottom: 100%;
       margin-bottom: @tooltip-distance;
@@ -132,7 +131,7 @@
 
     .is-left.is-arrow-start& {
       right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
         right: initial;
       }
@@ -140,7 +139,7 @@
 
     .is-left.is-arrow-middle& {
       right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
         right: initial;
       }
@@ -148,7 +147,7 @@
 
     .is-left.is-arrow-end& {
       right: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 0%;
         right: initial;
       }
@@ -157,7 +156,7 @@
     .is-middle.is-arrow-start& {
       left: calc(0% + @tooltip-arrow-width);
       transform: translate(-50%);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(0% + @tooltip-arrow-width);
         left: initial;
         transform: translate(50%);
@@ -172,7 +171,7 @@
     .is-middle.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width);
       transform: translate(-50%);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(100% - @tooltip-arrow-width);
         left: initial;
         transform: translate(50%);
@@ -181,7 +180,7 @@
 
     .is-right.is-arrow-start& {
       left: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 0%;;
         left: initial;
       }
@@ -189,7 +188,7 @@
 
     .is-right.is-arrow-middle& {
       left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
         left: initial;
       }
@@ -197,7 +196,7 @@
 
     .is-right.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
         left: initial;
       }
@@ -213,7 +212,7 @@
       margin-right: auto;
       width: initial;
       transform: initial;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
         right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
       }
@@ -225,11 +224,6 @@
 
     .is-bottom.is-fill-width& {
       max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - @tooltip-distance);
-    }
-
-
-
-    .is-fill-width& {
     }
 
     .is-snap-left& {
@@ -250,7 +244,7 @@
     .is-left& {
       right: 100%;
       margin-right: @tooltip-distance;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 100%;
         right: initial;
         margin-left: @tooltip-distance;
@@ -261,7 +255,7 @@
     .is-right& {
       left: 100%;
       margin-left: @tooltip-distance;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 100%;
         left: initial;
         margin-right: @tooltip-distance;
@@ -313,7 +307,7 @@
       max-height: var(--adapt-tooltip-viewport-constrained-height);
       max-width: unset;
       width: unset;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
         left: 100%;
       }
@@ -324,7 +318,7 @@
       max-height: var(--adapt-tooltip-viewport-constrained-height);
       max-width: unset;
       width: unset;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
         right: 100%;
       }
@@ -347,7 +341,7 @@
     .is-top.is-left& {
       left: 0%;
       top: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 0%;
         left: initial;
       }
@@ -362,7 +356,7 @@
     .is-top.is-right& {
       right: 0%;
       top: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 0%;
         right: initial;
       }
@@ -372,7 +366,7 @@
       right: 0%;
       top: 50%;
       transform: translateY(-50%);
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 0%;
         right: initial;
       }
@@ -388,7 +382,7 @@
       left: 0%;
       top: 50%;
       transform: translateY(-50%);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 0%;
         left: initial;
       }
@@ -397,7 +391,7 @@
     .is-bottom.is-left& {
       left: 0%;
       bottom: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 0%;
         left: initial;
       }
@@ -412,7 +406,7 @@
     .is-bottom.is-right& {
       right: 0%;
       bottom: 0%;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 0%;
         right: initial;
       }
@@ -441,7 +435,7 @@
     .is-fill-width.is-arrow-start&,
     .is-left.is-arrow-start& {
       right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
         right: initial;
       }
@@ -457,7 +451,7 @@
     .is-fill-width.is-arrow-end&,
     .is-left.is-arrow-end& {
       right: calc(0% + @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc(0% + @tooltip-offset);
         right: initial;
       }
@@ -465,7 +459,7 @@
 
     .is-middle.is-arrow-start& {
       left: calc(0% + @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(0% + @tooltip-offset);
         left: initial;
       }
@@ -478,7 +472,7 @@
 
     .is-middle.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
         left: initial;
       }
@@ -486,7 +480,7 @@
 
     .is-right.is-arrow-start& {
       left: calc(0% + @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(0% + @tooltip-offset);
         left: initial;
       }
@@ -498,7 +492,7 @@
 
     .is-right.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
         left: initial;
       }
@@ -508,7 +502,7 @@
       left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
       transform: none !important;
       right: initial !important;
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
         transform: none !important;
         left: initial !important;
@@ -519,7 +513,7 @@
       right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
       transform: none !important;
       left: initial !important;
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
         transform: none !important;
         right: initial !important;
@@ -534,7 +528,7 @@
       &::before {
         transform: translateX(99%) rotate(90deg)
       }
-      [dir="rtl"] & {
+      .dir-rtl & {
         left: 100%;
         right: initial;
         margin-left: @tooltip-distance;
@@ -551,7 +545,7 @@
       &::before {
         transform: translateX(-99%) rotate(270deg)
       }
-      [dir="rtl"] & {
+      .dir-rtl & {
         right: 100%;
         left: initial;
         margin-right: @tooltip-distance;
@@ -629,7 +623,7 @@
   .is-inside &__body {
     .is-top.is-left& {
       transform-origin: top left;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: top right;
       }
     }
@@ -640,14 +634,14 @@
 
     .is-top.is-right& {
       transform-origin: top right;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: top left;
       }
     }
 
     .is-center.is-left& {
       transform-origin: center left;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: center right;
       }
     }
@@ -658,14 +652,14 @@
 
     .is-center.is-right& {
       transform-origin: center right;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: center left;
       }
     }
 
     .is-bottom.is-left& {
       transform-origin: bottom left;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: bottom right;
       }
     }
@@ -676,7 +670,7 @@
 
     .is-bottom.is-right& {
       transform-origin: bottom right;
-      [dir="rtl"] & {
+      .dir-rtl & {
         transform-origin: bottom left;
       }
     }
