@@ -370,6 +370,14 @@
                       "inputType": "Text",
                       "required": true,
                       "translatable": true
+                    },
+                    "disabledText": {
+                      "type": "string",
+                      "title": "",
+                      "default": "Drawer",
+                      "inputType": "Disabled Text",
+                      "required": false,
+                      "translatable": true
                     }
                   }
                 }
@@ -427,6 +435,14 @@
                       "inputType": "Text",
                       "required": true,
                       "translatable": true
+                    },
+                    "disabledText": {
+                      "type": "string",
+                      "title": "",
+                      "default": "Drawer",
+                      "inputType": "Disabled Text",
+                      "required": false,
+                      "translatable": true
                     }
                   }
                 },
@@ -457,6 +473,28 @@
               }
             }
           }
+        }
+      }
+    },
+    "_tooltips": {
+      "type": "object",
+      "default": {},
+      "title": "Tooltip settings",
+      "help": "The start settings allow you to control whether tooltips can show and their default position.",
+      "properties": {
+        "_isEnabled": {
+          "type": "boolean",
+          "default": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Enabled?"
+        },
+        "_position": {
+          "type": "string",
+          "title": "Default position",
+          "default": "middle bottom right",
+          "inputType": "Text",
+          "required": true
         }
       }
     },
