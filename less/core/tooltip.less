@@ -62,7 +62,7 @@
 
   z-index: 0;
   .is-fixed& {
-    position: fixed !important;
+    position: fixed;
     z-index: 82;
   }
 
@@ -226,16 +226,16 @@
       max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - @tooltip-distance);
     }
 
-    .is-snap-left& {
-      left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1) !important;
-      transform: none !important;
-      right: initial !important;
+    .tooltip__container .is-snap-left& {
+      left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
+      transform: none;
+      right: initial;
     }
 
-    .is-snap-right& {
-      right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1) !important;
-      transform: none !important;
-      left: initial !important;
+    .tooltip__container .is-snap-right& {
+      right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
+      transform: none;
+      left: initial;
     }
 
   }
@@ -324,16 +324,16 @@
       }
     }
 
-    .is-snap-top& {
-      top: calc(var(--adapt-tooltip-target-distancetoedge-top) * -1) !important;
-      transform: none !important;
-      bottom: initial !important;
+    .tooltip__container .is-snap-top& {
+      top: calc(var(--adapt-tooltip-target-distancetoedge-top) * -1);
+      transform: none;
+      bottom: initial;
     }
 
-    .is-snap-bottom& {
-      bottom: calc(var(--adapt-tooltip-target-distancetoedge-bottom) * -1) !important;
-      transform: none !important;
-      top: initial !important;
+    .tooltip__container .is-snap-bottom& {
+      bottom: calc(var(--adapt-tooltip-target-distancetoedge-bottom) * -1);
+      transform: none;
+      top: initial;
     }
   }
 
@@ -498,25 +498,25 @@
       }
     }
 
-    .is-arrow-snap.is-arrow-start& {
-      left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
-      transform: none !important;
-      right: initial !important;
+    .tooltip__container .is-arrow-snap.is-arrow-start& {
+      left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset);
+      transform: none;
+      right: initial;
       .dir-rtl & {
-        right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
-        transform: none !important;
-        left: initial !important;
+        right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset);
+        transform: none;
+        left: initial;
       }
     }
 
-    .is-arrow-snap.is-arrow-end& {
-      right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
-      transform: none !important;
-      left: initial !important;
+    .tooltip__container .is-arrow-snap.is-arrow-end& {
+      right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset);
+      transform: none;
+      left: initial;
       .dir-rtl & {
-        left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
-        transform: none !important;
-        right: initial !important;
+        left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset);
+        transform: none;
+        right: initial;
       }
     }
   }
@@ -598,16 +598,16 @@
       top: calc(100% - @tooltip-arrow-width - @tooltip-offset);
     }
 
-    .is-arrow-snap.is-arrow-start& {
-      top: calc((var(--adapt-tooltip-target-distancetoedge-top) * -1) + @tooltip-offset) !important;
-      transform: none !important;
-      bottom: initial !important;
+    .tooltip__container .is-arrow-snap.is-arrow-start& {
+      top: calc((var(--adapt-tooltip-target-distancetoedge-top) * -1) + @tooltip-offset);
+      transform: none;
+      bottom: initial;
     }
 
-    .is-arrow-snap.is-arrow-end& {
-      bottom: calc((var(--adapt-tooltip-target-distancetoedge-bottom) * -1) + @tooltip-offset) !important;
-      transform: none !important;
-      top: initial !important;
+    .tooltip__container .is-arrow-snap.is-arrow-end& {
+      bottom: calc((var(--adapt-tooltip-target-distancetoedge-bottom) * -1) + @tooltip-offset);
+      transform: none;
+      top: initial;
     }
   }
 
