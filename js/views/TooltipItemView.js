@@ -11,7 +11,7 @@ export default class TooltipItemView extends Backbone.View {
 
   className() {
     return [
-      'tooltip__position',
+      'tooltip__target',
       this.model.get('isTargetFixedPosition') && 'tooltip-fixed',
       this.model.get('tooltipClasses') || 'is-vertical-axis is-top is-middle is-arrow-middle',
       this.model.get('isShown') && 'is-shown',
@@ -94,8 +94,8 @@ export default class TooltipItemView extends Backbone.View {
     if (!this.model) return;
     this.model.set('hasLoaded', true);
     const multipassCache = {};
-    // First pass - render at the requested orientation
-    // Second pass - if needed, swap sides, switch orientation and/or go into fill width or fill height
+    // First pass - render at the requested position
+    // Second pass - if needed, swap sides, switch axis and/or fill area
     // Third pass - snap to edges if overflowing
     for (let pass = SECOND_PASS, l = THIRD_PASS; pass <= l; pass++) {
       const { shouldNextPass } = multipassCache;

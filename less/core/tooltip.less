@@ -44,7 +44,7 @@
 
 // tooltip target overlay position
 .tooltip {
-  &__container &__position {
+  &__container &__target {
     position: absolute;
     left: calc(var(--adapt-tooltip-target-position-left) + var(--adapt-tooltip-scroll-left));
     top: calc(var(--adapt-tooltip-target-position-top) + var(--adapt-tooltip-scroll-top));
@@ -425,7 +425,7 @@
     }
   }
 
-  .is-inside&__position {
+  .is-inside&__target {
     .is-top.is-left& {
       transform-origin: top left;
       [dir="rtl"] & {
@@ -688,12 +688,12 @@
 
 // animations
 .tooltip {
-  &__container .is-shown&__position {
+  &__container .is-shown&__target {
     animation: toolTip--fadeScaleIn 0.4s forwards;
   }
 
 @media (prefers-reduced-motion) {
-  &__container .is-shown&__position {
+  &__container .is-shown&__target {
     animation: none;
   }
 }
