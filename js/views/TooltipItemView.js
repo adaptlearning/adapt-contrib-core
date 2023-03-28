@@ -152,7 +152,7 @@ export default class TooltipItemView extends Backbone.View {
 }
 
 /**
- * Extract the distance and padding properties from the css
+ * Extract the offset, distance and padding properties from the css
  * @returns {Object}
  */
 function fetchCSSVariables () {
@@ -228,6 +228,7 @@ function parseRelativePosition ({
 
 /**
  * Converts the DOMRect into a css-like distance from edge rectangle object
+ * https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
  * @param {DOMRect} DOMRect
  * @param {DOMRect} clientDOMRect
  * @returns {Object}
@@ -312,7 +313,7 @@ function calculateScrollOffset ({
 };
 
 /**
- * Four-pass positioning function which takes the dom rectangles of the
+ * Three-pass positioning function which takes the dom rectangles of the
  * target, client, tooltip and arrow, along with whether the target element
  * is fixed positioned, the course is rtl, the navigation bar offsets and a
  * position string and returns the appropriate sizes and classes for the tooltip
@@ -357,7 +358,7 @@ function position (
     viewPortPadding
   } = fetchCSSVariables();
 
-  // Convert DOMRect to DistanceRect (distances from edges instead of top left) https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+  // Convert target DOMRect to DistanceRect
   const targetDistRect = convertToDistanceRect(targetDOMRect, clientDOMRect);
   // Constrain shapes to padding and, when target is not fixed position, the navigation bar
   const constrainedClientDistRect = {
@@ -369,7 +370,7 @@ function position (
       )
   };
 
-  // Convert the position string and isRTL boolean into some initial positioning variables
+  // Convert the position string into some initial positioning variables
   let {
     isOutside,
     isInside,
@@ -417,14 +418,14 @@ function position (
   const tooltipStyles = {};
 
   if (pass >= SECOND_PASS) {
-    // Convert DOMRect to DistanceRect (distances from edges instead of top left) https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+    // Convert DOMRect to DistanceRect
     const tooltipDistRect = convertToDistanceRect(tooltipDOMRect, clientDOMRect);
     const arrowDistRect = convertToDistanceRect(arrowDOMRect, clientDOMRect);
     // Constrain shapes to padding and, when target is not fixed position, the navigation bar
     const constrainedTargetDistRect = constrainDimensions(targetDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
     const constrainedTooltipDistRect = constrainDimensions(tooltipDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
     const constrainedArrowDistRect = constrainDimensions(arrowDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
-    // Calculate the overall height and width of the tooltip and arrow according to the position
+    // Calculate the overall height and width of the tooltip and arrow according to the axis
     const overallHeight = (isOutside && isVerticalAxis)
       ? constrainedTooltipDistRect.height + constrainedArrowDistRect.height + distance
       : constrainedTooltipDistRect.height;
@@ -465,20 +466,20 @@ function position (
     // Check if the arrow is offscreen
     const isArrowOffscreen = (isVerticalAxis && (constrainedArrowDistRect.left < offset || constrainedArrowDistRect.right < offset)) ||
         (isHorizontalAxis && (constrainedArrowDistRect.top < offset || constrainedArrowDistRect.bottom < offset));
-    // Usually over-sized tooltips, can't fit in the available height or width at the current shape
+    // Usually over-sized tooltips can't fit in the available height or width at the current shape
     const isBadShape = (!canFitHeightLength || !canFitWidthLength);
     // If the arrow and tooltip have fallen offscreen on their axis
-    //   or if the tooltip can't fit onto the axis and there is more space on the
-    //   other axis
+    //   or if the tooltip can't fit onto the axis
+    //   and there is more space on the other axis
     const isSwapAxis = (isArrowOffscreen && isHorizontalAxis && isOverflowVertical) ||
       (isArrowOffscreen && isVerticalAxis && isOverflowHorizontal) ||
       (isHorizontalAxis && !canFitInHorizontalArea && isVerticalAreaLarger) ||
       (isVerticalAxis && !canFitInVerticalArea && isHorizontalAreaLarger);
     // Break from height or width constraint
     //   If the axis is being swapped and the shape can't fit in its available area
-    //    this isusually because of having too much text and being width constrained
+    //    this is usually because of having too much text and a width constraint
     //   If the shape currently can't fit in its axis, but it can fit in the available area
-    //     this is because its css width is contained
+    //     because its css width is contained
     const isFillArea = (isSwapAxis && isBadShape) ||
       (isVerticalAxis && isOverflow && isBadShape && (canFitInVerticalArea || isVerticalAreaLarger)) ||
       (isHorizontalAxis && isOverflow && isBadShape && (canFitInHorizontalArea || isHorizontalAreaLarger));
@@ -486,7 +487,6 @@ function position (
     if (pass === SECOND_PASS && (isBadShape || isOverflow)) {
       if (isSwapAxis) {
         // Move from left/right to up/down or from up/down to left/right
-        // Make full screen if required
         [isVerticalAxis, isHorizontalAxis] = swapValues(isVerticalAxis, isHorizontalAxis);
         if (isCenter) {
           // Rotate vertical center around to horizontal middle
@@ -503,7 +503,7 @@ function position (
         ((isFillArea && !((isTop && canFitInTopArea) || (isBottom && canFitInBottomArea))) ||
         (!isFillArea && ((isBottom && isOverflowBottom) || (isTop && isOverflowTop))));
       if (isSwapVerticalSide && isFillArea && (canFitInTopArea || canFitInBottomArea)) {
-        // Switch to fitting side
+        // Switch to fitting top/bottom side
         isTop = !canFitInBottomArea;
         isBottom = canFitInBottomArea;
       } else if (isSwapVerticalSide) {
@@ -515,7 +515,7 @@ function position (
         ((isFillArea && !((isLeft && canFitInLeftArea) || (isRight && canFitInRightArea))) ||
         (!isFillArea && ((isLeft && isOverflowLeft) || (isRight && isOverflowRight))));
       if (isSwapHorizontalSide && isFillArea && (canFitInLeftArea || canFitInRightArea)) {
-        // Switch to fitting side
+        // Switch to fitting left / right side
         isLeft = invertRTL(!canFitInRightArea, isRTL);
         isRight = invertRTL(canFitInRightArea, isRTL);
       } else if (isSwapHorizontalSide) {
@@ -604,7 +604,7 @@ function position (
     isTargetFixedPosition
   });
 
-  // Add positioning variables to CSS to allow positioning in LESS
+  // Add target, viewport and scroll positioning variables to CSS to allow positioning in LESS
   Object.assign(tooltipStyles, {
     '--adapt-tooltip-viewport-constrained-height': `${constrainedClientDistRect.height}px`,
     '--adapt-tooltip-viewport-constrained-width': `${constrainedClientDistRect.width}px`,
