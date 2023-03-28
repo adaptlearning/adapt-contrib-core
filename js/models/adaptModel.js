@@ -228,13 +228,13 @@ export default class AdaptModel extends LockingModel {
    */
   reset(type = 'hard', canReset = this.get('_canReset')) {
     if (!canReset) return false;
+    const isHardReset = (type === 'hard' || type === true);
+    const isSoftReset = (type === 'soft');
+    if (!isHardReset && !isSoftReset) return false
     const resetData = {
       _isEnabled: true,
       _isInteractionComplete: false
     };
-    const isHardReset = (type === 'hard' || type === true);
-    const isSoftReset = (type === 'soft');
-    if (!isHardReset && !isSoftReset) return false
     if (isHardReset) resetData._isComplete = false;
     this.set(resetData);
     this.trigger('reset');
