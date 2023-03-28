@@ -3,7 +3,6 @@ import { classes, compile } from 'core/js/reactHelpers';
 
 export default function Tooltip(props) {
   const {
-    _classes,
     text,
     disabledText,
     isDisabled,
@@ -22,8 +21,7 @@ export default function Tooltip(props) {
       <div
         className={classes([
           'tooltip',
-          'js-tooltip',
-          _classes
+          'js-tooltip'
         ])}
         aria-hidden={ariaHidden}
       >

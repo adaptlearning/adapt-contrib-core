@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom';
 const FIRST_PASS = 1;
 const SECOND_PASS = 2;
 const THIRD_PASS = 3;
-const FOURTH_PASS = 4;
 
 export default class TooltipItemView extends Backbone.View {
 
@@ -14,8 +13,9 @@ export default class TooltipItemView extends Backbone.View {
     return [
       'tooltip__position',
       this.model.get('isTargetFixedPosition') && 'tooltip-fixed',
-      this.model.get('tooltipClasses') || 'is-vertical-order is-top is-middle is-arrow-middle',
-      this.model.get('isShown') && 'is-shown'
+      this.model.get('tooltipClasses') || 'is-vertical-axis is-top is-middle is-arrow-middle',
+      this.model.get('isShown') && 'is-shown',
+      this.model.get('_classes')
     ].filter(Boolean).join(' ');
   }
 
@@ -91,15 +91,15 @@ export default class TooltipItemView extends Backbone.View {
   }
 
   doSubsequentPasses() {
+    if (!this.model) return;
     this.model.set('hasLoaded', true);
     const multipassCache = {};
     // First pass - render at the requested orientation
-    // Second pass - swap sides if necessary
-    // Third pass - switch orientation and/or go into full width or full height
-    // Fourth pass - snap to edge if required
-    for (let pass = SECOND_PASS, l = FOURTH_PASS; pass <= l; pass++) {
+    // Second pass - if needed, swap sides, switch orientation and/or go into fill width or fill height
+    // Third pass - snap to edges if overflowing
+    for (let pass = SECOND_PASS, l = THIRD_PASS; pass <= l; pass++) {
       const { shouldNextPass } = multipassCache;
-      const isFouthPass = (pass === FOURTH_PASS);
+      const isFouthPass = (pass === THIRD_PASS);
       if (isFouthPass && !shouldNextPass) break;
       const environment = this.environment;
       const positions = position(this.environment, multipassCache, pass);
@@ -136,7 +136,9 @@ export default class TooltipItemView extends Backbone.View {
   }
 
   remove() {
+    if (this.$el.hasClass('test')) return;
     this.stopListening(Adapt);
+    $(document).off('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
     this.model?.set('isShown', false);
     this.render();
     this.model = null;
@@ -159,6 +161,7 @@ export default class TooltipItemView extends Backbone.View {
 function fetchCSSVariables () {
   const computed = getComputedStyle(document.documentElement);
   return {
+    offset: lengthToPx('@tooltip-offset', computed.getPropertyValue('--adapt-tooltip-offset')),
     distance: lengthToPx('@tooltip-distance', computed.getPropertyValue('--adapt-tooltip-distance')),
     viewPortPadding: lengthToPx('@tooltip-viewport-padding', computed.getPropertyValue('--adapt-tooltip-viewport-padding'))
   };
@@ -186,8 +189,7 @@ function lengthToPx (name, length) {
  * @returns {Object}
  */
 function parseRelativePosition ({
-  position,
-  isRTL
+  position
 }) {
   const positions = position.split(' ');
   const isArrowStart = positions.includes('start');
@@ -199,17 +201,13 @@ function parseRelativePosition ({
   const horizontalIndex = Math.min(...['left', 'right']
     .map(v => positions.indexOf(v))
     .filter(v => v !== -1));
-  const isVerticalFirst = (verticalIndex < horizontalIndex);
-  const isHorizontalFirst = (verticalIndex > horizontalIndex);
-  const isMiddleFirst = !isVerticalFirst && !isHorizontalFirst;
+  const isVerticalAxis = (verticalIndex < horizontalIndex);
+  const isHorizontalAxis = (verticalIndex > horizontalIndex);
+  const isMiddleFirst = !isVerticalAxis && !isHorizontalAxis;
   const isInside = isMiddleFirst || positions.includes('inside');
   const isOutside = !isInside;
-  let isLeft = positions.includes('left');
-  let isRight = !isLeft && positions.includes('right');
-  if (isRTL) {
-    isLeft = !isLeft;
-    isRight = !isRight;
-  }
+  const isLeft = positions.includes('left');
+  const isRight = !isLeft && positions.includes('right');
   const isMiddle = !isLeft && !isRight;
   const isTop = positions.includes('top');
   const isBottom = !isTop && positions.includes('bottom');
@@ -217,8 +215,8 @@ function parseRelativePosition ({
   return {
     isOutside,
     isInside,
-    isVerticalFirst,
-    isHorizontalFirst,
+    isVerticalAxis,
+    isHorizontalAxis,
     isMiddleFirst,
     isLeft,
     isMiddle,
@@ -251,6 +249,17 @@ function convertToDistanceRect (
     height: DOMRect.height
   };
 };
+
+/**
+ * Inverts booleans for left and right if isRTL
+ * @param {boolean} bool
+ * @param {boolean} isRTL
+ * @returns {boolean}
+ */
+function invertRTL(bool, isRTL) {
+  if (!isRTL) return bool;
+  return !bool;
+}
 
 /**
  * Adjusts the distanceRect such that the viewPort padding and navoffsets are
@@ -347,6 +356,7 @@ function position (
 
   // Fetch the CSS variable values for distance and viewport padding
   const {
+    offset,
     distance,
     viewPortPadding
   } = fetchCSSVariables();
@@ -367,23 +377,22 @@ function position (
   let {
     isOutside,
     isInside,
-    isVerticalFirst,
-    isHorizontalFirst,
+    isVerticalAxis,
+    isHorizontalAxis,
     isMiddleFirst,
     isLeft,
     isMiddle,
     isRight,
-    isFullWidth = false,
+    isFillWidth = false,
     isTop,
     isCenter,
     isBottom,
-    isFullHeight = false,
+    isFillHeight = false,
     isArrowStart,
     isArrowMiddle,
     isArrowEnd
   } = parseRelativePosition({
-    position,
-    isRTL
+    position
   });
 
   if (pass >= THIRD_PASS) {
@@ -391,17 +400,17 @@ function position (
     ({
       isOutside,
       isInside,
-      isVerticalFirst,
-      isHorizontalFirst,
+      isVerticalAxis,
+      isHorizontalAxis,
       isMiddleFirst,
       isLeft,
       isMiddle,
       isRight,
-      isFullWidth = false,
+      isFillWidth = false,
       isTop,
       isCenter,
       isBottom,
-      isFullHeight = false
+      isFillHeight = false
     } = multipassCache);
   }
 
@@ -422,133 +431,126 @@ function position (
     const constrainedTargetDistRect = constrainDimensions(targetDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
     const constrainedTooltipDistRect = constrainDimensions(tooltipDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
     const constrainedArrowDistRect = constrainDimensions(arrowDistRect, viewPortPadding, isTargetFixedPosition, topNavOffset, bottomNavOffset);
+    // Calculate the overall height and width of the tooltip and arrow according to the position
+    const overallHeight = (isOutside && isVerticalAxis)
+      ? constrainedTooltipDistRect.height + constrainedArrowDistRect.height + distance
+      : constrainedTooltipDistRect.height;
+    const overallWidth = (isOutside && isHorizontalAxis)
+      ? constrainedTooltipDistRect.width + constrainedArrowDistRect.width + distance
+      : constrainedTooltipDistRect.width;
     // Is the tooltip overflowing at any constrained edge
     const isOverflowTop = (constrainedTooltipDistRect.top < 0);
     const isOverflowBottom = (constrainedTooltipDistRect.bottom < 0);
     const isOverflowLeft = (constrainedTooltipDistRect.left < 0);
     const isOverflowRight = (constrainedTooltipDistRect.right < 0);
-    // Calculate the overall height and width of the tooltip and arrow according to the position
-    const overallHeight = (isOutside && isVerticalFirst)
-      ? constrainedTooltipDistRect.height + constrainedArrowDistRect.height + distance
-      : constrainedTooltipDistRect.height;
-    const overallWidth = (isOutside && isHorizontalFirst)
-      ? constrainedTooltipDistRect.width + constrainedArrowDistRect.width + distance
-      : constrainedTooltipDistRect.width;
+    const isOverflowHorizontal = (isOverflowLeft || isOverflowRight);
+    const isOverflowVertical = (isOverflowTop || isOverflowBottom);
+    const isOverflow = (isOverflowHorizontal || isOverflowVertical);
+    // Find largest vertical and horizontal areas
+    const tooltipArea = (overallHeight * overallWidth);
+    const topArea = constrainedTargetDistRect.top * constrainedClientDistRect.width;
+    const bottomArea = constrainedTargetDistRect.bottom * constrainedClientDistRect.width;
+    const leftArea = (constrainedTargetDistRect.left * constrainedClientDistRect.height);
+    const rightArea = (constrainedTargetDistRect.right * constrainedClientDistRect.height);
+    const maxHorizontalArea = Math.max(leftArea, rightArea);
+    const maxVerticalArea = Math.max(topArea, bottomArea);
+    const isVerticalAreaLarger = (maxVerticalArea >= maxHorizontalArea);
+    const isHorizontalAreaLarger = (maxHorizontalArea >= maxVerticalArea);
     // Can the tooltip and arrow fit in the constrained height or width accordingly
-    const canFitWidth = isVerticalFirst
+    const canFitWidthLength = isVerticalAxis
       ? (overallWidth <= constrainedClientDistRect.width)
       : (overallWidth <= constrainedTargetDistRect.left || overallWidth <= constrainedTargetDistRect.right);
-    const canFitHeight = isHorizontalFirst
+    const canFitHeightLength = isHorizontalAxis
       ? (overallHeight <= constrainedClientDistRect.height)
       : (overallHeight <= constrainedTargetDistRect.top || overallHeight <= constrainedTargetDistRect.bottom);
-    // Swap sides in orientation when easy and possible
-    const isVerticalSwap = canFitHeight && !isCenter && (isOverflowTop || isOverflowBottom);
-    const isHorizontalSwap = canFitWidth && !isMiddle && (isOverflowLeft || isOverflowRight);
-    const isSwap = (isVerticalSwap || isHorizontalSwap);
+    const canFitInLeftArea = (tooltipArea < leftArea);
+    const canFitInRightArea = (tooltipArea < rightArea);
+    const canFitInTopArea = (tooltipArea < topArea);
+    const canFitInBottomArea = (tooltipArea < bottomArea);
+    const canFitInVerticalArea = (tooltipArea < maxVerticalArea);
+    const canFitInHorizontalArea = (tooltipArea < maxHorizontalArea);
+    // Check if the arrow is offscreen
+    const isArrowOffscreen = (isVerticalAxis && (constrainedArrowDistRect.left < offset || constrainedArrowDistRect.right < offset)) ||
+        (isHorizontalAxis && (constrainedArrowDistRect.top < offset || constrainedArrowDistRect.bottom < offset));
+    // Usually over-sized tooltips, can't fit in the available height or width at the current shape
+    const isBadShape = (!canFitHeightLength || !canFitWidthLength);
+    // If the arrow and tooltip have fallen offscreen on their axis
+    //   or if the tooltip can't fit onto the axis and there is more space on the
+    //   other axis
+    const isSwapAxis = (isArrowOffscreen && isHorizontalAxis && isOverflowVertical) ||
+      (isArrowOffscreen && isVerticalAxis && isOverflowHorizontal) ||
+      (isHorizontalAxis && !canFitInHorizontalArea && isVerticalAreaLarger) ||
+      (isVerticalAxis && !canFitInVerticalArea && isHorizontalAreaLarger);
+    // Break from height or width constraint
+    //   If the axis is being swapped and the shape can't fit in its available area
+    //    this isusually because of having too much text and being width constrained
+    //   If the shape currently can't fit in its axis, but it can fit in the available area
+    //     this is because its css width is contained
+    const isFillArea = (isSwapAxis && (!canFitHeightLength || !canFitWidthLength)) ||
+      (isVerticalAxis && isOverflowHorizontal && !canFitWidthLength && (canFitInVerticalArea || isVerticalAreaLarger)) ||
+      (isHorizontalAxis && isOverflowVertical && !canFitHeightLength && (canFitInHorizontalArea || isHorizontalAreaLarger));
+
     if (pass === SECOND_PASS) {
-      if (isSwap) {
-        if (isVerticalSwap) [isTop, isBottom] = swapValues(isTop, isBottom);
-        if (isHorizontalSwap) [isLeft, isRight] = swapValues(isLeft, isRight);
+      if (isBadShape || isOverflow) {
+        if (isSwapAxis) {
+          // Move from left/right to up/down or from up/down to left/right
+          // Make full screen if required
+          [isVerticalAxis, isHorizontalAxis] = swapValues(isVerticalAxis, isHorizontalAxis);
+          shouldNextPass = true;
+        }
+        if (isFillArea) {
+          // Fill into the largest available area top/bottom full width or left/right full height
+          if (isVerticalAxis) isFillWidth = true;
+          if (isHorizontalAxis) isFillHeight = true;
+        }
+        const isSwapVerticalSide = !(isHorizontalAxis && canFitInHorizontalArea) &&
+          !((isTop && canFitInTopArea) || (isBottom && canFitInBottomArea));
+        if (isSwapVerticalSide && (canFitInTopArea || canFitInBottomArea)) {
+          // Switch to fitting side
+          isTop = canFitInTopArea;
+          isBottom = canFitInBottomArea;
+        } else if (isSwapVerticalSide) {
+          // Largest of top / bottom
+          isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
+          isBottom = (constrainedTargetDistRect.top <= constrainedTargetDistRect.bottom);
+        }
+        const isSwapHorizontalSide = !(isVerticalAxis && canFitInVerticalArea) &&
+          !((isLeft && canFitInLeftArea) || (isRight && canFitInRightArea));
+        if (isSwapHorizontalSide && (canFitInLeftArea || canFitInRightArea)) {
+          // Switch to fitting side
+          isLeft = invertRTL(canFitInLeftArea, isRTL);
+          isRight = invertRTL(canFitInRightArea, isRTL);
+        } else if (isSwapHorizontalSide) {
+          // Largest of left / right
+          isLeft = invertRTL(constrainedTargetDistRect.left >= constrainedTargetDistRect.right, isRTL);
+          isRight = invertRTL(constrainedTargetDistRect.left <= constrainedTargetDistRect.right, isRTL);
+        }
+        isMiddle = (!isLeft && !isRight);
+        isCenter = (!isTop && !isBottom);
         shouldNextPass = true;
       }
     }
-    // Find largest vertical/horizontal area
-    const tooltipArea = (overallHeight * overallWidth);
-    const maxVerticalArea = Math.max(constrainedTargetDistRect.top * constrainedClientDistRect.width, constrainedTargetDistRect.bottom * constrainedClientDistRect.width);
-    const maxHorizontalArea = Math.max(constrainedTargetDistRect.left * constrainedClientDistRect.height, constrainedTargetDistRect.right * constrainedClientDistRect.height);
-    const canFitInVerticalArea = tooltipArea < maxHorizontalArea;
-    const canFitInHorizontalArea = tooltipArea < maxHorizontalArea;
-    const isVerticalLarger = maxVerticalArea >= maxHorizontalArea;
-    const isHorizontalLarger = maxHorizontalArea >= maxVerticalArea;
-    const isLarge = (!canFitHeight || !canFitWidth);
-    // Switch large tooltip orientation if advantageous
-    //   or switch to full width or full height only
     if (pass === THIRD_PASS) {
-      if (isLarge) { // Usually over-sized tooltips
-        if (isVerticalFirst && !canFitInVerticalArea && isHorizontalLarger) {
-          // Move from up/down to left/right
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [false, true, false];
-          [isLeft, isRight] = [false, false];
-          isLeft = (constrainedTargetDistRect.left >= constrainedTargetDistRect.right);
-          isRight = (constrainedTargetDistRect.left <= constrainedTargetDistRect.right);
-          isCenter = isMiddle;
-          isMiddle = false;
-          isFullHeight = true;
-          shouldNextPass = true;
-        } else if (isVerticalFirst && (canFitInVerticalArea || isVerticalLarger)) {
-          // Fill into the largest available area top/bottom
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [true, false, false];
-          [isTop, isCenter, isBottom] = [false, false, false];
-          isFullWidth = true;
-          isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
-          isBottom = (constrainedTargetDistRect.top <= constrainedTargetDistRect.bottom);
-          shouldNextPass = true;
-        } else if (isHorizontalFirst && !canFitInHorizontalArea && isVerticalLarger) {
-          // Move from left/right to up/down
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [true, false, false];
-          [isTop, isBottom] = [false, false];
-          isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
-          isBottom = (constrainedTargetDistRect.top <= constrainedTargetDistRect.bottom);
-          isMiddle = isCenter;
-          isCenter = false;
-          isFullWidth = true;
-          shouldNextPass = true;
-        } else if (isHorizontalFirst && (canFitInHorizontalArea || isHorizontalLarger)) {
-          // Fill into the largest available area left/right
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [false, true, false];
-          [isLeft, isMiddle, isRight] = [false, false, false];
-          isFullHeight = true;
-          isLeft = (constrainedTargetDistRect.left >= constrainedTargetDistRect.right);
-          isRight = (constrainedTargetDistRect.left <= constrainedTargetDistRect.right);
-          shouldNextPass = true;
-        }
-      } else if (!isLarge) { // Having scrolled target to edge of screen
-        if (isHorizontalFirst && (isOverflowTop || isOverflowBottom)) {
-          // Move from left/right to up/down
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [true, false, false];
-          [isTop, isBottom] = [false, false];
-          isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
-          isBottom = (constrainedTargetDistRect.top <= constrainedTargetDistRect.bottom);
-          isMiddle = isCenter;
-          isCenter = false;
-          shouldNextPass = true;
-        }
-        if (isVerticalFirst && (isOverflowLeft || isOverflowRight)) {
-          // Move from up/down to left/right
-          [isVerticalFirst, isHorizontalFirst, isMiddleFirst] = [false, true, false];
-          [isLeft, isRight] = [false, false];
-          isLeft = (constrainedTargetDistRect.left >= constrainedTargetDistRect.right);
-          isRight = (constrainedTargetDistRect.left <= constrainedTargetDistRect.right);
-          isCenter = isMiddle;
-          isMiddle = false;
-          shouldNextPass = true;
-        }
-      }
-    }
-    if (pass === FOURTH_PASS) {
-      if (isVerticalFirst) {
+      if (isVerticalAxis) {
         // Snap to left/right
         isSnapLeft = isOverflowLeft;
         isSnapRight = !isSnapLeft && isOverflowRight;
       }
-      if (isHorizontalFirst) {
+      if (isHorizontalAxis) {
         // Snap to top/bottom
         isSnapTop = isOverflowTop;
         isSnapBottom = !isSnapTop && isOverflowBottom;
       }
-      // Hide everything as the arrow has gone outside of the constrained area
-      const isArrowOffscreen = (isVerticalFirst && (constrainedArrowDistRect.left < 0 || constrainedArrowDistRect.right < 0)) ||
-        (isHorizontalFirst && (constrainedArrowDistRect.top < 0 || constrainedArrowDistRect.bottom < 0));
       isArrowSnap = isArrowOffscreen;
     }
     // Add the distance from the constrained edges to the CSS variables
     Object.assign(tooltipStyles, {
-      '--adapt-tooltip-target-distance-left': `${constrainedTargetDistRect.left}px`,
-      '--adapt-tooltip-target-distance-top': `${constrainedTargetDistRect.top}px`,
-      '--adapt-tooltip-target-distance-right': `${constrainedTargetDistRect.right}px`,
-      '--adapt-tooltip-target-distance-bottom': `${constrainedTargetDistRect.bottom}px`,
-      '--adapt-tooltip-target-distance-height': `${constrainedTargetDistRect.height}px`,
-      '--adapt-tooltip-target-distance-width': `${constrainedTargetDistRect.width}px`
+      '--adapt-tooltip-target-distancetoedge-left': `${constrainedTargetDistRect.left}px`,
+      '--adapt-tooltip-target-distancetoedge-top': `${constrainedTargetDistRect.top}px`,
+      '--adapt-tooltip-target-distancetoedge-right': `${constrainedTargetDistRect.right}px`,
+      '--adapt-tooltip-target-distancetoedge-bottom': `${constrainedTargetDistRect.bottom}px`,
+      '--adapt-tooltip-target-distancetoedge-height': `${constrainedTargetDistRect.height}px`,
+      '--adapt-tooltip-target-distancetoedge-width': `${constrainedTargetDistRect.width}px`
     });
     if (pass >= 2) {
       // Keep the current calculations for the next pass
@@ -556,17 +558,17 @@ function position (
         shouldNextPass,
         isOutside,
         isInside,
-        isVerticalFirst,
-        isHorizontalFirst,
+        isVerticalAxis,
+        isHorizontalAxis,
         isMiddleFirst,
         isLeft,
         isMiddle,
         isRight,
-        isFullWidth,
+        isFillWidth,
         isTop,
         isCenter,
         isBottom,
-        isFullHeight
+        isFillHeight
       });
     }
   }
@@ -576,19 +578,19 @@ function position (
     isOutside && 'is-outside',
     isInside && 'is-inside',
     isArrowSnap && 'is-arrow-snap',
-    isVerticalFirst && 'is-vertical-order',
-    isHorizontalFirst && 'is-horizontal-order',
-    isMiddleFirst && 'is-middle-order',
+    isVerticalAxis && 'is-vertical-axis',
+    isHorizontalAxis && 'is-horizontal-axis',
+    isMiddleFirst && 'is-middle-axis',
     isLeft && 'is-left',
     isMiddle && 'is-middle',
     isRight && 'is-right',
-    isFullWidth && 'is-full-width',
+    isFillWidth && 'is-fill-width',
     isSnapLeft && 'is-snap-left',
     isSnapRight && 'is-snap-right',
     isTop && 'is-top',
     isCenter && 'is-center',
     isBottom && 'is-bottom',
-    isFullHeight && 'is-full-height',
+    isFillHeight && 'is-fill-height',
     isSnapTop && 'is-snap-top',
     isSnapBottom && 'is-snap-bottom',
     isArrowStart && 'is-arrow-start',

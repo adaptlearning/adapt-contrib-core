@@ -32,6 +32,10 @@ export default class TooltipView extends Backbone.View {
     $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
   }
 
+  get config() {
+    return Adapt.course.get('_tooltips');
+  }
+
   /**
    * @param {jQuery} event
    */
@@ -45,6 +49,7 @@ export default class TooltipView extends Backbone.View {
    * @param {jQuery} event
    */
   onMouseOver(event) {
+
     const $mouseoverEl = $(event.currentTarget);
     const id = $mouseoverEl.data('tooltip-id');
     // Cancel if id is already tabbed to and gets focused again (from notify etc)
@@ -52,7 +57,11 @@ export default class TooltipView extends Backbone.View {
     this._currentId = id;
     const tooltip = this.getTooltip(id);
     if (!tooltip?.get('_isEnabled')) return this.hide();
-    this.show(tooltip, $mouseoverEl);
+    if (event.ctrlKey && this.config._allowTest) {
+      this.showTest(tooltip, $mouseoverEl);
+    } else {
+      this.show(tooltip, $mouseoverEl);
+    }
     $(document).on('scroll', this.onScroll);
   }
 
@@ -124,4 +133,56 @@ export default class TooltipView extends Backbone.View {
     return this._tooltipData[id];
   }
 
+  /**
+   * @param {object} tooltip
+   * @param {jQuery} $mouseoverEl
+   */
+  showTest(tooltip, $target) {
+    const produce = (parts) => {
+      const lastIndex = (parts.length - 1);
+      const partIndex = new Array(parts.length).fill(0, 0, lastIndex);
+      const tooltips = [];
+      const json = tooltip.toJSON();
+      while (true) {
+        const position = parts.map((part, index) => part[partIndex[index]]).join(' ');
+        tooltips.push(new TooltipItemModel({
+          ...json,
+          disabledText: `D ${position}`,
+          text: `T ${position}`,
+          _position: position,
+          _classes: 'test'
+        }));
+        for (let i = lastIndex; i >= 0; i--) {
+          partIndex[i] += 1;
+          if (partIndex[i] < parts[i].length) break;
+          if (i === 0) break;
+          partIndex[i] = 0;
+        }
+        if (partIndex[0] >= parts[0].length) break;
+      }
+      tooltips.forEach(model => {
+        const tooltipItem = new TooltipItemView({
+          model,
+          $target,
+          parent: this
+        });
+        this._tooltips.push(tooltipItem);
+        this.$el.append(tooltipItem.$el);
+      });
+    };
+
+    const areaOutside = ['outside'];
+    const areaInside = ['inside'];
+    const arrowPosition = ['middle', 'start', 'end'];
+    const vertical = ['middle', 'top', 'bottom'];
+    const horizontal = ['middle', 'right', 'left'];
+    const partsVertical = [areaOutside, arrowPosition, vertical, horizontal];
+    const partsHorizontal = [areaOutside, arrowPosition, horizontal, vertical];
+    const partsVerticalInside = [areaInside, vertical, horizontal];
+    const partsHorizontalInside = [areaInside, horizontal, vertical];
+    produce(partsVertical);
+    produce(partsHorizontal);
+    produce(partsVerticalInside);
+    produce(partsHorizontalInside);
+  }
 }

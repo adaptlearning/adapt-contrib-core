@@ -8,6 +8,7 @@
 @tooltip-viewport-padding: 8px;
 
 :root {
+  --adapt-tooltip-offset: @tooltip-offset;
   --adapt-tooltip-distance: @tooltip-distance;
   --adapt-tooltip-viewport-padding: @tooltip-viewport-padding;
   --adapt-tooltip-target-position-left: 0px;
@@ -16,19 +17,32 @@
   --adapt-tooltip-target-position-bottom: 0px;
   --adapt-tooltip-target-position-width: 0px;
   --adapt-tooltip-target-position-height: 0px;
-  --adapt-tooltip-target-distance-left: 0px;
-  --adapt-tooltip-target-distance-top: 0px;
-  --adapt-tooltip-target-distance-right: 0px;
-  --adapt-tooltip-target-distance-bottom: 0px;
+  --adapt-tooltip-target-distancetoedge-left: 0px;
+  --adapt-tooltip-target-distancetoedge-top: 0px;
+  --adapt-tooltip-target-distancetoedge-right: 0px;
+  --adapt-tooltip-target-distancetoedge-bottom: 0px;
   --adapt-tooltip-scroll-top: 0px;
   --adapt-tooltip-scroll-left: 0px;
 }
 
+.test {
+  color: transparent !important;
+  .tooltip {
+    pointer-events: all !important;
+    background-color: transparent !important;
+    outline: 1px solid black !important;
+  }
+  .tooltip:hover {
+    background-color: red !important;
+    color: white !important;
+  }
+}
 
 .tooltip__container {
   overflow: hidden;
 }
 
+// tooltip target overlay position
 .tooltip {
   &__container &__position {
     position: absolute;
@@ -56,6 +70,7 @@
   }
 }
 
+// tooltip text
 .tooltip__container .tooltip {
   position: absolute;
 
@@ -78,6 +93,7 @@
   border-radius: @tooltip-radius;
 }
 
+// tooltip arrow
 .tooltip {
   &__container &__arrow {
     position: absolute;
@@ -106,14 +122,9 @@
   }
 }
 
+// tooltip text positioning
 .tooltip {
-  .is-outside.is-vertical-order & {
-    .is-full-width& {
-      left: calc(var(--adapt-tooltip-target-distance-left) * -1);
-      right: calc(var(--adapt-tooltip-target-distance-right) * -1);
-      max-width: unset;
-      width: initial;
-    }
+  .is-outside.is-vertical-axis & {
 
     .is-top& {
       bottom: 100%;
@@ -127,19 +138,36 @@
 
     .is-left.is-arrow-start& {
       right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      [dir="rtl"] & {
+        left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+        right: initial;
+      }
     }
 
     .is-left.is-arrow-middle& {
       right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      [dir="rtl"] & {
+        left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        right: initial;
+      }
     }
 
     .is-left.is-arrow-end& {
       right: 0%;
+      [dir="rtl"] & {
+        left: 0%;
+        right: initial;
+      }
     }
 
     .is-middle.is-arrow-start& {
       left: calc(0% + @tooltip-arrow-width);
       transform: translate(-50%);
+      [dir="rtl"] & {
+        right: calc(0% + @tooltip-arrow-width);
+        left: initial;
+        transform: translate(50%);
+      }
     }
 
     .is-middle.is-arrow-middle& {
@@ -150,55 +178,101 @@
     .is-middle.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width);
       transform: translate(-50%);
+      [dir="rtl"] & {
+        right: calc(100% - @tooltip-arrow-width);
+        left: initial;
+        transform: translate(50%);
+      }
     }
 
     .is-right.is-arrow-start& {
       left: 0%;
+      [dir="rtl"] & {
+        right: 0%;;
+        left: initial;
+      }
     }
 
     .is-right.is-arrow-middle& {
       left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      [dir="rtl"] & {
+        right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        left: initial;
+      }
     }
 
     .is-right.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      [dir="rtl"] & {
+        right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+        left: initial;
+      }
     }
 
-    .is-top.is-full-width& {
-      left: calc(var(--adapt-tooltip-target-distance-left) * -1);
-      right: calc(var(--adapt-tooltip-target-distance-right) * -1);
-      max-height: calc(var(--adapt-tooltip-target-distance-top) - @tooltip-distance);
+    .is-fill-width.is-arrow-start&,
+    .is-fill-width.is-arrow-middle&,
+    .is-fill-width.is-arrow-end& {
+      left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
+      right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
+      max-width: unset;
+      width: initial;
+      [dir="rtl"] & {
+        left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
+        right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
+      }
     }
 
-    .is-bottom.is-full-width& {
-      left: calc(var(--adapt-tooltip-target-distance-left) * -1);
-      right: calc(var(--adapt-tooltip-target-distance-right) * -1);
-      max-height: calc(var(--adapt-tooltip-target-distance-bottom) - @tooltip-distance);
+    .is-top.is-fill-width& {
+      max-height: calc(var(--adapt-tooltip-target-distancetoedge-top) - @tooltip-distance);
+    }
+
+    .is-bottom.is-fill-width& {
+      max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - @tooltip-distance);
     }
 
     .is-snap-left& {
-      left: calc(var(--adapt-tooltip-left) * -1) !important;
+      left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1) !important;
       transform: none !important;
       right: initial !important;
+      [dir="rtl"] & {
+        right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1) !important;
+        left: initial;
+      }
     }
 
     .is-snap-right& {
-      right: calc(var(--adapt-tooltip-right) * -1) !important;
+      right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1) !important;
       transform: none !important;
       left: initial !important;
+      [dir="rtl"] & {
+        left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1) !important;
+        right: initial !important;
+      }
     }
 
   }
 
-  .is-outside.is-horizontal-order & {
+  .is-outside.is-horizontal-axis & {
     .is-left& {
       right: 100%;
       margin-right: @tooltip-distance;
+      [dir="rtl"] & {
+        left: 100%;
+        right: initial;
+        margin-left: @tooltip-distance;
+        margin-right: initial;
+      }
     }
 
     .is-right& {
       left: 100%;
       margin-left: @tooltip-distance;
+      [dir="rtl"] & {
+        right: 100%;
+        left: initial;
+        margin-right: @tooltip-distance;
+        margin-left: initial;
+      }
     }
 
     .is-top.is-arrow-start& {
@@ -240,21 +314,36 @@
       top: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
     }
 
-    .is-full-height& {
-      right: calc(var(--adapt-tooltip-target-distance-right) * -1);
+    .is-left.is-fill-height& {
+      left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
       max-height: var(--adapt-tooltip-viewport-constrained-height);
       max-width: unset;
       width: unset;
+      [dir="rtl"] & {
+        right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
+        left: 100%;
+      }
+    }
+
+    .is-right.is-fill-height& {
+      right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
+      max-height: var(--adapt-tooltip-viewport-constrained-height);
+      max-width: unset;
+      width: unset;
+      [dir="rtl"] & {
+        left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
+        right: 100%;
+      }
     }
 
     .is-snap-top& {
-      top: calc(var(--adapt-tooltip-target-distance-top) * -1) !important;
+      top: calc(var(--adapt-tooltip-target-distancetoedge-top) * -1) !important;
       transform: none !important;
       bottom: initial !important;
     }
 
     .is-snap-bottom& {
-      bottom: calc(var(--adapt-tooltip-target-distance-bottom) * -1) !important;
+      bottom: calc(var(--adapt-tooltip-target-distancetoedge-bottom) * -1) !important;
       transform: none !important;
       top: initial !important;
     }
@@ -264,6 +353,10 @@
     .is-top.is-left& {
       left: 0%;
       top: 0%;
+      [dir="rtl"] & {
+        right: 0%;
+        left: initial;
+      }
     }
 
     .is-top.is-middle& {
@@ -275,12 +368,20 @@
     .is-top.is-right& {
       right: 0%;
       top: 0%;
+      [dir="rtl"] & {
+        left: 0%;
+        right: initial;
+      }
     }
 
     .is-center.is-right& {
       right: 0%;
       top: 50%;
       transform: translateY(-50%);
+      [dir="rtl"] & {
+        left: 0%;
+        right: initial;
+      }
     }
 
     .is-center.is-middle& {
@@ -293,11 +394,19 @@
       left: 0%;
       top: 50%;
       transform: translateY(-50%);
+      [dir="rtl"] & {
+        right: 0%;
+        left: initial;
+      }
     }
 
     .is-bottom.is-left& {
       left: 0%;
       bottom: 0%;
+      [dir="rtl"] & {
+        right: 0%;
+        left: initial;
+      }
     }
 
     .is-bottom.is-middle& {
@@ -309,12 +418,19 @@
     .is-bottom.is-right& {
       right: 0%;
       bottom: 0%;
+      [dir="rtl"] & {
+        left: 0%;
+        right: initial;
+      }
     }
   }
 
   .is-inside&__position {
     .is-top.is-left& {
       transform-origin: top left;
+      [dir="rtl"] & {
+        transform-origin: top right;
+      }
     }
 
     .is-top.is-middle& {
@@ -323,10 +439,16 @@
 
     .is-top.is-right& {
       transform-origin: top right;
+      [dir="rtl"] & {
+        transform-origin: top left;
+      }
     }
 
     .is-center.is-left& {
       transform-origin: center left;
+      [dir="rtl"] & {
+        transform-origin: center right;
+      }
     }
 
     .is-center.is-middle& {
@@ -335,10 +457,16 @@
 
     .is-center.is-right& {
       transform-origin: center right;
+      [dir="rtl"] & {
+        transform-origin: center left;
+      }
     }
 
     .is-bottom.is-left& {
       transform-origin: bottom left;
+      [dir="rtl"] & {
+        transform-origin: bottom right;
+      }
     }
 
     .is-bottom.is-middle& {
@@ -347,12 +475,16 @@
 
     .is-bottom.is-right& {
       transform-origin: bottom right;
+      [dir="rtl"] & {
+        transform-origin: bottom left;
+      }
     }
   }
 }
 
+// tooltip arrow positioning
 .tooltip__arrow {
-  .is-outside.is-vertical-order & {
+  .is-outside.is-vertical-axis & {
     .is-top& {
       bottom: 100%;
       margin-bottom: @tooltip-distance;
@@ -369,26 +501,38 @@
       }
     }
 
-    .is-full-height.is-arrow-start&,
-    .is-full-width.is-arrow-start&,
+    .is-fill-height.is-arrow-start&,
+    .is-fill-width.is-arrow-start&,
     .is-left.is-arrow-start& {
       right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      [dir="rtl"] & {
+        left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        right: initial;
+      }
     }
 
-    .is-full-height.is-arrow-middle&,
-    .is-full-width.is-arrow-middle&,
+    .is-fill-height.is-arrow-middle&,
+    .is-fill-width.is-arrow-middle&,
     .is-left.is-arrow-middle& {
       right: calc(50% - (@tooltip-arrow-width / 2));
     }
 
-    .is-full-height.is-arrow-end&,
-    .is-full-width.is-arrow-end&,
+    .is-fill-height.is-arrow-end&,
+    .is-fill-width.is-arrow-end&,
     .is-left.is-arrow-end& {
       right: calc(0% + @tooltip-offset);
+      [dir="rtl"] & {
+        left: calc(0% + @tooltip-offset);
+        right: initial;
+      }
     }
 
     .is-middle.is-arrow-start& {
       left: calc(0% + @tooltip-offset);
+      [dir="rtl"] & {
+        right: calc(0% + @tooltip-offset);
+        left: initial;
+      }
     }
 
     .is-middle.is-arrow-middle& {
@@ -398,10 +542,18 @@
 
     .is-middle.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      [dir="rtl"] & {
+        right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        left: initial;
+      }
     }
 
     .is-right.is-arrow-start& {
       left: calc(0% + @tooltip-offset);
+      [dir="rtl"] & {
+        right: calc(0% + @tooltip-offset);
+        left: initial;
+      }
     }
 
     .is-right.is-arrow-middle& {
@@ -410,27 +562,50 @@
 
     .is-right.is-arrow-end& {
       left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      [dir="rtl"] & {
+        right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        left: initial;
+      }
     }
 
     .is-arrow-snap.is-arrow-start& {
-      left: calc((var(--adapt-tooltip-target-distance-left) * -1) + @tooltip-offset) !important;
+      left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
       transform: none !important;
       right: initial !important;
+      [dir="rtl"] & {
+        right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
+        transform: none !important;
+        left: initial !important;
+      }
     }
 
     .is-arrow-snap.is-arrow-end& {
-      right: calc((var(--adapt-tooltip-target-distance-right) * -1) + @tooltip-offset) !important;
+      right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset) !important;
       transform: none !important;
       left: initial !important;
+      [dir="rtl"] & {
+        left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset) !important;
+        transform: none !important;
+        right: initial !important;
+      }
     }
   }
 
-  .is-outside.is-horizontal-order & {
+  .is-outside.is-horizontal-axis & {
     .is-left& {
       right: 100%;
       margin-right: @tooltip-distance;
       &::before {
         transform: translateX(99%) rotate(90deg)
+      }
+      [dir="rtl"] & {
+        left: 100%;
+        right: initial;
+        margin-left: @tooltip-distance;
+        margin-right: initial;
+        &::before {
+          transform: translateX(-99%) rotate(270deg)
+        }
       }
     }
 
@@ -440,22 +615,31 @@
       &::before {
         transform: translateX(-99%) rotate(270deg)
       }
+      [dir="rtl"] & {
+        right: 100%;
+        left: initial;
+        margin-right: @tooltip-distance;
+        margin-left: initial;
+        &::before {
+          transform: translateX(99%) rotate(90deg)
+        }
+      }
     }
 
-    .is-full-height.is-arrow-start&,
-    .is-full-width.is-arrow-start&,
+    .is-fill-height.is-arrow-start&,
+    .is-fill-width.is-arrow-start&,
     .is-top.is-arrow-start& {
       bottom: calc(100% - @tooltip-arrow-width - @tooltip-offset);
     }
 
-    .is-full-height.is-arrow-middle&,
-    .is-full-width.is-arrow-middle&,
+    .is-fill-height.is-arrow-middle&,
+    .is-fill-width.is-arrow-middle&,
     .is-top.is-arrow-middle& {
       bottom: calc(50% - (@tooltip-arrow-width / 2));
     }
 
-    .is-full-height.is-arrow-end&,
-    .is-full-width.is-arrow-end&,
+    .is-fill-height.is-arrow-end&,
+    .is-fill-width.is-arrow-end&,
     .is-top.is-arrow-end& {
       bottom: calc(0% + @tooltip-offset);
     }
@@ -485,13 +669,13 @@
     }
 
     .is-arrow-snap.is-arrow-start& {
-      top: calc((var(--adapt-tooltip-target-distance-top) * -1) + @tooltip-offset) !important;
+      top: calc((var(--adapt-tooltip-target-distancetoedge-top) * -1) + @tooltip-offset) !important;
       transform: none !important;
       bottom: initial !important;
     }
 
     .is-arrow-snap.is-arrow-end& {
-      bottom: calc((var(--adapt-tooltip-target-distance-bottom) * -1) + @tooltip-offset) !important;
+      bottom: calc((var(--adapt-tooltip-target-distancetoedge-bottom) * -1) + @tooltip-offset) !important;
       transform: none !important;
       top: initial !important;
     }
@@ -502,6 +686,7 @@
   }
 }
 
+// animations
 .tooltip {
   &__container .is-shown&__position {
     animation: toolTip--fadeScaleIn 0.4s forwards;
