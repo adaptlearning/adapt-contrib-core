@@ -488,13 +488,6 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Enabled?"
-        },
-        "_position": {
-          "type": "string",
-          "title": "Default position",
-          "default": "middle bottom right",
-          "inputType": "Text",
-          "required": true
         }
       }
     },

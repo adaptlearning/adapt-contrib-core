@@ -443,14 +443,6 @@
               "type": "boolean",
               "title": "Enabled",
               "default": true
-            },
-            "_position": {
-              "type": "string",
-              "title": "Default position",
-              "default": "middle bottom right",
-              "_adapt": {
-                "translatable": true
-              }
             }
           }
         },

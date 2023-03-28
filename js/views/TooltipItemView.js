@@ -13,7 +13,7 @@ export default class TooltipItemView extends Backbone.View {
     return [
       'tooltip',
       this.model.get('isTargetFixedPosition') && 'is-fixed',
-      this.model.get('tooltipClasses') || 'is-vertical-axis is-top is-middle is-arrow-middle',
+      this.model.get('tooltipClasses') || 'is-vertical-axis is-arrow-middle is-bottom is-middle',
       this.model.get('isShown') && 'is-shown',
       this.model.get('_classes')
     ].filter(Boolean).join(' ');
