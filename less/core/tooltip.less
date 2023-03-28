@@ -27,12 +27,12 @@
 
 .test {
   color: transparent !important;
-  .tooltip {
+  .tooltip__body {
     pointer-events: all !important;
     background-color: transparent !important;
     outline: 1px solid black !important;
   }
-  .tooltip:hover {
+  .tooltip__body:hover {
     background-color: red !important;
     color: white !important;
   }
@@ -44,58 +44,54 @@
 
 // tooltip target overlay position
 .tooltip {
-  &__container &__target {
-    position: absolute;
-    left: calc(var(--adapt-tooltip-target-position-left) + var(--adapt-tooltip-scroll-left));
-    top: calc(var(--adapt-tooltip-target-position-top) + var(--adapt-tooltip-scroll-top));
-    width: var(--adapt-tooltip-target-position-width);
-    height: var(--adapt-tooltip-target-position-height);
-
-    pointer-events: none;
-
-
-    opacity: 0;
-    &.is-shown {
-      opacity: 1;
-    }
-    &.is-loading {
-      visibility: hidden;
-    }
-
-    z-index: 0;
-    &.tooltip-fixed {
-      position: fixed !important;
-      z-index: 82;
-    }
-  }
-}
-
-// tooltip text
-.tooltip__container .tooltip {
   position: absolute;
+  left: calc(var(--adapt-tooltip-target-position-left) + var(--adapt-tooltip-scroll-left));
+  top: calc(var(--adapt-tooltip-target-position-top) + var(--adapt-tooltip-scroll-top));
+  width: var(--adapt-tooltip-target-position-width);
+  height: var(--adapt-tooltip-target-position-height);
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: max-content;
-  min-width: 3rem;
-  max-width: 20rem;
-  @media (min-width: @device-width-medium) {
-     max-width: 30rem;
+  pointer-events: none;
+
+  opacity: 0;
+  .is-shown& {
+    opacity: 1;
+  }
+  .is-loading& {
+    visibility: hidden;
   }
 
-  color: white;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  z-index: 0;
+  .is-fixed& {
+    position: fixed !important;
+    z-index: 82;
+  }
 
-  padding: 0.5rem 0.75rem 0.55rem;
 
-  background-color: @tooltip-color;
-  border-radius: @tooltip-radius;
-}
+  // tooltip text
+  &__body {
+    position: absolute;
 
-// tooltip arrow
-.tooltip {
-  &__container &__arrow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: max-content;
+    min-width: 3rem;
+    max-width: 20rem;
+    @media (min-width: @device-width-medium) {
+      max-width: 30rem;
+    }
+
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.5;
+
+    padding: 0.5rem 0.75rem 0.55rem;
+
+    background-color: @tooltip-color;
+    border-radius: @tooltip-radius;
+  }
+
+  // tooltip arrow
+  &__arrow {
     position: absolute;
 
     width: @tooltip-arrow-width;
@@ -120,11 +116,9 @@
       border-bottom-color: @tooltip-color;
     }
   }
-}
 
-// tooltip text positioning
-.tooltip {
-  .is-outside.is-vertical-axis & {
+  // tooltip text positioning
+  .is-outside.is-vertical-axis &__body {
 
     .is-top& {
       bottom: 100%;
@@ -218,6 +212,7 @@
       margin-left: auto;
       margin-right: auto;
       width: initial;
+      transform: initial;
       [dir="rtl"] & {
         left: calc(var(--adapt-tooltip-target-distancetoedge-left) * -1);
         right: calc(var(--adapt-tooltip-target-distancetoedge-right) * -1);
@@ -230,6 +225,11 @@
 
     .is-bottom.is-fill-width& {
       max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - @tooltip-distance);
+    }
+
+
+
+    .is-fill-width& {
     }
 
     .is-snap-left& {
@@ -246,7 +246,7 @@
 
   }
 
-  .is-outside.is-horizontal-axis & {
+  .is-outside.is-horizontal-axis &__body {
     .is-left& {
       right: 100%;
       margin-right: @tooltip-distance;
@@ -343,7 +343,7 @@
     }
   }
 
-  .is-inside & {
+  .is-inside &__body {
     .is-top.is-left& {
       left: 0%;
       top: 0%;
@@ -419,66 +419,8 @@
     }
   }
 
-  .is-inside&__target {
-    .is-top.is-left& {
-      transform-origin: top left;
-      [dir="rtl"] & {
-        transform-origin: top right;
-      }
-    }
-
-    .is-top.is-middle& {
-      transform-origin: top center;
-    }
-
-    .is-top.is-right& {
-      transform-origin: top right;
-      [dir="rtl"] & {
-        transform-origin: top left;
-      }
-    }
-
-    .is-center.is-left& {
-      transform-origin: center left;
-      [dir="rtl"] & {
-        transform-origin: center right;
-      }
-    }
-
-    .is-center.is-middle& {
-      transform-origin: center;
-    }
-
-    .is-center.is-right& {
-      transform-origin: center right;
-      [dir="rtl"] & {
-        transform-origin: center left;
-      }
-    }
-
-    .is-bottom.is-left& {
-      transform-origin: bottom left;
-      [dir="rtl"] & {
-        transform-origin: bottom right;
-      }
-    }
-
-    .is-bottom.is-middle& {
-      transform-origin: bottom center;
-    }
-
-    .is-bottom.is-right& {
-      transform-origin: bottom right;
-      [dir="rtl"] & {
-        transform-origin: bottom left;
-      }
-    }
-  }
-}
-
-// tooltip arrow positioning
-.tooltip__arrow {
-  .is-outside.is-vertical-axis & {
+  // tooltip arrow positioning
+  .is-outside.is-vertical-axis &__arrow {
     .is-top& {
       bottom: 100%;
       margin-bottom: @tooltip-distance;
@@ -585,7 +527,7 @@
     }
   }
 
-  .is-outside.is-horizontal-axis & {
+  .is-outside.is-horizontal-axis &__arrow{
     .is-left& {
       right: 100%;
       margin-right: @tooltip-distance;
@@ -675,22 +617,76 @@
     }
   }
 
-  .is-inside & {
+  .is-inside &__arrow {
     display: none;
   }
-}
 
-// animations
-.tooltip {
-  &__container .is-shown&__target {
+  // animations
+  .is-shown {
     animation: toolTip--fadeScaleIn 0.4s forwards;
   }
 
-@media (prefers-reduced-motion) {
-  &__container .is-shown&__target {
-    animation: none;
+  .is-inside &__body {
+    .is-top.is-left& {
+      transform-origin: top left;
+      [dir="rtl"] & {
+        transform-origin: top right;
+      }
+    }
+
+    .is-top.is-middle& {
+      transform-origin: top center;
+    }
+
+    .is-top.is-right& {
+      transform-origin: top right;
+      [dir="rtl"] & {
+        transform-origin: top left;
+      }
+    }
+
+    .is-center.is-left& {
+      transform-origin: center left;
+      [dir="rtl"] & {
+        transform-origin: center right;
+      }
+    }
+
+    .is-center.is-middle& {
+      transform-origin: center;
+    }
+
+    .is-center.is-right& {
+      transform-origin: center right;
+      [dir="rtl"] & {
+        transform-origin: center left;
+      }
+    }
+
+    .is-bottom.is-left& {
+      transform-origin: bottom left;
+      [dir="rtl"] & {
+        transform-origin: bottom right;
+      }
+    }
+
+    .is-bottom.is-middle& {
+      transform-origin: bottom center;
+    }
+
+    .is-bottom.is-right& {
+      transform-origin: bottom right;
+      [dir="rtl"] & {
+        transform-origin: bottom left;
+      }
+    }
   }
-}
+
+  @media (prefers-reduced-motion) {
+    &.is-shown {
+      animation: none;
+    }
+  }
 }
 
 @keyframes toolTip--fadeScaleIn {

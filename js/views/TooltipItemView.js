@@ -11,8 +11,8 @@ export default class TooltipItemView extends Backbone.View {
 
   className() {
     return [
-      'tooltip__target',
-      this.model.get('isTargetFixedPosition') && 'tooltip-fixed',
+      'tooltip',
+      this.model.get('isTargetFixedPosition') && 'is-fixed',
       this.model.get('tooltipClasses') || 'is-vertical-axis is-top is-middle is-arrow-middle',
       this.model.get('isShown') && 'is-shown',
       this.model.get('_classes')
@@ -66,8 +66,8 @@ export default class TooltipItemView extends Backbone.View {
         width: parseInt(getComputedStyle(document.body).width),
         height: $('html')[0].clientHeight
       },
-      tooltipDOMRect: this.$('.tooltip')[0]?.getBoundingClientRect(),
-      arrowDOMRect: this.$('.has-arrow')[0]?.getBoundingClientRect(),
+      tooltipDOMRect: this.$('.tooltip__body')[0]?.getBoundingClientRect(),
+      arrowDOMRect: this.$('.tooltip__arrow')[0]?.getBoundingClientRect(),
       ariaHidden: (document.activeElement === this.$target[0])
     };
   }

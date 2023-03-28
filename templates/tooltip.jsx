@@ -13,27 +13,20 @@ export default function Tooltip(props) {
     <React.Fragment>
       <div
         className={classes([
-          'tooltip__arrow',
-          'has-arrow'
+          'tooltip__arrow'
         ])}
         aria-hidden='true'
       />
       <div
         className={classes([
-          'tooltip',
-          'js-tooltip'
+          'tooltip__body'
         ])}
         aria-hidden={ariaHidden}
       >
         <div
-          className='tooltip__inner'
-        >
-          <div
-            className='tooltip__body'
-            dangerouslySetInnerHTML={{ __html: compile((isDisabled ? disabledText : text) || '', props) }}
-          />
-
-        </div>
+          className='tooltip__body-inner'
+          dangerouslySetInnerHTML={{ __html: compile((isDisabled ? disabledText : text) || '', props) }}
+        />
       </div>
     </React.Fragment>
   );
