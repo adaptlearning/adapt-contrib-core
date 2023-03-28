@@ -98,9 +98,6 @@ export default class TooltipItemView extends Backbone.View {
     // Second pass - if needed, swap sides, switch axis and/or fill area
     // Third pass - snap to edges if overflowing
     for (let pass = SECOND_PASS, l = THIRD_PASS; pass <= l; pass++) {
-      const { shouldNextPass } = multipassCache;
-      const isFouthPass = (pass === THIRD_PASS);
-      if (isFouthPass && !shouldNextPass) break;
       const environment = this.environment;
       const positions = position(this.environment, multipassCache, pass);
       const {
@@ -423,7 +420,6 @@ function position (
   const tooltipStyles = {};
 
   if (pass >= SECOND_PASS) {
-    let shouldNextPass = false;
     // Convert DOMRect to DistanceRect (distances from edges instead of top left) https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
     const tooltipDistRect = convertToDistanceRect(tooltipDOMRect, clientDOMRect);
     const arrowDistRect = convertToDistanceRect(arrowDOMRect, clientDOMRect);
@@ -486,49 +482,47 @@ function position (
     //    this isusually because of having too much text and being width constrained
     //   If the shape currently can't fit in its axis, but it can fit in the available area
     //     this is because its css width is contained
-    const isFillArea = (isSwapAxis && (!canFitHeightLength || !canFitWidthLength)) ||
-      (isVerticalAxis && isOverflowHorizontal && !canFitWidthLength && (canFitInVerticalArea || isVerticalAreaLarger)) ||
-      (isHorizontalAxis && isOverflowVertical && !canFitHeightLength && (canFitInHorizontalArea || isHorizontalAreaLarger));
+    const isFillArea = (isSwapAxis && isBadShape) ||
+      (isVerticalAxis && isOverflow && isBadShape && (canFitInVerticalArea || isVerticalAreaLarger)) ||
+      (isHorizontalAxis && isOverflow && isBadShape && (canFitInHorizontalArea || isHorizontalAreaLarger));
 
-    if (pass === SECOND_PASS) {
-      if (isBadShape || isOverflow) {
-        if (isSwapAxis) {
-          // Move from left/right to up/down or from up/down to left/right
-          // Make full screen if required
-          [isVerticalAxis, isHorizontalAxis] = swapValues(isVerticalAxis, isHorizontalAxis);
-          shouldNextPass = true;
-        }
-        if (isFillArea) {
-          // Fill into the largest available area top/bottom full width or left/right full height
-          if (isVerticalAxis) isFillWidth = true;
-          if (isHorizontalAxis) isFillHeight = true;
-        }
-        const isSwapVerticalSide = !(isHorizontalAxis && canFitInHorizontalArea) &&
-          !((isTop && canFitInTopArea) || (isBottom && canFitInBottomArea));
-        if (isSwapVerticalSide && (canFitInTopArea || canFitInBottomArea)) {
-          // Switch to fitting side
-          isTop = canFitInTopArea;
-          isBottom = canFitInBottomArea;
-        } else if (isSwapVerticalSide) {
-          // Largest of top / bottom
-          isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
-          isBottom = (constrainedTargetDistRect.top <= constrainedTargetDistRect.bottom);
-        }
-        const isSwapHorizontalSide = !(isVerticalAxis && canFitInVerticalArea) &&
-          !((isLeft && canFitInLeftArea) || (isRight && canFitInRightArea));
-        if (isSwapHorizontalSide && (canFitInLeftArea || canFitInRightArea)) {
-          // Switch to fitting side
-          isLeft = invertRTL(canFitInLeftArea, isRTL);
-          isRight = invertRTL(canFitInRightArea, isRTL);
-        } else if (isSwapHorizontalSide) {
-          // Largest of left / right
-          isLeft = invertRTL(constrainedTargetDistRect.left >= constrainedTargetDistRect.right, isRTL);
-          isRight = invertRTL(constrainedTargetDistRect.left <= constrainedTargetDistRect.right, isRTL);
-        }
-        isMiddle = (!isLeft && !isRight);
-        isCenter = (!isTop && !isBottom);
-        shouldNextPass = true;
+    if (pass === SECOND_PASS && (isBadShape || isOverflow)) {
+      if (isSwapAxis) {
+        // Move from left/right to up/down or from up/down to left/right
+        // Make full screen if required
+        [isVerticalAxis, isHorizontalAxis] = swapValues(isVerticalAxis, isHorizontalAxis);
       }
+      if (isFillArea) {
+        // Fill into the largest available area top/bottom full width or left/right full height
+        if (isVerticalAxis) isFillWidth = true;
+        if (isHorizontalAxis) isFillHeight = true;
+      }
+      const isSwapVerticalSide = !(isHorizontalAxis && canFitInHorizontalArea) &&
+        (!((isTop && isFillArea && canFitInTopArea) || (isBottom && isFillArea && canFitInBottomArea)) ||
+        ((isBottom && !isFillArea && isOverflowBottom) || (isTop && !isFillArea && isOverflowTop)));
+      if (isSwapVerticalSide && isFillArea && (canFitInTopArea || canFitInBottomArea)) {
+        // Switch to fitting side
+        isTop = !canFitInBottomArea;
+        isBottom = canFitInBottomArea;
+      } else if (isSwapVerticalSide) {
+        // Largest of top / bottom
+        isTop = (constrainedTargetDistRect.top >= constrainedTargetDistRect.bottom);
+        isBottom = (constrainedTargetDistRect.top < constrainedTargetDistRect.bottom);
+      }
+      const isSwapHorizontalSide = !(isVerticalAxis && canFitInVerticalArea) &&
+        (!((isLeft && isFillArea && canFitInLeftArea) || (isRight && isFillArea && canFitInRightArea)) ||
+        ((isLeft && !isFillArea && isOverflowLeft) || (isRight && !isFillArea && isOverflowRight)));
+      if (isSwapHorizontalSide && isFillArea && (canFitInLeftArea || canFitInRightArea)) {
+        // Switch to fitting side
+        isLeft = invertRTL(!canFitInRightArea, isRTL);
+        isRight = invertRTL(canFitInRightArea, isRTL);
+      } else if (isSwapHorizontalSide) {
+        // Largest of left / right
+        isLeft = invertRTL(constrainedTargetDistRect.left >= constrainedTargetDistRect.right, isRTL);
+        isRight = invertRTL(constrainedTargetDistRect.left < constrainedTargetDistRect.right, isRTL);
+      }
+      isMiddle = (!isLeft && !isRight);
+      isCenter = (!isTop && !isBottom);
     }
     if (pass === THIRD_PASS) {
       if (isVerticalAxis) {
@@ -555,7 +549,6 @@ function position (
     if (pass >= 2) {
       // Keep the current calculations for the next pass
       Object.assign(multipassCache, {
-        shouldNextPass,
         isOutside,
         isInside,
         isVerticalAxis,
