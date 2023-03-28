@@ -520,6 +520,10 @@ function position (
         // Largest of left / right
         isLeft = invertRTL(constrainedTargetDistRect.left >= constrainedTargetDistRect.right, isRTL);
         isRight = invertRTL(constrainedTargetDistRect.left < constrainedTargetDistRect.right, isRTL);
+      } else if (isSwapAxis) {
+        // As axis has rotated, needs rtl inverting
+        isLeft = invertRTL(isLeft, isRTL);
+        isRight = invertRTL(isRight, isRTL);
       }
       isMiddle = (!isLeft && !isRight);
       isCenter = (!isTop && !isBottom);
