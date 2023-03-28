@@ -491,6 +491,11 @@ function position (
         // Move from left/right to up/down or from up/down to left/right
         // Make full screen if required
         [isVerticalAxis, isHorizontalAxis] = swapValues(isVerticalAxis, isHorizontalAxis);
+        if (isCenter) {
+          // Rotate vertical center around to horizontal middle
+          [isMiddle, isLeft, isRight] = [true, false, false];
+          [isBottom, isTop, isCenter] = [true, false, false];
+        }
       }
       if (isFillArea) {
         // Fill into the largest available area top/bottom full width or left/right full height
@@ -498,8 +503,8 @@ function position (
         if (isHorizontalAxis) isFillHeight = true;
       }
       const isSwapVerticalSide = !(isHorizontalAxis && canFitInHorizontalArea) &&
-        (!((isTop && isFillArea && canFitInTopArea) || (isBottom && isFillArea && canFitInBottomArea)) ||
-        ((isBottom && !isFillArea && isOverflowBottom) || (isTop && !isFillArea && isOverflowTop)));
+        ((isFillArea && !((isTop && canFitInTopArea) || (isBottom && canFitInBottomArea))) ||
+        (!isFillArea && ((isBottom && isOverflowBottom) || (isTop && isOverflowTop))));
       if (isSwapVerticalSide && isFillArea && (canFitInTopArea || canFitInBottomArea)) {
         // Switch to fitting side
         isTop = !canFitInBottomArea;
@@ -510,8 +515,8 @@ function position (
         isBottom = (constrainedTargetDistRect.top < constrainedTargetDistRect.bottom);
       }
       const isSwapHorizontalSide = !(isVerticalAxis && canFitInVerticalArea) &&
-        (!((isLeft && isFillArea && canFitInLeftArea) || (isRight && isFillArea && canFitInRightArea)) ||
-        ((isLeft && !isFillArea && isOverflowLeft) || (isRight && !isFillArea && isOverflowRight)));
+        ((isFillArea && !((isLeft && canFitInLeftArea) || (isRight && canFitInRightArea))) ||
+        (!isFillArea && ((isLeft && isOverflowLeft) || (isRight && isOverflowRight))));
       if (isSwapHorizontalSide && isFillArea && (canFitInLeftArea || canFitInRightArea)) {
         // Switch to fitting side
         isLeft = invertRTL(!canFitInRightArea, isRTL);
@@ -525,8 +530,10 @@ function position (
         isLeft = invertRTL(isLeft, isRTL);
         isRight = invertRTL(isRight, isRTL);
       }
-      isMiddle = (!isLeft && !isRight);
-      isCenter = (!isTop && !isBottom);
+      if (isSwapVerticalSide || isSwapHorizontalSide || isSwapAxis) {
+        isMiddle = (!isLeft && !isRight);
+        isCenter = (!isTop && !isBottom);
+      }
     }
     if (pass === THIRD_PASS) {
       if (isVerticalAxis) {
