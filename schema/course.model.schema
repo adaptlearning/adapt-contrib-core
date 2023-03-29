@@ -366,17 +366,9 @@
                     "text": {
                       "type": "string",
                       "title": "",
-                      "default": "Drawer",
+                      "default": "{{ariaLabel}}",
                       "inputType": "Text",
                       "required": true,
-                      "translatable": true
-                    },
-                    "disabledText": {
-                      "type": "string",
-                      "title": "",
-                      "default": "Drawer",
-                      "inputType": "Disabled Text",
-                      "required": false,
                       "translatable": true
                     }
                   }
@@ -431,17 +423,9 @@
                     "text": {
                       "type": "string",
                       "title": "",
-                      "default": "Back",
+                      "default": "{{ariaLabel}}",
                       "inputType": "Text",
                       "required": true,
-                      "translatable": true
-                    },
-                    "disabledText": {
-                      "type": "string",
-                      "title": "",
-                      "default": "Drawer",
-                      "inputType": "Disabled Text",
-                      "required": false,
                       "translatable": true
                     }
                   }

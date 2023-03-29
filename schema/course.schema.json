@@ -332,15 +332,7 @@
                         "text": {
                           "type": "string",
                           "title": "",
-                          "default": "Drawer",
-                          "_adapt": {
-                            "translatable": true
-                          }
-                        },
-                        "disabledText": {
-                          "type": "string",
-                          "title": "Disabled text",
-                          "default": "",
+                          "default": "{{ariaLabel}}",
                           "_adapt": {
                             "translatable": true
                           }
@@ -393,15 +385,7 @@
                         "text": {
                           "type": "string",
                           "title": "",
-                          "default": "Back",
-                          "_adapt": {
-                            "translatable": true
-                          }
-                        },
-                        "disabledText": {
-                          "type": "string",
-                          "title": "Disabled text",
-                          "default": "",
+                          "default": "{{ariaLabel}}",
                           "_adapt": {
                             "translatable": true
                           }
