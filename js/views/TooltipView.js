@@ -143,7 +143,7 @@ export default class TooltipView extends Backbone.View {
   showTest(tooltip, $target) {
     const produce = (parts) => {
       const lastIndex = (parts.length - 1);
-      const partIndex = new Array(parts.length).fill(0, 0, lastIndex);
+      const partIndex = new Array(parts.length).fill(0);
       const tooltips = [];
       const json = tooltip.toJSON();
       while (true) {
@@ -176,13 +176,13 @@ export default class TooltipView extends Backbone.View {
 
     const areaOutside = ['outside'];
     const areaInside = ['inside'];
-    const arrowPosition = ['middle', 'start', 'end'];
-    const vertical = ['middle', 'top', 'bottom'];
-    const horizontal = ['middle', 'right', 'left'];
-    const partsVertical = [areaOutside, arrowPosition, vertical, horizontal];
-    const partsHorizontal = [areaOutside, arrowPosition, horizontal, vertical];
-    const partsVerticalInside = [areaInside, vertical, horizontal];
-    const partsHorizontalInside = [areaInside, horizontal, vertical];
+    const arrowPosition = ['middle', 'start', 'end', ''];
+    const vertical = ['middle', 'top', 'bottom', ''];
+    const horizontal = ['middle', 'right', 'left', ''];
+    const partsVertical = [areaOutside, vertical, arrowPosition, horizontal];
+    const partsHorizontal = [areaOutside, horizontal, arrowPosition, vertical];
+    const partsVerticalInside = [areaInside, vertical, arrowPosition, horizontal];
+    const partsHorizontalInside = [areaInside, horizontal, arrowPosition, vertical];
     produce(partsVertical);
     produce(partsHorizontal);
     produce(partsVerticalInside);

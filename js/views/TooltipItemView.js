@@ -2,6 +2,7 @@ import Adapt from 'core/js/adapt';
 import { templates } from 'core/js/reactHelpers';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import logging from '../logging';
 
 const FIRST_PASS = 1;
 const SECOND_PASS = 2;
@@ -188,27 +189,205 @@ function lengthToPx (name, length) {
 function parseRelativePosition ({
   position
 }) {
-  const positions = position.split(' ');
-  const isArrowStart = positions.includes('start');
-  const isArrowEnd = !isArrowStart && positions.includes('end');
-  const isArrowMiddle = !isArrowStart && !isArrowEnd;
-  const verticalIndex = Math.min(...['top', 'bottom']
-    .map(v => positions.indexOf(v))
-    .filter(v => v !== -1));
-  const horizontalIndex = Math.min(...['left', 'right']
-    .map(v => positions.indexOf(v))
-    .filter(v => v !== -1));
+  function fixConditions(positions, item1, item2, type) {
+    positions = positions.slice(0);
+    const indexOf1 = positions.indexOf(item1);
+    const indexOf2 = positions.indexOf(item2);
+    let has1 = (indexOf1 !== -1);
+    let has2 = (indexOf2 !== -1);
+    let assume3 = false;
+    let specifiedAtIndex = null;
+    if (has1 && has2) {
+      const isItem1 = (has1 < has2);
+      specifiedAtIndex = isItem1 ? indexOf1 : indexOf2;
+      has1 = isItem1;
+      has2 = !isItem1;
+    } else if (has1) {
+      specifiedAtIndex = indexOf1;
+    } else if (has2) {
+      specifiedAtIndex = indexOf2;
+    } else {
+      assume3 = true;
+    }
+    if (specifiedAtIndex !== null) {
+      positions[specifiedAtIndex] = type;
+      positions = positions.filter((item, index) => {
+        if (index <= specifiedAtIndex) return true;
+        return (item !== item1 && item !== item2);
+      });
+    }
+    const hasSpecified = (has1 || has2);
+    return [positions, has1, has2, assume3, hasSpecified, specifiedAtIndex];
+  }
+  position = position.toLowerCase().split(' ').filter(Boolean).join(' ');
+  let positions = position.split(' ');
+  let isArrowStart = null;
+  let isArrowEnd = null;
+  let isArrowMiddle = null;
+  let isTop = null;
+  let isCenter = null;
+  let isBottom = null;
+  let isLeft = null;
+  let isMiddle = null;
+  let isRight = null;
+  let isOutside = null;
+  let isInside = null;
+  let isAreaAuto = null;
+  let hasArrowSpecified = null;
+  let hasVerticalSpecified = null;
+  let verticalIndex = null;
+  let hasHorizontalSpecified = null;
+  let horizontalIndex = null;
+  [
+    positions,
+    isOutside,
+    isInside,
+    isAreaAuto
+  ] = fixConditions(positions, 'outside', 'inside', 'area');
+  if (isAreaAuto) positions.unshift('area');
+  if (positions.length < 4) {
+    const start = positions.length;
+    positions.length = 4;
+    positions.fill('auto', start);
+  }
+  [
+    positions,
+    isArrowStart,
+    isArrowEnd,
+    isArrowMiddle,
+    hasArrowSpecified
+  ] = fixConditions(positions, 'start', 'end', 'arrow');
+  [
+    positions,
+    isTop,
+    isBottom,
+    isCenter,
+    hasVerticalSpecified,
+    verticalIndex
+  ] = fixConditions(positions, 'top', 'bottom', 'vertical');
+  [
+    positions,
+    isLeft,
+    isRight,
+    isMiddle,
+    hasHorizontalSpecified,
+    horizontalIndex
+  ] = fixConditions(positions, 'left', 'right', 'horizontal');
+  if (positions.length > 4) {
+    positions.length = 4;
+  }
+  let specifiedCount = [
+    hasArrowSpecified,
+    hasHorizontalSpecified,
+    hasVerticalSpecified
+  ].reduce((sum, bool) => sum + (bool ? 1 : 0), 0);
+  // Fill in any missing values and types
+  let wasVerticalFilled = false;
+  let wasHorizontalFilled = false;
+  let wasArrowFilled = false;
+  while (true) {
+    let isAuto = false;
+    const indexOfMiddle = positions.indexOf('middle');
+    const indexOfAuto = positions.indexOf('auto');
+    const hasMiddleSpecified = (indexOfMiddle !== -1);
+    const hasAutoSpecified = (indexOfAuto !== -1);
+    let indexOf;
+    let hasValue = false;
+    if (hasMiddleSpecified && hasAutoSpecified) {
+      isAuto = indexOfAuto < indexOfMiddle;
+      indexOf = isAuto ? indexOfAuto : indexOfMiddle;
+      hasValue = true;
+    } else if (hasAutoSpecified) {
+      isAuto = true;
+      indexOf = indexOfAuto;
+      hasValue = true;
+    } else if (hasMiddleSpecified) {
+      isAuto = false;
+      indexOf = indexOfMiddle;
+      hasValue = true;
+    }
+    if (!hasValue) break;
+    const requiresHorizontal = (!hasHorizontalSpecified && !wasHorizontalFilled);
+    const requiresVertical = (!hasVerticalSpecified && !wasVerticalFilled);
+    const requiresArrow = (!hasArrowSpecified && !wasArrowFilled);
+    const shouldArrow = (requiresArrow && (specifiedCount === 1 || specifiedCount === 0 || (!requiresHorizontal && !requiresVertical)));
+    const shouldHorizontal = (!shouldArrow && requiresHorizontal);
+    const shouldVertical = (!shouldHorizontal && !shouldArrow && requiresVertical);
+    if (shouldHorizontal) {
+      positions[indexOf] = 'horizontal';
+      if (isAuto) wasHorizontalFilled = true;
+      else hasHorizontalSpecified = true;
+      horizontalIndex = indexOf;
+    } else if (shouldArrow) {
+      positions[indexOf] = 'arrow';
+      if (isAuto) wasArrowFilled = true;
+      else hasArrowSpecified = true;
+    } else if (shouldVertical) {
+      positions[indexOf] = 'vertical';
+      if (isAuto) wasVerticalFilled = true;
+      else hasVerticalSpecified = true;
+      verticalIndex = indexOf;
+    } else {
+      debugger;
+    }
+    if (!isAuto) specifiedCount += 1;
+  }
+  // Calculate the axis
   const isVerticalAxis = (verticalIndex < horizontalIndex);
-  const isHorizontalAxis = (verticalIndex > horizontalIndex);
-  const isMiddleFirst = !isVerticalAxis && !isHorizontalAxis;
-  const isInside = isMiddleFirst || positions.includes('inside');
-  const isOutside = !isInside;
-  const isLeft = positions.includes('left');
-  const isRight = !isLeft && positions.includes('right');
-  const isMiddle = !isLeft && !isRight;
-  const isTop = positions.includes('top');
-  const isBottom = !isTop && positions.includes('bottom');
-  const isCenter = !isTop && !isBottom;
+  const isHorizontalAxis = (horizontalIndex < verticalIndex);
+  const isInsideMiddleCenter = ((isVerticalAxis && isCenter) || (isHorizontalAxis && isMiddle));
+  if (isAreaAuto) {
+    isOutside = !isInsideMiddleCenter;
+    isInside = !isOutside;
+  }
+  if (isOutside && isVerticalAxis && isCenter) {
+    // Illogic correction, outside vertical center isn't a place
+    isTop = true;
+    isCenter = false;
+    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not location, assuming side 'top'`);
+  } else if (isOutside && isHorizontalAxis && isMiddle) {
+    // Illogic correction, outside horizontal middle isn't a place
+    isLeft = true;
+    isMiddle = false;
+    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not location, assuming side 'left'`);
+  }
+  // Apply sensible flow and arrow defaults
+  const shouldSensibleDefaults = (specifiedCount === 2);
+  if (shouldSensibleDefaults) {
+    // Outside arrow is following flow if unspecified
+    if (isOutside && !hasArrowSpecified && isVerticalAxis && hasVerticalSpecified) {
+      isArrowMiddle = false;
+      isArrowEnd = isRight;
+      isArrowStart = !isArrowEnd;
+    }
+    if (isOutside && !hasArrowSpecified && isHorizontalAxis && hasHorizontalSpecified) {
+      isArrowMiddle = false;
+      isArrowEnd = isBottom;
+      isArrowStart = !isArrowEnd;
+    }
+    // Inside arrow is opposite flow if unspecified
+    if (isInside && !hasArrowSpecified && isVerticalAxis && hasVerticalSpecified) {
+      isArrowMiddle = false;
+      isArrowEnd = !isRight;
+      isArrowStart = !isArrowEnd;
+    }
+    if (isInside && !hasArrowSpecified && isHorizontalAxis && hasHorizontalSpecified) {
+      isArrowMiddle = false;
+      isArrowEnd = !isBottom;
+      isArrowStart = !isArrowEnd;
+    }
+    // Flow is opposite to arrow if unspecified
+    if (!hasHorizontalSpecified && isVerticalAxis && hasArrowSpecified && !isArrowMiddle) {
+      isMiddle = false;
+      isRight = isArrowStart;
+      isLeft = !isRight;
+    }
+    if (!hasVerticalSpecified && isHorizontalAxis && hasArrowSpecified && !isArrowMiddle) {
+      isCenter = false;
+      isBottom = isArrowStart;
+      isTop = !isBottom;
+    }
+  }
   return {
     isOutside,
     isInside,
