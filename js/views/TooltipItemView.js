@@ -374,13 +374,24 @@ function parseRelativePosition ({
       isArrowEnd = !isBottom;
       isArrowStart = !isArrowEnd;
     }
-    // Flow is opposite to arrow if unspecified
-    if (!hasHorizontalSpecified && isVerticalAxis && hasArrowSpecified && !isArrowMiddle) {
+    // Outside flow is following arrow if unspecified
+    if (isOutside && !hasHorizontalSpecified && isVerticalAxis && hasArrowSpecified && !isArrowMiddle) {
+      isMiddle = false;
+      isRight = !isArrowStart;
+      isLeft = !isRight;
+    }
+    if (isOutside && !hasVerticalSpecified && isHorizontalAxis && hasArrowSpecified && !isArrowMiddle) {
+      isCenter = false;
+      isBottom = !isArrowStart;
+      isTop = !isBottom;
+    }
+    // Inside flow is opposite to arrow if unspecified
+    if (isInside && !hasHorizontalSpecified && isVerticalAxis && hasArrowSpecified && !isArrowMiddle) {
       isMiddle = false;
       isRight = isArrowStart;
       isLeft = !isRight;
     }
-    if (!hasVerticalSpecified && isHorizontalAxis && hasArrowSpecified && !isArrowMiddle) {
+    if (isInside && !hasVerticalSpecified && isHorizontalAxis && hasArrowSpecified && !isArrowMiddle) {
       isCenter = false;
       isBottom = isArrowStart;
       isTop = !isBottom;
