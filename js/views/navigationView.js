@@ -77,7 +77,7 @@ class NavigationView extends Backbone.View {
     })).insertBefore('#app');
     this.sortNavigationButtons();
     _.defer(() => {
-      Adapt.trigger('navigationView:postRender', this);
+      Adapt.trigger('navigationView:postRender navigation:ready', this);
     });
     return this;
   }
@@ -201,6 +201,12 @@ class NavigationView extends Backbone.View {
 
   removeButton(buttonView) {
     this.buttons = this.buttons.filter(view => view !== buttonView);
+    this.stopListening(buttonView.model, 'change', this.sortNavigationButtons);
+    if (buttonView.isInjectedButton) {
+      buttonView.$el.remove();
+      return;
+    }
+    buttonView.remove();
   }
 
 }

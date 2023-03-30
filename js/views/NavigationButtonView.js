@@ -10,6 +10,10 @@ import location from 'core/js/location';
 
 export default class NavigationButtonView extends Backbone.View {
 
+  tagName() {
+    return 'button';
+  }
+
   events() {
     return {
       click: 'triggerEvent'
@@ -17,12 +21,31 @@ export default class NavigationButtonView extends Backbone.View {
   }
 
   className() {
-    return '';
+    if (this.isInjectedButton) {
+      return [
+        this.model.get('_showLabel') === true && 'show-label'
+      ].filter(Boolean).join(' ');
+    }
+    return [
+      'btn-icon nav__btn',
+      this.model.get('_classes'),
+      this.model.get('_showLabel') === true && 'show-label'
+    ].join(' ');
   }
 
   attributes() {
     const attributes = this.model.toJSON();
+    if (this.isInjectedButton) {
+      return {
+        name: attributes._id,
+        'data-order': attributes._order,
+        'data-event': attributes._event
+      };
+    }
     return {
+      name: attributes._id,
+      role: attributes._role === 'button' ? undefined : attributes._role,
+      'aria-label': attributes.ariaLabel,
       'data-order': attributes._order,
       'data-event': attributes._event
     };
@@ -40,8 +63,8 @@ export default class NavigationButtonView extends Backbone.View {
     this.render();
   }
 
-  static template() {
-    return 'navigation-button.jsx';
+  static get template() {
+    return 'navButton.jsx';
   }
 
   render() {
@@ -104,7 +127,7 @@ export default class NavigationButtonView extends Backbone.View {
       // Add model json data
       ...this.model.toJSON(),
       // Add globals
-      _globals: Adapt.course.get('_globals')
+      _globals: Adapt.course?.get('_globals')
     };
     const Template = templates[this.constructor.template.replace('.jsx', '')];
     this.updateViewProperties();
