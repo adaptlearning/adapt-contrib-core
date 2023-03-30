@@ -30,7 +30,7 @@ export default class NavigationButtonView extends Backbone.View {
       'btn-icon nav__btn',
       this.model.get('_classes'),
       this.model.get('_showLabel') === true && 'show-label'
-    ].join(' ');
+    ].filter(Boolean).join(' ');
   }
 
   attributes() {
@@ -104,7 +104,7 @@ export default class NavigationButtonView extends Backbone.View {
   }
 
   /**
-   * Re-render a react template
+   * Re-render
    * @param {string} eventName=null Backbone change event name
    */
   changed(eventName = null) {
