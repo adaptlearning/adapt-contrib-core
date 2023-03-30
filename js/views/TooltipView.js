@@ -34,7 +34,7 @@ export default class TooltipView extends Backbone.View {
 
   get config() {
     return {
-      _position: 'middle bottom right',
+      _position: 'bottom middle right',
       ...Adapt.course.get('_tooltips')
     };
   }

@@ -327,8 +327,6 @@ function parseRelativePosition ({
       if (isAuto) wasVerticalFilled = true;
       else hasVerticalSpecified = true;
       verticalIndex = indexOf;
-    } else {
-      debugger;
     }
     if (!isAuto) specifiedCount += 1;
   }
