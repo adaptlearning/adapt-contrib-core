@@ -245,11 +245,6 @@ function parseRelativePosition ({
     isAreaAuto
   ] = fixConditions(positions, 'outside', 'inside', 'area');
   if (isAreaAuto) positions.unshift('area');
-  if (positions.length < 4) {
-    const start = positions.length;
-    positions.length = 4;
-    positions.fill('auto', start);
-  }
   [
     positions,
     isArrowStart,
@@ -275,6 +270,11 @@ function parseRelativePosition ({
   ] = fixConditions(positions, 'left', 'right', 'horizontal');
   if (positions.length > 4) {
     positions.length = 4;
+  }
+  if (positions.length < 4) {
+    const start = positions.length;
+    positions.length = 4;
+    positions.fill('auto', start);
   }
   let specifiedCount = [
     hasArrowSpecified,
@@ -342,12 +342,12 @@ function parseRelativePosition ({
     // Illogic correction, outside vertical center isn't a place
     isTop = true;
     isCenter = false;
-    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not location, assuming side 'top'`);
+    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not a valid location, assuming side 'top'`);
   } else if (isOutside && isHorizontalAxis && isMiddle) {
     // Illogic correction, outside horizontal middle isn't a place
     isLeft = true;
     isMiddle = false;
-    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not location, assuming side 'left'`);
+    logging.info(`tooltips: "${position}"(${positions.join(' ')}) is not a valid location, assuming side 'left'`);
   }
   // Apply sensible flow and arrow defaults
   const shouldSensibleDefaults = (specifiedCount === 2);
