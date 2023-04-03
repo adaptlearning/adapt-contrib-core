@@ -62,6 +62,7 @@ export default class BrowserFocus extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onClick(event) {
+    if (!event.isTrusted) return;
     const $element = $(event.target);
     // search element and parents for aria-disabled - see https://github.com/adaptlearning/adapt_framework/issues/3097
     const isAriaDisabled = $element.closest('[aria-disabled=true]').length === 1;
@@ -78,8 +79,19 @@ export default class BrowserFocus extends Backbone.Controller {
     if (!$focusable.length) {
       return;
     }
+    const $closestFocusable = $element.closest(config._options._tabbableElements);
     // Force focus for screen reader enter / space press
-    $focusable[0].focus();
+    if ($closestFocusable[0] !== document.activeElement) {
+      // Focus on the nearest focusable element if not already with focus
+      $closestFocusable[0].focus();
+    }
+    if (!config._options._isClickDelayedAfterFocusEnabled) return;
+    // Add a small delay to each click to allow screen readers to process focus
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setTimeout(() => {
+      $element[0].click();
+    }, 50);
   }
 
 }
