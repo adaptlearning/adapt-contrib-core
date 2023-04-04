@@ -205,7 +205,7 @@ class AdaptView extends Backbone.View {
    */
   addChildView(childView) {
     const childModel = childView.model;
-    const type = childModel.get('_type')
+    const type = childModel.get('_type');
     const childViews = this.getChildViews() || [];
     childViews.push(childView);
     this.setChildViews(childViews);
@@ -295,6 +295,7 @@ class AdaptView extends Backbone.View {
         return;
       }
       // A new model has been supplied for the end of the list.
+      model = event.model;
     }
     const type = model.get('_type');
     // Trigger an event to signify that a new model is to be added
