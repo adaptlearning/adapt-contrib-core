@@ -24,13 +24,17 @@ html.is-nav-bottom #wrapper {
   &__inner {
     .l-container-responsive(@max-page-width);
     display: flex;
-    align-items: center;
+    align-items: stretch;
   }
 
-  // Override floats on additional `nav__btn` elements part of plugins
-  // that haven't been updated to work with data-order yet.
-  // Can be removed in time.
   &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    // Override floats on additional `nav__btn` elements part of plugins
+    // that haven't been updated to work with data-order yet.
+    // Can be removed in time.
     float: none !important;
   }
 
@@ -38,9 +42,21 @@ html.is-nav-bottom #wrapper {
     display: none;
   }
 
-  &.show-label &__btn > .label,
-  &__btn.show-label > .label {
-    display: initial;
+  &.show-label &__btn,
+  &__btn.show-label {
+    > .label {
+      display: initial;
+      margin-left: 0.5rem;
+    }
+  }
+
+  &.has-label-bottom &__btn,
+  &__btn.has-label-bottom {
+    flex-direction: column;
+
+    > .label {
+      margin: 0.5rem 0 0;
+    }
   }
 
   &__spacer {
