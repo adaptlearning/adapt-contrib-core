@@ -79,6 +79,8 @@ class Data extends AdaptCollection {
 
   async onLanguageChange(model, language) {
     await wait.queue();
+    const previousAttributes = model.previousAttributes();
+    const previousLanguage = previousAttributes._activeLanguage;
     offlineStorage.set('lang', language);
     // set `_isStarted` back to `false` when changing language so that the learner's answers
     // to questions get restored in the new language when `_restoreStateOnLanguageChange: true`
@@ -86,10 +88,10 @@ class Data extends AdaptCollection {
     if (Adapt.get('_isStarted')) {
       Adapt.set('_isStarted', false);
     }
-    this.loadCourseData(language);
+    this.loadCourseData(language, previousLanguage);
   }
 
-  async loadCourseData(newLanguage) {
+  async loadCourseData(newLanguage, previousLanguage) {
 
     // All code that needs to run before adapt starts should go here
     const language = Adapt.config.get('_activeLanguage');
@@ -100,7 +102,7 @@ class Data extends AdaptCollection {
 
     await this.loadManifestFiles(courseFolder);
     await this.triggerDataLoaded();
-    await this.triggerDataReady(newLanguage);
+    await this.triggerDataReady(newLanguage, previousLanguage);
     this.triggerInit();
 
   }
@@ -144,7 +146,7 @@ class Data extends AdaptCollection {
         fileData.forEach((datum, index) => {
           datum.__path__ = fileData.__path__;
           datum.__index__ = index;
-      });
+        });
         result.push(...fileData);
       } else if (fileData instanceof Object) {
         result.push(fileData);
@@ -169,7 +171,7 @@ class Data extends AdaptCollection {
       try {
         components.getModelName(modelData);
       } catch (error) {
-        logging.error(`Failed to load object ${modelData.__path__}${Object.prototype.hasOwnProperty.call(modelData, '__index__') ? `[${modelData.__index__}]` : ''}`)
+        logging.error(`Failed to load object ${modelData.__path__}${Object.prototype.hasOwnProperty.call(modelData, '__index__') ? `[${modelData.__index__}]` : ''}`);
         logging.error(error);
         return;
       }
@@ -193,9 +195,9 @@ class Data extends AdaptCollection {
     await wait.queue();
   }
 
-  async triggerDataReady(newLanguage) {
+  async triggerDataReady(newLanguage, previousLanguage) {
     if (newLanguage) {
-      Adapt.trigger('app:languageChanged', newLanguage);
+      Adapt.trigger('app:languageChanged', newLanguage, previousLanguage);
       await wait.queue();
     }
     logging.debug('Firing app:dataReady');
