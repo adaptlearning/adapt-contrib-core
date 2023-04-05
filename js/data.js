@@ -171,7 +171,7 @@ class Data extends AdaptCollection {
       try {
         components.getModelName(modelData);
       } catch (error) {
-        logging.error(`Failed to load object ${modelData.__path__}${Object.prototype.hasOwnProperty.call(modelData, '__index__') ? `[${modelData.__index__}]` : ''}`);
+        logging.error(`Failed to load object ${modelData.__path__}${Object.hasOwn(modelData, '__index__') ? `[${modelData.__index__}]` : ''}`);
         logging.error(error);
         return;
       }
