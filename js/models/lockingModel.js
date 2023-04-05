@@ -29,17 +29,22 @@ export default class LockingModel extends Backbone.Model {
         continue;
       }
 
+      const defaults = _.result(this, 'defaults');
+      const isDefault = (defaults[attrName] !== undefined);
+      const isInitialDefault = (isDefault && !this.changed);
+      if (isInitialDefault) {
+        this._lockedAttributes[attrName] = !defaults[attrName];
+      }
+
       const isSettingValueForSpecificPlugin = options?.pluginName;
       if (!isSettingValueForSpecificPlugin) {
-        console.error('Must supply a pluginName to change a locked attribute');
+        if (!isInitialDefault) {
+          console.error('Must supply a pluginName to change a locked attribute');
+        }
         options.pluginName = 'compatibility';
       }
 
       const pluginName = options.pluginName;
-      const defaults = _.result(this, 'defaults');
-      if (defaults[attrName] !== undefined) {
-        this._lockedAttributes[attrName] = !defaults[attrName];
-      }
       const lockingValue = this._lockedAttributes[attrName];
       const isAttemptingToLock = (lockingValue === attrVal);
 
