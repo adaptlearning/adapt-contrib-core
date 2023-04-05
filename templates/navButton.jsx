@@ -15,7 +15,7 @@ export default function NavButton(props) {
         ])}
         aria-hidden="true"
       />
-      <span className='label' aria-hidden="true">{compile(text, props)}</span>
+      <span className="nav__btn-label" aria-hidden="true">{compile(text, props)}</span>
     </React.Fragment>
   );
 }

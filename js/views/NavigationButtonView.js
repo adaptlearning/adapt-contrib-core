@@ -92,12 +92,12 @@ export default class NavigationButtonView extends Backbone.View {
   }
 
   injectLabel() {
-    const textLabel = this.$el.find('> .label');
+    const textLabel = this.$el.find('> .nav__btn-label');
     const ariaLabel = this.$el.attr('aria-label') ?? this.$el.find('.aria-label').text();
     const text = this.model.get('text');
     const output = compile(text ?? '', { ariaLabel });
     if (!textLabel.length) {
-      this.$el.append(`<span class="label" aria-hidden="true">${output}</span>`);
+      this.$el.append(`<span class="nav__btn-label" aria-hidden="true">${output}</span>`);
       return;
     }
     textLabel.html(output);

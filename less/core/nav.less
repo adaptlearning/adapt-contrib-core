@@ -38,24 +38,39 @@ html.is-nav-bottom #wrapper {
     float: none !important;
   }
 
-  &__btn > .label {
+  &__btn > &__btn-label {
     display: none;
   }
 
   &.show-label &__btn,
   &__btn.show-label {
-    > .label {
+    > .nav__btn-label {
       display: initial;
       margin-left: 0.5rem;
     }
   }
 
-  &.has-label-bottom &__btn,
-  &__btn.has-label-bottom {
+  &.has-label-bottom &__btn {
     flex-direction: column;
 
-    > .label {
+    > .nav__btn-label {
       margin: 0.5rem 0 0;
+    }
+  }
+
+  &.has-label-top &__btn {
+    flex-direction: column;
+
+    > .nav__btn-label {
+      order: -1;
+      margin: 0 0 0.5rem 0;
+    }
+  }
+
+  &.has-label-left &__btn {
+    > .nav__btn-label {
+      order: -1;
+      margin: 0 0.5rem 0 0;
     }
   }
 
