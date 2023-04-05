@@ -324,12 +324,12 @@ class QuestionModel extends ComponentModel {
             title,
             _classes,
             body: !isFinal
-              ? _feedback._incorrect.notFinal
+              ? (_feedback._incorrect.notFinal || _feedback._incorrect.final)
               : _feedback._incorrect.final
           };
         }
         // new style
-        const feedbackIncorrect = !isFinal ? _feedback._incorrectNotFinal : _feedback._incorrectFinal;
+        const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || _feedback._incorrectFinal) : _feedback._incorrectFinal;
         const feedbackConfig = {
           // add higher values
           ...feedbackIncorrect || {},
