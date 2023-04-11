@@ -45,8 +45,12 @@ html.is-nav-bottom #wrapper {
   &.show-label &__btn,
   &__btn.show-label {
     > .nav__btn-label {
-      display: initial;
-      margin-left: 0.5rem;
+      display: none;
+
+      @media (min-width: @device-width-medium) {
+        display: initial;
+        margin-left: 0.5rem;
+      }
     }
   }
 
