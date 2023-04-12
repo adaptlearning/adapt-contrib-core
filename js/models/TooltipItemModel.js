@@ -9,6 +9,7 @@ export default class TooltipItemModel extends Backbone.Model {
       _id: null,
       _isEnabled: true,
       _classes: '',
+      disabledText: '{{text}}',
       text: ''
     };
   }
