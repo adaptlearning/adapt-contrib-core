@@ -56,7 +56,7 @@ export default class TooltipItemView extends Backbone.View {
     const navHeight = $('.nav').outerHeight(true);
     const $target = this.$target;
     return {
-      position: this.model.get('_position') || 'bottom right',
+      position: this.model.get('_position') || 'outside bottom middle right',
       isDisabled: $target.attr('aria-disabled') !== undefined || $target.hasClass('is-disabled') || $target.is(':disabled'),
       isTargetFixedPosition: Boolean(this.$target.add(this.$target.parents()).filter((index, el) => $(el).css('position') === 'fixed').length),
       isRTL: Adapt.config.get('_defaultDirection') === 'rtl',
