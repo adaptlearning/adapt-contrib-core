@@ -21,14 +21,16 @@ Adapt.on('app:dataReady', () => {
   applySafariLabelClickBlur();
 });
 
-function applySafariLabelClickBlur() {
+function onLabelClick (event) {
+  event.preventDefault();
+  const input = document.querySelector(`#${event.currentTarget.getAttribute('for')}`);
+  input.click();
+};
+
+function applySafariLabelClickBlur () {
   Adapt.on('reactElement:preRender', event => {
     const [tagName, props] = event.args;
     if (tagName !== 'label' && !Object.hasOwn(props, 'for') && !Object.hasOwn(props, 'onClick')) return;
-    props.onClick = event => {
-      event.preventDefault();
-      const input = document.querySelector(`#${event.currentTarget.getAttribute('for')}`);
-      input.click();
-    };
+    props.onClick = onLabelClick;
   });
 }
