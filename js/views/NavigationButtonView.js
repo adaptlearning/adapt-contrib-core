@@ -23,13 +23,13 @@ export default class NavigationButtonView extends Backbone.View {
   className() {
     if (this.isInjectedButton) {
       return [
-        this.model.get('_showLabel') === true && 'show-label'
+        this.model.get('_showLabel') === false && 'hide-label'
       ].filter(Boolean).join(' ');
     }
     return [
       'btn-icon nav__btn',
       this.model.get('_classes'),
-      this.model.get('_showLabel') === true && 'show-label'
+      this.model.get('_showLabel') === false && 'hide-label'
     ].filter(Boolean).join(' ');
   }
 

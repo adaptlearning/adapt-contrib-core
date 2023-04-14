@@ -6,7 +6,9 @@ export default class NavigationModel extends LockingModel {
     return {
       _navigationAlignment: 'top',
       _isBottomOnTouchDevices: false,
-      _showLabel: false
+      _showLabel: false,
+      _showLabelAtWidth: 'medium',
+      _labelPosition: 'right'
     };
   }
 

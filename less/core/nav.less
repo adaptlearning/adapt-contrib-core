@@ -40,17 +40,36 @@ html.is-nav-bottom #wrapper {
 
   &__btn > &__btn-label {
     display: none;
+    font-size: 0.875rem;
   }
 
-  &.show-label &__btn,
-  &__btn.show-label {
-    > .nav__btn-label {
-      display: none;
-
-      @media (min-width: @device-width-medium) {
+  .show-label-small.show-label& {
+    @media (min-width: @device-width-small) {
+      .nav__btn:not(.hide-label) .nav__btn-label {
         display: initial;
-        margin-left: 0.5rem;
       }
+    }
+  }
+
+  .show-label-medium.show-label& {
+    @media (min-width: @device-width-medium) {
+      .nav__btn:not(.hide-label) .nav__btn-label {
+        display: initial;
+      }
+    }
+  }
+
+  .show-label-large.show-label& {
+    @media (min-width: @device-width-large) {
+      .nav__btn-label .nav__btn:not(.hide-label) {
+        display: initial;
+      }
+    }
+  }
+
+  &.has-label-right &__btn {
+    > .nav__btn-label {
+      margin: 0 0 0 0.5rem;
     }
   }
 
