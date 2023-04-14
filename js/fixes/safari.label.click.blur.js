@@ -17,7 +17,7 @@ import 'core/js/templates';
 
 Adapt.on('app:dataReady', () => {
   const config = Adapt.config.get('_fixes');
-  if (config?._jsxReactHelpersHTML === false) return;
+  if (config?._safariLabelClickBlur === false) return;
   applySafariLabelClickBlur();
 });
 
