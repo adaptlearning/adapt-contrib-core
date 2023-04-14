@@ -30,7 +30,7 @@ function onLabelClick (event) {
 function applySafariLabelClickBlur () {
   Adapt.on('reactElement:preRender', event => {
     const [tagName, props] = event.args;
-    if (tagName !== 'label' || !Object.hasOwn(props, 'for') || Object.hasOwn(props, 'onClick')) return;
+    if (tagName !== 'label' || !Object.hasOwn(props, 'htmlFor') || Object.hasOwn(props, 'onClick')) return;
     props.onClick = onLabelClick;
   });
 }
