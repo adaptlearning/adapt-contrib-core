@@ -26,6 +26,7 @@ class A11y extends Backbone.Controller {
       _isFocusOutlineDisabled: false,
       _isFocusAssignmentEnabled: true,
       _isFocusOnClickEnabled: true,
+      _isClickDelayedAfterFocusEnabled: false,
       _isFocusNextOnDisabled: true,
       _isScrollDisableEnabled: true,
       _isAriaHiddenManagementEnabled: true,
