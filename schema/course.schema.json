@@ -582,6 +582,45 @@
               "_adapt": {
                 "editorOnly": true
               }
+            },
+            "_showLabel": {
+              "type": "boolean",
+              "title": "Show navigation button labels",
+              "default": false,
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_showLabelAtWidth": {
+              "type": "string",
+              "title": "Show label at this breakpoint and higher",
+              "description": "When the user's browser window is at least this wide, the labels will be shown. Options refer to the standard Adapt breakpoints",
+              "default": "medium",
+              "enum": [
+                "small",
+                "medium",
+                "large"
+              ],
+              "_backboneForms": "Select",
+              "_adapt": {
+                "editorOnly": true
+              }
+            },
+            "_labelPosition": {
+              "type": "string",
+              "title": "Label position",
+              "description": "Where to show the label in relation to the button icons",
+              "default": "right",
+              "enum": [
+                "top",
+                "bottom",
+                "left",
+                "right"
+              ],
+              "_backboneForms": "Select",
+              "_adapt": {
+                "editorOnly": true
+              }
             }
           }
         },

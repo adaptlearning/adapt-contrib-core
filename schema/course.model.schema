@@ -626,6 +626,47 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Is bottom on touch devices?"
+        },
+        "_showLabel": {
+          "type": "boolean",
+          "default": false,
+          "required": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Show navigation button labels"
+        },
+        "_showLabelAtWidth": {
+          "type": "string",
+          "required": true,
+          "default": "medium",
+          "title": "Show label at this breakpoint and higher",
+          "inputType": {
+            "type": "Select",
+            "options": [
+                "small",
+                "medium",
+                "large"
+            ]
+          },
+          "validators": [],
+          "help": "When the user's browser window is at least this wide, the labels will be shown. Options refer to the standard Adapt breakpoints"
+        },
+        "_labelPosition": {
+          "type": "string",
+          "required": true,
+          "default": "medium",
+          "title": "Label position",
+          "inputType": {
+            "type": "Select",
+            "options": [
+                "top",
+                "bottom",
+                "left",
+                "right"
+            ]
+          },
+          "validators": [],
+          "help": "Where to show the label in relation to the button icons"
         }
       }
     },
