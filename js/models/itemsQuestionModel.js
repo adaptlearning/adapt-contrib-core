@@ -194,9 +194,9 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   resetItems() {
     if (this.get('_shouldResetAllAnswers') === false) {
       this.resetIncorrectItems();
-    } else {
-      this.resetActiveItems();
+      return;
     }
+    this.resetActiveItems();
     this.set('_isAtLeastOneCorrectSelection', false);
   }
 
@@ -206,6 +206,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
       if (isCorrect) return;
       item.toggleActive(false);
     });
+    this.set('_isAtLeastOneCorrectSelection', Boolean(this.getLastActiveItem()));
   }
 
   getInteractionObject() {
