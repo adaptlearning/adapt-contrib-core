@@ -128,8 +128,8 @@
               "properties": {
                 "skipNavigationText": {
                   "type": "string",
-                  "title": "Skip navigation label",
-                  "default": "Skip navigation",
+                  "title": "Skip to main content label",
+                  "default": "Skip to main content",
                   "_adapt": {
                     "translatable": true
                   }
