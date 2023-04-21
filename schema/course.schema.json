@@ -610,8 +610,9 @@
               "type": "string",
               "title": "Label position",
               "description": "Where to show the label in relation to the button icons",
-              "default": "right",
+              "default": "auto",
               "enum": [
+                "auto",
                 "top",
                 "bottom",
                 "left",

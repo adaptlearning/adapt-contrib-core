@@ -654,11 +654,12 @@
         "_labelPosition": {
           "type": "string",
           "required": true,
-          "default": "medium",
+          "default": "auto",
           "title": "Label position",
           "inputType": {
             "type": "Select",
             "options": [
+                "auto",
                 "top",
                 "bottom",
                 "left",
