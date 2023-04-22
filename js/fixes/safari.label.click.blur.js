@@ -22,8 +22,9 @@ Adapt.on('app:dataReady', () => {
 });
 
 function onLabelClick (event) {
+  const input = document.querySelector(`[id="${event.currentTarget.getAttribute('for')}"]`);
+  if (!input) return;
   event.preventDefault();
-  const input = document.querySelector(`#${event.currentTarget.getAttribute('for')}`);
   input.click();
 };
 
