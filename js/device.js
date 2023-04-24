@@ -13,14 +13,14 @@ class Device extends Backbone.Controller {
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
     this.setViewportHeight();
-    this.setNavigationHeight();
     this.browser = (this.bowser.browser.name || '').toLowerCase();
     this.version = (this.bowser.browser.version || '').toLowerCase();
     this.OS = this.getOperatingSystem().toLowerCase();
     this.osVersion = this.bowser.os.version || '';
     this.renderingEngine = this.getRenderingEngine();
     this.listenTo(Adapt, {
-      'configModel:dataLoaded': this.onConfigDataLoaded
+      'configModel:dataLoaded': this.onConfigDataLoaded,
+      'navigationView:postRender': this.setNavigationHeight
     });
     const browser = this.browser.toLowerCase();
     // Convert 'msie' and 'internet explorer' to 'ie'.
