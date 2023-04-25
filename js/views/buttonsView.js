@@ -132,10 +132,11 @@ export default class ButtonsView extends Backbone.View {
 
   checkFeedbackState() {
     const canShowFeedback = this.model.get('_canShowFeedback');
+    const canShowMarking = this.model.get('_canShowMarking');
 
     this.$('.js-btn-action').toggleClass('is-full-width', !canShowFeedback);
     this.$('.js-btn-feedback').toggleClass('u-display-none', !canShowFeedback);
-    this.$('.js-btn-marking, .js-btn-marking-label').toggleClass('is-full-width u-display-none', !canShowFeedback);
+    this.$('.js-btn-marking, .js-btn-marking-label').toggleClass('is-full-width u-display-none', !canShowMarking);
   }
 
   updateAttemptsCount() {
