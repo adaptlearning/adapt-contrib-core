@@ -38,7 +38,7 @@ html.is-nav-bottom #wrapper {
     float: none !important;
   }
 
-  &__btn-label {
+  &__btn.hide-label &__btn-label {
     display: none;
   }
 
@@ -117,9 +117,11 @@ html.is-nav-bottom #wrapper {
 // Show nav label at breakpoints
 .show-nav-label(@size) {
   &.show-label-@{size} {
-    @breakpoint: "device-width-@{size}";
-    @media (min-width: @@breakpoint) {
-      .nav__btn:not(.hide-label) .nav__btn-label {
+    .nav__btn-label { display: none }
+
+    .nav__btn:not(.hide-label) .nav__btn-label {
+      @breakpoint: "device-width-@{size}";
+      @media (min-width: @@breakpoint) {
         display: initial;
       }
     }

@@ -643,13 +643,14 @@
           "inputType": {
             "type": "Select",
             "options": [
+                "any",
                 "small",
                 "medium",
                 "large"
             ]
           },
           "validators": [],
-          "help": "When the user's browser window is at least this wide, the labels will be shown. Options refer to the standard Adapt breakpoints"
+          "help": "When the user's browser window is at least this wide, the labels will be shown. Options refer to the standard Adapt breakpoints. The 'any' option will show the label at any size."
         },
         "_labelPosition": {
           "type": "string",
