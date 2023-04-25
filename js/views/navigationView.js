@@ -195,6 +195,9 @@ class NavigationView extends Backbone.View {
     const container = this.$('.nav__inner');
     container.append(buttonView.$el);
     this.listenTo(buttonView.model, 'change', this.sortNavigationButtons);
+    // Injected button are added from sortNavigationButtons, prevent recursion
+    if (buttonView.isInjectedButton) return;
+    this.sortNavigationButtons();
   }
 
   getButton(id) {
