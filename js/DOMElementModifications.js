@@ -83,9 +83,6 @@ export class DOMElementModifications extends Backbone.View {
     };
   }
 
-  /**
-   *
-   */
   startWatching() {
     this._calculateElementFilters();
     if (this._observer) return this;
