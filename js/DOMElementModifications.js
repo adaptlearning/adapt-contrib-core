@@ -46,6 +46,7 @@ export class DOMElementModifications extends Backbone.View {
     watchImmediateChildrenOnly = true,
     watchAttributes = false
   } = {}) {
+    this._onMutation = this._onMutation.bind(this);
     this.el = el;
     this._watch = {
       childList: true,
@@ -169,7 +170,6 @@ export class DOMElementModifications extends Backbone.View {
         this.trigger('changed', EventObject);
       });
     }
-    this._observer.takeRecords();
   }
 
   stopWatching() {

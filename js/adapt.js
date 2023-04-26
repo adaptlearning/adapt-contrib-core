@@ -1,5 +1,6 @@
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
+import { DOMElementModifications } from './DOMElementModifications';
 
 class AdaptSingleton extends LockingModel {
 
@@ -44,6 +45,16 @@ class AdaptSingleton extends LockingModel {
 
       this.trigger('adapt:initialize');
       await wait.queue();
+
+      const ariaLabelModifications = new DOMElementModifications({
+        el: document.body,
+        watchAttributes: true,
+        watchImmediateChildrenOnly: true
+      });
+      ariaLabelModifications.on('changed:.aria-label,[aria-label]', function onAriaLabelChanges(event) {
+        // An element with an aria-label was changed
+        console.log('aria-label', event);
+      });
 
     });
   }
