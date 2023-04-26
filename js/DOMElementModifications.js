@@ -22,7 +22,7 @@ import DOMElementModificationEventObject from './DOMElementModificationEventObje
  *   watchAttributes: false,
  *   watchImmediateChildrenOnly: true
  * });
- * navModifications.on('added removed', function onChildElementAddedOrRemoved (event) {
+ * navModifications.on('added:button removed:button', function onChildElementAddedOrRemoved (event) {
  *
  * })
  *
@@ -243,7 +243,7 @@ export class DOMElementModifications extends Backbone.View {
 }
 
 /**
- * Return a document global instance for an added, removed or moved elements,
+ * Return a document global instance for any added, removed or moved elements,
  * this instance does not listen to attribute changes.
  */
 const documentModifications = new DOMElementModifications({
