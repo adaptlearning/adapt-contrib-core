@@ -8,7 +8,7 @@ export default class NavigationModel extends LockingModel {
       _isBottomOnTouchDevices: false,
       _showLabel: false,
       _showLabelAtWidth: 'medium',
-      _labelPosition: 'right'
+      _labelPosition: 'auto'
     };
   }
 

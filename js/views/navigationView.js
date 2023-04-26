@@ -11,7 +11,7 @@ class NavigationView extends Backbone.View {
       'nav',
       this.model?.get('_showLabel') === true ? 'show-label' : 'hide-label',
       `show-label-${this.model?.get('_showLabelAtWidth') || 'medium'}`,
-      `has-label-${this.model?.get('_labelPosition') || 'right'}`
+      `has-label-${this.model?.get('_labelPosition') || 'auto'}`
     ].filter(Boolean).join(' ');
   }
 
