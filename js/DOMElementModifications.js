@@ -112,8 +112,7 @@ export class DOMElementModifications extends Backbone.View {
         ...removedNodes
       ];
       const isTextChange = allNodes.some(node => node.nodeType === Node.TEXT_NODE);
-      const isChangeOnSubject = (item.target === this.el);
-      const isAttributeChange = (!isChangeOnSubject && this._watch.attributes && item.type === 'attributes');
+      const isAttributeChange = (this._watch.attributes && item.type === 'attributes');
       addedNodes = addedNodes.filter(node => node.nodeType === Node.ELEMENT_NODE);
       removedNodes = removedNodes.filter(node => node.nodeType === Node.ELEMENT_NODE);
       const isAddedEvent = Boolean(addedNodes.length);
