@@ -40,7 +40,7 @@ export class DOMElementModificationEventObject {
  *
  * })
  *
- * this.listenTo(documentModifications, 'remove:[data-tooltip-id]', function onToolTipTargetRemoved (event) {
+ * this.listenTo(documentModifications, 'removed:[data-tooltip-id]', function onToolTipTargetRemoved (event) {
  *
  * });
  *
