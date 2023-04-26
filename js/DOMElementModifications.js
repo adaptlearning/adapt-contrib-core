@@ -251,5 +251,6 @@ const documentModifications = new DOMElementModifications({
   watchImmediateChildrenOnly: false,
   watchAttributes: false
 });
+documentModifications.DOMElementModifications = DOMElementModifications;
 
 export default documentModifications;
