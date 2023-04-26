@@ -69,7 +69,7 @@ export class DOMElementModifications extends Backbone.View {
    * @param {Object} options.watchAttributes Watch for attribute changes as well as descendant changes
    */
   initialize({
-    el = document.body,
+    el = document.documentElement,
     watchImmediateChildrenOnly = true,
     watchAttributes = false
   } = {}) {
@@ -266,13 +266,12 @@ export class DOMElementModifications extends Backbone.View {
 }
 
 /**
- * Return a document global instance for any added, removed or moved elements,
- * this instance does not listen to attribute changes.
+ * Return a document global instance for any added, removed or changed elements or attributes.
  */
 const documentModifications = new DOMElementModifications({
-  el: document.body,
+  el: document.documentElement,
   watchImmediateChildrenOnly: false,
-  watchAttributes: false
+  watchAttributes: true
 });
 documentModifications.DOMElementModifications = DOMElementModifications;
 
