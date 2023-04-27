@@ -105,8 +105,8 @@ export class DOMElementModifications extends Backbone.View {
 
   _onMutation(list) {
     const reducedChanges = list.reduce((changes, item) => {
-      let addedNodes = _.toArray(item.addedNodes);
-      let removedNodes = _.toArray(item.removedNodes);
+      let addedNodes = Array.from(item.addedNodes);
+      let removedNodes = Array.from(item.removedNodes);
       const allNodes = [
         ...addedNodes,
         ...removedNodes
@@ -123,11 +123,11 @@ export class DOMElementModifications extends Backbone.View {
       // Collect all possible nodes
       const targetNodes = isChangedEvent
         ? [ item.target ]
-        : _.toArray(isAddedEvent ? addedNodes : removedNodes)
+        : Array.from(isAddedEvent ? addedNodes : removedNodes)
           .flatMap(node => {
             return this._watch.subtree
               // Fetch all decendant nodes
-              ? [node, ...$(node).find('*').toArray()]
+              ? [node, ...node.querySelectorAll('*')]
               // Use only immediate node
               : [node];
           });
@@ -207,6 +207,10 @@ export class DOMElementModifications extends Backbone.View {
     const selectorFilter = selector => {
       const eventWithNoSelector = (selector === undefined);
       if (eventWithNoSelector) return () => { return true; };
+      if (Element.prototype.matches) {
+        // eslint-disable-next-line no-new-func
+        return new Function('el', `return el.matches("${selector}") && "${selector}";`);
+      }
       // eslint-disable-next-line no-new-func
       return new Function('el', `return $(el).is("${selector}") && "${selector}";`);
     };
