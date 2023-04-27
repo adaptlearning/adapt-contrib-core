@@ -49,7 +49,6 @@ html.is-nav-bottom #wrapper {
     .show-nav-label(large);
   }
 
-  .dir-ltr &.has-label-auto &__btn-label,
   &.has-label-right &__btn-label {
     margin-left: (@icon-padding / 2);
   }
@@ -79,9 +78,18 @@ html.is-nav-bottom #wrapper {
     order: -1;
   }
 
-  .dir-rtl &.has-label-auto &__btn-label,
   &.has-label-left &__btn-label {
     margin-right: (@icon-padding / 2);
+  }
+
+  &.has-label-auto {
+    .dir-rtl & .nav__btn-label {
+      margin-right: (@icon-padding / 2);
+    }
+
+    .dir-ltr & .nav__btn-label {
+      margin-left: (@icon-padding / 2);
+    }
   }
 
   &__spacer {
