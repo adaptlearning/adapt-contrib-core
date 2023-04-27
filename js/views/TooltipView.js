@@ -58,6 +58,7 @@ export default class TooltipView extends Backbone.View {
    */
   onMouseOver(event) {
     const $mouseoverEl = $(event.currentTarget);
+    if (!a11y.isFocusable($mouseoverEl)) return;
     const id = $mouseoverEl.data('tooltip-id');
     // Cancel if id is already tabbed to and gets focused again (from notify etc)
     if (this._currentId === id && event.name === 'focusin') return;
