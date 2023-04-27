@@ -2,6 +2,7 @@ import Adapt from '../adapt';
 import logging from '../logging';
 import TooltipItemView from './TooltipItemView';
 import TooltipItemModel from '../models/TooltipItemModel';
+import a11y from '../a11y';
 
 export default class TooltipView extends Backbone.View {
 
@@ -28,7 +29,11 @@ export default class TooltipView extends Backbone.View {
     if (this.config?._isEnabled === false) return;
     this.onMouseOver = _.debounce(this.onMouseOver, 500);
     $(document).on('keydown', this.onKeyDown);
-    $(document).on('mouseenter focus', '[data-tooltip-id]', this.onMouseOver);
+    $(document).on('focus', '[data-tooltip-id]', (...args) => {
+      if (a11y.isForcedFocus) return;
+      this.onMouseOver(...args);
+    });
+    $(document).on('mouseenter', '[data-tooltip-id]', this.onMouseOver);
     $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
   }
 
@@ -52,7 +57,6 @@ export default class TooltipView extends Backbone.View {
    * @param {jQuery} event
    */
   onMouseOver(event) {
-
     const $mouseoverEl = $(event.currentTarget);
     const id = $mouseoverEl.data('tooltip-id');
     // Cancel if id is already tabbed to and gets focused again (from notify etc)
