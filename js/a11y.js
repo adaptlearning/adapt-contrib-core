@@ -2,6 +2,7 @@ import Adapt from 'core/js/adapt';
 import offlineStorage from 'core/js/offlineStorage';
 import device from 'core/js/device';
 import location from 'core/js/location';
+import BrowserConfig from './a11y/browserConfig';
 import BrowserFocus from 'core/js/a11y/browserFocus';
 import FocusOptions from 'core/js/a11y/focusOptions';
 import KeyboardFocusOutline from 'core/js/a11y/keyboardFocusOutline';
@@ -18,6 +19,7 @@ class A11y extends Backbone.Controller {
 
   defaults() {
     return {
+      _isPrefersReducedMotionEnabled: true,
       _isFocusOutlineKeyboardOnlyEnabled: true,
       /**
        * `_isFocusOutlineDisabled` ignores `_isEnabled` and can be used when all other
@@ -26,6 +28,7 @@ class A11y extends Backbone.Controller {
       _isFocusOutlineDisabled: false,
       _isFocusAssignmentEnabled: true,
       _isFocusOnClickEnabled: true,
+      _isClickDelayedAfterFocusEnabled: false,
       _isFocusNextOnDisabled: true,
       _isScrollDisableEnabled: true,
       _isAriaHiddenManagementEnabled: true,
@@ -74,6 +77,7 @@ class A11y extends Backbone.Controller {
     this._htmlCharRegex = /&.*;/g;
     /** @type {Object} */
     this.config = null;
+    this._browserConfig = new BrowserConfig({ a11y: this });
     this._browserFocus = new BrowserFocus({ a11y: this });
     this._keyboardFocusOutline = new KeyboardFocusOutline({ a11y: this });
     this._wrapFocus = new WrapFocus({ a11y: this });

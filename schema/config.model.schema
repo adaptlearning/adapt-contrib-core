@@ -48,6 +48,14 @@
           "validators": [],
           "title": "Submit completion on every assessment attempt",
           "help": "Specifies that the completion status will be reported every time the assessment is completed (regardless of whether the user passes or fails), assuming the course completion criteria is met"
+        },
+        "_shouldSubmitScore": {
+          "type": "boolean",
+          "default": false,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Submit score to LMS",
+          "help": "If enabled, the score attained in any assessment attempt will be reported (regardless of whether the user passes or fails)"
         }
       }
     },
