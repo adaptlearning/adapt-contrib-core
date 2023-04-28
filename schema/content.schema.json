@@ -37,7 +37,7 @@
       "type": "string",
       "title": "Display title",
       "description": "When viewing an element - this is the title that will be displayed on the page",
-      "default": "",
+      "default": "Untitled",
       "_adapt": {
         "translatable": true
       },

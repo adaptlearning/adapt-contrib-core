@@ -318,6 +318,26 @@
                       "title": "Navigation bar order",
                       "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                       "default": 100
+                    },
+                    "_navTooltip": {
+                      "type": "object",
+                      "title": "Navigation tooltip",
+                      "default": {},
+                      "properties": {
+                        "_isEnabled": {
+                          "type": "boolean",
+                          "title": "Enabled",
+                          "default": true
+                        },
+                        "text": {
+                          "type": "string",
+                          "title": "",
+                          "default": "{{ariaLabel}}",
+                          "_adapt": {
+                            "translatable": true
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -352,6 +372,26 @@
                         }
                       }
                     },
+                    "_backNavTooltip": {
+                      "type": "object",
+                      "title": "Back tooltip",
+                      "default": {},
+                      "properties": {
+                        "_isEnabled": {
+                          "type": "boolean",
+                          "title": "Enabled",
+                          "default": true
+                        },
+                        "text": {
+                          "type": "string",
+                          "title": "",
+                          "default": "{{ariaLabel}}",
+                          "_adapt": {
+                            "translatable": true
+                          }
+                        }
+                      }
+                    },
                     "_spacers": {
                       "type": "array",
                       "title": "Items",
@@ -375,6 +415,18 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "_tooltips": {
+          "type": "object",
+          "title": "Tooltips",
+          "default": {},
+          "properties": {
+            "_isEnabled": {
+              "type": "boolean",
+              "title": "Enabled",
+              "default": true
             }
           }
         },

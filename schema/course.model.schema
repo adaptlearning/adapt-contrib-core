@@ -350,6 +350,28 @@
                   "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                   "default": 100,
                   "inputType": "Number"
+                },
+                "_navTooltip": {
+                  "type": "object",
+                  "title": "Navigation tooltip",
+                  "default": {},
+                  "properties": {
+                    "_isEnabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "inputType": "Checkbox",
+                      "validators": [],
+                      "title": "Enabled?"
+                    },
+                    "text": {
+                      "type": "string",
+                      "title": "",
+                      "default": "{{ariaLabel}}",
+                      "inputType": "Text",
+                      "required": true,
+                      "translatable": true
+                    }
+                  }
                 }
               }
             },
@@ -386,6 +408,28 @@
                     }
                   }
                 },
+                "_backNavTooltip": {
+                  "type": "object",
+                  "title": "Back tooltip",
+                  "default": {},
+                  "properties": {
+                    "_isEnabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "inputType": "Checkbox",
+                      "validators": [],
+                      "title": "Enabled?"
+                    },
+                    "text": {
+                      "type": "string",
+                      "title": "",
+                      "default": "{{ariaLabel}}",
+                      "inputType": "Text",
+                      "required": true,
+                      "translatable": true
+                    }
+                  }
+                },
                 "_spacers": {
                   "type": "array",
                   "required": false,
@@ -413,6 +457,21 @@
               }
             }
           }
+        }
+      }
+    },
+    "_tooltips": {
+      "type": "object",
+      "default": {},
+      "title": "Tooltip settings",
+      "help": "The start settings allow you to control whether tooltips can show and their default position.",
+      "properties": {
+        "_isEnabled": {
+          "type": "boolean",
+          "default": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Enabled?"
         }
       }
     },
