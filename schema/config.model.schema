@@ -192,6 +192,15 @@
       "type": "object",
       "title": "Screen Size",
       "properties": {
+        "xsmall": {
+          "type": "number",
+          "required": true,
+          "default": 0,
+          "title": "Extra Small",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "Pixel width for the extra small breakpoint, e.g. cellphones"
+        },
         "small": {
           "type": "number",
           "required": true,
@@ -218,6 +227,15 @@
           "inputType": "Number",
           "validators": ["required", "number"],
           "help": "Pixel width for the large breakpoint, e.g. laptop/desktop computers"
+        },
+        "xlarge": {
+          "type": "number",
+          "required": true,
+          "default": 2147483647,
+          "title": "Extra Large",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "Pixel width for the extra large breakpoint, e.g. laptop/desktop computers"
         }
       }
     },
