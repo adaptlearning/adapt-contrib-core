@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import Adapt from 'core/js/adapt';
 import DrawerView from 'core/js/views/drawerView';
+import tooltips from './tooltips';
 
 const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrder' });
 
@@ -9,13 +10,21 @@ class Drawer extends Backbone.Controller {
   initialize() {
     this.listenTo(Adapt, {
       'adapt:start': this.onAdaptStart,
-      'app:languageChanged': this.remove,
+      'app:languageChanged': this.onLanguageChanged,
       'navigation:toggleDrawer': this.toggle
     });
   }
-
+  
   onAdaptStart() {
     this._drawerView = new DrawerView({ collection: DrawerCollection });
+  }
+  
+  onLanguageChanged() {
+    tooltips.register({
+      _id: 'drawer',
+      ...Adapt.course.get('_globals')?._extensions?._drawer?._navTooltip || {}
+    });
+    this.remove();
   }
 
   toggle() {

@@ -3,6 +3,7 @@ import a11y from 'core/js/a11y';
 import location from 'core/js/location';
 import router from 'core/js/router';
 import startController from 'core/js/startController';
+import tooltips from '../tooltips';
 import _ from 'underscore';
 
 class NavigationView extends Backbone.View {
@@ -24,6 +25,10 @@ class NavigationView extends Backbone.View {
   }
 
   initialize() {
+    tooltips.register({
+      _id: 'back',
+      ...Adapt.course.get('_globals')?._extensions?._navigation?._backNavTooltip || {}
+    });
     _.bindAll(this, 'sortNavigationButtons');
     this.listenToOnce(Adapt, 'courseModel:dataLoading', this.remove);
     this.listenTo(Adapt, 'router:menu router:page', this.hideNavigationButton);
