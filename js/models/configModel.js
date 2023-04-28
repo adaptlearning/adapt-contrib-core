@@ -7,10 +7,12 @@ export default class ConfigModel extends LockingModel {
 
   defaults() {
     return {
-      screenSize: {
+      screenSize: { // Will be replaced if any object exists in the config.json
+        xlarge: 2147483647,
         large: 900,
         medium: 760,
-        small: 520
+        small: 520,
+        xsmall: 0
       },
       _forceRouteLocking: false,
       _canLoadData: true,
