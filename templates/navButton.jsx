@@ -7,7 +7,7 @@ export default function NavButton(props) {
     _iconClasses
   } = props;
   return (
-    <React.Fragment>
+    <>
       <span
         className={classes([
           'icon',
@@ -16,6 +16,6 @@ export default function NavButton(props) {
         aria-hidden="true"
       />
       <span className="nav__btn-label" aria-hidden="true">{compile(text, props)}</span>
-    </React.Fragment>
+    </>
   );
 }

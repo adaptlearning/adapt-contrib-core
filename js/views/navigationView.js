@@ -1,9 +1,5 @@
 import Adapt from 'core/js/adapt';
 import device from 'core/js/device';
-import a11y from 'core/js/a11y';
-import location from 'core/js/location';
-import router from 'core/js/router';
-import startController from 'core/js/startController';
 import tooltips from '../tooltips';
 import _ from 'underscore';
 import NavigationButtonView from './NavigationButtonView';
@@ -35,15 +31,15 @@ class NavigationView extends Backbone.View {
   }
 
   initialize() {
-    tooltips.register({
-      _id: 'back',
-      ...Adapt.course.get('_globals')?._extensions?._navigation?._backNavTooltip || {}
-    });
     _.bindAll(this, 'sortNavigationButtons');
     this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
   }
 
   start(model) {
+    tooltips.register({
+      _id: 'back',
+      ...Adapt.course.get('_globals')?._extensions?._navigation?._backNavTooltip || {}
+    });
     this.model = model;
     this.listenTo(model, 'change', this.update);
     this.listenToOnce(Adapt, 'courseModel:dataLoading', this.remove);
@@ -62,11 +58,10 @@ class NavigationView extends Backbone.View {
 
   onDeviceResize() {
     let {
-      _navigationAlignment,
-      _isBottomOnTouchDevices
+      _navigationAlignment = 'top',
+      _isBottomOnTouchDevices = false
     } = this.model.toJSON();
     const $html = $('html');
-    $html.addClass('is-nav-top');
     const isBottomOnTouchDevices = (device.touch && _isBottomOnTouchDevices);
     if (isBottomOnTouchDevices) _navigationAlignment = 'bottom';
     $html
