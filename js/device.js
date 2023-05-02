@@ -19,7 +19,8 @@ class Device extends Backbone.Controller {
     this.osVersion = this.bowser.os.version || '';
     this.renderingEngine = this.getRenderingEngine();
     this.listenTo(Adapt, {
-      'configModel:dataLoaded': this.onConfigDataLoaded
+      'configModel:dataLoaded': this.onConfigDataLoaded,
+      'navigationView:postRender': this.setNavigationHeight
     });
     const browser = this.browser.toLowerCase();
     // Convert 'msie' and 'internet explorer' to 'ie'.
@@ -105,6 +106,10 @@ class Device extends Backbone.Controller {
     document.documentElement.style.setProperty('--adapt-viewport-height', `${window.innerHeight}px`);
   }
 
+  setNavigationHeight() {
+    document.documentElement.style.setProperty('--adapt-navigation-height', `${$('.nav').height()}px`);
+  }
+
   getOperatingSystem() {
     let os = this.bowser.os.name.toLowerCase() || '';
 
@@ -141,6 +146,7 @@ class Device extends Backbone.Controller {
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
     this.setViewportHeight();
+    this.setNavigationHeight();
 
     if (previousWidth === this.screenWidth && previousHeight === this.screenHeight) {
       // Do not trigger a change if the viewport hasn't actually changed.  Scrolling on iOS will trigger a resize.

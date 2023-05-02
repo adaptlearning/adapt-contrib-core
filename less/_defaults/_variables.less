@@ -1,5 +1,6 @@
 :root {
   --adapt-viewport-height: 100vh;
+  --adapt-navigation-height: calc(@icon-size + (@icon-padding * 2));
 }
 
 // body {
@@ -81,6 +82,8 @@
 
 // Navigation height
 // --------------------------------------------------
+// Deprecated @navigation-height: Navigation height is now set
+// by --adapt-navigation-height and is updated by JS
 @navigation-height: @icon-size + (@icon-padding * 2);
 
 // Focus outline

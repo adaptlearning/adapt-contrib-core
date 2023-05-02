@@ -1,11 +1,11 @@
 // Add top padding equal to the height of the navigation bar
 // --------------------------------------------------
 html.is-nav-top #wrapper {
-  padding-top: @navigation-height;
+  padding-top: var(--adapt-navigation-height);
 }
 
 html.is-nav-bottom #wrapper {
-  padding-bottom: @navigation-height;
+  padding-bottom: var(--adapt-navigation-height);
 }
 
 .nav {
@@ -24,14 +24,72 @@ html.is-nav-bottom #wrapper {
   &__inner {
     .l-container-responsive(@max-page-width);
     display: flex;
-    align-items: center;
+    align-items: stretch;
   }
 
-  // Override floats on additional `nav__btn` elements part of plugins
-  // that haven't been updated to work with data-order yet.
-  // Can be removed in time.
   &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    // Override floats on additional `nav__btn` elements part of plugins
+    // that haven't been updated to work with data-order yet.
+    // Can be removed in time.
     float: none !important;
+  }
+
+  &.hide-label &__btn-label,
+  &__btn.hide-label &__btn-label {
+    display: none;
+  }
+
+  &.show-label {
+    .show-nav-label(small);
+    .show-nav-label(medium);
+    .show-nav-label(large);
+  }
+
+  &.has-label-right &__btn-label {
+    margin-left: (@icon-padding / 2);
+  }
+
+  &.has-label-bottom {
+    .nav__btn {
+      flex-direction: column;
+    }
+
+    .nav__btn-label {
+      margin-top: (@icon-padding / 2);
+    }
+  }
+
+  &.has-label-top {
+    .nav__btn {
+      flex-direction: column;
+    }
+
+    .nav__btn-label {
+      order: -1;
+      margin-bottom: (@icon-padding / 2);
+    }
+  }
+  
+  .has-label-left &__btn-label {
+    order: -1;
+  }
+
+  &.has-label-left &__btn-label {
+    margin-right: (@icon-padding / 2);
+  }
+
+  &.has-label-auto {
+    .dir-rtl & .nav__btn-label {
+      margin-right: (@icon-padding / 2);
+    }
+
+    .dir-ltr & .nav__btn-label {
+      margin-left: (@icon-padding / 2);
+    }
   }
 
   &__spacer {
@@ -62,5 +120,19 @@ html.is-nav-bottom #wrapper {
 
   &__drawer-btn .icon {
     .icon-list;
+  }
+}
+
+// Show nav label at breakpoints
+.show-nav-label(@size) {
+  &.show-label-@{size} {
+    .nav__btn-label { display: none }
+
+    .nav__btn:not(.hide-label) .nav__btn-label {
+      @breakpoint: "device-width-@{size}";
+      @media (min-width: @@breakpoint) {
+        display: initial;
+      }
+    }
   }
 }
