@@ -26,6 +26,12 @@ export default class Scroll extends Backbone.Controller {
     this._ignoreKeysOnElementsMatching = 'textarea, input, select';
     this._isRunning = false;
     this._touchStartEventObject = null;
+    window.addEventListener('touchstart', this._onTouchStart); // mobile
+    window.addEventListener('touchend', this._onTouchEnd); // mobile
+    window.addEventListener('touchmove', this._onScrollEvent, { passive: false }); // mobile
+    window.addEventListener('wheel', this._onScrollEvent, { passive: false });
+    document.addEventListener('wheel', this._onScrollEvent, { passive: false });
+    document.addEventListener('keydown', this._onKeyDown);
   }
 
   /**
@@ -84,12 +90,6 @@ export default class Scroll extends Backbone.Controller {
       return;
     }
     this._isRunning = true;
-    window.addEventListener('touchstart', this._onTouchStart); // mobile
-    window.addEventListener('touchend', this._onTouchEnd); // mobile
-    window.addEventListener('touchmove', this._onScrollEvent, { passive: false }); // mobile
-    window.addEventListener('wheel', this._onScrollEvent, { passive: false });
-    document.addEventListener('wheel', this._onScrollEvent, { passive: false });
-    document.addEventListener('keydown', this._onKeyDown);
   }
 
   /**
@@ -98,6 +98,7 @@ export default class Scroll extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onTouchStart(event) {
+    if (!this._isRunning) return;
     event = $.event.fix(event);
     this._touchStartEventObject = event;
     return true;
@@ -107,6 +108,7 @@ export default class Scroll extends Backbone.Controller {
    * Clear touchstart event object.
    */
   _onTouchEnd() {
+    if (!this._isRunning) return;
     this._touchStartEventObject = null;
     return true;
   }
@@ -117,6 +119,7 @@ export default class Scroll extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onScrollEvent(event) {
+    if (!this._isRunning) return;
     event = $.event.fix(event);
     return this._preventScroll(event);
   }
@@ -127,6 +130,7 @@ export default class Scroll extends Backbone.Controller {
    * @param {JQuery.Event} event
    */
   _onKeyDown(event) {
+    if (!this._isRunning) return;
     event = $.event.fix(event);
     if (!this._preventScrollOnKeys[event.which]) {
       return;
@@ -322,13 +326,6 @@ export default class Scroll extends Backbone.Controller {
       return;
     }
     this._isRunning = false;
-    window.removeEventListener('touchstart', this._onTouchStart); // mobile
-    window.removeEventListener('touchend', this._onTouchEnd); // mobile
-    // shouldn't need to supply 3rd arg when removing, but IE11 won't remove the event listener if you don't - see https://github.com/adaptlearning/adapt_framework/issues/2466
-    window.removeEventListener('touchmove', this._onScrollEvent, { passive: false }); // mobile
-    window.removeEventListener('wheel', this._onScrollEvent, { passive: false });
-    document.removeEventListener('wheel', this._onScrollEvent, { passive: false });
-    document.removeEventListener('keydown', this._onKeyDown);
   }
 
 }
