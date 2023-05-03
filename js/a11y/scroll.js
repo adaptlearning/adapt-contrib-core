@@ -183,7 +183,7 @@ export default class Scroll extends Backbone.Controller {
     const isTouchEvent = event.type === 'touchmove';
     const isKeyDownEvent = event.type === 'keydown';
     const hasTouchStartEvent = this._touchStartEventObject?.originalEvent;
-    if ((isTouchEvent && !hasTouchStartEvent) || !isKeyDownEvent) {
+    if ((isTouchEvent && !hasTouchStartEvent) && !isKeyDownEvent) {
       return $target;
     }
     const directionY = this._getScrollDirection(event);
