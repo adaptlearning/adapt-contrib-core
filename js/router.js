@@ -201,12 +201,13 @@ class Router extends Backbone.Router {
       return;
     }
 
-    if (!isMenu) {
-      // checkIfResetOnRevisit where exists on descendant models before render
-      _.invoke(model.getAllDescendantModels(), 'checkIfResetOnRevisit');
-      // wait for completion to settle
-      await Adapt.deferUntilCompletionChecked();
-    }
+    // checkIfResetOnRevisit on descendant page children models before render
+    const pageDescendants = model.getAllDescendantModels({
+      filter: model => !model.isTypeGroup('contentobject')
+    });
+    _.invoke(pageDescendants, 'checkIfResetOnRevisit');
+    // wait for completion to settle
+    await Adapt.deferUntilCompletionChecked();
 
     this.$wrapper.append(new ViewClass({ model }).$el);
 

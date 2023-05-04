@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
+import components from './components';
 import Data from 'core/js/data';
 import AdaptSubsetCollection from 'core/js/collections/adaptSubsetCollection';
 import ContentObjectModel from 'core/js/models/contentObjectModel';
@@ -10,7 +11,7 @@ import ComponentModel from 'core/js/models/componentModel';
 import 'core/js/models/courseModel';
 import 'core/js/models/menuModel';
 import 'core/js/models/pageModel';
-import 'core/js/views/pageView';
+import PageView from 'core/js/views/pageView';
 import 'core/js/views/articleView';
 import 'core/js/views/blockView';
 
@@ -18,6 +19,7 @@ class MPABC extends Backbone.Controller {
 
   initialize() {
     // Example of how to cause the data loader to wait for another module to setup
+    this.listenTo(Adapt, 'configModel:loadCourseData', this.onConfigLoaded);
     this.listenTo(Data, {
       loading: this.waitForDataLoaded,
       loaded: this.onDataLoaded
@@ -28,6 +30,11 @@ class MPABC extends Backbone.Controller {
   waitForDataLoaded() {
     // Tell the data loader to wait
     wait.begin();
+  }
+
+  onConfigLoaded() {
+    if (!Adapt.config.get('_isPageMenu')) return;
+    components.register('course menu', { view: PageView });
   }
 
   onDataLoaded() {
