@@ -59,14 +59,6 @@
         }
       }
     },
-    "_isPageMenu": {
-      "type": "boolean",
-      "default": false,
-      "inputType": "Checkbox",
-      "validators": [],
-      "title": "Allow components on menus",
-      "help": "EXPERIMENTAL: If enabled, menus will be rendered as pages by default. Not supported in the AAT."
-    },
     "_defaultLanguage": {
       "type": "string",
       "required": true,
