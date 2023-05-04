@@ -17,7 +17,7 @@ Object.assign(ComponentMenuView, {
    */
   childContainer: '.js-children',
   childView: MenuItemView,
-  type: 'menu',
+  type: 'component',
   template: 'menu'
 });
 

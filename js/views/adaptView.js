@@ -139,6 +139,16 @@ class AdaptView extends Backbone.View {
   }
 
   /**
+   * Generate an array of models to render.
+   * This defaults to available non-contentobject children models.
+   *
+   * @returns {[Backbone.Model]}
+   */
+  get childrenToAdd() {
+    return this.model.getAvailableChildModels().filter(model => !model.isTypeGroup('contentobject'));
+  }
+
+  /**
    * Add children and descendant views, first-child-first. Wait until all possible
    * views are added before resolving asynchronously.
    * Will trigger 'view:addChild'(ChildEvent), 'view:requestChild'(ChildEvent)
@@ -152,7 +162,7 @@ class AdaptView extends Backbone.View {
     // Iterate through existing available children and/or request new children
     // if required and allowed
     while (true) {
-      const models = this.model.getAvailableChildModels().filter(model => !model.isTypeGroup('contentobject'));
+      const models = this.childrenToAdd;
       const event = this._getAddChildEvent(models[this.nthChild]);
       if (!event) {
         break;
