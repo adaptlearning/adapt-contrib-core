@@ -176,12 +176,6 @@
       "title": "Device breakpoints",
       "default": {},
       "properties": {
-        "xsmall": {
-          "type": "number",
-          "title": "Extra Small",
-          "description": "Pixel width for the extra small breakpoint, e.g. cellphones",
-          "default": 0
-        },
         "small": {
           "type": "number",
           "title": "Small",
@@ -199,12 +193,6 @@
           "title": "Large",
           "description": "Pixel width for the large breakpoint, e.g. laptop/desktop computers",
           "default": 900
-        },
-        "xlarge": {
-          "type": "number",
-          "title": "Extra Large",
-          "description": "Pixel width for the extra large breakpoint, e.g. laptop/desktop computers",
-          "default": 2147483647
         }
       }
     },
