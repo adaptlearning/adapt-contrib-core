@@ -60,7 +60,7 @@ class Device extends Backbone.Controller {
     let screenSizesList = Object.entries(screenSizes);
     const screensizeEmThreshold = 300;
     const baseFontSize = 16;
-    for (const [name, value] of Object.entries(screenSizes)) {
+    for (const [name, value] of screenSizesList) {
       // Check to see if the screen size value is larger than the em threshold
       // If value is larger than em threshold, convert value (assumed px) to ems
       // Otherwise assume value is in ems
@@ -68,6 +68,7 @@ class Device extends Backbone.Controller {
         ? value / baseFontSize
         : value;
     }
+    // Reread list after modifications
     screenSizesList = Object.entries(screenSizes);
     const fontSize = parseFloat($('html').css('font-size'));
     const screenSizeEmWidth = (window.innerWidth / fontSize);
