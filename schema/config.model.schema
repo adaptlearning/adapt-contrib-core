@@ -192,6 +192,15 @@
       "type": "object",
       "title": "Screen Size",
       "properties": {
+        "xsmall": {
+          "type": "number",
+          "required": true,
+          "default": 0,
+          "title": "Extra Small",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "Pixel width for the extra small breakpoint, e.g. small cellphones"
+        },
         "small": {
           "type": "number",
           "required": true,

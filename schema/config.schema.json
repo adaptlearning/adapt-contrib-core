@@ -176,6 +176,12 @@
       "title": "Device breakpoints",
       "default": {},
       "properties": {
+        "xsmall": {
+          "type": "number",
+          "title": "Extra Small",
+          "description": "Pixel width for the extra small breakpoint, e.g. small cellphones",
+          "default": 0
+        },
         "small": {
           "type": "number",
           "title": "Small",
