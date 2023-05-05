@@ -52,13 +52,12 @@ class Device extends Backbone.Controller {
   }
 
   /**
-   * Compares the calculated screen width to the breakpoints defined in config.json.
-   *
-   * @returns {string} 'large', 'medium' or 'small'
+   * Returns an object of screen size names and em values
+   * @returns {Object}
    */
-  checkScreenSize() {
+  get screenSizes() {
     const screenSizes = { ...Adapt.config.get('screenSize') };
-    let screenSizesList = Object.entries(screenSizes);
+    const screenSizesList = Object.entries(screenSizes);
     const screensizeEmThreshold = 300;
     const baseFontSize = 16;
     for (const [name, value] of screenSizesList) {
@@ -69,11 +68,28 @@ class Device extends Backbone.Controller {
         ? value / baseFontSize
         : value;
     }
-    // Reread list after modifications
-    screenSizesList = Object.entries(screenSizes);
+    return screenSizes;
+  }
+
+  /**
+   * Returns a boolean if the current screen size is equal to or above the named
+   * screen size.
+   * @param {string} name
+   * @returns {boolean}
+   */
+  isScreenSizeFrom(name) {
+    return Boolean(window.matchMedia(`(min-width: ${this.screenSizes[name]}em)`)?.matches);
+  }
+
+  /**
+   * Returns the calculated screen width name.
+   * @returns {string} 'large', 'medium' or 'small'
+   */
+  checkScreenSize() {
+    const screenSizesList = Object.entries(this.screenSizes);
+    screenSizesList.sort((a, b) => a[1] - b[1]);
     const fontSize = parseFloat($('html').css('font-size'));
     const screenSizeEmWidth = (window.innerWidth / fontSize);
-    screenSizesList.sort((a, b) => a[1] - b[1]);
     const smallestScreenSize = screenSizesList[0][0];
     // Find the best sized screen size
     const screenSize = screenSizesList.reduce((screenSize, [name, value]) => {
