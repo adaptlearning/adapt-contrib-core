@@ -57,36 +57,29 @@ class Device extends Backbone.Controller {
    * @returns {string} 'large', 'medium' or 'small'
    */
   checkScreenSize() {
-    const screenSizeConfig = Adapt.config.get('screenSize');
-    let screenSize;
-
+    const screenSizes = { ...Adapt.config.get('screenSize') };
+    let screenSizesList = Object.entries(screenSizes);
     const screensizeEmThreshold = 300;
     const baseFontSize = 16;
-
-    // Check to see if the screen size value is larger than the em threshold
-    // If value is larger than em threshold, convert value (assumed px) to ems
-    // Otherwise assume value is in ems
-    const mediumEmBreakpoint = screenSizeConfig.medium > screensizeEmThreshold
-      ? screenSizeConfig.medium / baseFontSize
-      : screenSizeConfig.medium;
-    const smallEmBreakpoint = screenSizeConfig.small > screensizeEmThreshold
-      ? screenSizeConfig.small / baseFontSize
-      : screenSizeConfig.small;
-
+    for (const [name, value] of screenSizesList) {
+      // Check to see if the screen size value is larger than the em threshold
+      // If value is larger than em threshold, convert value (assumed px) to ems
+      // Otherwise assume value is in ems
+      screenSizes[name] = value > screensizeEmThreshold
+        ? value / baseFontSize
+        : value;
+    }
+    // Reread list after modifications
+    screenSizesList = Object.entries(screenSizes);
     const fontSize = parseFloat($('html').css('font-size'));
     const screenSizeEmWidth = (window.innerWidth / fontSize);
-
-    // Check to see if client screen width is larger than medium em breakpoint
-    // If so apply large, otherwise check to see if client screen width is
-    // larger than small em breakpoint. If so apply medium, otherwise apply small
-    if (screenSizeEmWidth >= mediumEmBreakpoint) {
-      screenSize = 'large';
-    } else if (screenSizeEmWidth >= smallEmBreakpoint) {
-      screenSize = 'medium';
-    } else {
-      screenSize = 'small';
-    }
-
+    screenSizesList.sort((a, b) => a[1] - b[1]);
+    const smallestScreenSize = screenSizesList[0][0];
+    // Find the best sized screen size
+    const screenSize = screenSizesList.reduce((screenSize, [name, value]) => {
+      if (screenSizeEmWidth >= value) return name;
+      return screenSize;
+    }, smallestScreenSize);
     return screenSize;
   }
 
