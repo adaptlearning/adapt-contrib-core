@@ -170,9 +170,12 @@ class Device extends Backbone.Controller {
     const newScreenSize = this.checkScreenSize();
     if (newScreenSize !== this.screenSize) {
       this.screenSize = newScreenSize;
-      this.$html.toggleClass('size-small', this.screenSize === 'small');
-      this.$html.toggleClass('size-medium', this.screenSize === 'medium');
-      this.$html.toggleClass('size-large', this.screenSize === 'large');
+      const screenSizes = this.screenSizes;
+      for (const name in screenSizes) {
+        if (name === this.screenSize) continue;
+        this.$html.removeClass(`size-${name}`);
+      }
+      this.$html.toggleClass(`size-${this.screenSize}`, true);
       Adapt.trigger('device:changed', this.screenSize);
     }
 
