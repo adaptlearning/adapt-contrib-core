@@ -34,7 +34,7 @@ export default function Header(props) {
       _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
-  const sizedInstruction = (mobileInstruction && device.screenSize !== 'large') ?
+  const sizedInstruction = (mobileInstruction && device.isScreenSizeMax('small')) ?
     mobileInstruction :
     instruction;
   const _globals = Adapt.course.get('_globals');
