@@ -77,7 +77,7 @@ class Device extends Backbone.Controller {
    * @param {string} name
    * @returns {boolean}
    */
-  isScreenSizeFrom(name) {
+  isScreenSizeMin(name) {
     return Boolean(window.matchMedia(`(min-width: ${this.screenSizes[name]}em)`)?.matches);
   }
 
