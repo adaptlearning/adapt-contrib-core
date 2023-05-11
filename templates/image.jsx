@@ -10,7 +10,7 @@ import { html, classes, prefixClasses } from 'core/js/reactHelpers';
  * @param {Array} [props.attributionClassNamePrefixes]
  */
 export default function Image(props) {
-  const hasMatchingSetting = (Object.prototype.hasOwnProperty.call(props, `_${device.screenSize}`) || Object.prototype.hasOwnProperty.call(props, device.screenSize));
+  const hasMatchingSetting = (Object.hasOwn(props, `_${device.screenSize}`) || Object.hasOwn(props, device.screenSize));
   const screenSize = hasMatchingSetting
     ? device.screenSize
     : (device.isScreenSizeMin('medium') ? 'large' : 'small');
