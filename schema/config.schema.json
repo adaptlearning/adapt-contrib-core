@@ -176,29 +176,29 @@
       "title": "Device breakpoints",
       "default": {},
       "properties": {
-        "xsmall": {
-          "type": "number",
-          "title": "Extra Small",
-          "description": "Pixel width for the extra small breakpoint, e.g. small cellphones",
-          "default": 0
-        },
         "small": {
           "type": "number",
           "title": "Small",
-          "description": "Pixel width for the small breakpoint, e.g. cellphones",
-          "default": 520
+          "description": "Pixel width for the start of the small breakpoint, e.g. cellphones",
+          "default": 0
         },
         "medium": {
           "type": "number",
           "title": "Medium",
-          "description": "Pixel width for the medium breakpoint, e.g. tablet devices",
-          "default": 760
+          "description": "Pixel width for the start of the medium breakpoint, e.g. tablet devices",
+          "default": 720
         },
         "large": {
           "type": "number",
           "title": "Large",
-          "description": "Pixel width for the large breakpoint, e.g. laptop/desktop computers",
-          "default": 900
+          "description": "Pixel width for the start of the large breakpoint, e.g. laptop/desktop computers",
+          "default": 960
+        },
+        "xlarge": {
+          "type": "number",
+          "title": "Large",
+          "description": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers",
+          "default": 1280
         }
       }
     },
