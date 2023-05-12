@@ -82,16 +82,6 @@ class Device extends Backbone.Controller {
   }
 
   /**
-    * Returns a boolean if the current screen size is equal to or below the named
-    * screen size.
-    * @param {string} name
-    * @returns {boolean}
-    */
-  isScreenSizeMax(name) {
-    return Boolean(window.matchMedia(`(max-width: ${this.screenSizes[name]}em)`)?.matches);
-  }
-
-  /**
    * Returns the calculated screen width name.
    * @returns {string} 'large', 'medium' or 'small'
    */
