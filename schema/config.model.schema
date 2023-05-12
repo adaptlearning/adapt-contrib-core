@@ -195,29 +195,38 @@
         "small": {
           "type": "number",
           "required": true,
-          "default": 520,
+          "default": 0,
           "title": "Small",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the small breakpoint, e.g. cellphones"
+          "help": "Pixel width for the start of the small breakpoint, e.g. cellphones"
         },
         "medium": {
           "type": "number",
           "required": true,
-          "default": 760,
+          "default": 720,
           "title": "Medium",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the medium breakpoint, e.g. tablet devices"
+          "help": "Pixel width for the start of the medium breakpoint, e.g. tablet devices"
         },
         "large": {
           "type": "number",
           "required": true,
-          "default": 900,
+          "default": 960,
           "title": "Large",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the large breakpoint, e.g. laptop/desktop computers"
+          "help": "Pixel width for the start of the large breakpoint, e.g. laptop/desktop computers"
+        },
+        "xlarge": {
+          "type": "number",
+          "required": true,
+          "default": 1280,
+          "title": "Large",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers"
         }
       }
     },
