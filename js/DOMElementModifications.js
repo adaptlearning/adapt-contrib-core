@@ -91,16 +91,19 @@ export class DOMElementModifications extends Backbone.View {
     return this;
   }
 
-  static calculateEventName(eventNames) {
+  static calculateEventNames(eventNames) {
     const firstEvent = eventNames[0];
     const isNew = (firstEvent === 'added');
     const lastRemovedIndex = eventNames.lastIndexOf('removed');
     const lastAddedIndex = eventNames.lastIndexOf('added');
     const hasReAdded = (lastRemovedIndex !== -1 && lastAddedIndex !== -1 && lastRemovedIndex < lastAddedIndex);
     // Element was moved, not added or removed
-    if (!isNew && hasReAdded) return 'changed';
-    const lastEvent = eventNames[eventNames.length - 1];
-    return lastEvent;
+    if (!isNew && hasReAdded) return ['changed'];
+    const events = _.uniq([
+      isNew && 'added',
+      eventNames[eventNames.length - 1]
+    ].filter(Boolean));
+    return events;
   };
 
   _onMutation(list) {
@@ -153,44 +156,46 @@ export class DOMElementModifications extends Backbone.View {
       });
       return changes;
     }, new Map());
-    for (const [target, { eventNames, previousAttributes }] of reducedChanges.entries()) {
+    for (let [target, { eventNames, previousAttributes }] of reducedChanges.entries()) {
       // Check if the added and removed events are a moved node, which should have a changed event
-      const eventName = DOMElementModifications.calculateEventName(eventNames);
-      const isNodeAdded = (eventName === 'added');
-      const isNodeRemoved = (eventName === 'removed');
-      // Find events to trigger, filter by and return event name selectors
-      const selectorFilters = isNodeAdded
-        ? this._addedFilters
-        : isNodeRemoved
-          ? this._removedFilters
-          : this._changedFilters;
-      if (!selectorFilters.length) continue;
-      const selectors = selectorFilters.map(filter => filter(target)).filter(Boolean);
-      if (!selectors.length) continue;
-      // Capture new attribute values
-      const changedAttributes = this._watch.attributes
-        ? Object.keys(previousAttributes).reduce((attributes, attrName) => {
-          attributes[attrName] = target.getAttribute(attrName);
-          return attributes;
-        }, {})
-        : null;
-      // Trigger events.
-      // Always trigger a changed event, trigger added or removed only when specifically requested
-      const EventObject = new DOMElementModificationEventObject({
-        type: eventName,
-        target,
-        changedAttributes,
-        previousAttributes
-      });
-      selectors.forEach(selector => {
-        if (selector && selector !== true) {
-          // Event attachment has specified selector
-          if (eventName !== 'changed') this.trigger(`${eventName}:${selector}`, EventObject);
-          this.trigger(`changed:${selector}`, EventObject);
-        }
-        // Event attachment has no selector
-        if (eventName !== 'changed') this.trigger(`${eventName}`, EventObject);
-        this.trigger('changed', EventObject);
+      eventNames = DOMElementModifications.calculateEventNames(eventNames);
+      eventNames.forEach(eventName => {
+        const isNodeAdded = (eventName === 'added');
+        const isNodeRemoved = (eventName === 'removed');
+        // Find events to trigger, filter by and return event name selectors
+        const selectorFilters = isNodeAdded
+          ? this._addedFilters
+          : isNodeRemoved
+            ? this._removedFilters
+            : this._changedFilters;
+        if (!selectorFilters.length) return;
+        const selectors = selectorFilters.map(filter => filter(target)).filter(Boolean);
+        if (!selectors.length) return;
+        // Capture new attribute values
+        const changedAttributes = this._watch.attributes
+          ? Object.keys(previousAttributes).reduce((attributes, attrName) => {
+            attributes[attrName] = target.getAttribute(attrName);
+            return attributes;
+          }, {})
+          : null;
+        // Trigger events.
+        // Always trigger a changed event, trigger added or removed only when specifically requested
+        const EventObject = new DOMElementModificationEventObject({
+          type: eventName,
+          target,
+          changedAttributes,
+          previousAttributes
+        });
+        selectors.forEach(selector => {
+          if (selector && selector !== true) {
+            // Event attachment has specified selector
+            if (eventName !== 'changed') this.trigger(`${eventName}:${selector}`, EventObject);
+            this.trigger(`changed:${selector}`, EventObject);
+          }
+          // Event attachment has no selector
+          if (eventName !== 'changed') this.trigger(`${eventName}`, EventObject);
+          this.trigger('changed', EventObject);
+        });
       });
     }
   }
