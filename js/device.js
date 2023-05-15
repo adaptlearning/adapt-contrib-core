@@ -19,7 +19,8 @@ class Device extends Backbone.Controller {
     this.osVersion = this.bowser.os.version || '';
     this.renderingEngine = this.getRenderingEngine();
     this.listenTo(Adapt, {
-      'configModel:dataLoaded': this.onConfigDataLoaded
+      'configModel:dataLoaded': this.onConfigDataLoaded,
+      'navigationView:postRender': this.setNavigationHeight
     });
     const browser = this.browser.toLowerCase();
     // Convert 'msie' and 'internet explorer' to 'ie'.
@@ -51,41 +52,50 @@ class Device extends Backbone.Controller {
   }
 
   /**
-   * Compares the calculated screen width to the breakpoints defined in config.json.
-   *
+   * Returns an object of screen size names and em values
+   * @returns {Object}
+   */
+  get screenSizes() {
+    const screenSizes = { ...Adapt.config.get('screenSize') };
+    const screenSizesList = Object.entries(screenSizes);
+    const screensizeEmThreshold = 300;
+    const baseFontSize = 16;
+    for (const [name, value] of screenSizesList) {
+      // Check to see if the screen size value is larger than the em threshold
+      // If value is larger than em threshold, convert value (assumed px) to ems
+      // Otherwise assume value is in ems
+      screenSizes[name] = value > screensizeEmThreshold
+        ? value / baseFontSize
+        : value;
+    }
+    return screenSizes;
+  }
+
+  /**
+   * Returns a boolean if the current screen size is equal to or above the named
+   * screen size.
+   * @param {string} name
+   * @returns {boolean}
+   */
+  isScreenSizeMin(name) {
+    return Boolean(window.matchMedia(`(min-width: ${this.screenSizes[name]}em)`)?.matches);
+  }
+
+  /**
+   * Returns the calculated screen width name.
    * @returns {string} 'large', 'medium' or 'small'
    */
   checkScreenSize() {
-    const screenSizeConfig = Adapt.config.get('screenSize');
-    let screenSize;
-
-    const screensizeEmThreshold = 300;
-    const baseFontSize = 16;
-
-    // Check to see if the screen size value is larger than the em threshold
-    // If value is larger than em threshold, convert value (assumed px) to ems
-    // Otherwise assume value is in ems
-    const mediumEmBreakpoint = screenSizeConfig.medium > screensizeEmThreshold
-      ? screenSizeConfig.medium / baseFontSize
-      : screenSizeConfig.medium;
-    const smallEmBreakpoint = screenSizeConfig.small > screensizeEmThreshold
-      ? screenSizeConfig.small / baseFontSize
-      : screenSizeConfig.small;
-
+    const screenSizesList = Object.entries(this.screenSizes);
+    screenSizesList.sort((a, b) => a[1] - b[1]);
     const fontSize = parseFloat($('html').css('font-size'));
     const screenSizeEmWidth = (window.innerWidth / fontSize);
-
-    // Check to see if client screen width is larger than medium em breakpoint
-    // If so apply large, otherwise check to see if client screen width is
-    // larger than small em breakpoint. If so apply medium, otherwise apply small
-    if (screenSizeEmWidth >= mediumEmBreakpoint) {
-      screenSize = 'large';
-    } else if (screenSizeEmWidth >= smallEmBreakpoint) {
-      screenSize = 'medium';
-    } else {
-      screenSize = 'small';
-    }
-
+    const smallestScreenSize = screenSizesList[0][0];
+    // Find the best sized screen size
+    const screenSize = screenSizesList.reduce((screenSize, [name, value]) => {
+      if (screenSizeEmWidth >= value) return name;
+      return screenSize;
+    }, smallestScreenSize);
     return screenSize;
   }
 
@@ -103,6 +113,10 @@ class Device extends Backbone.Controller {
 
   setViewportHeight() {
     document.documentElement.style.setProperty('--adapt-viewport-height', `${window.innerHeight}px`);
+  }
+
+  setNavigationHeight() {
+    document.documentElement.style.setProperty('--adapt-navigation-height', `${$('.nav').height()}px`);
   }
 
   getOperatingSystem() {
@@ -141,6 +155,7 @@ class Device extends Backbone.Controller {
     this.screenWidth = this.getScreenWidth();
     this.screenHeight = this.getScreenHeight();
     this.setViewportHeight();
+    this.setNavigationHeight();
 
     if (previousWidth === this.screenWidth && previousHeight === this.screenHeight) {
       // Do not trigger a change if the viewport hasn't actually changed.  Scrolling on iOS will trigger a resize.
@@ -155,9 +170,12 @@ class Device extends Backbone.Controller {
     const newScreenSize = this.checkScreenSize();
     if (newScreenSize !== this.screenSize) {
       this.screenSize = newScreenSize;
-      this.$html.toggleClass('size-small', this.screenSize === 'small');
-      this.$html.toggleClass('size-medium', this.screenSize === 'medium');
-      this.$html.toggleClass('size-large', this.screenSize === 'large');
+      const screenSizes = this.screenSizes;
+      for (const name in screenSizes) {
+        if (name === this.screenSize) continue;
+        this.$html.removeClass(`size-${name}`);
+      }
+      this.$html.toggleClass(`size-${this.screenSize}`, true);
       Adapt.trigger('device:changed', this.screenSize);
     }
 

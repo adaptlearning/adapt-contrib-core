@@ -27,9 +27,9 @@ class AdaptView extends Backbone.View {
     this.isJSX = (this.constructor.template || '').includes('.jsx');
     if (this.isJSX) {
       this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
-      this.listenTo(this.model, 'all', this.changed);
+      this.listenTo(this.model, 'change', this.changed);
       const children = this.model?.getChildren?.();
-      children && this.listenTo(children, 'all', this.changed);
+      children && this.listenTo(children, 'change', this.changed);
       // Facilitate adaptive react views
       this.listenTo(Adapt, 'device:changed', this.changed);
     }

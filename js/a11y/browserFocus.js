@@ -83,7 +83,9 @@ export default class BrowserFocus extends Backbone.Controller {
     // Force focus for screen reader enter / space press
     if ($closestFocusable[0] !== document.activeElement) {
       // Focus on the nearest focusable element if not already with focus
+      this.a11y._isForcedFocus = true;
       $closestFocusable[0].focus();
+      this.a11y._isForcedFocus = false;
     }
     if (!config._options._isClickDelayedAfterFocusEnabled) return;
     // Add a small delay to each click to allow screen readers to process focus

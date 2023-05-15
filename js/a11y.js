@@ -83,6 +83,7 @@ class A11y extends Backbone.Controller {
     this._wrapFocus = new WrapFocus({ a11y: this });
     this._popup = new Popup({ a11y: this });
     this._scroll = new Scroll({ a11y: this });
+    this._isForcedFocus = false;
     this.log = new Log({ a11y: this });
     deprecated(this);
 
@@ -728,7 +729,7 @@ class A11y extends Backbone.Controller {
     if (!config._isEnabled || !config._options._isFocusAssignmentEnabled || $element.length === 0) {
       return this;
     }
-    function perform() {
+    const perform = () => {
       if ($element.attr('tabindex') === undefined) {
         $element.attr({
           // JAWS reads better with 0, do not use -1
@@ -739,9 +740,11 @@ class A11y extends Backbone.Controller {
       if (options.preventScroll) {
         const y = $(window).scrollTop();
         try {
+          this._isForcedFocus = true;
           $element[0].focus({
             preventScroll: true
           });
+          this._isForcedFocus = false;
         } catch (e) {
           // Drop focus errors as only happens when the element
           // isn't attached to the DOM.
@@ -754,15 +757,24 @@ class A11y extends Backbone.Controller {
             window.scrollTo(null, y);
         }
       } else {
+        this._isForcedFocus = true;
         $element[0].focus();
+        this._isForcedFocus = false;
       }
-    }
+    };
     if (options.defer) {
       _.defer(perform);
     } else {
       perform();
     }
     return this;
+  }
+
+  /**
+   * Returns true if focus was assigned by a11y and not user-interaction
+   */
+  get isForcedFocus() {
+    return this._isForcedFocus;
   }
 
   /**

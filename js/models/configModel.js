@@ -7,11 +7,7 @@ export default class ConfigModel extends LockingModel {
 
   defaults() {
     return {
-      screenSize: {
-        large: 900,
-        medium: 760,
-        small: 520
-      },
+      screenSize: null,
       _forceRouteLocking: false,
       _canLoadData: true,
       _disableAnimation: false
