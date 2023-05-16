@@ -60,7 +60,10 @@ class A11y extends Backbone.Controller {
        * Specifies all stylistic elements.
        */
       _wrapStyleElements: 'b,i,abbr,strong,em,small,sub,sup,ins,del,mark,zw,nb',
-
+      /**
+       * Specified elements are navigated by the keyboard arrows.
+       */
+      _arrowElements: 'input[type=radio]',
       /**
        * Logging settings
        */
@@ -487,6 +490,18 @@ class A11y extends Backbone.Controller {
     $element = $($element).first();
     if (!$element.is(config._options._focusForwardElementsExcludes)) return null;
     return this.isReadable($element, checkParents);
+  }
+
+  /**
+   * Check if the first item uses keyboard arrows for interactions.
+   *
+   * @param {Object|string|Array} $element
+   * @returns {boolean}
+   */
+  isArrowable($element) {
+    const config = this.config;
+    $element = $($element).first();
+    return $element.is(config._options._arrowElements);
   }
 
   /**
