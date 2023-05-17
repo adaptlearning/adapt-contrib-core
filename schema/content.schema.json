@@ -55,7 +55,6 @@
     "instruction": {
       "type": "string",
       "title": "Instruction",
-      "default": "",
       "_adapt": {
         "translatable": true
       }
