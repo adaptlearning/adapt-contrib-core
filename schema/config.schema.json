@@ -196,7 +196,7 @@
         },
         "xlarge": {
           "type": "number",
-          "title": "Large",
+          "title": "Extra Large",
           "description": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers",
           "default": 1280
         }
