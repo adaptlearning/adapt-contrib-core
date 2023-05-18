@@ -192,8 +192,21 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   }
 
   resetItems() {
+    if (this.get('_shouldResetAllAnswers') === false) {
+      this.resetIncorrectItems();
+      return;
+    }
     this.resetActiveItems();
     this.set('_isAtLeastOneCorrectSelection', false);
+  }
+
+  resetIncorrectItems() {
+    this.getChildren().each(item => {
+      const isCorrect = (item.get('_shouldBeSelected') || item.get('_isCorrect'));
+      if (isCorrect) return;
+      item.toggleActive(false);
+    });
+    this.set('_isAtLeastOneCorrectSelection', Boolean(this.getLastActiveItem()));
   }
 
   getInteractionObject() {
