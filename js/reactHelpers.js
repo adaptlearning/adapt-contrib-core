@@ -88,7 +88,7 @@ export function partial(name, ...args) {
  * @param {...any} args Helper arguments
  */
 export function helper(name, ...args) {
-  const output = Handlebars.helpers[name].call(this, args[0]);
+  const output = Handlebars.helpers[name].call(this ?? args[0], args[0]);
   return (output && output.string) || output;
 };
 
