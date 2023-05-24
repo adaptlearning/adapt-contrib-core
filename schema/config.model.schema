@@ -223,7 +223,7 @@
           "type": "number",
           "required": true,
           "default": 1280,
-          "title": "Large",
+          "title": "Extra Large",
           "inputType": "Number",
           "validators": ["required", "number"],
           "help": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers"
