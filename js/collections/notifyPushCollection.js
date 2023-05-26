@@ -28,7 +28,7 @@ export default class NotifyPushCollection extends Backbone.Collection {
 
   showPush(model) {
     new NotifyPushView({
-      model: model
+      model
     });
   }
 

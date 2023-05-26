@@ -50,6 +50,8 @@ export default class NotifyView extends Backbone.View {
       _closeOnShadowClick: true
     });
 
+    if (notifyObject._type === 'a11y-push') notifyObject._showCloseButton = false;
+
     switch (notifyObject._type) {
       case 'a11y-push':
       case 'push':
