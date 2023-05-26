@@ -23,7 +23,13 @@ export default class Scroll extends Backbone.Controller {
       39: true, // right
       40: true // down
     };
-    this._ignoreKeysOnElementsMatching = 'textarea, input, select';
+    this._arrowKeys = {
+      37: true, // left
+      38: true, // up
+      39: true, // right
+      40: true // down
+    };
+    this._ignoreKeysOnElementsMatching = 'textarea, input[type=radio], select';
     this._isRunning = false;
     this._touchStartEventObject = null;
     window.addEventListener('touchstart', this._onTouchStart); // mobile
@@ -132,6 +138,9 @@ export default class Scroll extends Backbone.Controller {
   _onKeyDown(event) {
     if (!this._isRunning) return;
     event = $.event.fix(event);
+    if (this._arrowKeys[event.which] && this._a11y.isArrowable(event.target)) {
+      return;
+    }
     if (!this._preventScrollOnKeys[event.which]) {
       return;
     }
