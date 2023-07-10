@@ -40,7 +40,7 @@ export default function Image(props) {
         aria-hidden={!props.alt}
         loading='eager'
         aria-describedby={props.longdescription ? props.longDescriptionId : undefined}
-        draggable={props.draggable || null}
+        draggable={props.draggable ?? null}
       />
 
       {props.attribution &&
