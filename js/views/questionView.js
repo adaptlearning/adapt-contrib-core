@@ -311,7 +311,7 @@ class QuestionView extends ComponentView {
 
   focusAfterReset() {
     // Focus on the first readable item in this element
-    a11y.focusNext(this.$el, { preventScroll: true });
+    a11y.focusNext(this.$el);
   }
 
   /**
