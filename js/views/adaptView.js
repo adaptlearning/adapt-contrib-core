@@ -394,7 +394,7 @@ class AdaptView extends Backbone.View {
    * @returns {[AdaptView]}
    */
   getChildViews() {
-    if (!this._childViews) return this._childViews;
+    if (!this._childViews) return null;
     // Allow both a deprecated id/view map or a new array of child views
     return Object.entries(this._childViews).map(([key, value]) => value);
   }
