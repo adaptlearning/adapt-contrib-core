@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import device from 'core/js/device';
 import React, { useRef } from 'react';
-import { prefixClasses, compile } from 'core/js/reactHelpers';
+import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
@@ -51,7 +51,13 @@ export default function Header(props) {
   }
   if (!isSet) return null;
   return (
-    <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
+    <div
+      id={`${_id}-header`}
+      className={classes([
+        prefixClasses(classNamePrefixes, ['__header']),
+        props.classes
+      ])}
+    >
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
