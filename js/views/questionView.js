@@ -300,14 +300,18 @@ class QuestionView extends ComponentView {
     const currentModel = data.findById(location._currentId);
     // Make sure the page is ready
     if (!currentModel?.get('_isReady')) return;
-    // Focus on the first readable item in this element
-    a11y.focusNext(this.$el, { preventScroll: true });
+    this.focusAfterReset();
   }
 
   setQuestionAsReset() {
     this.model.setQuestionAsReset();
     this.resetQuestion();
     this.$('.component__widget').removeClass('is-submitted');
+  }
+
+  focusAfterReset() {
+    // Focus on the first readable item in this element
+    a11y.focusNext(this.$el);
   }
 
   /**
