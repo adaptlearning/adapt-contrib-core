@@ -18,7 +18,7 @@ class DrawerView extends Backbone.View {
       'aria-modal': 'true',
       'aria-labelledby': 'drawer-heading',
       'aria-hidden': 'true',
-      'aria-expanded': 'false';
+      'aria-expanded': 'false'
     };
   }
 
