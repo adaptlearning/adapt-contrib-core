@@ -17,7 +17,8 @@ class DrawerView extends Backbone.View {
       role: 'dialog',
       'aria-modal': 'true',
       'aria-labelledby': 'drawer-heading',
-      'aria-hidden': 'true'
+      'aria-hidden': 'true',
+      'aria-expanded': 'false'
     };
   }
 
@@ -110,7 +111,10 @@ class DrawerView extends Backbone.View {
 
   showDrawer(emptyDrawer, position = null) {
     this.setDrawerPosition(position);
-    this.$el.removeClass('u-display-none').removeAttr('aria-hidden');
+    this.$el
+      .removeClass('u-display-none')
+      .attr('aria-hidden', 'false')
+      .attr('aria-expanded', 'true');
     // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
     if (!this._isVisible) {
       a11y.popupOpened(this.$el);
@@ -200,7 +204,8 @@ class DrawerView extends Backbone.View {
       this.$el
         .removeAttr('style')
         .addClass('u-display-none')
-        .attr('aria-hidden', 'true');
+        .attr('aria-hidden', 'true')
+        .attr('aria-expanded', 'false');
       this.$('.js-drawer-holder').removeAttr('role');
       this._customView = null;
       $('.js-nav-drawer-btn').attr('aria-expanded', false);
