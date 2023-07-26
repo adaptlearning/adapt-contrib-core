@@ -291,18 +291,22 @@ class QuestionModel extends ComponentModel {
       case 'partlyCorrect': {
         if (typeof _feedback._partlyCorrect === 'object') {
           // old style
+          const fallbackBody = _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
+          const body = !isFinal ? _feedback._partlyCorrect?.notFinal || fallbackBody : fallbackBody;
+
           return {
             // add higher values
             altTitle,
             title,
             _classes,
-            body: !isFinal
-              ? _feedback._partlyCorrect?.notFinal || _feedback._incorrect?.notFinal || ''
-              : _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
+            body
           };
         }
+
         // new style
-        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || _feedback._incorrectNotFinal : _feedback._partlyCorrectFinal || _feedback._incorrectFinal;
+        const fallbackFeedback = _feedback._partlyCorrectFinal || _feedback._incorrectFinal || ''
+        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || fallbackFeedback : fallbackFeedback;
+
         const feedbackConfig = {
           // add higher values
           ...feedbackPartlyCorrect || {},
