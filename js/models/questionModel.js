@@ -242,14 +242,8 @@ class QuestionModel extends ComponentModel {
 
   }
 
-  getFeedback (_feedback = this.get('_feedback')) {
+  getFeedback(_feedback = this.get('_feedback')) {
     if (!_feedback) return {};
-    const isFinal = (this.get('_attemptsLeft') === 0);
-    const correctness = this.get('_isCorrect')
-      ? 'correct'
-      : this.isPartlyCorrect()
-        ? 'partlyCorrect'
-        : 'incorrect';
 
     // global feedback altTitle / title / _classes
     let {
@@ -267,25 +261,41 @@ class QuestionModel extends ComponentModel {
       _classes
     };
 
+    const feedbackOverrides = this.getFeedbackOverrides() || {};
+
+    const feedbackConfig = {
+      ...feedbackBase,
+      ...feedbackOverrides
+    };
+
+    if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+      feedbackConfig._imageAlignment = 'right';
+    }
+
+    return feedbackConfig;
+  }
+
+  getFeedbackOverrides() {
+    const _feedback = this.get('_feedback');
+    const isFinal = (this.get('_attemptsLeft') === 0);
+
+    const correctness = this.get('_isCorrect')
+      ? 'correct'
+      : this.isPartlyCorrect()
+        ? 'partlyCorrect'
+        : 'incorrect';
+
     switch (correctness) {
       case 'correct': {
         if (typeof _feedback.correct === 'string') {
           // old style
           return {
-            ...feedbackBase,
             body: _feedback.correct
           };
         }
+
         // new style
-        const feedbackCorrect = _feedback._correct;
-        const feedbackConfig = {
-          ...feedbackBase,
-          ...feedbackCorrect || {}
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
+        return _feedback._correct;
       }
 
       case 'partlyCorrect': {
@@ -295,7 +305,6 @@ class QuestionModel extends ComponentModel {
           const body = !isFinal ? _feedback._partlyCorrect?.notFinal || fallbackBody : fallbackBody;
 
           return {
-            ...feedbackBase,
             body
           };
         }
@@ -303,15 +312,7 @@ class QuestionModel extends ComponentModel {
         // new style
         const fallbackFeedback = _feedback._partlyCorrectFinal || _feedback._incorrectFinal || ''
         const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || fallbackFeedback : fallbackFeedback;
-
-        const feedbackConfig = {
-          ...feedbackBase,
-          ...feedbackPartlyCorrect || {}
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
+        return feedbackPartlyCorrect
       }
       case 'incorrect': {
         if (typeof _feedback._incorrect === 'object') {
@@ -320,25 +321,16 @@ class QuestionModel extends ComponentModel {
           const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody
 
           return {
-            ...feedbackBase,
             body
           };
         }
+
         // new style
         const fallbackFeedback = _feedback._incorrectFinal;
         const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || fallbackFeedback) : fallbackFeedback;
-
-        const feedbackConfig = {
-          ...feedbackBase,
-          ...feedbackIncorrect || {}
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
+        return feedbackIncorrect;
       }
     }
-    return {};
   }
 
   // Used to setup the correct, incorrect and partly correct feedback
