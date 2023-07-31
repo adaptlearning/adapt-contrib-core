@@ -322,18 +322,21 @@ class QuestionModel extends ComponentModel {
       case 'incorrect': {
         if (typeof _feedback._incorrect === 'object') {
           // old style
+          const fallbackBody = _feedback._incorrect.final
+          const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody
+
           return {
             // add higher values
             altTitle,
             title,
             _classes,
-            body: !isFinal
-              ? (_feedback._incorrect.notFinal || _feedback._incorrect.final)
-              : _feedback._incorrect.final
+            body
           };
         }
         // new style
-        const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || _feedback._incorrectFinal) : _feedback._incorrectFinal;
+        const fallbackFeedback = _feedback._incorrectFinal;
+        const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || fallbackFeedback) : fallbackFeedback;
+
         const feedbackConfig = {
           // add higher values
           ...feedbackIncorrect || {},
