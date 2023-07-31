@@ -261,26 +261,26 @@ class QuestionModel extends ComponentModel {
     altTitle = altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
     title = title || this.get('displayTitle') || this.get('title') || '';
 
+    const feedbackBase = {
+      altTitle,
+      title,
+      _classes
+    };
+
     switch (correctness) {
       case 'correct': {
         if (typeof _feedback.correct === 'string') {
           // old style
           return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
+            ...feedbackBase,
             body: _feedback.correct
           };
         }
         // new style
         const feedbackCorrect = _feedback._correct;
         const feedbackConfig = {
-          // add higher values
-          ...feedbackCorrect || {},
-          altTitle: feedbackCorrect?.altTitle || altTitle,
-          title: feedbackCorrect?.title || title,
-          _classes: feedbackCorrect?._classes || _classes
+          ...feedbackBase,
+          ...feedbackCorrect || {}
         };
         if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
           feedbackConfig._imageAlignment = 'right';
@@ -295,10 +295,7 @@ class QuestionModel extends ComponentModel {
           const body = !isFinal ? _feedback._partlyCorrect?.notFinal || fallbackBody : fallbackBody;
 
           return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
+            ...feedbackBase,
             body
           };
         }
@@ -308,11 +305,8 @@ class QuestionModel extends ComponentModel {
         const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || fallbackFeedback : fallbackFeedback;
 
         const feedbackConfig = {
-          // add higher values
-          ...feedbackPartlyCorrect || {},
-          altTitle: feedbackPartlyCorrect?.altTitle || altTitle,
-          title: feedbackPartlyCorrect?.title || title,
-          _classes: feedbackPartlyCorrect?._classes || _classes
+          ...feedbackBase,
+          ...feedbackPartlyCorrect || {}
         };
         if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
           feedbackConfig._imageAlignment = 'right';
@@ -326,10 +320,7 @@ class QuestionModel extends ComponentModel {
           const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody
 
           return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
+            ...feedbackBase,
             body
           };
         }
@@ -338,11 +329,8 @@ class QuestionModel extends ComponentModel {
         const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || fallbackFeedback) : fallbackFeedback;
 
         const feedbackConfig = {
-          // add higher values
-          ...feedbackIncorrect || {},
-          altTitle: feedbackIncorrect?.altTitle || altTitle,
-          title: feedbackIncorrect?.title || title,
-          _classes: feedbackIncorrect?._classes || _classes
+          ...feedbackBase,
+          ...feedbackIncorrect || {}
         };
         if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
           feedbackConfig._imageAlignment = 'right';
