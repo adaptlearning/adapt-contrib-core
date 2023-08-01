@@ -5,6 +5,13 @@ module.exports = {
     'node': true
   },
   'extends': 'eslint:recommended',
+  'globals': {
+    '$': 'readonly',
+    '_': 'readonly',
+    'Backbone': 'readonly',
+    'Handlebars': 'readonly',
+    'Modernizr': 'readonly',
+  },
   'parserOptions': {
     'ecmaVersion': 12,
     'sourceType': 'module'
