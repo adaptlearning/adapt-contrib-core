@@ -21,6 +21,7 @@
     "@semantic-release/npm": "^9.0.1",
     "@semantic-release/release-notes-generator": "^10.0.3",
     "conventional-changelog-eslint": "^3.0.9",
+    "eslint": "^8.46.0",
     "semantic-release": "^19.0.3"
   },
   "release": {
