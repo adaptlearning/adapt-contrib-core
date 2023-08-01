@@ -34,7 +34,7 @@ const ready = () => {
   if (!isEventListening) {
     return;
   }
-  logging.deprecated("Use wait.queue(callback) as Adapt.on('plugins:ready', callback) will be removed in the future");
+  logging.deprecated('Use wait.queue(callback) as Adapt.on(\'plugins:ready\', callback) will be removed in the future');
   Adapt.trigger('plugins:ready');
 };
 

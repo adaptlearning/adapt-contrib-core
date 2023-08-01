@@ -21,7 +21,7 @@ export default function register(name, component) {
     // Return rendered, modified template
     return postRenderEvent.value;
   };
-};
+}
 
 /**
  * Override React.createElement to allow trapping and modification of react
@@ -70,7 +70,7 @@ export function html(html) {
 export function compile(template, ...args) {
   const output = Handlebars.compile(template)(...args);
   return output;
-};
+}
 
 /**
  * Handlebars partials integration
@@ -80,7 +80,7 @@ export function compile(template, ...args) {
 export function partial(name, ...args) {
   const output = Handlebars.partials[name](...args);
   return output;
-};
+}
 
 /**
  * Handlebars helpers integration
@@ -90,7 +90,7 @@ export function partial(name, ...args) {
 export function helper(name, ...args) {
   const output = Handlebars.helpers[name].call(this ?? args[0], args[0]);
   return (output && output.string) || output;
-};
+}
 
 /**
  * Helper for a list of classes, filtering out falsies and duplicates, and joining with spaces
@@ -98,7 +98,7 @@ export function helper(name, ...args) {
  */
 export function classes(...args) {
   return _.uniq(_.flatten(args).filter(Boolean).join(' ').split(' ')).join(' ');
-};
+}
 
 /**
  * Helper for prefixing a list of classes, filtering out falsies and duplicates and joining with spaces
@@ -109,4 +109,4 @@ export function prefixClasses(prefixes, ...args) {
   const classes = _.flatten(args).filter(Boolean);
   const prefixed = _.flatten(prefixes.map(prefix => classes.map(className => `${prefix}${className}`)));
   return _.uniq(prefixed.join(' ').split(' ')).join(' ');
-};
+}

@@ -104,7 +104,7 @@ export class DOMElementModifications extends Backbone.View {
       eventNames[eventNames.length - 1]
     ].filter(Boolean));
     return events;
-  };
+  }
 
   _onMutation(list) {
     const reducedChanges = list.reduce((changes, item) => {
