@@ -301,7 +301,7 @@ class QuestionModel extends ComponentModel {
       case 'partlyCorrect': {
         if (typeof _feedback._partlyCorrect === 'object') {
           // old style
-          const fallbackBody = _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
+          const fallbackBody = _feedback._partlyCorrect?.final || _feedback._incorrect?.final || '';
           const body = !isFinal ? _feedback._partlyCorrect?.notFinal || fallbackBody : fallbackBody;
 
           return {
@@ -310,15 +310,15 @@ class QuestionModel extends ComponentModel {
         }
 
         // new style
-        const fallbackFeedback = _feedback._partlyCorrectFinal || _feedback._incorrectFinal || ''
+        const fallbackFeedback = _feedback._partlyCorrectFinal || _feedback._incorrectFinal || '';
         const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || fallbackFeedback : fallbackFeedback;
-        return feedbackPartlyCorrect
+        return feedbackPartlyCorrect;
       }
       case 'incorrect': {
         if (typeof _feedback._incorrect === 'object') {
           // old style
-          const fallbackBody = _feedback._incorrect.final
-          const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody
+          const fallbackBody = _feedback._incorrect.final;
+          const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody;
 
           return {
             body
