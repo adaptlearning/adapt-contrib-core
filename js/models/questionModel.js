@@ -242,30 +242,57 @@ class QuestionModel extends ComponentModel {
 
   }
 
-  getFeedback(_feedback = this.get('_feedback')) {
-    if (!_feedback) return {};
+  getFeedback(feedback = this.get('_feedback')) {
+    if (!feedback) return {};
 
-    // global feedback altTitle / title / _classes
-    let {
-      altTitle,
-      title,
-      _classes
-    } = _feedback;
+    const isFinal = (this.get('_attemptsLeft') === 0);
+    const correctness = this.get('_isCorrect')
+      ? 'correct'
+      : this.isPartlyCorrect()
+        ? 'partlyCorrect'
+        : 'incorrect';
 
-    altTitle = altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
-    title = title || this.get('displayTitle') || this.get('title') || '';
+    const isLegacyConfig = (typeof feedback.correct === 'string') ||
+      (typeof feedback._partlyCorrect === 'object') ||
+      (typeof feedback._incorrect === 'object');
 
-    const feedbackBase = {
-      altTitle,
-      title,
-      _classes
+    const getLegacyConfig = () => {
+      const subPart = isFinal ? 'final' : 'notFinal';
+      return {
+        body: (
+          (correctness === 'correct')
+            ? feedback.correct
+            : feedback[`_${correctness}`]?.[subPart] ||
+            feedback[`_${correctness}`]?.final ||
+            feedback?._incorrect?.final
+        ) || ''
+      };
     };
 
-    const feedbackOverrides = this.getFeedbackOverrides() || {};
+    const getConfig = () => {
+      const subPart = isFinal ? 'Final' : 'NotFinal';
+      return (
+        (correctness === 'correct')
+          ? feedback._correct
+          : feedback[`_${correctness}${subPart}`] ||
+            feedback[`_${correctness}Final`] ||
+            feedback._incorrectFinal
+      ) || {};
+    };
 
     const feedbackConfig = {
-      ...feedbackBase,
-      ...feedbackOverrides
+      altTitle: feedback.altTitle ||
+        Adapt.course.get('_globals')._accessibility.altFeedbackTitle ||
+        '',
+      title: feedback.title ||
+        this.get('displayTitle') ||
+        this.get('title') ||
+        '',
+      _classes: feedback._classes,
+      ...(isLegacyConfig
+        ? getLegacyConfig()
+        : getConfig()
+      )
     };
 
     if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
@@ -273,64 +300,6 @@ class QuestionModel extends ComponentModel {
     }
 
     return feedbackConfig;
-  }
-
-  getFeedbackOverrides() {
-    const _feedback = this.get('_feedback');
-    const isFinal = (this.get('_attemptsLeft') === 0);
-
-    const correctness = this.get('_isCorrect')
-      ? 'correct'
-      : this.isPartlyCorrect()
-        ? 'partlyCorrect'
-        : 'incorrect';
-
-    switch (correctness) {
-      case 'correct': {
-        if (typeof _feedback.correct === 'string') {
-          // old style
-          return {
-            body: _feedback.correct
-          };
-        }
-
-        // new style
-        return _feedback._correct;
-      }
-
-      case 'partlyCorrect': {
-        if (typeof _feedback._partlyCorrect === 'object') {
-          // old style
-          const fallbackBody = _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
-          const body = !isFinal ? _feedback._partlyCorrect?.notFinal || fallbackBody : fallbackBody;
-
-          return {
-            body
-          };
-        }
-
-        // new style
-        const fallbackFeedback = _feedback._partlyCorrectFinal || _feedback._incorrectFinal || ''
-        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || fallbackFeedback : fallbackFeedback;
-        return feedbackPartlyCorrect
-      }
-      case 'incorrect': {
-        if (typeof _feedback._incorrect === 'object') {
-          // old style
-          const fallbackBody = _feedback._incorrect.final
-          const body = !isFinal ? (_feedback._incorrect.notFinal || fallbackBody) : fallbackBody
-
-          return {
-            body
-          };
-        }
-
-        // new style
-        const fallbackFeedback = _feedback._incorrectFinal;
-        const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || fallbackFeedback) : fallbackFeedback;
-        return feedbackIncorrect;
-      }
-    }
   }
 
   // Used to setup the correct, incorrect and partly correct feedback
