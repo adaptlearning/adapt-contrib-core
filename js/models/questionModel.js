@@ -263,8 +263,8 @@ class QuestionModel extends ComponentModel {
           (correctness === 'correct')
             ? feedback.correct
             : feedback[`_${correctness}`]?.[subPart] ||
-            feedback[`_${correctness}`]?.final ||
-            feedback?._incorrect?.final
+              feedback[`_${correctness}`]?.final ||
+              feedback?._incorrect?.final
         ) || ''
       };
     };
