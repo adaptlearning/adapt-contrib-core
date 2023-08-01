@@ -246,7 +246,8 @@ class QuestionModel extends ComponentModel {
     if (!feedback) return {};
 
     const isFinal = (this.get('_attemptsLeft') === 0);
-    const correctness = this.get('_isCorrect')
+    const isCorrect = this.get('_isCorrect');
+    const correctness = isCorrect
       ? 'correct'
       : this.isPartlyCorrect()
         ? 'partlyCorrect'
@@ -260,7 +261,7 @@ class QuestionModel extends ComponentModel {
       const subPart = isFinal ? 'final' : 'notFinal';
       return {
         body: (
-          (correctness === 'correct')
+          isCorrect
             ? feedback.correct
             : feedback[`_${correctness}`]?.[subPart] ||
               feedback[`_${correctness}`]?.final ||
@@ -272,7 +273,7 @@ class QuestionModel extends ComponentModel {
     const getConfigObject = () => {
       const subPart = isFinal ? 'Final' : 'NotFinal';
       return (
-        (correctness === 'correct')
+        isCorrect
           ? feedback._correct
           : feedback[`_${correctness}${subPart}`] ||
             feedback[`_${correctness}Final`] ||
