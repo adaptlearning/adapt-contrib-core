@@ -256,7 +256,7 @@ class QuestionModel extends ComponentModel {
       (typeof feedback._partlyCorrect === 'object') ||
       (typeof feedback._incorrect === 'object');
 
-    const getLegacyConfig = () => {
+    const getLegacyConfigObject = () => {
       const subPart = isFinal ? 'final' : 'notFinal';
       return {
         body: (
@@ -269,7 +269,7 @@ class QuestionModel extends ComponentModel {
       };
     };
 
-    const getConfig = () => {
+    const getConfigObject = () => {
       const subPart = isFinal ? 'Final' : 'NotFinal';
       return (
         (correctness === 'correct')
@@ -290,8 +290,8 @@ class QuestionModel extends ComponentModel {
         '',
       _classes: feedback._classes,
       ...(isLegacyConfig
-        ? getLegacyConfig()
-        : getConfig()
+        ? getLegacyConfigObject()
+        : getConfigObject()
       )
     };
 
