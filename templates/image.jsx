@@ -34,7 +34,10 @@ export default function Image(props) {
     >
 
       <img
-        className={prefixClasses(props.classNamePrefixes, ['__image'])}
+        className={classes([
+          prefixClasses(props.classNamePrefixes, ['__image']),
+          props?._srcFocalPoint && `object-position-${props?._srcFocalPoint}`
+        ])}
         src={src}
         aria-label={a11y.normalize(props.alt)}
         aria-hidden={!props.alt}
