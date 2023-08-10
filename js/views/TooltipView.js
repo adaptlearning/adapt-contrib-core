@@ -21,7 +21,7 @@ export default class TooltipView extends Backbone.View {
     _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut');
     this._tooltipData = {};
     this._tooltips = [];
-    this.listenTo(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+    this.listenToOnce(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
     this.render();
   }
 
