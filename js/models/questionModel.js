@@ -286,10 +286,6 @@ class QuestionModel extends ComponentModel {
         Adapt.course.get('_globals')._accessibility.altFeedbackTitle ||
         '',
       title: feedback.title ||
-        feedback.altTitle ||
-        Adapt.course.get('_globals')._accessibility.altFeedbackTitle ||
-        this.get('displayTitle') ||
-        this.get('title') ||
         '',
       _classes: feedback._classes,
       ...(isLegacyConfig
