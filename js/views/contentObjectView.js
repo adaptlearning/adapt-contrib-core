@@ -3,6 +3,7 @@ import wait from 'core/js/wait';
 import AdaptView from 'core/js/views/adaptView';
 import ReactDOM from 'react-dom';
 import data from 'core/js/data';
+import router from 'core/js/router';
 
 export default class ContentObjectView extends AdaptView {
 
@@ -68,7 +69,7 @@ export default class ContentObjectView extends AdaptView {
     const performIsReady = async () => {
       Adapt.trigger(`${type}View:preReady contentObjectView:preReady view:preReady`, this);
       await wait.queue();
-      $('.js-loading').hide();
+      router.hideLoading();
       if (Adapt.get('_shouldContentObjectScrollTop') !== false) {
         $(window).scrollTop(0);
       }
