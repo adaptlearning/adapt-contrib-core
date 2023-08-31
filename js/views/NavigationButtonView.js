@@ -150,7 +150,9 @@ export default class NavigationButtonView extends Backbone.View {
         router.navigateToParent();
         break;
       case 'skipNavigation':
-        a11y.focusFirst('.' + location._contentType);
+        _.delay(() => {
+          a11y.focusFirst('.' + location._contentType);
+        }, 250);
         break;
       case 'returnToStart':
         startController.returnToStartLocation();
