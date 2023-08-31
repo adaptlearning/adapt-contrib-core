@@ -18,7 +18,9 @@
       // Make each value a power of 2 to allow for bitwise switches
       const value = Math.pow(2, i);
       const baseName = names[0];
+      // Add values to lookup hash
       lookupHash[baseName] = baseName;
+      lookupHash[value] = baseName;
       // Create Number object to allow for primitive comparisons, JSON stringify and sub properties
       // eslint-disable-next-line no-new-wrappers
       const entry = new Number(value);
@@ -36,8 +38,7 @@
           enumerable: (n === 0),
           value: entry
         });
-        // Add value to lookup hash
-        lookupHash[value] = baseName;
+        lookupHash[name] = baseName;
       });
     });
     // Freeze ENUM object
