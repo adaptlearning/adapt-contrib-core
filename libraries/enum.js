@@ -1,7 +1,7 @@
 // 2023-08-31 BASIC ENUMERATION SUPPORT
 (function() {
   function ENUM(namesArray, lookupModifierFunction) {
-    if (!(namesArray instanceof Array)) throw new Error('First argument of ENUM must be an array');
+    if (!Array.isArray(namesArray)) throw new Error('First argument of ENUM must be an array');
     const lookupHash = {};
     // Create lookup & storage function
     const ENUMERATION = function (lookupValue) {
