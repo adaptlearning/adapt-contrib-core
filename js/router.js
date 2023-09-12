@@ -41,10 +41,12 @@ class Router extends Backbone.Router {
   }
 
   showLoading() {
+    $('html').removeClass('is-loading-hidden').addClass('is-loading-visible');
     $('.js-loading').show();
   }
 
   hideLoading() {
+    $('html').addClass('is-loading-hidden').removeClass('is-loading-visible');
     $('.js-loading').hide();
   }
 
