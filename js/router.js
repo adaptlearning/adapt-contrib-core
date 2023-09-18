@@ -368,6 +368,10 @@ class Router extends Backbone.Router {
             resolve();
           }, 1)));
           this.isScrolling = false;
+          if (currentModel.isTypeGroup('contentobject')) {
+            a11y.focusFirst(document.body);
+            return;
+          }
         }
         await Adapt.parentView.renderTo(currentModelId);
       }
