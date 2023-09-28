@@ -166,6 +166,17 @@
               ],
               "translatable": true
             },
+            "bookmarkingResumeText": {
+              "type": "string",
+              "title": "Resume at furthest location label",
+              "default": "Resume",
+              "inputType": "Text",
+              "required": true,
+              "validators": [
+                "required"
+              ],
+              "translatable": true
+            },
             "_ariaLabels": {
               "type": "object",
               "title": "ARIA labels",
@@ -326,6 +337,14 @@
                   "type": "string",
                   "title": "",
                   "default": "Visited",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
+                },
+                "resume": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Resume",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
