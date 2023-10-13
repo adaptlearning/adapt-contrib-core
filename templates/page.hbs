@@ -7,39 +7,43 @@
   <div class="page__header">
     <div class="page__header-inner">
 
-      {{#if displayTitle}}
-      <div class="page__title">
-        <div class="page__title-inner js-heading"></div>
-      </div>
-      {{/if}}
+      <div class="page__header-content">
 
-      {{#if subtitle}}
-      <div class="page__subtitle">
-        <div class="page__subtitle-inner">
-          {{{compile subtitle}}}
+        {{#if displayTitle}}
+        <div class="page__title">
+          <div class="page__title-inner js-heading"></div>
         </div>
-      </div>
-      {{/if}}
+        {{/if}}
 
-      {{#any body pageBody}}
-      <div class="page__body">
-        <div class="page__body-inner">
-          {{#if pageBody}}
-          {{{compile pageBody}}}
-          {{else}}
-          {{{compile body}}}
-          {{/if}}
+        {{#if subtitle}}
+        <div class="page__subtitle">
+          <div class="page__subtitle-inner">
+            {{{compile subtitle}}}
+          </div>
         </div>
-      </div>
-      {{/any}}
+        {{/if}}
 
-      {{#if instruction}}
-      <div class="page__instruction">
-        <div class="page__instruction-inner">
-          {{{compile instruction}}}
+        {{#any body pageBody}}
+        <div class="page__body">
+          <div class="page__body-inner">
+            {{#if pageBody}}
+            {{{compile pageBody}}}
+            {{else}}
+            {{{compile body}}}
+            {{/if}}
+          </div>
         </div>
+        {{/any}}
+
+        {{#if instruction}}
+        <div class="page__instruction">
+          <div class="page__instruction-inner">
+            {{{compile instruction}}}
+          </div>
+        </div>
+        {{/if}}
+
       </div>
-      {{/if}}
 
     </div>
   </div>
