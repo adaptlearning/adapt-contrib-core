@@ -92,7 +92,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
     activeChildren.forEach(itemModel => itemModel.set('_isCorrect', itemModel.get('_shouldBeSelected')));
 
-    props._isAtLeastOneCorrectSelection = (props._numberOfCorrectAnswers || props._numberOfPartlyCorrectAnswers);
+    props._isAtLeastOneCorrectSelection = Boolean(props._numberOfCorrectAnswers || props._numberOfPartlyCorrectAnswers);
 
     const numberOfSelectableAnswers = this.get('_selectable');
     const hasSelectableCorrectAnswers = (props._numberOfCorrectAnswers === numberOfSelectableAnswers);
