@@ -34,7 +34,8 @@ class QuestionModel extends ComponentModel {
       '_isSubmitted',
       '_score',
       '_isCorrect',
-      '_attemptsLeft'
+      '_attemptsLeft',
+      '_isPartlyCorrect'
     ]);
   }
 
@@ -43,7 +44,8 @@ class QuestionModel extends ComponentModel {
       Boolean,
       Number,
       Boolean,
-      Number
+      Number,
+      Boolean
     ]);
   }
 
