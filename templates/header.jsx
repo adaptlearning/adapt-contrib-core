@@ -13,7 +13,6 @@ import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
  * @param {string} [props.mobileInstruction]
  * @param {string} [props._type]
  * @param {string} [props._component]
- * @param {string} [props._disableAccessibilityState]
  */
 export default function Header(props) {
   // Create references to un-controlled view containers
