@@ -35,11 +35,11 @@
           },
           "_backboneForms": "Select"
         },
-        "_disableAccessibilityState": {
+        "_isA11yCompletionDescriptionEnabled": {
           "type": "boolean",
-          "title": "Disable completion ARIA label",
-          "description": "Controls whether the user can tab to a hidden label that describes the completion state of the component",
-          "default": false,
+          "title": "Enable accessibility completion description",
+          "description": "Controls whether a hidden label is appended to the component title that describes the completion state of the component.",
+          "default": true,
           "_adapt": {
             "isSetting": true
           }
