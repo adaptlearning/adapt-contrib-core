@@ -91,14 +91,14 @@
       "validators": ["number"],
       "help": "If you need to override the default component ARIA level (as defined in Configuration Settings), set this to any number greater than 0."
     },
-    "_disableAccessibilityState": {
+    "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
-      "default": false,
+      "default": true,
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is the accessibility state disabled?",
-      "help": "Controls whether the user can tab to a hidden label that describes the completion state of the component"
+      "title": "Enable accessibility completion description",
+      "help": "Controls whether a hidden label is appended to the component title that describes the completion state of the component."
     },
     "_parentId": {
       "type": "objectid",

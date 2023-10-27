@@ -114,6 +114,15 @@
         "isSetting": true
       }
     },
+    "_isA11yCompletionDescriptionEnabled": {
+      "type": "boolean",
+      "title": "Enable accessibility completion description",
+      "description": "Controls whether a hidden label is appended to the element title that describes the completion state of the element.",
+      "default": true,
+      "_adapt": {
+        "isSetting": true
+      }
+    },
     "_onScreen": {
       "type": "object",
       "title": "Animation classes",
