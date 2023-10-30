@@ -105,15 +105,6 @@
         "isSetting": true
       }
     },
-    "_ariaLevel": {
-      "type": "number",
-      "title": "Custom ARIA level",
-      "description": "If you need to override the default element ARIA level (as defined in Configuration Settings), set this to any number greater than 0",
-      "default": 0,
-      "_adapt": {
-        "isSetting": true
-      }
-    },
     "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
       "title": "Enable accessibility completion description",
