@@ -186,14 +186,6 @@
       "title": "Require completion of",
       "help": "The number of articles within this page the learner must complete in order for this page to be set as completed. A value of -1 requires all of them to be completed."
     },
-    "_ariaLevel": {
-      "type": "number",
-      "default": 0,
-      "isSetting": true,
-      "inputType": "Number",
-      "validators": ["number"],
-      "help": "If you need to override the default page ARIA level (as defined in Configuration Settings), set this to any number greater than 0."
-    },
     "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
       "default": true,
