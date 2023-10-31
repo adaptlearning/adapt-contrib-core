@@ -129,6 +129,11 @@ export default class TooltipItemView extends Backbone.View {
     this.remove();
   }
 
+  onClick() {
+    console.log('onClick!!!');
+    this.remove();
+  }
+
   onMouseOut() {
     this.remove();
   }
