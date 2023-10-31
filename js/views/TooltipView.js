@@ -18,7 +18,7 @@ export default class TooltipView extends Backbone.View {
   }
 
   initialize() {
-    _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut');
+    _.bindAll(this, 'onMouseOver', 'onKeyDown');
     this._tooltipData = {};
     this._tooltips = [];
     this.listenToOnce(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
@@ -27,14 +27,12 @@ export default class TooltipView extends Backbone.View {
 
   onAdaptPreInitialize() {
     if (this.config?._isEnabled === false) return;
-    this.onMouseOver = _.debounce(this.onMouseOver, 500);
     $(document).on('keydown', this.onKeyDown);
     $(document).on('focus', '[data-tooltip-id]', (...args) => {
       if (a11y.isForcedFocus) return;
       this.onMouseOver(...args);
     });
     $(document).on('mouseenter', '[data-tooltip-id]', this.onMouseOver);
-    $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
   }
 
   get config() {
@@ -71,13 +69,6 @@ export default class TooltipView extends Backbone.View {
       this.show(tooltip, $mouseoverEl);
     }
     $(document).on('scroll', this.onScroll);
-  }
-
-  /**
-   * Cancel the last mouseover debounce
-   */
-  onMouseOut() {
-    this.onMouseOver.cancel();
   }
 
   render() {
