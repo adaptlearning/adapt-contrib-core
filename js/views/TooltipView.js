@@ -89,6 +89,7 @@ export default class TooltipView extends Backbone.View {
    * @param {jQuery} $mouseoverEl
    */
   show(tooltip, $mouseoverEl) {
+    if (this.isShowing(tooltip)) return;
     const tooltipItem = new TooltipItemView({
       model: tooltip,
       $target: $mouseoverEl,
@@ -96,6 +97,14 @@ export default class TooltipView extends Backbone.View {
     });
     this._tooltips.push(tooltipItem);
     this.$el.append(tooltipItem.$el);
+  }
+
+  /**
+   * @param {TooltipModel} tooltip
+   */
+  isShowing(tooltip) {
+    const id = tooltip.get('_id');
+    return this._tooltips.some(tooltipView => tooltipView.model?.get('_id') === id);
   }
 
   /**
