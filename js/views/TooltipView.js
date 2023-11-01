@@ -18,7 +18,7 @@ export default class TooltipView extends Backbone.View {
   }
 
   initialize() {
-    _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut');
+    _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut', 'onClick');
     this._tooltipData = {};
     this._tooltips = [];
     this.listenToOnce(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
@@ -35,6 +35,7 @@ export default class TooltipView extends Backbone.View {
     });
     $(document).on('mouseenter', '[data-tooltip-id]', this.onMouseOver);
     $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
+    $(document).on('click', '[data-tooltip-id]', this.onClick);
   }
 
   get config() {
@@ -78,6 +79,13 @@ export default class TooltipView extends Backbone.View {
    */
   onMouseOut() {
     this.onMouseOver.cancel();
+  }
+
+  /**
+   * Ensure tooltip is hidden when element is clicked
+   */
+  onClick() {
+    this.hide();
   }
 
   render() {
