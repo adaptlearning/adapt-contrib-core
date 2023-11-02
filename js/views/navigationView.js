@@ -174,13 +174,17 @@ class NavigationView extends Backbone.View {
     // Sort items and add to dom in sorted order
     //   Make sure not to move any item with focus as it will lose focus
     const focusElement = document.activeElement;
+    const domOrder = [...$container[0].children];
     items.sort((a, b) => parseFloat($(a).attr('data-order') || 0) - parseFloat($(b).attr('data-order') || 0));
-    let indexOfFocused = items.findIndex(el => el === focusElement);
-    if (indexOfFocused === -1) indexOfFocused = Infinity;
-    const before = items.slice(0, indexOfFocused);
-    const after = items.slice(indexOfFocused + 1);
-    before.reverse().forEach(el => $container.prepend(el));
-    after.forEach(el => $container.append(el));
+    const hasOrderChanged = domOrder.some((item, index) => item !== items[index]);
+    if (hasOrderChanged) {
+      let indexOfFocused = items.findIndex(el => el === focusElement);
+      if (indexOfFocused === -1) indexOfFocused = Infinity;
+      const before = items.slice(0, indexOfFocused);
+      const after = items.slice(indexOfFocused + 1);
+      before.reverse().forEach(el => $container.prepend(el));
+      after.forEach(el => $container.append(el));
+    }
     this.observer?.takeRecords();
     this.listenForInjectedButtons();
   }
