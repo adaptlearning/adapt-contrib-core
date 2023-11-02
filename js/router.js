@@ -426,7 +426,7 @@ class Router extends Backbone.Router {
     await new Promise(resolve => {
       _.delay(() => {
         a11y.focusNext(selector);
-        Adapt.trigger(`${location}:scrolledTo`, selector);
+        Adapt.trigger(`${newLocation}:scrolledTo`, selector);
         resolve();
       }, settings.duration + 300);
     });
