@@ -10,7 +10,10 @@
     "_friendlyId": {
       "type": "string",
       "title": "Friendly id",
-      "description": "A human-readable ID for this content object which will replace the standard _id field on course build (useful in instances where the _id must be specified in the config of an extension). Must be unique to this course."
+      "description": "A human-readable ID for this content object which will replace the standard _id field on course build (useful in instances where the _id must be specified in the config of an extension). Must be unique to this course.",
+      "_backboneForms": {
+        "editorAttrs": { "disabled": true }
+      }
     },
     "_parentId": {
       "type": "string",
@@ -23,6 +26,15 @@
       "title": "Course id",
       "_adapt": {
         "editorOnly": true
+      }
+    },
+    "_lang": {
+      "type": "string",
+      "title": "Language",
+      "description": "The language/locale e.g. 'en' or 'fr_CA'.",
+      "default": "en",
+      "_backboneForms": {
+        "editorAttrs": { "disabled": true }
       }
     },
     "title": {
