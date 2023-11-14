@@ -31,7 +31,7 @@
     "_lang": {
       "type": "string",
       "title": "Language",
-      "description": "The language/locale e.g. 'en' or 'fr_CA'.",
+      "description": "The language/locale e.g. 'en' or 'fr-CA'.",
       "default": "en",
       "_backboneForms": {
         "editorAttrs": { "disabled": true }
