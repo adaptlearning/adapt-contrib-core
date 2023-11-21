@@ -448,7 +448,8 @@ class A11y extends Backbone.Controller {
         style.visibility === 'hidden' ||
         item.getAttribute('aria-hidden') === 'true';
     });
-    if (isNotVisible) {
+    const isInDOM = Boolean($element.parents('body').length);
+    if (isNotVisible || !isInDOM) {
       return false;
     }
 
