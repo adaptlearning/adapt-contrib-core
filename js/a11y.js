@@ -441,6 +441,9 @@ class A11y extends Backbone.Controller {
       ? $element.add($element.parents())
       : $element;
 
+    const isInDOM = Boolean($element.parents('body').length);
+    if (!isInDOM) return false;
+    
     const isNotVisible = $branch.toArray().some(item => {
       const style = window.getComputedStyle(item);
       // make sure item is not explicitly invisible
@@ -448,8 +451,7 @@ class A11y extends Backbone.Controller {
         style.visibility === 'hidden' ||
         item.getAttribute('aria-hidden') === 'true';
     });
-    const isInDOM = Boolean($element.parents('body').length);
-    if (isNotVisible || !isInDOM) {
+    if (isNotVisible) {
       return false;
     }
 
