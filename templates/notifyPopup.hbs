@@ -26,7 +26,8 @@
             </div>
           </div>
         {{/if}}
-        
+
+        {{#any _graphic._src body}}
         <div class="notify__section">
           <div class="notify__section-inner">
           
@@ -70,7 +71,8 @@
             
           </div>
         </div>
-
+        {{/any}}
+        
         {{#equals _type "alert"}}
         <div class="notify__btn-container">
           <button class="btn-text notify__btn notify__btn-alert js-notify-btn-alert" aria-label="{{{confirmText}}}">
