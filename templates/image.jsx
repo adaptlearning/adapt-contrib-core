@@ -22,12 +22,13 @@ export default function Image(props) {
   );
   const hasSource = Boolean(src);
   if (!hasSource) return null;
+  const classNamePrefixSeparator = (props.classNamePrefixSeparator || '__');
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
   return (
     <span
       id={props.id}
       className={classes([
-        prefixClasses(props.classNamePrefixes, ['__image-container']),
+        prefixClasses(props.classNamePrefixes, [`${classNamePrefixSeparator}image-container`]),
         props.classes,
         props.attribution && 'has-attribution'
       ])}
@@ -35,7 +36,7 @@ export default function Image(props) {
 
       <img
         className={classes([
-          prefixClasses(props.classNamePrefixes, ['__image']),
+          prefixClasses(props.classNamePrefixes, [`${classNamePrefixSeparator}image`]),
           props?._srcFocalPoint && `object-position-${props?._srcFocalPoint}`
         ])}
         src={src}
@@ -47,8 +48,8 @@ export default function Image(props) {
       />
 
       {props.attribution &&
-      <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
+      <span className={prefixClasses(attributionClassNamePrefixes, [`${classNamePrefixSeparator}attribution`])}>
+        <span className={prefixClasses(attributionClassNamePrefixes, [`${classNamePrefixSeparator}attribution-inner`])}>
           {html(props.attribution)}
         </span>
       </span>
