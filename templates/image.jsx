@@ -48,8 +48,8 @@ export default function Image(props) {
       />
 
       {props.attribution &&
-      <span className={prefixClasses(attributionClassNamePrefixes, [`${classNamePrefixSeparator}attribution`])}>
-        <span className={prefixClasses(attributionClassNamePrefixes, [`${classNamePrefixSeparator}attribution-inner`])}>
+      <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
+        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
           {html(props.attribution)}
         </span>
       </span>
