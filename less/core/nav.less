@@ -73,7 +73,7 @@ html.is-nav-bottom #wrapper {
       margin-bottom: (@icon-padding / 2);
     }
   }
-  
+
   .has-label-left &__btn-label {
     order: -1;
   }
@@ -82,14 +82,8 @@ html.is-nav-bottom #wrapper {
     margin-right: (@icon-padding / 2);
   }
 
-  &.has-label-auto {
-    .dir-rtl & .nav__btn-label {
-      margin-right: (@icon-padding / 2);
-    }
-
-    .dir-ltr & .nav__btn-label {
-      margin-left: (@icon-padding / 2);
-    }
+  &.has-label-auto .nav__btn-label {
+    margin-inline-start: @icon-padding / 2;
   }
 
   &__spacer {
