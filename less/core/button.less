@@ -20,22 +20,12 @@
 
   &__action:not(.is-full-width) {
     width: calc(~'50% - @{btn-padding}');
-    margin-right: @btn-padding;
-
-    .dir-rtl & {
-      margin-right: inherit;
-      margin-left: @btn-padding;
-    }
+    margin-inline-end: @btn-padding;
   }
 
   &__feedback:not(.is-full-width) {
     width: calc(~'50% - @{btn-padding}');
-    margin-left: @btn-padding;
-
-    .dir-rtl & {
-      margin-left: inherit;
-      margin-right: @btn-padding;
-    }
+    margin-inline-start: @btn-padding;
   }
 
   &__action.is-full-width,
@@ -45,12 +35,7 @@
 
   .can-show-marking &__action.is-full-width,
   .can-show-marking &__feedback.is-full-width {
-    margin-right: @icon-size + (@item-margin * 2);
-
-    .dir-rtl & {
-      margin-right: inherit;
-      margin-left: @icon-size + (@item-margin * 2);
-    }
+    margin-inline-end: @icon-size + (@item-margin * 2);
   }
 
   // Button marking

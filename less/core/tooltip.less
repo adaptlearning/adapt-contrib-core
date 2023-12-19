@@ -257,23 +257,19 @@
   .is-outside.is-horizontal-axis &__body {
     .is-left& {
       right: 100%;
-      margin-right: @tooltip-distance;
+      margin-inline-end: @tooltip-distance;
       .dir-rtl & {
         left: 100%;
         right: initial;
-        margin-left: @tooltip-distance;
-        margin-right: initial;
       }
     }
 
     .is-right& {
       left: 100%;
-      margin-left: @tooltip-distance;
+      margin-inline-start: @tooltip-distance;
       .dir-rtl & {
         right: 100%;
         left: initial;
-        margin-right: @tooltip-distance;
-        margin-left: initial;
       }
     }
 
@@ -469,23 +465,19 @@
   .is-inside.is-horizontal-axis &__body {
     .is-left& {
       left: 0%;
-      margin-left: var(--adapt-tooltip-viewport-padding);
+      margin-inline-start: var(--adapt-tooltip-viewport-padding);
       .dir-rtl & {
         right: 0%;
         left: initial;
-        margin-right: var(--adapt-tooltip-viewport-padding);
-        margin-left: initial;
       }
     }
 
     .is-right& {
       right: 0%;
-      margin-right: var(--adapt-tooltip-viewport-padding);
+      margin-inline-end: var(--adapt-tooltip-viewport-padding);
       .dir-rtl & {
         left: 100%;
         right: initial;
-        margin-left: var(--adapt-tooltip-viewport-padding);
-        margin-right: initial;
       }
     }
 
@@ -651,15 +643,13 @@
   .is-outside.is-horizontal-axis &__arrow {
     .is-left& {
       right: 100%;
-      margin-right: @tooltip-distance;
+      margin-inline-end: @tooltip-distance;
       &::before {
         transform: translateX(99%) rotate(90deg)
       }
       .dir-rtl & {
         left: 100%;
         right: initial;
-        margin-left: @tooltip-distance;
-        margin-right: initial;
         &::before {
           transform: translateX(-99%) rotate(270deg)
         }
@@ -668,15 +658,13 @@
 
     .is-right& {
       left: 100%;
-      margin-left: @tooltip-distance;
+      margin-inline-start: @tooltip-distance;
       &::before {
         transform: translateX(-99%) rotate(270deg)
       }
       .dir-rtl & {
         right: 100%;
         left: initial;
-        margin-right: @tooltip-distance;
-        margin-left: initial;
         &::before {
           transform: translateX(99%) rotate(90deg)
         }
