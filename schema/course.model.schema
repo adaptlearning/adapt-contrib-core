@@ -339,16 +339,16 @@
                   "required": true,
                   "translatable": true
                 }
-              },
-              "altFeedbackTitle": {
-                "type": "string",
-                "title": "Alternative Feedback Title",
-                "help": "Text read out by screen readers if no visual title is set for component question feedback.",
-                "default": "Feedback",
-                "inputType": "Text",
-                "required": false,
-                "translatable": true
               }
+            },
+            "altFeedbackTitle": {
+              "type": "string",
+              "title": "Alternative Feedback Title",
+              "help": "Text read out by screen readers if no visual title is set for component question feedback.",
+              "default": "Feedback",
+              "inputType": "Text",
+              "required": false,
+              "translatable": true
             }
           }
         },
