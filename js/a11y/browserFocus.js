@@ -45,6 +45,10 @@ export default class BrowserFocus extends Backbone.Controller {
     if (event.target !== event.currentTarget) {
       return;
     }
+    // Do not auto next if the focus isn't returning to the body
+    if (!$(event.relatedTarget).is('body')) {
+      return;
+    }
     // Check if element losing focus is losing focus
     // due to the addition of a disabled class
     if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden') {
