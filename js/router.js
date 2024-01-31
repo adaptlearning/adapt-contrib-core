@@ -13,6 +13,7 @@ class Router extends Backbone.Router {
     return {
       '': 'handleRoute',
       'id/:id': 'handleRoute',
+      'preview/:id': 'handlePreview',
       ':pluginName(/*location)(/*action)': 'handleRoute'
     };
   }
@@ -76,6 +77,50 @@ class Router extends Backbone.Router {
     }
     logging.deprecated('Use Backbone.history.navigate or window.location.href instead of Adapt.trigger(\'router:navigateTo\')');
     this.handleRoute(...args);
+  }
+
+  handlePreview(...args) {
+    args = args.filter(v => v !== null);
+
+    if (this.model.get('_canNavigate')) {
+      // Reset _isCircularNavigationInProgress protection as code is allowed to navigate away.
+      this._isCircularNavigationInProgress = false;
+    }
+
+    // Check if the current page is in the process of navigating to itself.
+    // It will redirect to itself if the URL was changed and _canNavigate is false.
+    if (this._isCircularNavigationInProgress === false) {
+      // Trigger an event pre 'router:location' to allow extensions to stop routing.
+      Adapt.trigger('router:navigate', args);
+    }
+
+    // Re-check as _canNavigate can be set to false on 'router:navigate' event.
+    if (this.model.get('_canNavigate')) {
+      // Disable navigation whilst rendering.
+      this.model.set('_canNavigate', false, { pluginName: 'adapt' });
+      this._isBackward = false;
+      if (args.length <= 1) {
+        return this.handleIdPreview(...args);
+      }
+      return this.handlePluginRouter(...args);
+    }
+
+    if (this._isCircularNavigationInProgress) {
+      // Navigation correction finished.
+      // Router has successfully re-navigated to the current _id as the URL was changed
+      // while _canNavigate: false
+      this._isCircularNavigationInProgress = false;
+      return;
+    }
+
+    // Cancel navigation to stay at the current location.
+    this._isCircularNavigationInProgress = true;
+    Adapt.trigger('router:navigationCancelled', args);
+
+    // Reset URL to the current one.
+    // https://github.com/adaptlearning/adapt_framework/issues/3061
+    Backbone.history.history[this._isBackward ? 'forward' : 'back']();
+    this._isBackward = false;
   }
 
   handleRoute(...args) {
@@ -175,6 +220,7 @@ class Router extends Backbone.Router {
     // Move to a content object
     this.showLoading();
     await Adapt.remove();
+    await this.removePreviews();
 
     /**
      * TODO:
@@ -220,6 +266,127 @@ class Router extends Backbone.Router {
       await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
     }
 
+  }
+
+  async handleIdPreview(id) {
+    const rootModel = router.rootModel;
+    let model = (!id) ? rootModel : data.findById(id);
+
+    if (!model) {
+      // Bad id
+      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      return;
+    }
+
+    // Move to a content object
+    this.showLoading();
+    await Adapt.remove();
+    await this.removePreviews();
+
+    let isContentObject = model.isTypeGroup?.('contentobject');
+    if (!isContentObject) {
+      // If the preview id is not a content object then make
+      // some containers to put it in
+      const types = ['page', 'article', 'block', 'component'];
+      const type = model.get('_type');
+      const buildTypes = types.slice(0, types.indexOf(type));
+      let parentModel = Adapt.course;
+      let _parentId = parentModel.get('_id');
+      const built = buildTypes.map((_type, index) => {
+        const ModelClass = components.getModelClass({ _type });
+        const _id = `preview-${_type}`
+        const builtModel = new ModelClass({
+          _type,
+          _id,
+          _parentId,
+          _isPreview: true
+        });
+        if (index) parentModel.getChildren().add(builtModel)
+        data.add(builtModel)
+        parentModel = builtModel
+        _parentId = _id
+        return builtModel
+      })
+      // Clone the requested content to sanitise
+      model.deepClone((clone, orig) => {
+        // Make the cloned item available and unlocked
+        clone.set({
+          _isAvailable: true,
+          _isLocked: false
+        });
+        clone.on('change', function () {
+          // Sync the cloned item with the original
+          const state = this.getAttemptObject
+            ? this.getAttemptObject()
+            : this.getTrackableState();
+          delete state._id;
+          delete state._isAvailable;
+          delete state._isLocked;
+          if (this.getAttemptObject) orig.setAttemptObject(state);
+          else orig.set(state);
+        });
+        if (orig !== model) return;
+        // Relocate the cloned item into the preview containers
+        clone.set({
+          _parentId
+        });
+      });
+      built.forEach(model => model.setupModel());
+      isContentObject = true
+      model = built[0]
+      model.setOnChildren({ _isPreview : true })
+    }
+
+    const navigateToId = model.get('_id');
+
+    // Ensure that the router is rendering a contentobject
+    model = isContentObject ? model : model.findAncestor('contentobject');
+    id = model.get('_id');
+
+    /**
+     * TODO:
+     * As the course object has separate location and type rules,
+     * it makes it more difficult to update the location object
+     * should stop doing this.
+     */
+    const isCourse = model.isTypeGroup?.('course');
+    const type = isCourse ? 'menu' : model.get('_type');
+    const newLocation = isCourse ? 'course' : `${type}-${id}`;
+
+    model.set({
+      _isVisited: true,
+      _isRendered: true
+    });
+    await this.updateLocation(newLocation, type, id, model);
+
+    Adapt.once('contentObjectView:ready', () => {
+      // Allow navigation.
+      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      this.handleNavigationFocus();
+    });
+    Adapt.trigger(`router:${type} router:contentObject`, model);
+
+    const ViewClass = components.getViewClass(model);
+    const isMenu = model.isTypeGroup?.('menu');
+    if (!ViewClass && isMenu) {
+      logging.deprecated(`Using event based menu view instantiation for '${components.getViewName(model)}'`);
+      return;
+    }
+
+    if (!isMenu) {
+      // checkIfResetOnRevisit where exists on descendant models before render
+      _.invoke(model.getAllDescendantModels(), 'checkIfResetOnRevisit');
+      // wait for completion to settle
+      await Adapt.deferUntilCompletionChecked();
+    }
+
+    this.$wrapper.append(new ViewClass({ model }).$el);
+
+  }
+
+  async removePreviews() {
+    const previews = data.filter(model => model.get('_isPreview'))
+    previews.forEach(model => data.remove(model));
   }
 
   async updateLocation(currentLocation, type, id, currentModel) {
