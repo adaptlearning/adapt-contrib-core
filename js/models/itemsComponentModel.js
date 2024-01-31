@@ -84,10 +84,10 @@ export default class ItemsComponentModel extends ComponentModel {
   setActiveItem(index) {
     const item = this.getItem(index);
     if (!item) return;
-
     const activeItem = this.getActiveItem();
     if (activeItem) activeItem.toggleActive(false);
     item.toggleActive(true);
+    this.storeUserAnswer();
   }
 
 }
