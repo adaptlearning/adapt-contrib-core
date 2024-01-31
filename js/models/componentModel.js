@@ -161,6 +161,7 @@ class ComponentModel extends AdaptModel {
    */
   setAttemptObject(object, silent = true) {
     this.set(object, { silent });
+    this.restoreUserAnswers();
   }
 
   /**
