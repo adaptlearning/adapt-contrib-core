@@ -11,14 +11,15 @@ class Drawer extends Backbone.Controller {
     this.listenTo(Adapt, {
       'adapt:start': this.onAdaptStart,
       'app:languageChanged': this.onLanguageChanged,
-      'navigation:toggleDrawer': this.toggle
+      'navigation:toggleDrawer': this.toggle,
+      'router:navigate': this.close
     });
   }
-  
+
   onAdaptStart() {
     this._drawerView = new DrawerView({ collection: DrawerCollection });
   }
-  
+
   onLanguageChanged() {
     tooltips.register({
       _id: 'drawer',
