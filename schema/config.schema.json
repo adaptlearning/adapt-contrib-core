@@ -305,6 +305,12 @@
             "left",
             "right"
           ]
+        },
+        "_iconClass": {
+          "type": "string",
+          "title": "Drawer icon class",
+          "description": "CSS class name to be applied to the drawer sidebar icon.",
+          "default": "icon-list"
         }
       },
       "_adapt": {
