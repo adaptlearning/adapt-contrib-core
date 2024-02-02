@@ -14,6 +14,7 @@ export default class ItemsComponentModel extends ComponentModel {
     this.setUpItems();
     this.listenTo(this.getChildren(), {
       all: this.onAll,
+      'change': this.storeUserAnswer,
       'change:_isActive': this.setVisitedStatus,
       'change:_isVisited': this.checkCompletionStatus
     });
@@ -60,7 +61,6 @@ export default class ItemsComponentModel extends ComponentModel {
 
   checkCompletionStatus() {
     this.setVisitedStatus();
-    this.storeUserAnswer();
     if (!this.areAllItemsCompleted()) return;
     this.setCompletionStatus();
   }
@@ -84,7 +84,6 @@ export default class ItemsComponentModel extends ComponentModel {
   setActiveItem(index) {
     const item = this.getItem(index);
     if (!item) return;
-
     const activeItem = this.getActiveItem();
     if (activeItem) activeItem.toggleActive(false);
     item.toggleActive(true);
