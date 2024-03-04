@@ -1,5 +1,6 @@
 {{! make the _globals object in course.json available to this template}}
 {{import_globals}}
+{{import_adapt}}
 
 {{! All links in the nav bar should have an attribute of data-event, navigationView uses this to fire a global event}}
 <div class="nav__inner">
@@ -20,8 +21,12 @@
   {{/each}}
 
   <button name="drawer" class="btn-icon nav__btn nav__drawer-btn js-nav-drawer-btn is-position-{{_config._drawer._position}}" data-event="toggleDrawer" aria-expanded="false" aria-label="{{_globals._accessibility._ariaLabels.navigationDrawer}}" data-order="{{_globals._extensions._drawer._navOrder}}" data-tooltip-id="drawer">
-    <span class="icon" aria-hidden="true"></span>
+    {{#if _config._drawer._iconClass}}
+    <span class="icon {{_config._drawer._iconClass}}" aria-hidden="true"></span>
+    {{/if}}
+    {{#if Adapt.course._navigation._showLabel}}
     <span class='nav__btn-label' aria-hidden="true">{{_globals._accessibility._ariaLabels.navigationDrawer}}</span>
+    {{/if}}
   </button>
 
 </div>

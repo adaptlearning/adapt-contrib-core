@@ -349,6 +349,15 @@
               "right"
             ]
           }
+        },
+        "_iconClass": {
+          "type": "string",
+          "required": false,
+          "default": "icon-list",
+          "title": "Drawer icon class",
+          "inputType": "Text",
+          "validators": [],
+          "help": "CSS class name to be applied to the drawer sidebar icon."
         }
       }
     },

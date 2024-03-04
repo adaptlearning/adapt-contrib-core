@@ -78,11 +78,11 @@ html.is-nav-bottom #wrapper {
     order: -1;
   }
 
-  &.has-label-left &__btn-label {
+  &.has-label-left .icon ~ .nav__btn-label {
     margin-inline-end: @icon-padding / 2;
   }
 
-  &.has-label-auto .nav__btn-label {
+  &.has-label-auto .icon ~ .nav__btn-label {
     margin-inline-start: @icon-padding / 2;
   }
 
@@ -110,10 +110,6 @@ html.is-nav-bottom #wrapper {
 
   &__back-btn .icon {
     .icon-controls-small-left;
-  }
-
-  &__drawer-btn .icon {
-    .icon-list;
   }
 }
 
