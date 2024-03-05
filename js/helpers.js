@@ -67,6 +67,14 @@ const helpers = {
     }
   },
 
+  use(id, block) {
+    if (!block.fn) return;
+    try {
+      const model = data.findById(id);
+      return block.fn(model.toJSON());
+    } catch (err) {}
+  },
+
   /**
    * Equivalent to:
    *  if (conditionA || conditionB)
