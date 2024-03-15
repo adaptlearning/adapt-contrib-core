@@ -42,6 +42,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
     const itemModels = this.getChildren();
     const userAnswer = this.get('_userAnswer');
+    if (!userAnswer) return;
     itemModels.each(item => {
       item.toggleActive(userAnswer[item.get('_index')]);
     });
