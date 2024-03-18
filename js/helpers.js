@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
+import data from 'core/js/data';
 import logging from './logging';
 
 const helpers = {
