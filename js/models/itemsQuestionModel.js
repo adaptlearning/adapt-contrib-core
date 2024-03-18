@@ -42,6 +42,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
     const itemModels = this.getChildren();
     const userAnswer = this.get('_userAnswer');
+    if (!userAnswer) return;
     itemModels.each(item => {
       item.toggleActive(userAnswer[item.get('_index')]);
     });
@@ -140,7 +141,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   getFeedback (_feedback = this.get('_feedback')) {
     if (!_feedback) return {};
     const activeItem = this.getActiveItem();
-    const activeItemFeedback = activeItem.get('feedback');
+    const activeItemFeedback = activeItem?.get?.('feedback');
     const isIndividualFeedback = (!this.isCorrect() && !this.isPartlyCorrect() && this.isSingleSelect() && activeItemFeedback);
     const feedback = super.getFeedback(_feedback);
     if (!isIndividualFeedback) return feedback;
