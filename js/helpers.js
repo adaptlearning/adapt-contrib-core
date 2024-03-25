@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
+import data from 'core/js/data';
 import logging from './logging';
 
 const helpers = {
@@ -65,6 +66,14 @@ const helpers = {
       case '/': return lvalue / rvalue;
       case '%': return lvalue % rvalue;
     }
+  },
+
+  use(id, block) {
+    if (!block.fn) return;
+    try {
+      const model = data.findById(id);
+      return block.fn(model.toJSON());
+    } catch (err) {}
   },
 
   /**
