@@ -189,6 +189,7 @@ class A11y extends Backbone.Controller {
     level = '1',
     override = null
   } = {}) {
+    if (level === 'course') level = 'menu';
     if (arguments.length === 2) {
       // backward compatibility
       level = arguments[0];
@@ -443,7 +444,7 @@ class A11y extends Backbone.Controller {
 
     const isInDOM = Boolean($element.parents('body').length);
     if (!isInDOM) return false;
-    
+
     const isNotVisible = $branch.toArray().some(item => {
       const style = window.getComputedStyle(item);
       // make sure item is not explicitly invisible

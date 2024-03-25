@@ -15,7 +15,6 @@ class HeadingView extends Backbone.View {
     const isBackwardCompatible = [...this.$el[0].classList].every(name => !name.includes('-inner'));
     data._isBackwardCompatible = isBackwardCompatible;
     if (customHeadingType) data._type = customHeadingType;
-    if (data._type === 'course') data._type = 'menu';
     this.$el.html(template(data));
     this.checkCompletion();
   }
