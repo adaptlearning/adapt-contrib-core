@@ -287,8 +287,9 @@ class QuestionModel extends ComponentModel {
     const title = feedback.title || this.get('title') || altTitle || '';
 
     const feedbackConfig = {
+      isAltTitle: (title === altTitle),
       altTitle,
-      title,
+      title: Handlebars.compile(title)(this.toJSON()),
       _classes: feedback._classes,
       ...(isLegacyConfig
         ? getLegacyConfigObject()
@@ -296,7 +297,7 @@ class QuestionModel extends ComponentModel {
       )
     };
 
-    if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
+    if (feedbackConfig._graphic?._src && !feedbackConfig._imageAlignment) {
       feedbackConfig._imageAlignment = 'right';
     }
 
@@ -307,10 +308,8 @@ class QuestionModel extends ComponentModel {
   setupFeedback() {
     if (!this.has('_feedback')) return;
     const { altTitle = '', title = '', body = '' } = this.getFeedback();
-    const isAltTitle = title === altTitle;
 
     this.set({
-      isAltTitle,
       feedbackTitle: Handlebars.compile(title)(this.toJSON()),
       feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });
