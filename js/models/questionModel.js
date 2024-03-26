@@ -283,13 +283,12 @@ class QuestionModel extends ComponentModel {
       ) || {};
     };
 
+    const altTitle = feedback.altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
+    const title = feedback.title || this.get('title') || altTitle || '';
+
     const feedbackConfig = {
-      altTitle: feedback.altTitle ||
-        Adapt.course.get('_globals')._accessibility.altFeedbackTitle ||
-        '',
-      title: feedback.title ||
-        this.get('title') ||
-        '',
+      altTitle,
+      title,
       _classes: feedback._classes,
       ...(isLegacyConfig
         ? getLegacyConfigObject()
@@ -308,8 +307,10 @@ class QuestionModel extends ComponentModel {
   setupFeedback() {
     if (!this.has('_feedback')) return;
     const { altTitle = '', title = '', body = '' } = this.getFeedback();
+    const isAltTitle = title === altTitle;
+
     this.set({
-      altFeedbackTitle: Handlebars.compile(altTitle)(this.toJSON()),
+      isAltTitle,
       feedbackTitle: Handlebars.compile(title)(this.toJSON()),
       feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });

@@ -13,24 +13,18 @@
         </div>
         {{/if}}
 
-        {{#if title}}
-        <div class="notify__title" id="notify-heading">
+        {{#if feedbackTitle}}
+        <div class="notify__title{{#if isAltTitle}} aria-label{{/if}}" id="notify-heading">
           <div class="notify__title-inner" role="heading" aria-level="{{a11y_aria_level _id 'notify' _ariaLevel}}">
             {{{compile title}}}
           </div>
         </div>
-        {{else if altTitle}}
-          <div class="notify__title aria-label" id="notify-heading">
-            <div class="notify__title-inner" role="heading" aria-level="{{a11y_aria_level _id 'notify' _ariaLevel}}">
-              {{{compile altTitle}}}
-            </div>
-          </div>
         {{/if}}
 
         {{#any _graphic._src body}}
         <div class="notify__section">
           <div class="notify__section-inner">
-          
+
             {{#if _graphic._src}}
             {{#any (equals _imageAlignment 'left') (equals _imageAlignment 'top')}}
             <div class="notify__image-container{{#if _graphic.attribution}} has-attribution{{/if}}">
@@ -45,7 +39,7 @@
             </div>
             {{~/any~}}
             {{~/if~}}
-            
+
             {{~#if body~}}
             <div class="notify__body">
               <div class="notify__body-inner">
@@ -53,7 +47,7 @@
               </div>
             </div>
             {{~/if~}}
-            
+
             {{~#if _graphic._src~}}
             {{~#any (equals _imageAlignment 'right') (equals _imageAlignment 'bottom')~}}
             <div class="notify__image-container{{#if _graphic.attribution}} has-attribution{{/if}}">
@@ -68,11 +62,11 @@
             </div>
             {{/any}}
             {{/if}}
-            
+
           </div>
         </div>
         {{/any}}
-        
+
         {{#equals _type "alert"}}
         <div class="notify__btn-container">
           <button class="btn-text notify__btn notify__btn-alert js-notify-btn-alert" aria-label="{{{confirmText}}}">
