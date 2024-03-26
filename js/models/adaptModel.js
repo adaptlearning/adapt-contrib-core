@@ -443,17 +443,32 @@ export default class AdaptModel extends LockingModel {
    * Such that the tree:
    *  { a1: { b1: [ c1, c2 ], b2: [ c3, c4 ] }, a2: { b3: [ c5, c6 ] } }
    *
-   * will become the array (parent first = false):
+   * will become the array (isParentFirst = false):
    *  [ c1, c2, b1, c3, c4, b2, a1, c5, c6, b3, a2 ]
    *
-   * or (parent first = true):
+   * or (isParentFirst = true):
    *  [ a1, b1, c1, c2, b2, c3, c4, a2, b3, c5, c6 ]
    *
    * This is useful when sequential operations are performed on the menu/page/article/block/component hierarchy.
-   * @param {boolean} [isParentFirst]
+   * @param {boolean|object} [options]
+   * @param {Object} [options.isParentFirst]
+   * @param {Object} [options.filter]
    * @return {array}
    */
-  getAllDescendantModels(isParentFirst) {
+  getAllDescendantModels(options = {}) {
+    let isParentFirst = false;
+    let filter = null;
+    if (typeof options === 'object') {
+      // New arguments
+      ({
+        isParentFirst = isParentFirst,
+        filter = filter
+      } = options);
+    } else {
+      // Old arguments, options is a boolean describing isParentFirst
+      isParentFirst = Boolean(options);
+      options = { isParentFirst };
+    }
 
     const descendants = [];
 
@@ -465,12 +480,14 @@ export default class AdaptModel extends LockingModel {
 
     children.models.forEach(child => {
 
+      if (options.filter?.(child) === false) return;
+
       if (!child.hasManagedChildren) {
         descendants.push(child);
         return;
       }
 
-      const subDescendants = child.getAllDescendantModels(isParentFirst);
+      const subDescendants = child.getAllDescendantModels(options);
       if (isParentFirst === true) {
         descendants.push(child);
       }
