@@ -178,7 +178,7 @@ Object.defineProperties(Adapt, {
   },
   offlineStorage: {
     get() {
-      logging.deprecated('offlineStorage, please use src/core/offlineStorage instead');
+      logging.deprecated('offlineStorage, please use core/js/offlineStorage instead');
       return offlineStorage;
     }
   },
@@ -232,7 +232,7 @@ Object.defineProperties(Adapt, {
   },
   wait: {
     get() {
-      logging.deprecated('Adapt.wait, please use src/core/wait instead');
+      logging.deprecated('Adapt.wait, please use core/js/wait instead');
       return wait;
     }
   }
