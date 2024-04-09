@@ -64,7 +64,7 @@ class Scrolling extends Backbone.Controller {
   _windowScrollFix() {
     /** @type {HTMLDivElement} */
     const body = document.body;
-    const html = Adapt.scrolling.$html[0];
+    const html = scrolling.$html[0];
     const scrollY = {
       get: () => body.scrollTop,
       set: value => (body.scrollTop = value)
