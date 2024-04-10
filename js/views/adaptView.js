@@ -346,12 +346,14 @@ class AdaptView extends Backbone.View {
   preRemove() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRemove view:preRemove`, this);
+    this.trigger('preRemove');
   }
 
   remove() {
     const type = this.constructor.type;
     this.preRemove();
     Adapt.trigger(`${type}View:remove view:remove`, this);
+    this.trigger('remove');
     this._isRemoved = true;
     this.stopListening();
 
@@ -363,6 +365,7 @@ class AdaptView extends Backbone.View {
       super.remove();
       _.defer(() => {
         Adapt.trigger(`${type}View:postRemove view:postRemove`, this);
+        this.trigger('postRemove');
       });
       end();
     });

@@ -2,7 +2,10 @@ import Adapt from 'core/js/adapt';
 
 class HeadingView extends Backbone.View {
 
-  initialize() {
+  initialize({
+    parentView
+  }) {
+    this.listenTo(parentView, 'preRemove', this.remove);
     this.listenTo(Adapt.parentView, 'postRemove', this.remove);
     this.listenTo(this.model, 'change:_isComplete', this.updateAria);
     this.render();
