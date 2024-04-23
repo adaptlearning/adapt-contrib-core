@@ -338,6 +338,22 @@
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
+                },
+                "mandatory": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Mandatory",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
+                },
+                "optional": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Optional",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
                 }
               }
             },
