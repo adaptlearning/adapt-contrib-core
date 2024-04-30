@@ -139,12 +139,14 @@ export default class ContentObjectView extends AdaptView {
   preRemove() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRemove contentObjectView:preRemove view:preRemove`, this);
+    this.trigger('preRemove');
   }
 
   remove() {
     const type = this.constructor.type;
     this.preRemove();
     Adapt.trigger(`${type}View:remove contentObjectView:remove view:remove`, this);
+    this.trigger('remove');
     this._isRemoved = true;
 
     wait.for(end => {
