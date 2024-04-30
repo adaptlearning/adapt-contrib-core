@@ -14,8 +14,10 @@ export default class TooltipItemView extends Backbone.View {
     return [
       'tooltip',
       this.model.get('isTargetFixedPosition') && 'is-fixed',
+      this.isStatic && 'is-static',
       this.model.get('tooltipClasses') || 'is-vertical-axis is-arrow-middle is-bottom is-middle',
       this.model.get('isShown') && 'is-shown',
+      this.model.get('wasShown') && 'was-shown',
       this.model.get('_classes')
     ].filter(Boolean).join(' ');
   }
@@ -39,15 +41,35 @@ export default class TooltipItemView extends Backbone.View {
 
   initialize({ $target, parent }) {
     _.bindAll(this, 'onDeviceResize', 'onMouseOut', 'doSubsequentPasses');
+    // Slow down change rendering to ~30fps as it's expensive
+    this.changed = _.throttle(this.changed.bind(this), 34);
     this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
     this.$target = $target;
     this.parent = parent;
     this.$target.attr('aria-describedby', `tooltip-${this.model.get('_id')}`);
-    this.model.set('ariaLabel', this.$target.attr('aria-label') || this.$target.find('.aria-label').text());
+    this.listenTo(this.model, 'change', this.changed);
     this.listenTo(Adapt, 'device:resize', this.onDeviceResize);
-    $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
-    this.doFirstPass();
-    setTimeout(this.doSubsequentPasses, 17);
+    this.listenTo(Adapt.parentView, 'preRemove', this.remove);
+    if (!this.isStatic) {
+      // Should not hide static tooltips on blur
+      $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
+    }
+    this.changed();
+  }
+
+  applyStaticScrollOffset(rect) {
+    if (!rect) return rect;
+    const scrollTop = $(window).scrollTop();
+    return {
+      left: rect.left,
+      right: rect.right,
+      width: rect.width,
+      height: rect.height,
+      x: rect.x,
+      top: rect.top + scrollTop,
+      bottom: rect.bottom + scrollTop,
+      y: rect.y + scrollTop
+    };
   }
 
   get environment() {
@@ -55,45 +77,83 @@ export default class TooltipItemView extends Backbone.View {
     const navigationAlignment = Adapt.course.get('_navigation')?._navigationAlignment ?? 'top';
     const navHeight = $('.nav').outerHeight(true);
     const $target = this.$target;
+    // Fetch the CSS variable values for distance and viewport padding
+    const {
+      offset,
+      distance,
+      viewPortPadding,
+      hasArrow,
+      shouldOverrideOffset,
+      shouldOverrideDistance,
+      shouldOverrideArrow
+    } = fetchCSSVariables(this.el, {
+      offset: this.model.get('_offset'),
+      distance: this.model.get('_distance'),
+      hasArrow: this.model.get('_hasArrow')
+    });
+
+    const arrowDOMReact = this.$('.tooltip__arrow')[0]?.getBoundingClientRect();
+    const tooltipDOMRect = this.$('.tooltip__body')[0]?.getBoundingClientRect();
+    const targetDOMRect = $target[0]?.getBoundingClientRect();
+
     return {
       position: this.model.get('_position') || 'outside bottom middle right',
+      offset,
+      distance,
+      viewPortPadding,
+      hasArrow,
+      shouldOverrideOffset,
+      shouldOverrideDistance,
+      shouldOverrideArrow,
       isDisabled: $target.attr('aria-disabled') !== undefined || $target.hasClass('is-disabled') || $target.is(':disabled'),
+      isStatic: this.isStatic,
       isTargetFixedPosition: Boolean(this.$target.add(this.$target.parents()).filter((index, el) => $(el).css('position') === 'fixed').length),
       isRTL: Adapt.config.get('_defaultDirection') === 'rtl',
       topNavOffset: navigationAlignment === 'top' ? navHeight : 0,
       bottomNavOffset: navigationAlignment === 'bottom' ? navHeight : 0,
-      targetDOMRect: $target[0]?.getBoundingClientRect(),
+      targetDOMRect: this.isStatic
+        ? this.applyStaticScrollOffset(targetDOMRect)
+        : targetDOMRect,
       clientDOMRect: {
         width: parseInt(getComputedStyle(document.body).width),
-        height: $('html')[0].clientHeight
+        height: this.isStatic
+          ? parseInt(getComputedStyle(document.getElementById('app')).height)
+          : $('html')[0].clientHeight
       },
-      tooltipDOMRect: this.$('.tooltip__body')[0]?.getBoundingClientRect(),
-      arrowDOMRect: this.$('.tooltip__arrow')[0]?.getBoundingClientRect(),
-      ariaHidden: (document.activeElement === this.$target[0])
+      tooltipDOMRect: this.isStatic
+        ? this.applyStaticScrollOffset(tooltipDOMRect)
+        : tooltipDOMRect,
+      arrowDOMRect: this.isStatic
+        ? this.applyStaticScrollOffset(arrowDOMReact)
+        : arrowDOMReact,
+      ariaHidden: (document.activeElement === this.$target[0] || this.isStatic)
     };
   }
 
   doFirstPass() {
-    this.model.set('isShown', false);
+    if (!this.model) return;
+    this.model.set('isShown', false, { silent: true });
     const environment = this.environment;
     const positions = position(environment, {}, FIRST_PASS);
     const {
       isDisabled,
+      isStatic,
       isTargetFixedPosition,
       ariaHidden
     } = environment;
     this.model.set({
       isDisabled,
+      isStatic,
       isTargetFixedPosition,
       ariaHidden,
       ...positions
-    });
+    }, { silent: true });
     this.render();
   }
 
   doSubsequentPasses() {
     if (!this.model) return;
-    this.model.set('hasLoaded', true);
+    this.model.set('hasLoaded', true, { silent: true });
     const multipassCache = {};
     // First pass - render at the requested position
     // Second pass - if needed, swap sides, switch axis and/or fill area
@@ -103,33 +163,55 @@ export default class TooltipItemView extends Backbone.View {
       const positions = position(this.environment, multipassCache, pass);
       const {
         isDisabled,
+        isStatic,
         isTargetFixedPosition,
         ariaHidden
       } = environment;
       this.model.set({
         isDisabled,
+        isStatic,
         isTargetFixedPosition,
         ariaHidden,
         ...positions
-      });
+      }, { silent: true });
       this.render();
     }
-    this.model.set('isShown', true);
+    this.model.set('isShown', true, { silent: true });
     this.render();
+    this.model.set('wasShown', true, { silent: true });
   }
 
   render() {
     if (!this.model) return;
     const Template = templates.tooltip;
+    this.model.set('ariaLabel', this.$target.attr('aria-label') || this.$target.find('.aria-label').text(), { silent: true });
     this.updateViewProperties();
     ReactDOM.render(<Template {...this.model.toJSON()} />, this.el);
   }
 
+  changed() {
+    if (!this.model) return;
+    requestAnimationFrame(() => {
+      this.doFirstPass();
+      this.doSubsequentPasses();
+    });
+  }
+
+  get isStatic() {
+    return Boolean(this.model.get('_isStatic'));
+  }
+
+  get isTargetPresent() {
+    return Boolean(this.$target.parents('body').length);
+  }
+
   onDeviceResize() {
+    if (this.isStatic && this.isTargetPresent) return this.changed();
     this.remove();
   }
 
   onMouseOut() {
+    if (this.isStatic) return;
     this.remove();
   }
 
@@ -137,7 +219,10 @@ export default class TooltipItemView extends Backbone.View {
     if (this.$el.hasClass('test')) return;
     this.stopListening(Adapt);
     $(document).off('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
-    this.model?.set('isShown', false);
+    this.model?.set({
+      isShown: false,
+      wasShown: false
+    });
     this.render();
     this.model = null;
     this.$target = null;
@@ -156,12 +241,18 @@ export default class TooltipItemView extends Backbone.View {
  * Extract the offset, distance and padding properties from the css
  * @returns {Object}
  */
-function fetchCSSVariables () {
-  const computed = getComputedStyle(document.documentElement);
+function fetchCSSVariables (target, { offset, distance, hasArrow }) {
+  const computed = getComputedStyle(target);
+  offset = offset < 0 ? null : offset ?? null;
+  distance = distance < 0 ? null : distance ?? null;
   return {
-    offset: lengthToPx('@tooltip-offset', computed.getPropertyValue('--adapt-tooltip-offset')),
-    distance: lengthToPx('@tooltip-distance', computed.getPropertyValue('--adapt-tooltip-distance')),
-    viewPortPadding: lengthToPx('@tooltip-viewport-padding', computed.getPropertyValue('--adapt-tooltip-viewport-padding'))
+    shouldOverrideOffset: offset !== null && offset !== undefined && offset !== 'default',
+    shouldOverrideDistance: distance !== null && distance !== undefined && distance !== 'default',
+    shouldOverrideArrow: hasArrow !== null && hasArrow !== undefined,
+    offset: lengthToPx('@tooltip-offset', offset ?? computed.getPropertyValue('--adapt-tooltip-offset')),
+    distance: lengthToPx('@tooltip-distance', distance ?? computed.getPropertyValue('--adapt-tooltip-distance')),
+    viewPortPadding: lengthToPx('@tooltip-viewport-padding', computed.getPropertyValue('--adapt-tooltip-viewport-padding')),
+    hasArrow: hasArrow ?? (computed.getPropertyValue('--adapt-tooltip-arrow') === 'true')
   };
 };
 
@@ -175,7 +266,7 @@ function lengthToPx (name, length) {
   const unit = String(length).replaceAll(/[\d.]+/g, '').trim();
   const value = parseFloat(length);
   if (unit === 'rem') return value * parseInt(getComputedStyle(document.body).fontSize);
-  if (unit === 'px') return value;
+  if (unit === 'px' || unit === '') return value;
   throw new Error(`Cannot convert ${name} ${length} to pixels`);
 };
 
@@ -490,10 +581,11 @@ function swapValues (a, b) {
  * @returns {Object}
  */
 function calculateScrollOffset ({
+  isStatic,
   isTargetFixedPosition
 }) {
-  const scrollOffsetTop = isTargetFixedPosition ? 0 : $(window).scrollTop();
-  const scrollOffsetLeft = isTargetFixedPosition ? 0 : $(window).scrollLeft();
+  const scrollOffsetTop = isTargetFixedPosition || isStatic ? 0 : $(window).scrollTop();
+  const scrollOffsetLeft = isTargetFixedPosition || isStatic ? 0 : $(window).scrollLeft();
   return {
     scrollOffsetLeft,
     scrollOffsetTop
@@ -525,8 +617,16 @@ function calculateScrollOffset ({
  */
 function position (
   {
+    isStatic,
     isTargetFixedPosition,
     position,
+    offset,
+    distance,
+    viewPortPadding,
+    hasArrow,
+    shouldOverrideOffset,
+    shouldOverrideDistance,
+    shouldOverrideArrow,
     isRTL,
     topNavOffset,
     bottomNavOffset,
@@ -538,13 +638,6 @@ function position (
   multipassCache,
   pass
 ) {
-
-  // Fetch the CSS variable values for distance and viewport padding
-  const {
-    offset,
-    distance,
-    viewPortPadding
-  } = fetchCSSVariables();
 
   // Convert target DOMRect to DistanceRect
   const targetDistRect = convertToDistanceRect(targetDOMRect, clientDOMRect);
@@ -780,6 +873,7 @@ function position (
     isFillHeight && 'is-fill-height',
     isSnapTop && 'is-snap-top',
     isSnapBottom && 'is-snap-bottom',
+    hasArrow && 'has-arrow',
     isArrowStart && 'is-arrow-start',
     isArrowMiddle && 'is-arrow-middle',
     isArrowEnd && 'is-arrow-end'
@@ -789,6 +883,7 @@ function position (
     scrollOffsetLeft,
     scrollOffsetTop
   } = calculateScrollOffset({
+    isStatic,
     isTargetFixedPosition
   });
 
@@ -803,6 +898,10 @@ function position (
     '--adapt-tooltip-target-position-width': `${targetDistRect.width}px`,
     '--adapt-tooltip-target-position-height': `${targetDistRect.height}px`
   });
+
+  if (shouldOverrideOffset) tooltipStyles['--adapt-tooltip-offset'] = `${offset}px`;
+  if (shouldOverrideDistance) tooltipStyles['--adapt-tooltip-distance'] = `${distance}px`;
+  if (shouldOverrideArrow) tooltipStyles['--adapt-tooltip-arrow'] = String(hasArrow).toLowerCase();
 
   return {
     tooltipClasses,

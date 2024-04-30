@@ -8,6 +8,7 @@
 @tooltip-viewport-padding: 8px;
 
 :root {
+  --adapt-tooltip-arrow: @tooltip-arrow;
   --adapt-tooltip-offset: @tooltip-offset;
   --adapt-tooltip-distance: @tooltip-distance;
   --adapt-tooltip-viewport-padding: @tooltip-viewport-padding;
@@ -97,6 +98,10 @@
     width: @tooltip-arrow-width;
     height: @tooltip-arrow-width;
 
+    :not(.has-arrow) > & {
+      display: none;
+    }
+
     & when (@tooltip-arrow = false) {
       display: none;
     }
@@ -121,12 +126,12 @@
   .is-outside.is-vertical-axis &__body {
     .is-top& {
       bottom: 100%;
-      margin-bottom: @tooltip-distance;
+      margin-bottom: var(--adapt-tooltip-distance);
     }
 
     .is-bottom& {
       top: 100%;
-      margin-top: @tooltip-distance;
+      margin-top: var(--adapt-tooltip-distance);
     }
 
     .is-center& {
@@ -135,17 +140,17 @@
     }
 
     .is-left.is-arrow-start& {
-      right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      right: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
       .dir-rtl & {
-        left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+        left: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
         right: initial;
       }
     }
 
     .is-left.is-arrow-middle& {
-      right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      right: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        left: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
         right: initial;
       }
     }
@@ -192,17 +197,17 @@
     }
 
     .is-right.is-arrow-middle& {
-      left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      left: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        right: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
         left: initial;
       }
     }
 
     .is-right.is-arrow-end& {
-      left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      left: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
       .dir-rtl & {
-        right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+        right: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
         left: initial;
       }
     }
@@ -233,11 +238,11 @@
     }
 
     .is-top.is-fill-width& {
-      max-height: calc(var(--adapt-tooltip-target-distancetoedge-top) - @tooltip-distance);
+      max-height: calc(var(--adapt-tooltip-target-distancetoedge-top) - var(--adapt-tooltip-distance));
     }
 
     .is-bottom.is-fill-width& {
-      max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - @tooltip-distance);
+      max-height: calc(var(--adapt-tooltip-target-distancetoedge-bottom) - var(--adapt-tooltip-distance));
     }
 
     .tooltip__container .is-snap-left& {
@@ -257,7 +262,7 @@
   .is-outside.is-horizontal-axis &__body {
     .is-left& {
       right: 100%;
-      margin-inline-end: @tooltip-distance;
+      margin-inline-end: var(--adapt-tooltip-distance);
       .dir-rtl & {
         left: 100%;
         right: initial;
@@ -266,7 +271,7 @@
 
     .is-right& {
       left: 100%;
-      margin-inline-start: @tooltip-distance;
+      margin-inline-start: var(--adapt-tooltip-distance);
       .dir-rtl & {
         right: 100%;
         left: initial;
@@ -284,11 +289,11 @@
     }
 
     .is-top.is-arrow-start& {
-      bottom: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      bottom: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
     }
 
     .is-top.is-arrow-middle& {
-      bottom: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      bottom: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
     }
 
     .is-top.is-arrow-end& {
@@ -315,11 +320,11 @@
     }
 
     .is-bottom.is-arrow-middle& {
-      top: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      top: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
     }
 
     .is-bottom.is-arrow-end& {
-      top: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2));
+      top: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2));
     }
 
     .is-left.is-fill-height& {
@@ -383,17 +388,17 @@
     }
 
     .is-left.is-arrow-start& {
-      right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+      right: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
       .dir-rtl & {
-        left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+        left: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
         right: initial;
       }
     }
 
     .is-left.is-arrow-middle& {
-      right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      right: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        left: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
         right: initial;
       }
     }
@@ -440,17 +445,17 @@
     }
 
     .is-right.is-arrow-middle& {
-      left: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      left: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+        right: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
         left: initial;
       }
     }
 
     .is-right.is-arrow-end& {
-      left: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+      left: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
       .dir-rtl & {
-        right: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+        right: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
         left: initial;
       }
     }
@@ -487,11 +492,11 @@
     }
 
     .is-top.is-arrow-start& {
-      bottom: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+      bottom: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
     }
 
     .is-top.is-arrow-middle& {
-      bottom: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      bottom: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
     }
 
     .is-top.is-arrow-end& {
@@ -518,11 +523,11 @@
     }
 
     .is-bottom.is-arrow-middle& {
-      top: calc(50% - (@tooltip-arrow-width / 2) - @tooltip-offset);
+      top: calc(50% - (@tooltip-arrow-width / 2) - var(--adapt-tooltip-offset));
     }
 
     .is-bottom.is-arrow-end& {
-      top: calc(100% - @tooltip-arrow-width - (@tooltip-offset * 2) - var(--adapt-tooltip-viewport-padding));
+      top: calc(100% - @tooltip-arrow-width - (var(--adapt-tooltip-offset) * 2) - var(--adapt-tooltip-viewport-padding));
     }
 
     .is-center.is-middle.is-arrow-start&,
@@ -536,7 +541,7 @@
   .is-outside.is-vertical-axis &__arrow {
     .is-top& {
       bottom: 100%;
-      margin-bottom: @tooltip-distance;
+      margin-bottom: var(--adapt-tooltip-distance);
       &::before {
         transform: translateY(99%) rotate(180deg);
       }
@@ -544,7 +549,7 @@
 
     .is-bottom& {
       top: 100%;
-      margin-top: @tooltip-distance;
+      margin-top: var(--adapt-tooltip-distance);
       &::before {
         transform: translateY(-99%);
       }
@@ -553,9 +558,9 @@
     .is-fill-height.is-arrow-start&,
     .is-fill-width.is-arrow-start&,
     .is-left.is-arrow-start& {
-      right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      right: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        left: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
         right: initial;
       }
     }
@@ -569,17 +574,17 @@
     .is-fill-height.is-arrow-end&,
     .is-fill-width.is-arrow-end&,
     .is-left.is-arrow-end& {
-      right: calc(0% + @tooltip-offset);
+      right: calc(0% + var(--adapt-tooltip-offset));
       .dir-rtl & {
-        left: calc(0% + @tooltip-offset);
+        left: calc(0% + var(--adapt-tooltip-offset));
         right: initial;
       }
     }
 
     .is-middle.is-arrow-start& {
-      left: calc(0% + @tooltip-offset);
+      left: calc(0% + var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(0% + @tooltip-offset);
+        right: calc(0% + var(--adapt-tooltip-offset));
         left: initial;
       }
     }
@@ -590,17 +595,17 @@
     }
 
     .is-middle.is-arrow-end& {
-      left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      left: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        right: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
         left: initial;
       }
     }
 
     .is-right.is-arrow-start& {
-      left: calc(0% + @tooltip-offset);
+      left: calc(0% + var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(0% + @tooltip-offset);
+        right: calc(0% + var(--adapt-tooltip-offset));
         left: initial;
       }
     }
@@ -610,30 +615,30 @@
     }
 
     .is-right.is-arrow-end& {
-      left: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      left: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
       .dir-rtl & {
-        right: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+        right: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
         left: initial;
       }
     }
 
     .tooltip__container .is-arrow-snap.is-arrow-start& {
-      left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset);
+      left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + var(--adapt-tooltip-offset));
       transform: none;
       right: initial;
       .dir-rtl & {
-        right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset);
+        right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + var(--adapt-tooltip-offset));
         transform: none;
         left: initial;
       }
     }
 
     .tooltip__container .is-arrow-snap.is-arrow-end& {
-      right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + @tooltip-offset);
+      right: calc((var(--adapt-tooltip-target-distancetoedge-right) * -1) + var(--adapt-tooltip-offset));
       transform: none;
       left: initial;
       .dir-rtl & {
-        left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + @tooltip-offset);
+        left: calc((var(--adapt-tooltip-target-distancetoedge-left) * -1) + var(--adapt-tooltip-offset));
         transform: none;
         right: initial;
       }
@@ -643,7 +648,7 @@
   .is-outside.is-horizontal-axis &__arrow {
     .is-left& {
       right: 100%;
-      margin-inline-end: @tooltip-distance;
+      margin-inline-end: var(--adapt-tooltip-distance);
       &::before {
         transform: translateX(99%) rotate(90deg)
       }
@@ -658,7 +663,7 @@
 
     .is-right& {
       left: 100%;
-      margin-inline-start: @tooltip-distance;
+      margin-inline-start: var(--adapt-tooltip-distance);
       &::before {
         transform: translateX(-99%) rotate(270deg)
       }
@@ -674,7 +679,7 @@
     .is-fill-height.is-arrow-start&,
     .is-fill-width.is-arrow-start&,
     .is-top.is-arrow-start& {
-      bottom: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      bottom: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
     }
 
     .is-fill-height.is-arrow-middle&,
@@ -686,11 +691,11 @@
     .is-fill-height.is-arrow-end&,
     .is-fill-width.is-arrow-end&,
     .is-top.is-arrow-end& {
-      bottom: calc(0% + @tooltip-offset);
+      bottom: calc(0% + var(--adapt-tooltip-offset));
     }
 
     .is-center.is-arrow-start& {
-      top: calc(0% + @tooltip-offset);
+      top: calc(0% + var(--adapt-tooltip-offset));
     }
 
     .is-center.is-arrow-middle& {
@@ -698,11 +703,11 @@
     }
 
     .is-center.is-arrow-end& {
-      top: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      top: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
     }
 
     .is-bottom.is-arrow-start& {
-      top: calc(0% + @tooltip-offset);
+      top: calc(0% + var(--adapt-tooltip-offset));
     }
 
     .is-bottom.is-arrow-middle& {
@@ -710,17 +715,17 @@
     }
 
     .is-bottom.is-arrow-end& {
-      top: calc(100% - @tooltip-arrow-width - @tooltip-offset);
+      top: calc(100% - @tooltip-arrow-width - var(--adapt-tooltip-offset));
     }
 
     .tooltip__container .is-arrow-snap.is-arrow-start& {
-      top: calc((var(--adapt-tooltip-target-distancetoedge-top) * -1) + @tooltip-offset);
+      top: calc((var(--adapt-tooltip-target-distancetoedge-top) * -1) + var(--adapt-tooltip-offset));
       transform: none;
       bottom: initial;
     }
 
     .tooltip__container .is-arrow-snap.is-arrow-end& {
-      bottom: calc((var(--adapt-tooltip-target-distancetoedge-bottom) * -1) + @tooltip-offset);
+      bottom: calc((var(--adapt-tooltip-target-distancetoedge-bottom) * -1) + var(--adapt-tooltip-offset));
       transform: none;
       top: initial;
     }
@@ -731,7 +736,7 @@
   }
 
   // animations
-  .is-shown& {
+  .is-shown:not(.was-shown)& {
     animation: toolTip--fadeScaleIn 0.4s forwards;
   }
 
