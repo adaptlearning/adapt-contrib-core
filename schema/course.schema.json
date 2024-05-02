@@ -299,10 +299,10 @@
                         "translatable": true
                       }
                     },
-                    "mandatory": {
+                    "required": {
                       "type": "string",
-                      "title": "Mandatory",
-                      "default": "Mandatory",
+                      "title": "Required",
+                      "default": "Required",
                       "_adapt": {
                         "translatable": true
                       }

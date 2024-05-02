@@ -339,10 +339,10 @@
                   "required": true,
                   "translatable": true
                 },
-                "mandatory": {
+                "required": {
                   "type": "string",
                   "title": "",
-                  "default": "Mandatory",
+                  "default": "Required",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
