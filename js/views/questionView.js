@@ -227,7 +227,7 @@ class QuestionView extends ComponentView {
 
     this.startRendering();
     this.changed();
-    
+
     this.model.onSubmitted();
     this.onSubmitted();
     Adapt.trigger('questionView:submitted', this);
@@ -409,7 +409,7 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
 
   // Retturns a string detailing how the user answered the question.
   getResponse() {
-    log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
+    log.deprecated('QuestionView.getResponse, please use QuestionModel.getResponse');
     return this.model.getResponse();
   }
 
