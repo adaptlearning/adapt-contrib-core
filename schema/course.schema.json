@@ -298,6 +298,22 @@
                       "_adapt": {
                         "translatable": true
                       }
+                    },
+                    "required": {
+                      "type": "string",
+                      "title": "Required",
+                      "default": "Required",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "optional": {
+                      "type": "string",
+                      "title": "Optional",
+                      "default": "Optional",
+                      "_adapt": {
+                        "translatable": true
+                      }
                     }
                   }
                 },
