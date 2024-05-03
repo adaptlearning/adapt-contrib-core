@@ -313,7 +313,7 @@ export default class AdaptModel extends LockingModel {
    */
   checkCompletionStatusFor(completionAttribute = '_isComplete') {
     let completed = false;
-    const children = this.getAvailableChildModels();
+    const children = this.getAvailableTrackableChildModels();
     const requireCompletionOf = this.get('_requireCompletionOf');
     const isOptional = this.get('_isOptional');
     const isEveryChildOptional = children.every(child => child.get('_isOptional'));
@@ -649,6 +649,10 @@ export default class AdaptModel extends LockingModel {
     return this.getChildren().where({
       _isAvailable: true
     });
+  }
+
+  getAvailableTrackableChildModels() {
+    return this.getAvailableChildModels().filter(child => child.get('_isTrackable') !== false);
   }
 
   getParent() {
