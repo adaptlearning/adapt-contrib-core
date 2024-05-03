@@ -15,11 +15,11 @@ export default class ItemModel extends LockingModel {
   }
 
   toggleActive(isActive = !this.get('_isActive')) {
-    this.set('_isActive', isActive);
+    this.set('_isActive', Boolean(isActive));
   }
 
   toggleVisited(isVisited = !this.get('_isVisited')) {
-    this.set('_isVisited', isVisited);
+    this.set('_isVisited', Boolean(isVisited));
   }
 
 }
