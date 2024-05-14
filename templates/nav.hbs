@@ -21,7 +21,7 @@
   {{/each}}
 
   <button name="drawer" class="btn-icon nav__btn nav__drawer-btn js-nav-drawer-btn is-position-{{#if _config._drawer._position}}{{_config._drawer._position}}{{/if}}{{#unless _config._drawer._position}}auto{{/unless}}" data-event="toggleDrawer" aria-expanded="false" aria-label="{{_globals._accessibility._ariaLabels.navigationDrawer}}" data-order="{{_globals._extensions._drawer._navOrder}}" data-tooltip-id="drawer">
-    <span class="icon {{#if _config._drawer._iconClass}}{{_config._drawer._iconClass}}{{/if}}{{#unless _config._drawer._iconClass}}icon-list{{/unless}}" aria-hidden="true"></span>
+    <span class="icon {{#if _config._drawer._iconClass}}{{_config._drawer._iconClass}}{{else}}icon-list{{/if}}" aria-hidden="true"></span>
     {{#if Adapt.course._navigation._showLabel}}
     <span class='nav__btn-label' aria-hidden="true">{{_globals._accessibility._ariaLabels.navigationDrawer}}</span>
     {{/if}}
