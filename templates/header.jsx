@@ -5,11 +5,12 @@ import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
- * instruction and mobileInstruction will switch automatically
+ * instruction / mobileInstruction and body / mobileBody will switch automatically
  * @param {Object} props
  * @param {string} [props.displayTitle]
  * @param {string} [props.body]
  * @param {string} [props.instruction]
+ * @param {string} [props.mobileBody]
  * @param {string} [props.mobileInstruction]
  * @param {string} [props._type]
  * @param {string} [props._component]
