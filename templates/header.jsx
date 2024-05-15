@@ -5,7 +5,7 @@ import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
- * instruction / mobileInstruction and body / mobileBody will switch automatically
+ * body / mobileBody and instruction / mobileInstruction will switch automatically
  * @param {Object} props
  * @param {string} [props.displayTitle]
  * @param {string} [props.body]
