@@ -108,7 +108,7 @@ export function getResolutionDuration($element, property = null) {
   if (property && !isAllProperty) transitions = transitions.filter(({ transitionProperty }) => transitionProperty === property);
   const longestTransition = transitions.slice().sort((a, b) => a.timeToEnd - b.timeToEnd).pop();
   const buffer = 100;
-  return (longestTransition?.timeToEnd * 1000) + buffer;
+  return ((longestTransition?.timeToEnd ?? 0) * 1000) + buffer;
 }
 
 export default {
