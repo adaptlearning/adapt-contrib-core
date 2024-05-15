@@ -22,6 +22,7 @@ export default function Header(props) {
     displayTitle,
     body,
     instruction,
+    mobileBody,
     mobileInstruction,
     _type,
     _component,
@@ -33,6 +34,9 @@ export default function Header(props) {
       _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
+  const sizedBody = (mobileBody && !device.isScreenSizeMin('medium')) ?
+    mobileBody :
+    body;
   const sizedInstruction = (mobileInstruction && !device.isScreenSizeMin('medium')) ?
     mobileInstruction :
     instruction;
@@ -69,9 +73,9 @@ export default function Header(props) {
         </div>
         }
 
-        {body &&
+        {sizedBody &&
         <div className={prefixClasses(classNamePrefixes, ['__body'])}>
-          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(body, props) }}>
+          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedBody, props) }}>
           </div>
         </div>
         }
