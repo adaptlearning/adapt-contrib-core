@@ -1,18 +1,37 @@
 import logging from 'core/js/logging';
 
 /**
- * Returns whether `CSSTransitions` are still active for an element.
- * An optional `transition-property` can be specified, else all properties will be evaluated.
+ * Handler to await completion of active `CSSTransitions`.
+ * An optional `transition-property` to await can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Boolean}
+ * @returns {Promise}
  */
-export function hasActiveTransition($element, property = null) {
-  let element = $element;
-  if (element instanceof $) element = element[0];
-  let transitions = element.getAnimations().filter(animation => animation instanceof window.CSSTransition);
-  if (property) transitions = transitions.filter(({ transitionProperty }) => transitionProperty === property);
-  return Boolean(transitions.length);
+export async function transitionsEnded($element, property = null) {
+  if (!($element instanceof $)) $element = $($element);
+  if (!willTransition($element, property)) return false;
+  const longestEndTime = getTransitionsLongestEndTime($element, property);
+  const buffer = 100;
+  const timeoutDuration = longestEndTime + buffer;
+  return new Promise(resolve => {
+    const onRun = () => clearTimeout(resolveInterval);
+    const onEnd = () => {
+      if (!hasActiveTransition($element, property)) done(true);
+    };
+    const done = (didTransition) => {
+      clearTimeout(resolveInterval);
+      $element
+        .off('transitionrun', onRun)
+        .off('transitioncancel transitionend', onEnd);
+      resolve(didTransition);
+    };
+    $element.on('transitionrun', onRun);
+    $element.on('transitioncancel transitionend', onEnd);
+    const resolveInterval = setTimeout(() => {
+      logging.warn('transition could/did not run forcing resolution', $element[0]);
+      if (!hasActiveTransition($element, property)) done(false);
+    }, timeoutDuration);
+  });
 }
 
 /**
@@ -53,42 +72,23 @@ export function willTransition($element, property = null) {
 }
 
 /**
- * Handler to await completion of active `CSSTransitions`.
- * An optional `transition-property` to await can be specified, else all properties will be evaluated.
+ * Returns whether `CSSTransitions` are still active for an element.
+ * An optional `transition-property` can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Promise}
+ * @returns {Boolean}
  */
-export async function transitionsEnded($element, property = null) {
-  if (!($element instanceof $)) $element = $($element);
-  if (!willTransition($element, property)) return false;
-  const longestEndTime = getTransitionsLongestEndTime($element, property);
-  const buffer = 100;
-  const timeoutDuration = longestEndTime + buffer;
-  return new Promise(resolve => {
-    const onRun = () => clearTimeout(resolveInterval);
-    const onEnd = () => {
-      if (!hasActiveTransition($element, property)) done(true);
-    };
-    const done = (didTransition) => {
-      clearTimeout(resolveInterval);
-      $element
-        .off('transitionrun', onRun)
-        .off('transitioncancel transitionend', onEnd);
-      resolve(didTransition);
-    };
-    $element.on('transitionrun', onRun);
-    $element.on('transitioncancel transitionend', onEnd);
-    const resolveInterval = setTimeout(() => {
-      logging.warn('transition could/did not run forcing resolution', $element[0]);
-      if (!hasActiveTransition($element, property)) done(false);
-    }, timeoutDuration);
-  });
+export function hasActiveTransition($element, property = null) {
+  let element = $element;
+  if (element instanceof $) element = element[0];
+  let transitions = element.getAnimations().filter(animation => animation instanceof window.CSSTransition);
+  if (property) transitions = transitions.filter(({ transitionProperty }) => transitionProperty === property);
+  return Boolean(transitions.length);
 }
 
 export default {
-  hasActiveTransition,
+  transitionsEnded,
   getTransitionsLongestEndTime,
   willTransition,
-  transitionsEnded
+  hasActiveTransition
 };
