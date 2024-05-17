@@ -38,7 +38,7 @@ export async function transitionsEnded($element, property = null) {
  * Returns the longest end time of the configured transitions
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Boolean}
+ * @returns {number}
  */
 export function getTransitionsLongestEndTime($element, property = null) {
   const properties = $element.css('transition-property').split(',').map(property => property.trim());
@@ -64,7 +64,7 @@ export function getTransitionsLongestEndTime($element, property = null) {
  * An optional `transition-property` can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Boolean}
+ * @returns {boolean}
  */
 export function willTransition($element, property = null) {
   if (hasActiveTransition($element, property)) return true;
@@ -76,7 +76,7 @@ export function willTransition($element, property = null) {
  * An optional `transition-property` can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Boolean}
+ * @returns {boolean}
  */
 export function hasActiveTransition($element, property = null) {
   let element = $element;
