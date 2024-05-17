@@ -16,7 +16,8 @@ export async function transitionsEnded($element, property = null) {
   return new Promise(resolve => {
     const onRun = () => clearTimeout(resolveInterval);
     const onEnd = () => {
-      if (!hasActiveTransition($element, property)) done(true);
+      if (hasActiveTransition($element, property)) return;
+      done(true);
     };
     const done = (didTransition) => {
       clearTimeout(resolveInterval);
@@ -29,7 +30,8 @@ export async function transitionsEnded($element, property = null) {
     $element.on('transitioncancel transitionend', onEnd);
     const resolveInterval = setTimeout(() => {
       logging.warn('transition could/did not run forcing resolution', $element[0]);
-      if (!hasActiveTransition($element, property)) done(false);
+      if (hasActiveTransition($element, property)) return;
+      done(false);
     }, timeoutDuration);
   });
 }
