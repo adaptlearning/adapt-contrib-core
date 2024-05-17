@@ -57,7 +57,7 @@ export function getTransitionsLongestEndTime($element, property = null) {
   const isAllProperty = property === 'all' || Boolean(endTimes.all);
   const longestEndTime = (property && !isAllProperty)
     ? endTimes[property]
-    : Object.values(endTimes).sort((a, b) => a.timeToEnd - b.timeToEnd).pop();
+    : Math.max(...Object.values(endTimes));
   return (longestEndTime ?? 0) * 1000; // Convert to milliseconds
 }
 
