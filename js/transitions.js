@@ -7,7 +7,7 @@ import logging from 'core/js/logging';
  * @param {string} [property=null]
  * @returns {Boolean}
  */
-function hasActiveTransition($element, property = null) {
+export function hasActiveTransition($element, property = null) {
   let element = $element;
   if (element instanceof $) element = element[0];
   let transitions = element.getAnimations().filter(animation => animation instanceof window.CSSTransition);
@@ -21,7 +21,7 @@ function hasActiveTransition($element, property = null) {
  * @param {string} [property=null]
  * @returns {Boolean}
  */
-function getTransitionsLongestEndTime($element, property = null) {
+export function getTransitionsLongestEndTime($element, property = null) {
   const properties = $element.css('transition-property').split(',').map(property => property.trim());
   const durations = $element.css('transition-duration').split(',').map(duration => parseFloat(duration));
   const delays = $element.css('transition-delay').split(',').map(delay => parseFloat(delay));
@@ -47,7 +47,7 @@ function getTransitionsLongestEndTime($element, property = null) {
  * @param {string} [property=null]
  * @returns {Boolean}
  */
-function willTransition($element, property = null) {
+export function willTransition($element, property = null) {
   if (hasActiveTransition($element, property)) return true;
   return (getTransitionsLongestEndTime($element, property) > 0);
 }
@@ -87,5 +87,8 @@ export async function transitionsEnded($element, property = null) {
 }
 
 export default {
+  hasActiveTransition,
+  getTransitionsLongestEndTime,
+  willTransition,
   transitionsEnded
 };
