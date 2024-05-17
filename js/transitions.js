@@ -5,10 +5,10 @@ import logging from 'core/js/logging';
  * An optional `transition-property` to await can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
  * @param {string} [property=null]
- * @returns {Promise}
+ * @returns {Promise<boolean>}
  */
 export async function transitionsEnded($element, property = null) {
-  if (!($element instanceof $)) $element = $($element);
+  $element = $($element).first();
   if (!willTransition($element, property)) return false;
   const longestEndTime = getTransitionsLongestEndTime($element, property);
   const buffer = 100;
@@ -43,6 +43,7 @@ export async function transitionsEnded($element, property = null) {
  * @returns {number}
  */
 export function getTransitionsLongestEndTime($element, property = null) {
+  $element = $($element);
   const properties = $element.css('transition-property').split(',').map(property => property.trim());
   const durations = $element.css('transition-duration').split(',').map(duration => parseFloat(duration));
   const delays = $element.css('transition-delay').split(',').map(delay => parseFloat(delay));
@@ -81,8 +82,7 @@ export function willTransition($element, property = null) {
  * @returns {boolean}
  */
 export function hasActiveTransition($element, property = null) {
-  let element = $element;
-  if (element instanceof $) element = element[0];
+  const element = $($element)[0];
   let transitions = element.getAnimations().filter(animation => animation instanceof window.CSSTransition);
   if (property) transitions = transitions.filter(({ transitionProperty }) => transitionProperty === property);
   return Boolean(transitions.length);
