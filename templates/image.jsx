@@ -1,7 +1,7 @@
 import device from 'core/js/device';
 import a11y from 'core/js/a11y';
 import React from 'react';
-import { html, classes, prefixClasses } from 'core/js/reactHelpers';
+import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Size switching content image
@@ -49,9 +49,7 @@ export default function Image(props) {
 
       {props.attribution &&
       <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
-          {html(props.attribution)}
-        </span>
+        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])} dangerouslySetInnerHTML={{ __html: compile(props.attribution, props) }} />
       </span>
       }
 
