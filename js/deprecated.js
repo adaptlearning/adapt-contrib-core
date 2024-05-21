@@ -47,8 +47,8 @@ Adapt.on({
 
 /** START REDUNDANT DRAWER BEHAVIOUR */
 Adapt.on({
-  'drawer:removeDrawer'() {
-    logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:removeDrawer\') will be removed in the future');
+  'drawer:remove'() {
+    logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
     drawer.remove();
   },
   'drawer:closeDrawer'() {
