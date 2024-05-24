@@ -49,9 +49,9 @@ export default function Image(props) {
 
       {props.attribution &&
       <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <span 
-          className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])} 
-          dangerouslySetInnerHTML={{ __html: compile(props.attribution, props) }} 
+        <span
+          className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}
+          dangerouslySetInnerHTML={{ __html: compile(props.attribution, props) }}
         />
       </span>
       }
