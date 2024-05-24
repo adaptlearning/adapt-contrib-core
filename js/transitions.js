@@ -26,10 +26,11 @@ export async function transitionsEnded($element, property = null) {
         .off('transitioncancel transitionend', onEnd);
       resolve(didTransition);
     };
-    $element.on('transitionrun', onRun);
-    $element.on('transitioncancel transitionend', onEnd);
+    $element
+      .on('transitionrun', onRun)
+      .on('transitioncancel transitionend', onEnd);
     const resolveInterval = setTimeout(() => {
-      logging.warn('transition could/did not run forcing resolution', $element[0]);
+      logging.warn('transition could/did not run, forcing resolution', $element[0]);
       if (hasActiveTransition($element, property)) return;
       done(false);
     }, timeoutDuration);
