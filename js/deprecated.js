@@ -57,7 +57,7 @@ Adapt.on({
   },
   'drawer:triggerCustomView'() {
     logging.deprecated('Use drawer.openCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
-    drawer.triggerCustomView();
+    drawer.openCustomView();
   }
 });
 
