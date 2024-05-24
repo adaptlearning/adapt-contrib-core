@@ -56,8 +56,8 @@ Adapt.on({
     drawer.close();
   },
   'drawer:triggerCustomView'() {
-    logging.deprecated('Use drawer.triggerCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
-    drawer.triggerCustomView();
+    logging.deprecated('Use drawer.openCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
+    drawer.openCustomView();
   }
 });
 
