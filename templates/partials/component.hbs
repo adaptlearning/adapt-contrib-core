@@ -13,13 +13,13 @@
 
     {{component_description}}
 
-    {{#if body}}
+    {{#any body mobileBody}}
     <div class="component__body {{lowercase _component}}__body">
       <div class="component__body-inner {{lowercase _component}}__body-inner">
         {{{compile body}}}
       </div>
     </div>
-    {{/if}}
+    {{/any}}
 
     {{#any instruction mobileInstruction}}
     <div class="component__instruction {{lowercase _component}}__instruction">
