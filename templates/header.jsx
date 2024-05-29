@@ -5,11 +5,12 @@ import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
- * instruction and mobileInstruction will switch automatically
+ * body / mobileBody and instruction / mobileInstruction will switch automatically
  * @param {Object} props
  * @param {string} [props.displayTitle]
  * @param {string} [props.body]
  * @param {string} [props.instruction]
+ * @param {string} [props.mobileBody]
  * @param {string} [props.mobileInstruction]
  * @param {string} [props._type]
  * @param {string} [props._component]
@@ -22,6 +23,7 @@ export default function Header(props) {
     displayTitle,
     body,
     instruction,
+    mobileBody,
     mobileInstruction,
     _type,
     _component,
@@ -33,6 +35,9 @@ export default function Header(props) {
       _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
+  const sizedBody = (mobileBody && !device.isScreenSizeMin('medium')) ?
+    mobileBody :
+    body;
   const sizedInstruction = (mobileInstruction && !device.isScreenSizeMin('medium')) ?
     mobileInstruction :
     instruction;
@@ -69,9 +74,9 @@ export default function Header(props) {
         </div>
         }
 
-        {body &&
+        {sizedBody &&
         <div className={prefixClasses(classNamePrefixes, ['__body'])}>
-          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(body, props) }}>
+          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedBody, props) }}>
           </div>
         </div>
         }
