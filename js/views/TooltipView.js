@@ -78,7 +78,6 @@ export default class TooltipView extends Backbone.View {
 
   onAdded(event) {
     const $addedEl = $(event.target);
-    if (!a11y.isFocusable($addedEl)) return;
     const id = $addedEl.data('tooltip-id');
     const tooltip = this.getTooltip(id);
     if (!tooltip?.get('_isEnabled') || !tooltip?.get('_isStatic')) return;
