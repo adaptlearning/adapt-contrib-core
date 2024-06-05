@@ -284,10 +284,12 @@ class QuestionModel extends ComponentModel {
     };
 
     const altTitle = feedback.altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
-    const title = feedback.title || this.get('title') || altTitle || '';
+    const hasTitle = Boolean(feedback.title || this.get('title'));
+    const isAltTitle = altTitle && !hasTitle;
+    const title = hasTitle ? (feedback.title || this.get('title')) : isAltTitle ? altTitle : '';
 
     const feedbackConfig = {
-      isAltTitle: (title === altTitle),
+      isAltTitle,
       altTitle,
       title: Handlebars.compile(title)(this.toJSON()),
       _classes: feedback._classes,
