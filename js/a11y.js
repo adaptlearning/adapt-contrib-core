@@ -227,8 +227,8 @@ class A11y extends Backbone.Controller {
       const nextModel = data.findById(id)?.findAncestor(relativeDescriptor.type?.toLowerCase()) ?? data.findById(id);
       const nextModelId = nextModel?.get('_id') ?? id;
       // check overrides, check title existence, adjust offset accordingly
-      const hasNextTitle = Boolean(nextModel.get('displayTitle'));
       let nextModelOverride = nextModel.get('_ariaLevel');
+      const hasNextTitle = Boolean(nextModel.get('displayTitle')) || Boolean(nextModelOverride);
       // Fix for authoring tool schema _ariaLevel = 0 default
       if (nextModelOverride === 0) nextModelOverride = null;
       const accumulatedOffset = offset + (hasNextTitle ? relativeDescriptor.offset : 0);
