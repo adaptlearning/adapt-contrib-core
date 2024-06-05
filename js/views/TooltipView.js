@@ -3,6 +3,7 @@ import logging from '../logging';
 import TooltipItemView from './TooltipItemView';
 import TooltipItemModel from '../models/TooltipItemModel';
 import a11y from '../a11y';
+import documentModifications from '../DOMElementModifications';
 
 export default class TooltipView extends Backbone.View {
 
@@ -22,6 +23,7 @@ export default class TooltipView extends Backbone.View {
     this._tooltipData = {};
     this._tooltips = [];
     this.listenToOnce(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+    this.listenTo(documentModifications, 'added:[data-tooltip-id]', this.onAdded);
     this.render();
   }
 
@@ -65,13 +67,21 @@ export default class TooltipView extends Backbone.View {
     if (this._currentId === id && event.name === 'focusin') return;
     this._currentId = id;
     const tooltip = this.getTooltip(id);
+    if (tooltip?.get('_isStatic')) return;
     if (!tooltip?.get('_isEnabled')) return this.hide();
     if (event.ctrlKey && this.config._allowTest) {
       this.showTest(tooltip, $mouseoverEl);
     } else {
       this.show(tooltip, $mouseoverEl);
     }
-    $(document).on('scroll', this.onScroll);
+  }
+
+  onAdded(event) {
+    const $addedEl = $(event.target);
+    const id = $addedEl.data('tooltip-id');
+    const tooltip = this.getTooltip(id);
+    if (!tooltip?.get('_isEnabled') || !tooltip?.get('_isStatic')) return;
+    this.show(tooltip, $addedEl);
   }
 
   /**
@@ -103,7 +113,9 @@ export default class TooltipView extends Backbone.View {
       $target: $mouseoverEl,
       parent: this
     });
-    this._tooltips.push(tooltipItem);
+    if (!tooltip?.get('_isStatic')) {
+      this._tooltips.push(tooltipItem);
+    }
     this.$el.append(tooltipItem.$el);
   }
 
@@ -147,6 +159,7 @@ export default class TooltipView extends Backbone.View {
   register(tooltipData) {
     if (!tooltipData._id) return logging.warn('Tooltip cannot be registered with no id');
     this._tooltipData[tooltipData._id] = new TooltipItemModel(tooltipData);
+    return this._tooltipData[tooltipData._id];
   }
 
   /**
