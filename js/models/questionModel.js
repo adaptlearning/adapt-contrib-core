@@ -309,7 +309,7 @@ class QuestionModel extends ComponentModel {
   // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
     if (!this.has('_feedback')) return;
-    const { altTitle = '', title = '', body = '' } = this.getFeedback();
+    const { title = '', body = '' } = this.getFeedback();
 
     this.set({
       feedbackTitle: Handlebars.compile(title)(this.toJSON()),
