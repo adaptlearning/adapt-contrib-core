@@ -321,7 +321,7 @@
                   "type": "string",
                   "title": "Alternative Feedback Title",
                   "description": "Text read out by screen readers if no visual title is set for component question feedback.",
-                  "default": "Feedback",
+                  "default": "",
                   "_adapt": {
                     "translatable": true
                   }
