@@ -284,7 +284,7 @@ class QuestionModel extends ComponentModel {
     };
 
     const altTitle = feedback.altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
-    const isAltTitle = Boolean(altTitle);
+    const isAltTitle = altTitle && !feedback.title;
     const title = (feedback.title || altTitle || this.get('title') || '');
 
     const feedbackConfig = {
