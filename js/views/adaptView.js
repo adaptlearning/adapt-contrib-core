@@ -24,7 +24,7 @@ class AdaptView extends Backbone.View {
       'change:_isHidden': this.toggleHidden,
       'change:_isComplete': this.onIsCompleteChange
     });
-    this.isJSX = (this.constructor.template || '').includes('.jsx');
+    this.isJSX = (this.template || this.constructor.template || '').includes('.jsx');
     if (this.isJSX) {
       this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
       this.listenTo(this.model, 'change', this.changed);
@@ -100,7 +100,7 @@ class AdaptView extends Backbone.View {
       // Add globals
       _globals: Adapt.course.get('_globals')
     };
-    const Template = templates[this.constructor.template.replace('.jsx', '')];
+    const Template = templates[(this.template || this.constructor.template).replace('.jsx', '')];
     this.updateViewProperties();
     ReactDOM.render(<Template {...props} />, this.el);
   }
