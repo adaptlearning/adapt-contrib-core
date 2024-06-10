@@ -189,7 +189,7 @@ export default class ButtonsView extends Backbone.View {
     const correctnessAriaLabel = isCorrect
       ? ariaLabels.answeredCorrectly
       : isPartlyCorrect
-        ? ariaLabels.answeredPartlyCorrect
+        ? (ariaLabels.answeredPartlyCorrect ?? ariaLabels.answeredIncorrectly)
         : ariaLabels.answeredIncorrectly;
     
     if (!hasSpanAriaLabel) {
