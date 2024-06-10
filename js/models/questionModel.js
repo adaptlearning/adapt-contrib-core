@@ -283,12 +283,13 @@ class QuestionModel extends ComponentModel {
       ) || {};
     };
 
-    const altTitle = feedback.altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
-    const title = feedback.title || this.get('title') || altTitle || '';
+    const altFeedbackTitle = Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
+    const hasTitle = Boolean(feedback.title || this.get('title'));
+    const isAltTitle = Boolean(feedback.altTitle) || (!hasTitle && altFeedbackTitle);
+    const title = (feedback.altTitle || feedback.title || this.get('title') || altFeedbackTitle || '');
 
     const feedbackConfig = {
-      isAltTitle: (title === altTitle),
-      altTitle,
+      isAltTitle,
       title: Handlebars.compile(title)(this.toJSON()),
       _classes: feedback._classes,
       ...(isLegacyConfig
@@ -307,7 +308,7 @@ class QuestionModel extends ComponentModel {
   // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
     if (!this.has('_feedback')) return;
-    const { altTitle = '', title = '', body = '' } = this.getFeedback();
+    const { title = '', body = '' } = this.getFeedback();
 
     this.set({
       feedbackTitle: Handlebars.compile(title)(this.toJSON()),
