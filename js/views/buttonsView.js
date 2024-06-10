@@ -177,6 +177,7 @@ export default class ButtonsView extends Backbone.View {
     if (!this.model.shouldShowMarking) return;
 
     const isCorrect = this.model.get('_isCorrect');
+    const isPartlyCorrect = this.model.get('_isPartlyCorrect');
     const ariaLabels = Adapt.course.get('_globals')._accessibility._ariaLabels;
 
     const $marking = this.$('.js-btn-marking, .js-btn-marking-label')
@@ -185,13 +186,19 @@ export default class ButtonsView extends Backbone.View {
 
     const $ariaLabel = this.$('.js-btn-marking-label');
     const hasSpanAriaLabel = Boolean($ariaLabel.length);
+    const correctnessAriaLabel = isCorrect
+      ? ariaLabels.answeredCorrectly
+      : isPartlyCorrect
+        ? ariaLabels.answeredPartlyCorrect
+        : ariaLabels.answeredIncorrectly;
+    
     if (!hasSpanAriaLabel) {
       // Backward compability
-      $marking.attr('aria-label', isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+      $marking.attr('aria-label', correctnessAriaLabel);
       return;
     }
 
-    $ariaLabel.html(isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+    $ariaLabel.html(correctnessAriaLabel);
   }
 
   refresh() {
