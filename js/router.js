@@ -82,7 +82,7 @@ class Router extends Backbone.Router {
 
   handlePreview(...args) {
     this.isPreviewMode = true;
-    this.handleRoute(args);
+    this.handleRoute(...args);
   }
 
   handleRoute(...args) {
