@@ -87,7 +87,6 @@ class Router extends Backbone.Router {
 
   handleRoute(...args) {
     args = args.filter(v => v !== null);
-    this.isPreviewMode = false;
 
     if (this.model.get('_canNavigate')) {
       // Reset _isCircularNavigationInProgress protection as code is allowed to navigate away.
