@@ -25,6 +25,7 @@ class Router extends Backbone.Router {
     this._navigationRoot = null;
     // Flag to indicate if the router has tried to redirect to the current location.
     this._isCircularNavigationInProgress = false;
+    this.isPreviewMode = false;
     this.showLoading();
     // Store #wrapper element and html to cache for later use.
     this.$wrapper = $('#wrapper');
@@ -80,51 +81,13 @@ class Router extends Backbone.Router {
   }
 
   handlePreview(...args) {
-    args = args.filter(v => v !== null);
-
-    if (this.model.get('_canNavigate')) {
-      // Reset _isCircularNavigationInProgress protection as code is allowed to navigate away.
-      this._isCircularNavigationInProgress = false;
-    }
-
-    // Check if the current page is in the process of navigating to itself.
-    // It will redirect to itself if the URL was changed and _canNavigate is false.
-    if (this._isCircularNavigationInProgress === false) {
-      // Trigger an event pre 'router:location' to allow extensions to stop routing.
-      Adapt.trigger('router:navigate', args);
-    }
-
-    // Re-check as _canNavigate can be set to false on 'router:navigate' event.
-    if (this.model.get('_canNavigate')) {
-      // Disable navigation whilst rendering.
-      this.model.set('_canNavigate', false, { pluginName: 'adapt' });
-      this._isBackward = false;
-      if (args.length <= 1) {
-        return this.handleIdPreview(...args);
-      }
-      return this.handlePluginRouter(...args);
-    }
-
-    if (this._isCircularNavigationInProgress) {
-      // Navigation correction finished.
-      // Router has successfully re-navigated to the current _id as the URL was changed
-      // while _canNavigate: false
-      this._isCircularNavigationInProgress = false;
-      return;
-    }
-
-    // Cancel navigation to stay at the current location.
-    this._isCircularNavigationInProgress = true;
-    Adapt.trigger('router:navigationCancelled', args);
-
-    // Reset URL to the current one.
-    // https://github.com/adaptlearning/adapt_framework/issues/3061
-    Backbone.history.history[this._isBackward ? 'forward' : 'back']();
-    this._isBackward = false;
+    this.isPreviewMode = true;
+    this.handleRoute(args);
   }
 
   handleRoute(...args) {
     args = args.filter(v => v !== null);
+    this.isPreviewMode = false;
 
     if (this.model.get('_canNavigate')) {
       // Reset _isCircularNavigationInProgress protection as code is allowed to navigate away.
@@ -144,6 +107,9 @@ class Router extends Backbone.Router {
       this.model.set('_canNavigate', false, { pluginName: 'adapt' });
       this._isBackward = false;
       if (args.length <= 1) {
+        if (this.isPreviewMode) {
+          return this.handleIdPreview(...args);
+        }
         return this.handleId(...args);
       }
       return this.handlePluginRouter(...args);
