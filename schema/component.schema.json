@@ -35,15 +35,6 @@
           },
           "_backboneForms": "Select"
         },
-        "_isA11yCompletionDescriptionEnabled": {
-          "type": "boolean",
-          "title": "Enable accessibility completion description",
-          "description": "Controls whether a hidden label is appended to the component title that describes the completion state of the component.",
-          "default": true,
-          "_adapt": {
-            "isSetting": true
-          }
-        },
         "properties": {
           "type": "object",
           "title": "Properties",
