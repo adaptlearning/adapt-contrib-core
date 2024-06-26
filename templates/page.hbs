@@ -1,8 +1,10 @@
 {{! make the _globals object in course.json available to this template}}
 {{import_globals}}
+{{import_adapt}}
 
 <div class="page__inner">
 
+  {{#unless Adapt.config._disablePageHeaders}}
   {{#any displayTitle subtitle body instruction}}
   <div class="page__header">
     <div class="page__header-inner">
@@ -48,6 +50,7 @@
     </div>
   </div>
   {{/any}}
+  {{/unless}}
 
   <div class="article__container">
     {{!-- Articles render here --}}
