@@ -26,7 +26,7 @@ class HeadingView extends Backbone.View {
     const template = Handlebars.templates[this.constructor.template];
     const data = this.model.toJSON();
     const $rendered = $(`<div>${template(data)}</div>`);
-    this.$('.aria-label').html($rendered.find('.aria-label').html());
+    this.$('.js-a11y-completion-description').html($rendered.find('.js-a11y-completion-description').html());
     this.checkCompletion();
   }
 
