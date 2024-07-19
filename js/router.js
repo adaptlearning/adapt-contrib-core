@@ -32,6 +32,7 @@ class Router extends Backbone.Router {
     this.$html = $('html');
     this.listenToOnce(Adapt, 'app:dataReady', this.setDocumentTitle);
     this.listenTo(Adapt, 'router:navigateTo', this.navigateToArguments);
+    this.listenToOnce(Adapt, 'configModel:dataLoaded', this.onConfigLoaded);
   }
 
   get rootModel() {
@@ -572,6 +573,14 @@ class Router extends Backbone.Router {
   set(...args) {
     logging.deprecated('router.set, please use router.model.set');
     return this.model.set(...args);
+  }
+
+  onConfigLoaded() {
+    this.listenTo(Adapt.config, 'change:_activeLanguage', this.onLanguageChange);
+  }
+
+  onLanguageChange() {
+    this.updateLocation(null, null, null, null)
   }
 
 }
