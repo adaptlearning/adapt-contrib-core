@@ -186,6 +186,7 @@ class NavigationView extends Backbone.View {
       after.forEach(el => $container.append(el));
     }
     this.observer?.takeRecords();
+    device.setNavigationHeight();
     this.listenForInjectedButtons();
   }
 
