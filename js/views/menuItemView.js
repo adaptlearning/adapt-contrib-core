@@ -4,7 +4,7 @@ class MenuItemView extends AdaptView {
 
   attributes() {
     return AdaptView.resultExtend('attributes', {
-      'role': 'listitem',
+      role: 'listitem',
       'aria-labelledby': this.model.get('_id') + '-heading'
     }, this);
   }
