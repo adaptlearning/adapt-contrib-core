@@ -14,7 +14,7 @@ export default class ItemsComponentModel extends ComponentModel {
     this.setUpItems();
     this.listenTo(this.getChildren(), {
       all: this.onAll,
-      'change': this.storeUserAnswer,
+      change: this.storeUserAnswer,
       'change:_isActive': this.setVisitedStatus,
       'change:_isVisited': this.checkCompletionStatus
     });
@@ -27,7 +27,7 @@ export default class ItemsComponentModel extends ComponentModel {
     this.getChildren().forEach(child => child.set('_isVisited', booleanArray[child.get('_index')]));
   }
 
-  storeUserAnswer() {    
+  storeUserAnswer() {
     const items = this.getChildren().slice(0);
     items.sort((a, b) => a.get('_index') - b.get('_index'));
     const booleanArray = items.map(child => child.get('_isVisited'));
