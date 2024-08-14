@@ -356,7 +356,7 @@ class Router extends Backbone.Router {
   }
 
   async updateLocation(currentLocation, type, id, currentModel) {
-    if (location._currentId === id) return;
+    if (location._currentId === id && id === null) return;
 
     // Handles updating the location.
     location._previousModel = location._currentModel;
