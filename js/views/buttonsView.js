@@ -191,7 +191,7 @@ export default class ButtonsView extends Backbone.View {
       : isPartlyCorrect
         ? (ariaLabels.answeredPartlyCorrect ?? ariaLabels.answeredIncorrectly)
         : ariaLabels.answeredIncorrectly;
-    
+
     if (!hasSpanAriaLabel) {
       // Backward compability
       $marking.attr('aria-label', correctnessAriaLabel);

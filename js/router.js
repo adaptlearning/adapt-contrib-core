@@ -260,19 +260,19 @@ class Router extends Backbone.Router {
       let _parentId = parentModel.get('_id');
       const built = buildTypes.map((_type, index) => {
         const ModelClass = components.getModelClass({ _type });
-        const _id = `preview-${_type}`
+        const _id = `preview-${_type}`;
         const builtModel = new ModelClass({
           _type,
           _id,
           _parentId,
           _isPreview: true
         });
-        if (index) parentModel.getChildren().add(builtModel)
-        data.add(builtModel)
-        parentModel = builtModel
-        _parentId = _id
-        return builtModel
-      })
+        if (index) parentModel.getChildren().add(builtModel);
+        data.add(builtModel);
+        parentModel = builtModel;
+        _parentId = _id;
+        return builtModel;
+      });
       // Clone the requested content to sanitise
       model.deepClone((clone, orig) => {
         // Make the cloned item available and unlocked
@@ -298,16 +298,16 @@ class Router extends Backbone.Router {
         });
       });
       built.forEach(model => model.setupModel());
-      isContentObject = true
-      model = built[0]
-      model.setOnChildren({ _isPreview : true })
+      isContentObject = true;
+      model = built[0];
+      model.setOnChildren({ _isPreview: true });
     }
 
     const navigateToId = model.get('_id');
 
     // Ensure that the router is rendering a contentobject
     model = isContentObject ? model : model.findAncestor('contentobject');
-    id = model.get('_id');
+    id = navigateToId;
 
     /**
      * TODO:
@@ -351,7 +351,7 @@ class Router extends Backbone.Router {
   }
 
   async removePreviews() {
-    const previews = data.filter(model => model.get('_isPreview'))
+    const previews = data.filter(model => model.get('_isPreview'));
     previews.forEach(model => data.remove(model));
   }
 
@@ -582,7 +582,7 @@ class Router extends Backbone.Router {
   }
 
   onLanguageChange() {
-    this.updateLocation(null, null, null, null)
+    this.updateLocation(null, null, null, null);
   }
 
 }
