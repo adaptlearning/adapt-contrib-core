@@ -165,7 +165,6 @@ export default class NotifyPopupView extends Backbone.View {
   }
 
   onOpened() {
-    $.inview();
     this.hasOpened = true;
     // Allows popup manager to control focus
     a11y.popupOpened(this.$el);
