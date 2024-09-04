@@ -74,10 +74,11 @@ export default class ContentObjectView extends AdaptView {
         $(window).scrollTop(0);
       }
       Adapt.trigger(`${type}View:ready contentObjectView:ready view:ready`, this);
+      $.inview.unlock(`${type}View`);
       const styleOptions = { opacity: 1 };
       if (this.disableAnimation) {
         this.$el.css(styleOptions);
-        $.inview.unlock(`${type}View`);
+        $.inview();
         _.defer(() => {
           Adapt.trigger(`${type}View:postReady contentObjectView:postReady view:postReady`, this);
         });
@@ -85,7 +86,7 @@ export default class ContentObjectView extends AdaptView {
         this.$el.velocity(styleOptions, {
           duration: 'fast',
           complete: () => {
-            $.inview.unlock(`${type}View`);
+            $.inview();
             Adapt.trigger(`${type}View:postReady contentObjectView:postReady view:postReady`, this);
           }
         });
