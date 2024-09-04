@@ -141,8 +141,6 @@
       visiblePartX, // left, right, both, none
       visiblePartY // top, bottom, both, none
     ];
-    item._inviewPreviousState = inviewState;
-    item._measurePreviousState = measurement;
     $(item.element).trigger('inview', inviewState);
   }
   // interface to allow for inview/onscreen to be disabled
