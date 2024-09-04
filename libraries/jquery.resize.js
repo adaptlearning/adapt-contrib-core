@@ -28,6 +28,7 @@
       // add item to observe
       const item = {
         id: makeId(this, data),
+        element: this,
         uniqueMeasurementId: getUniqueMeasurementId(this),
         observer: new window.ResizeObserver(() => {
           const uniqueMeasurementId = getUniqueMeasurementId(item.element);
