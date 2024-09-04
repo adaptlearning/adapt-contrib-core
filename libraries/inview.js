@@ -101,8 +101,10 @@
     const triggerable = registered.filter(item => item.shouldTriggerAfterUnlock);
     triggerable.forEach(item => {
       const measurement = getMeasurement(item.element);
+      const isFirstMeasurementAfterUnlock = (item.onscreen === null);
       item.onscreen = measurement.uniqueMeasurementId;
       item.shouldTriggerAfterUnlock = false;
+      if (isFirstMeasurementAfterUnlock) return;
       switch (item.type) {
         case TYPE.onscreen:
           processOnScreen(item, measurement);
