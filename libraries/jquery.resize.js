@@ -10,15 +10,15 @@
   function makeId(element, data) {
     // make a unique event id from the element's expando property and the event handler guid
     element[$.expando] = element[$.expando] || ++idIndex;
-    return data.guid + "-" + element[$.expando];
+    return data.guid + '-' + element[$.expando];
   }
   function getUniqueMeasurementId(element) {
     // create a easily comparible string for specific height/width pairs
     const height = element.clientHeight;
     const width = element.clientWidth;
-    return `${height},${width}`
+    return `${height},${width}`;
   }
-  const registered = []
+  const registered = [];
   // jQuery element + event handler attachment / removal
   $.event.special.resize = {
     noBubble: true,
@@ -40,9 +40,9 @@
           item.uniqueMeasurementId = uniqueMeasurementId;
           $(this).trigger('resize');
         })
-      }
+      };
       registered.push(item);
-      item.observer.observe(this)
+      item.observer.observe(this);
     },
     remove: function(data) {
       // allow window resize to be handled by browser
@@ -51,10 +51,10 @@
       const findId = makeId(this, data);
       // run in reverse to prevent index shifts
       for (let i = registered.length - 1, l = -1; i > l; i--) {
-        const item = registered[i]
+        const item = registered[i];
         if (item.id !== findId) continue;
         registered.splice(i, 1);
-        item.observer.disconnect()
+        item.observer.disconnect();
       }
     }
   };
