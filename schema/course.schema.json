@@ -4,7 +4,7 @@
   "type": "object",
   "$merge": {
     "source": {
-      "$ref": "content"
+      "$ref": "contentcontainer"
     },
     "with": {
       "properties": {
@@ -341,7 +341,6 @@
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
-                      "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                       "default": 100
                     },
                     "_navTooltip": {
@@ -379,7 +378,6 @@
                         "_navOrder": {
                           "type": "number",
                           "title": "Navigation bar order",
-                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                           "default": -100
                         }
                       }
@@ -392,7 +390,6 @@
                         "_navOrder": {
                           "type": "number",
                           "title": "Navigation bar order",
-                          "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                           "default": 0
                         }
                       }
@@ -431,7 +428,6 @@
                           "_navOrder": {
                             "type": "number",
                             "title": "Navigation bar order",
-                            "description": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
                             "default": 0
                           }
                         }
@@ -701,28 +697,6 @@
                 "editorOnly": true
               }
             }
-          }
-        },
-        "tags": {
-          "type": "array",
-          "title": "Tags",
-          "description": "Add tags to your course by entering one or more words, separated with a comma (,)",
-          "items": {
-            "type": "string",
-            "isObjectId": true
-          },
-          "_adapt": {
-            "editorOnly": true
-          },
-          "_backboneForms": "Tags"
-        },
-        "_requireCompletionOf": {
-          "type": "number",
-          "title": "Number of pages/submenus required for completion",
-          "description": "The number of content objects within this course the learner must complete in order for this course to be set as completed. A value of -1 requires all of them to be completed",
-          "default": -1,
-          "_adapt": {
-            "isSetting": true
           }
         },
         "_isSelected": {
