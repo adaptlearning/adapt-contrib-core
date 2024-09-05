@@ -15,6 +15,9 @@
           "type": "string",
           "title": "Component"
         },
+        "displayTitle": {
+          "default": "Untitled"
+        },
         "_layout": {
           "type": "string",
           "title": "Layout",
