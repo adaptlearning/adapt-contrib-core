@@ -16,6 +16,7 @@ class QuestionModel extends ComponentModel {
       _isQuestionType: true,
       _shouldDisplayAttempts: false,
       _shouldShowMarking: false,
+      _canShowCorrectness: false,
       _canShowModelAnswer: true,
       _canShowFeedback: true,
       _canShowMarking: true,
@@ -213,10 +214,11 @@ class QuestionModel extends ComponentModel {
     const isEnabled = this.get('_isEnabled');
     const buttonState = this.get('_buttonState');
     const canShowModelAnswer = this.get('_canShowModelAnswer');
+    const canShowCorrectness = this.get('_canShowCorrectness');
 
     if (isInteractionComplete) {
 
-      if (isCorrect || !canShowModelAnswer) {
+      if (isCorrect || (!canShowModelAnswer || canShowCorrectness)) {
         // Use correct instead of complete to signify button state
         this.set('_buttonState', BUTTON_STATE.CORRECT);
 
@@ -381,7 +383,11 @@ class QuestionModel extends ComponentModel {
     }
 
     if (this.get('_attemptsLeft') === 0) {
-      return this.get('_canShowModelAnswer') ? BUTTON_STATE.SHOW_CORRECT_ANSWER : BUTTON_STATE.INCORRECT;
+      const canShowModelAnswer = this.get('_canShowModelAnswer');
+      const canShowCorrectness = this.get('_canShowCorrectness');
+      return canShowModelAnswer && !canShowCorrectness
+        ? BUTTON_STATE.SHOW_CORRECT_ANSWER
+        : BUTTON_STATE.INCORRECT;
     }
 
     return this.get('_isSubmitted') ? BUTTON_STATE.RESET : BUTTON_STATE.SUBMIT;
