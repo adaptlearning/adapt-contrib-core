@@ -48,12 +48,17 @@ export default class TooltipItemView extends Backbone.View {
     this.parent = parent;
     this.$target.attr('aria-describedby', `tooltip-${this.model.get('_id')}`);
     this.listenTo(this.model, 'change', this.changed);
-    this.listenTo(Adapt, 'device:resize', this.onDeviceResize);
+    this.listenTo(Adapt, {
+      'contentObjectView:ready': this.changed,
+      'view:animationStart': this.changed,
+      'device:resize': this.onDeviceResize
+    });
     this.listenTo(Adapt.parentView, 'preRemove', this.remove);
     if (!this.isStatic) {
       // Should not hide static tooltips on blur
       $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
     }
+    this.unchangedRenders = 0;
     this.changed();
   }
 
@@ -152,7 +157,7 @@ export default class TooltipItemView extends Backbone.View {
   }
 
   doSubsequentPasses() {
-    if (!this.model) return;
+    if (!this.model) return false;
     this.model.set('hasLoaded', true, { silent: true });
     const multipassCache = {};
     // First pass - render at the requested position
@@ -179,6 +184,10 @@ export default class TooltipItemView extends Backbone.View {
     this.model.set('isShown', true, { silent: true });
     this.render();
     this.model.set('wasShown', true, { silent: true });
+    const endHash = JSON.stringify(this.model.get('tooltipStyles'));
+    const hasChanged = (this.startHash !== endHash);
+    this.startHash = endHash;
+    return hasChanged;
   }
 
   render() {
@@ -193,7 +202,15 @@ export default class TooltipItemView extends Backbone.View {
     if (!this.model) return;
     requestAnimationFrame(() => {
       this.doFirstPass();
-      this.doSubsequentPasses();
+      const hasChanged = this.doSubsequentPasses();
+      // rerender if unchanged for 34 frames (1second @ 30fps)
+      if (!hasChanged) this.unchangedRenders++;
+      if (hasChanged) this.unchangedRenders = 0;
+      if (this.unchangedRenders >= 34) {
+        this.unchangedRenders = 0;
+        return;
+      }
+      this.changed();
     });
   }
 
