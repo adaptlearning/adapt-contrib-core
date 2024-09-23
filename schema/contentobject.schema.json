@@ -8,6 +8,9 @@
     },
     "with": {
       "properties": {
+        "displayTitle": {
+          "default": "Untitled"
+        },
         "subtitle": {
           "type": "string",
           "title": "Subtitle",
