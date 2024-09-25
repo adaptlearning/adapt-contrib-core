@@ -49,7 +49,9 @@ export default class LockingModel extends Backbone.Model {
       const isAttemptingToLock = (lockingValue === attrVal);
 
       if (isAttemptingToLock) {
-        this.setLockState(attrName, true, { pluginName, skipcheck: true });
+        if (!isInitialDefault) {
+          this.setLockState(attrName, true, { pluginName, skipcheck: true });
+        }
         newValues[attrName] = lockingValue;
         continue;
       }
