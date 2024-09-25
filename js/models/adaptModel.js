@@ -856,6 +856,8 @@ export default class AdaptModel extends LockingModel {
     const ModelClass = this.constructor;
     // Clone the model
     const clonedModel = new ModelClass(this.toJSON());
+    clonedModel._lockedAttributes = { ...this._lockedAttributes };
+    clonedModel._lockedAttributesValues = { ...this._lockedAttributesValues };
     // Run the custom modifier on the clone
     if (modifier) {
       modifier(clonedModel, this);
