@@ -49,6 +49,12 @@ class QuestionModel extends ComponentModel {
     ]);
   }
 
+  lockedAttributes() {
+    return ComponentModel.resultExtend('lockedAttributes', {
+      _canSubmit: true
+    });
+  }
+
   /**
    * Returns a string of the model type group.
    * @returns {string}
@@ -59,7 +65,6 @@ class QuestionModel extends ComponentModel {
 
   init() {
     this.setupDefaultSettings();
-    this.setLocking('_canSubmit', true);
     this.updateRawScore();
     super.init();
   }

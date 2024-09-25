@@ -49,6 +49,12 @@ export default class AdaptModel extends LockingModel {
     };
   }
 
+  lockedAttributes() {
+    return {
+      _isLocked: true
+    };
+  }
+
   /**
    * Fetch an array representing the relative location of the model to the nearest _trackingId
    * @returns {Array<Number, Number>}
@@ -780,7 +786,7 @@ export default class AdaptModel extends LockingModel {
           !previousChild.get('_isComplete') &&
           !previousChild.get('_isOptional')
         );
-      child.set('_isLocked', isLockedByPreviousChild);
+      child.set('_isLocked', isLockedByPreviousChild, { pluginName: 'adapt' });
     }, false);
   }
 
@@ -788,19 +794,19 @@ export default class AdaptModel extends LockingModel {
     const children = this.getAvailableChildModels();
     const firstChild = children.shift();
     const isLockedByFirstChild = (!firstChild.get('_isComplete') && !firstChild.get('_isOptional'));
-    children.forEach(child => child.set('_isLocked', isLockedByFirstChild));
+    children.forEach(child => child.set('_isLocked', isLockedByFirstChild, { pluginName: 'adapt' }));
   }
 
   setLockLastLocking() {
     const children = this.getAvailableChildModels();
     const lastChild = children.pop();
     const isLockedByChildren = children.some(child => (!child.get('_isComplete') && !child.get('_isOptional')));
-    lastChild.set('_isLocked', isLockedByChildren);
+    lastChild.set('_isLocked', isLockedByChildren, { pluginName: 'adapt' });
   }
 
   setCustomLocking() {
     const children = this.getAvailableChildModels();
-    children.forEach(child => child.set('_isLocked', this.shouldLock(child)));
+    children.forEach(child => child.set('_isLocked', this.shouldLock(child), { pluginName: 'adapt' }));
   }
 
   shouldLock(child) {
