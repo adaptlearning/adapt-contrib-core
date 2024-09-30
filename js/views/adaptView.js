@@ -136,6 +136,8 @@ class AdaptView extends Backbone.View {
       const minVerticalInview = onscreen._percentInviewVertical || 33;
       if (m.percentInviewVertical < minVerticalInview) return;
       this.$el.addClass(`${onscreen._classes}-after`).off('onscreen.adaptView');
+      const type = this.model.get('_type');
+      Adapt.trigger(`${type}View:animationStart view:animationStart`, this);
     });
   }
 
