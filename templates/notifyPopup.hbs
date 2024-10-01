@@ -14,11 +14,13 @@
         {{/if}}
 
         {{#if title}}
+        {{#unless _graphic._src}}
         <div class="notify__title{{#if isAltTitle}} aria-label{{/if}}" id="notify-heading">
           <div class="notify__title-inner" role="heading" aria-level="{{a11y_aria_level _id 'notify' _ariaLevel}}">
             {{{compile title}}}
           </div>
         </div>
+        {{/unless}}
         {{/if}}
 
         {{#any _graphic._src body}}
@@ -40,13 +42,23 @@
             {{~/any~}}
             {{~/if~}}
 
-            {{~#if body~}}
-            <div class="notify__body">
-              <div class="notify__body-inner">
-                {{{compile body}}}
+            <div class="notify__text">
+              {{#all title _graphic._src}}
+              <div class="notify__title{{#if isAltTitle}} aria-label{{/if}}" id="notify-heading">
+                <div class="notify__title-inner" role="heading" aria-level="{{a11y_aria_level _id 'notify' _ariaLevel}}">
+                  {{{compile title}}}
+                </div>
               </div>
+              {{/all}}
+
+              {{~#if body~}}
+              <div class="notify__body">
+                <div class="notify__body-inner">
+                  {{{compile body}}}
+                </div>
+              </div>
+              {{~/if~}}
             </div>
-            {{~/if~}}
 
             {{~#if _graphic._src~}}
             {{~#any (equals _imageAlignment 'right') (equals _imageAlignment 'bottom')~}}
