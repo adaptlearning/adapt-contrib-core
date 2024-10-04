@@ -11,6 +11,8 @@ import 'core/js/models/questionModel';
 class QuestionView extends ComponentView {
 
   className() {
+    const canShowCorrectness = this.model.get('_canShowCorrectness');
+    const canShowModelAnswer = this.model.get('_canShowModelAnswer');
     return [
       'component',
       'is-question',
@@ -21,7 +23,8 @@ class QuestionView extends ComponentView {
       'is-' + this.model.get('_layout'),
       (this.model.get('_isComplete') ? 'is-complete' : ''),
       (this.model.get('_isOptional') ? 'is-optional' : ''),
-      (this.model.get('_canShowModelAnswer') ? 'can-show-model-answer' : ''),
+      (canShowCorrectness ? 'can-show-correctness' : ''),
+      (canShowModelAnswer && !canShowCorrectness ? 'can-show-model-answer' : ''),
       (this.model.get('_canShowFeedback') ? 'can-show-feedback' : ''),
       (this.model.get('_canShowMarking') ? 'can-show-marking' : '')
     ].join(' ');
