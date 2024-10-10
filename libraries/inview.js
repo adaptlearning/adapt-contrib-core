@@ -67,6 +67,7 @@
     };
     registered.push(item);
     observer.observe(element);
+    processItem(item);
   }
   function unregister(element, data, type) {
     const findId = makeId(element, data);
@@ -81,7 +82,8 @@
   function process() {
     const registeredCount = registered.length;
     if (registeredCount === 0) return;
-    registered.forEach(processItem);
+    const executables = registered.slice(0)
+    executables.forEach(processItem);
   }
   function processItem(item) {
     const measurement = getMeasurement(item.element);
@@ -90,9 +92,8 @@
       !item.uniqueMeasurementId ||
       item.uniqueMeasurementId !== uniqueMeasurementId
     );
-    if (!hasMeasureChanged) return;
-    item.onscreen = measurement.uniqueMeasurementId;
-    if (!measurement.onscreen) return;
+    item.uniqueMeasurementId = measurement.uniqueMeasurementId;
+    if (!hasMeasureChanged || !measurement.onscreen) return;
     switch (item.type) {
       case TYPE.onscreen:
         processOnScreen(item, measurement);
@@ -102,7 +103,9 @@
     }
   }
   function processOnScreen(item, measurement) {
-    $(item.element).trigger('onscreen', measurement);
+    try {
+      $(item.element).trigger('onscreen', measurement);
+    } catch (err) {}
   }
   function processInView(item, measurement) {
     const isTopOnScreen = (measurement.percentFromTop >= 0 && measurement.percentFromTop < 100);
@@ -128,7 +131,9 @@
       visiblePartX, // left, right, both, none
       visiblePartY // top, bottom, both, none
     ];
-    $(item.element).trigger('inview', inviewState);
+    try {
+      $(item.element).trigger('inview', inviewState);
+    } catch (err) {}
   }
   // interface to allow for inview/onscreen to be disabled
   function lock(name) {
