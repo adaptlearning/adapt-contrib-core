@@ -148,7 +148,7 @@
   }
   function isLocked(name) {
     if (!name) return (locks.length > 0);
-    return locks.includes(name)
+    return locks.includes(name);
   }
   function getMeasurement (element) {
     const offset = element.getBoundingClientRect();
