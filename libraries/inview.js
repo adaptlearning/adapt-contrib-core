@@ -138,7 +138,7 @@
   }
   function unlock(name) {
     if (!isLocked(name)) return;
-    for (let i = 0, l = locks.length; i < l; i++) {
+    for (let i = 0; i < locks.length; i++) {
       const lock = locks[i];
       if (lock !== name) continue;
       locks.splice(i, 1);
@@ -148,11 +148,7 @@
   }
   function isLocked(name) {
     if (!name) return (locks.length > 0);
-    for (let i = 0, l = locks.length; i < l; i++) {
-      const lock = locks[i];
-      if (lock === name) return true;
-    }
-    return false;
+    return locks.includes(name)
   }
   function getMeasurement (element) {
     const offset = element.getBoundingClientRect();
