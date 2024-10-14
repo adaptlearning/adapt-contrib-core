@@ -67,7 +67,7 @@
     };
     registered.push(item);
     observer.observe(element);
-    processItem(item);
+    setTimeout(() => processItem(item));
   }
   function unregister(element, data, type) {
     const findId = makeId(element, data);
