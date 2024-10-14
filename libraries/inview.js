@@ -51,25 +51,8 @@
   // handler functions
   function register(element, data, type) {
     const observer = new IntersectionObserver(entries => {
-      if (isLocked()) {
-        item.shouldTriggerAfterUnlock = true;
-        return;
-      }
-      const measurement = getMeasurement(item.element);
-      const uniqueMeasurementId = measurement.uniqueMeasurementId;
-      const hasMeasureChanged = (
-        !item.uniqueMeasurementId ||
-        item.uniqueMeasurementId !== uniqueMeasurementId
-      );
-      if (!hasMeasureChanged) return;
-      item.onscreen = measurement.uniqueMeasurementId;
-      switch (item.type) {
-        case TYPE.onscreen:
-          processOnScreen(item, measurement);
-          break;
-        case TYPE.inview:
-          processInView(item, measurement);
-      }
+      if (isLocked()) return;
+      processItem(item);
     }, {
       root: null,
       threshold: thresholds
@@ -84,6 +67,7 @@
     };
     registered.push(item);
     observer.observe(element);
+    setTimeout(() => processItem(item));
   }
   function unregister(element, data, type) {
     const findId = makeId(element, data);
@@ -98,24 +82,30 @@
   function process() {
     const registeredCount = registered.length;
     if (registeredCount === 0) return;
-    const triggerable = registered.filter(item => item.shouldTriggerAfterUnlock);
-    triggerable.forEach(item => {
-      const measurement = getMeasurement(item.element);
-      const isFirstMeasurementAfterUnlock = (item.onscreen === null);
-      item.onscreen = measurement.uniqueMeasurementId;
-      item.shouldTriggerAfterUnlock = false;
-      if (isFirstMeasurementAfterUnlock) return;
-      switch (item.type) {
-        case TYPE.onscreen:
-          processOnScreen(item, measurement);
-          break;
-        case TYPE.inview:
-          processInView(item, measurement);
-      }
-    });
+    const executables = registered.slice(0)
+    executables.forEach(processItem);
+  }
+  function processItem(item) {
+    const measurement = getMeasurement(item.element);
+    const uniqueMeasurementId = measurement.uniqueMeasurementId;
+    const hasMeasureChanged = (
+      !item.uniqueMeasurementId ||
+      item.uniqueMeasurementId !== uniqueMeasurementId
+    );
+    item.uniqueMeasurementId = measurement.uniqueMeasurementId;
+    if (!hasMeasureChanged || !measurement.onscreen) return;
+    switch (item.type) {
+      case TYPE.onscreen:
+        processOnScreen(item, measurement);
+        break;
+      case TYPE.inview:
+        processInView(item, measurement);
+    }
   }
   function processOnScreen(item, measurement) {
-    $(item.element).trigger('onscreen', measurement);
+    try {
+      $(item.element).trigger('onscreen', measurement);
+    } catch (err) {}
   }
   function processInView(item, measurement) {
     const isTopOnScreen = (measurement.percentFromTop >= 0 && measurement.percentFromTop < 100);
@@ -141,30 +131,29 @@
       visiblePartX, // left, right, both, none
       visiblePartY // top, bottom, both, none
     ];
-    $(item.element).trigger('inview', inviewState);
+    try {
+      $(item.element).trigger('inview', inviewState);
+    } catch (err) {}
   }
   // interface to allow for inview/onscreen to be disabled
   function lock(name) {
     if (isLocked(name)) return;
+    if (locks.includes(name)) return;
     locks.push(name);
   }
   function unlock(name) {
     if (!isLocked(name)) return;
-    for (let i = 0, l = locks.length; i < l; i++) {
+    for (let i = 0; i < locks.length; i++) {
       const lock = locks[i];
       if (lock !== name) continue;
       locks.splice(i, 1);
-      break;
     }
+    if (isLocked()) return;
     process();
   }
   function isLocked(name) {
     if (!name) return (locks.length > 0);
-    for (let i = 0, l = locks.length; i < l; i++) {
-      const lock = locks[i];
-      if (lock === name) return true;
-    }
-    return false;
+    return locks.includes(name);
   }
   function getMeasurement (element) {
     const offset = element.getBoundingClientRect();
