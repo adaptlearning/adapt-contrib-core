@@ -32,11 +32,8 @@ export default class LockingModel extends Backbone.Model {
       const defaults = _.result(this, 'defaults');
       const isDefault = (defaults[attrName] !== undefined);
       const isInitialDefault = (isDefault && !this.changed);
-      if (isInitialDefault) {
-        this._lockedAttributes[attrName] = !defaults[attrName];
-      }
-
       const isSettingValueForSpecificPlugin = options?.pluginName;
+
       if (!isSettingValueForSpecificPlugin) {
         if (!isInitialDefault) {
           console.error('Must supply a pluginName to change a locked attribute');
@@ -65,7 +62,7 @@ export default class LockingModel extends Backbone.Model {
       }
     }
 
-    if (!Object.keys(newValues)) return this;
+    if (!Object.keys(newValues).length) return this;
 
     super.set(newValues, options);
 
