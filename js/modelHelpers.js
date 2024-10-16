@@ -2,7 +2,7 @@
  * Toggle a className in the _classes attribute of any Backbone.Model
  * @param model {Backbone.Model} Model with a _classes attribute to modify
  * @param className {string} Name or names of class to add/remove to _classes attribute, space separated list
- * @param hasClass {boolean} true to add a class, false to remove
+ * @param hasClass {boolean|null|undefined} true to add a class, false to remove, null or undefined to toggle
  */
 export function toggleModelClass(model, className, hasClass) {
   // split the string of classes into an array of classNames
