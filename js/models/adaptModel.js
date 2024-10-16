@@ -3,6 +3,7 @@ import data from 'core/js/data';
 import ModelEvent from 'core/js/modelEvent';
 import LockingModel from 'core/js/models/lockingModel';
 import logging from 'core/js/logging';
+import { toggleModelClass } from '../modelHelpers';
 
 export default class AdaptModel extends LockingModel {
 
@@ -114,6 +115,16 @@ export default class AdaptModel extends LockingModel {
       'change:_isActive',
       'change:_isVisited'
     ];
+  }
+
+  /**
+   * Toggle a className in the _classes attribute
+   * @param className {string} Name or names of class to add/remove to _classes attribute, space separated list
+   * @param hasClass {boolean} true to add a class, false to remove
+   */
+  toggleClass(className, hasClass) {
+    toggleModelClass(this, className, hasClass);
+    return this;
   }
 
   setupModel() {
