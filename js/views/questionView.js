@@ -49,7 +49,7 @@ class QuestionView extends ComponentView {
   preRender() {
     // Setup listener for _isEnabled
     this.listenTo(this.model, 'change:_isEnabled', this.onEnabledChanged);
-
+    this.listenTo(this.model, 'change:_isSubmitted', this.onSubmittedChanged);
     this.listenTo(this.model, 'question:refresh', this.refresh);
 
     // Checks to see if the question should be reset on revisit
@@ -77,6 +77,11 @@ class QuestionView extends ComponentView {
       this.enableQuestion();
     }
 
+  }
+
+  onSubmittedChanged(model) {
+    // Remove error class, if it exists
+    model.toggleClass('has-error', false);
   }
 
   // Used by the question to disable the question during submit and complete stages
@@ -175,6 +180,7 @@ class QuestionView extends ComponentView {
 
     if (!canSubmit) {
       this.showInstructionError();
+      this.addErrorClass();
       this.onCannotSubmit();
       return;
     }
@@ -238,6 +244,10 @@ class QuestionView extends ComponentView {
 
   showInstructionError() {
     Adapt.trigger('questionView:showInstructionError', this);
+  }
+
+  addErrorClass() {
+    this.model.toggleClass('has-error', true);
   }
 
   // Blank method for question to fill out when the question cannot be submitted
