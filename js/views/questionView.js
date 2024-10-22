@@ -244,8 +244,8 @@ class QuestionView extends ComponentView {
   }
 
   showInstructionError() {
-    Adapt.trigger('questionView:showInstructionError', this);
     this.model.toggleClass('has-error', true);
+    Adapt.trigger('questionView:showInstructionError', this);
   }
 
   // Blank method for question to fill out when the question cannot be submitted
