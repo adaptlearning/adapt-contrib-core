@@ -245,9 +245,6 @@ class QuestionView extends ComponentView {
 
   showInstructionError() {
     Adapt.trigger('questionView:showInstructionError', this);
-  }
-
-  addErrorClass() {
     this.model.toggleClass('has-error', true);
   }
 
