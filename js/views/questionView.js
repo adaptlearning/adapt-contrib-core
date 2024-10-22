@@ -181,7 +181,6 @@ class QuestionView extends ComponentView {
 
     if (!canSubmit) {
       this.showInstructionError();
-      this.addErrorClass();
       this.onCannotSubmit();
       return;
     }
