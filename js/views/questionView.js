@@ -47,10 +47,11 @@ class QuestionView extends ComponentView {
   }
 
   preRender() {
-    // Setup listener for _isEnabled
-    this.listenTo(this.model, 'change:_isEnabled', this.onEnabledChanged);
-    this.listenTo(this.model, 'change:_isSubmitted', this.onSubmittedChanged);
-    this.listenTo(this.model, 'question:refresh', this.refresh);
+    this.listenTo(this.model, {
+      'change:_isEnabled': this.onEnabledChanged,
+      'change:_isSubmitted': this.onSubmittedChanged,
+      'question:refresh': this.refresh
+    });
 
     // Checks to see if the question should be reset on revisit
     if (this.checkIfResetOnRevisit !== QuestionView.prototype.checkIfResetOnRevisit) {
