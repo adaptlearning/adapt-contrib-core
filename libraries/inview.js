@@ -156,6 +156,7 @@
     return locks.includes(name);
   }
   function getMeasurement (element) {
+    if (!element?.getBoundingClientRect) return;
     const offset = element.getBoundingClientRect();
     const height = offset.height;
     const width = offset.width;
