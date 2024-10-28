@@ -47,10 +47,10 @@ class QuestionView extends ComponentView {
   }
 
   preRender() {
-    // Setup listener for _isEnabled
-    this.listenTo(this.model, 'change:_isEnabled', this.onEnabledChanged);
-
-    this.listenTo(this.model, 'question:refresh', this.refresh);
+    this.listenTo(this.model, {
+      'change:_isEnabled': this.onEnabledChanged,
+      'question:refresh': this.refresh
+    });
 
     // Checks to see if the question should be reset on revisit
     if (this.checkIfResetOnRevisit !== QuestionView.prototype.checkIfResetOnRevisit) {
@@ -172,6 +172,8 @@ class QuestionView extends ComponentView {
     // If the question stops the user form submitting - show instruction error
     // and give a blank method, onCannotSubmit to the question
     const canSubmit = this._runModelCompatibleFunction('canSubmit');
+
+    this.model.toggleClass('has-error', !canSubmit);
 
     if (!canSubmit) {
       this.showInstructionError();
