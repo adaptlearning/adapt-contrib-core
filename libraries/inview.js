@@ -48,6 +48,7 @@
       process();
     }
   };
+  $(window).on('resize', wndw.resize);
   // handler functions
   function register(element, data, type) {
     const observer = new IntersectionObserver(entries => {
