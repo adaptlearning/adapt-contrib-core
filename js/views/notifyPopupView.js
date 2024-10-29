@@ -139,6 +139,8 @@ export default class NotifyPopupView extends Backbone.View {
 
     this.$el.addClass('anim-open-before');
     await transitionNextFrame();
+    this.resetNotifySize();
+    await transitionNextFrame();
     this.$el.addClass('anim-open-after');
     await transitionsEnded(this.$('.notify__popup, .notify__shadow'));
   }
