@@ -16,6 +16,8 @@ class ShadowView extends Backbone.View {
 
   initialize() {
     this._isOpen = false;
+    this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
+    this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this.render();
   }
 

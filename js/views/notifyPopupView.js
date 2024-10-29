@@ -27,7 +27,7 @@ export default class NotifyPopupView extends Backbone.View {
   initialize({ notify }) {
     this.notify = notify;
     _.bindAll(this, 'onShadowClicked', 'resetNotifySize', 'onKeyUp');
-    this.disableAnimation = Adapt.config.get('_disableAnimation') || false;
+    this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this.isOpen = false;
     this.hasOpened = false;
