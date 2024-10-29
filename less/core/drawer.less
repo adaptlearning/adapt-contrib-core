@@ -1,7 +1,6 @@
 .drawer {
   position: fixed;
   top: 0;
-  opacity: 0;
   // Update JS to set start point
   // Update animation to be css rather than js
   height: 100%;
@@ -12,12 +11,18 @@
   &.is-position-right {
     left: inherit;
     right: -@drawer-width;
+    &.anim-open-after {
+      right: 0;
+    }
   }
 
   .dir-rtl &:not(.is-position-right),
   &.is-position-left {
     right: inherit;
     left: -@drawer-width;
+    &.anim-open-after {
+      left: 0;
+    }
   }
 
   &__inner {
