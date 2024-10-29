@@ -14,6 +14,9 @@
     &.anim-open-after {
       right: 0;
     }
+    &.anim-close-after {
+      right: -@drawer-width;
+    }
   }
 
   .dir-rtl &:not(.is-position-right),
@@ -22,6 +25,9 @@
     left: -@drawer-width;
     &.anim-open-after {
       left: 0;
+    }
+    &.anim-close-after {
+      left: -@drawer-width;
     }
   }
 
