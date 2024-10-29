@@ -137,11 +137,11 @@ export default class NotifyPopupView extends Backbone.View {
     a11y.scrollDisable('body');
     $('html').addClass('notify');
 
-    this.$el.addClass('anim-open-before');
+    this.$el.addClass('anim-show-before');
     await transitionNextFrame();
     this.resetNotifySize();
     await transitionNextFrame();
-    this.$el.addClass('anim-open-after');
+    this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$('.notify__popup, .notify__shadow'));
   }
 
@@ -189,7 +189,7 @@ export default class NotifyPopupView extends Backbone.View {
   }
 
   async onCloseReady() {
-    this.$el.addClass('anim-close-before');
+    this.$el.addClass('anim-hide-before');
     await transitionNextFrame();
     this.$el.addClass('anim-close-after');
     await transitionsEnded(this.$('.notify__popup, .notify__shadow'));

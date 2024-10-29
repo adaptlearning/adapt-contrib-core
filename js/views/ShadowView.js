@@ -33,23 +33,23 @@ class ShadowView extends Backbone.View {
 
   async showShadow() {
     this._isOpen = true;
-    this.$el.addClass('anim-open-before');
+    this.$el.addClass('anim-show-before');
     await transitionNextFrame();
     this.$el.removeClass('u-display-none');
     await transitionNextFrame();
-    this.$el.addClass('anim-open-after');
+    this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
   }
 
   async hideShadow() {
     this._isOpen = false;
-    this.$el.addClass('anim-close-before');
+    this.$el.addClass('anim-hide-before');
     await transitionNextFrame();
-    this.$el.addClass('anim-close-after');
+    this.$el.addClass('anim-hide-after');
     await transitionsEnded(this.$el);
     this.$el.addClass('u-display-none');
     await transitionNextFrame();
-    this.$el.removeClass('anim-open-before anim-open-after anim-close-before anim-close-after');
+    this.$el.removeClass('anim-open-before anim-open-after anim-hide-before anim-hide-after');
   }
 
 }

@@ -166,9 +166,9 @@ class DrawerView extends Backbone.View {
     $('.js-nav-drawer-btn').attr('aria-expanded', true);
     Adapt.trigger('drawer:opened');
 
-    this.$el.addClass('anim-open-before');
+    this.$el.addClass('anim-show-before');
     await transitionNextFrame();
-    this.$el.addClass('anim-open-after');
+    this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
 
   }
@@ -193,12 +193,12 @@ class DrawerView extends Backbone.View {
     this._isCustomViewVisible = false;
     shadow.hide();
 
-    this.$el.addClass('anim-close-before');
+    this.$el.addClass('anim-hide-before');
     await transitionNextFrame();
-    this.$el.addClass('anim-close-after');
+    this.$el.addClass('anim-hide-after');
     await transitionsEnded(this.$el);
 
-    this.$el.removeClass('anim-open-before anim-open-after anim-close-before anim-close-after');
+    this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
 
     a11y.popupClosed($toElement);
     this._isVisible = false;
