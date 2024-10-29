@@ -1,12 +1,15 @@
 .notify {
-  position: relative;
   z-index: 100;
 
   &__popup {
     position: fixed;
     top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    height: fit-content;
     width: 100%;
-    visibility: hidden;
+    overflow-y: hidden;
+    max-height: 100vh;
     z-index: 100;
     background-color: @background-inverted;
   }
@@ -45,7 +48,7 @@
         .notify__text {
           width: 60%;
         }
-    
+
         .notify__image-container {
           width: 40%;
         }

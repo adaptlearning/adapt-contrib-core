@@ -4,6 +4,7 @@ import data from 'core/js/data';
 import a11y from 'core/js/a11y';
 import AdaptView from 'core/js/views/adaptView';
 import Backbone from 'backbone';
+import { transitionNextFrame, transitionsEnded } from '../transitions';
 
 export default class NotifyPopupView extends Backbone.View {
 
@@ -12,19 +13,14 @@ export default class NotifyPopupView extends Backbone.View {
   }
 
   attributes() {
-    return Object.assign({
-      role: 'dialog',
-      'aria-labelledby': 'notify-heading',
-      'aria-modal': 'true'
-    }, this.model.get('_attributes'));
+    return this.model.get('_attributes');
   }
 
   events() {
     return {
       'click .js-notify-btn-alert': 'onAlertButtonClicked',
       'click .js-notify-btn-prompt': 'onPromptButtonClicked',
-      'click .js-notify-close-btn': 'onCloseButtonClicked',
-      'click .js-notify-shadow-click': 'onShadowClicked'
+      'click .js-notify-close-btn': 'onCloseButtonClicked'
     };
   }
 
@@ -32,19 +28,20 @@ export default class NotifyPopupView extends Backbone.View {
     this.notify = notify;
     _.bindAll(this, 'resetNotifySize', 'onKeyUp');
     this.disableAnimation = Adapt.config.get('_disableAnimation') || false;
+    this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this.isOpen = false;
     this.hasOpened = false;
     this.setupEventListeners();
     this.render();
+    this.$('.notify__popup')[0].addEventListener('click', this.onShadowClicked.bind(this), { capture: true });
   }
 
   setupEventListeners() {
     this.listenTo(Adapt, {
       remove: this.closeNotify,
-      'notify:resize': this.resetNotifySize,
+      'notify:resize device:resize': this.resetNotifySize,
       'notify:cancel': this.cancelNotify,
-      'notify:close': this.closeNotify,
-      'device:resize': this.resetNotifySize
+      'notify:close': this.closeNotify
     });
     this.setupEscapeKey();
   }
@@ -62,14 +59,7 @@ export default class NotifyPopupView extends Backbone.View {
   render() {
     const data = this.model.toJSON();
     const template = Handlebars.templates.notifyPopup;
-    // hide notify container
-    this.$el.css('visibility', 'hidden');
-    // attach popup + shadow
     this.$el.html(template(data)).appendTo('.notify__popup-container');
-    // hide popup
-    this.$('.notify__popup').css('visibility', 'hidden');
-    // show notify container
-    this.$el.css('visibility', 'visible');
     this.showNotify();
     return this;
   }
@@ -95,6 +85,11 @@ export default class NotifyPopupView extends Backbone.View {
   }
 
   onShadowClicked(event) {
+    const dialog = this.$('.notify__popup')[0];
+    const rect = dialog.getBoundingClientRect();
+    const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+      rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+    if (isInDialog) return;
     event.preventDefault();
     if (this.model.get('_closeOnShadowClick') === false) return;
     this.cancelNotify();
@@ -117,9 +112,7 @@ export default class NotifyPopupView extends Backbone.View {
     const notifyHeight = this.$('.notify__popup-inner').outerHeight();
     const isFullWindow = (notifyHeight >= windowHeight);
     this.$('.notify__popup').css({
-      height: isFullWindow ? '100%' : 'auto',
-      top: isFullWindow ? 0 : '',
-      'margin-top': isFullWindow ? '' : -(notifyHeight / 2),
+      height: isFullWindow ? '100%' : notifyHeight,
       'overflow-y': isFullWindow ? 'scroll' : '',
       '-webkit-overflow-scrolling': isFullWindow ? 'touch' : ''
     });
@@ -136,42 +129,17 @@ export default class NotifyPopupView extends Backbone.View {
     this.$el.imageready(this.onLoaded.bind(this));
   }
 
-  onLoaded() {
-    if (this.disableAnimation) {
-      this.$('.notify__shadow').css('display', 'block');
-    } else {
-      this.$('.notify__shadow').velocity({ opacity: 0 }, { duration: 0 }).velocity({ opacity: 1 }, {
-        duration: 400,
-        begin: () => {
-          this.$('.notify__shadow').css('display', 'block');
-        }
-      });
-    }
-    this.resizeNotify();
-    if (this.disableAnimation) {
-      this.$('.notify__popup').css('visibility', 'visible');
-      this.onOpened();
-    } else {
-      this.$('.notify__popup').velocity({ opacity: 0 }, { duration: 0 }).velocity({ opacity: 1 }, {
-        duration: 400,
-        begin: () => {
-          // Make sure to make the notify visible and then set
-          // focus, disabled scroll and manage tabs
-          this.$('.notify__popup').css('visibility', 'visible');
-          this.onOpened();
-        }
-      });
-    }
-  }
-
-  onOpened() {
+  async onLoaded() {
     this.hasOpened = true;
     // Allows popup manager to control focus
-    a11y.popupOpened(this.$el);
+    a11y.popupOpened(this.$('.notify__popup'));
     a11y.scrollDisable('body');
     $('html').addClass('notify');
-    // Set focus to first accessible element
-    a11y.focusFirst(this.$('.notify__popup'), { defer: false });
+
+    this.$el.addClass('anim-open-before');
+    await transitionNextFrame();
+    this.$el.addClass('anim-open-after');
+    await transitionsEnded(this.$('.notify__popup, .notify__shadow'));
   }
 
   async addSubView() {
@@ -217,26 +185,14 @@ export default class NotifyPopupView extends Backbone.View {
     });
   }
 
-  onCloseReady() {
-    if (this.disableAnimation) {
-      this.$('.notify__popup').css('visibility', 'hidden');
-      this.$el.css('visibility', 'hidden');
-      this.remove();
-    } else {
-      this.$('.notify__popup').velocity({ opacity: 0 }, {
-        duration: 400,
-        complete: () => {
-          this.$('.notify__popup').css('visibility', 'hidden');
-        }
-      });
-      this.$('.notify__shadow').velocity({ opacity: 0 }, {
-        duration: 400,
-        complete: () => {
-          this.$el.css('visibility', 'hidden');
-          this.remove();
-        }
-      });
-    }
+  async onCloseReady() {
+    this.$el.addClass('anim-close-before');
+    await transitionNextFrame();
+    this.$el.addClass('anim-close-after');
+    await transitionsEnded(this.$('.notify__popup, .notify__shadow'));
+
+    this.remove();
+
     a11y.scrollEnable('body');
     $('html').removeClass('notify');
     // Return focus to previous active element

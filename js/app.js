@@ -22,6 +22,7 @@ import 'core/js/navigation';
 import 'core/js/startController';
 import 'core/js/DOMElementModifications';
 import 'core/js/tooltips';
+import 'core/js/shadow';
 import 'plugins';
 
 $('body').append(Handlebars.templates.loading());

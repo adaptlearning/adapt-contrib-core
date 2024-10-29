@@ -1,6 +1,14 @@
 import logging from 'core/js/logging';
 
 /**
+ * Wait for one requestAnimationFrame to allow classes to settle
+ * @returns {Promise}
+ */
+export async function transitionNextFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+/**
  * Handler to await completion of active `CSSTransitions`.
  * An optional `transition-property` to await can be specified, else all properties will be evaluated.
  * @param {jQuery} $element
