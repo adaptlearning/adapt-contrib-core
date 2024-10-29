@@ -26,14 +26,15 @@ export default class NotifyPopupView extends Backbone.View {
 
   initialize({ notify }) {
     this.notify = notify;
-    _.bindAll(this, 'resetNotifySize', 'onKeyUp');
+    _.bindAll(this, 'onShadowClicked', 'resetNotifySize', 'onKeyUp');
     this.disableAnimation = Adapt.config.get('_disableAnimation') || false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this.isOpen = false;
     this.hasOpened = false;
     this.setupEventListeners();
     this.render();
-    this.$('.notify__popup')[0].addEventListener('click', this.onShadowClicked.bind(this), { capture: true });
+    const dialog = this.$('.notify__popup')[0];
+    dialog.addEventListener('click', this.onShadowClicked, { capture: true });
   }
 
   setupEventListeners() {

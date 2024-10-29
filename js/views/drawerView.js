@@ -38,6 +38,7 @@ class DrawerView extends Backbone.View {
   }
 
   initialize() {
+    _.bindAll(this, 'onShadowClicked');
     this._isVisible = false;
     this.disableAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
@@ -50,7 +51,7 @@ class DrawerView extends Backbone.View {
   setupEventListeners() {
     this.onKeyUp = this.onKeyUp.bind(this);
     $(window).on('keyup', this.onKeyUp);
-    this.el.addEventListener('click', this.onShadowClicked.bind(this), { capture: true });
+    this.el.addEventListener('click', this.onShadowClicked, { capture: true });
   }
 
   onKeyUp(event) {
