@@ -43,7 +43,8 @@ class DrawerView extends Backbone.View {
     this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this._globalDrawerPosition = Adapt.config.get('_drawer')?._position ?? 'auto';
-    this.drawerDuration = Adapt.config.get('_drawer')?._duration ?? 400;
+    const drawerDuration = Adapt.config.get('_drawer')?._duration ?? 400;
+    document.documentElement.style.setProperty('--drawerDuration', `${drawerDuration}ms`);
     this.setupEventListeners();
     this.render();
   }
