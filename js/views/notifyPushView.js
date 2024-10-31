@@ -2,6 +2,10 @@ import Adapt from 'core/js/adapt';
 
 export default class NotifyPushView extends Backbone.View {
 
+  tagName() {
+    return 'dialog';
+  }
+
   className() {
     const classes = [
       'notify-push',
@@ -13,7 +17,6 @@ export default class NotifyPushView extends Backbone.View {
 
   attributes() {
     return {
-      role: 'dialog',
       'aria-labelledby': 'notify-push-heading',
       'aria-modal': 'false'
     };

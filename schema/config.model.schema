@@ -244,90 +244,6 @@
       "isSetting": false,
       "title": "",
       "properties": {
-        "_showEasing": {
-          "type": "string",
-          "required": true,
-          "default": "easeOutQuart",
-          "title": "Show Easing",
-          "inputType": {
-            "type": "Select",
-            "options": [
-              "easeInSine",
-              "easeOutSine",
-              "easeInOutSine",
-              "easeInQuad",
-              "easeOutQuad",
-              "easeInOutQuad",
-              "easeInCubic",
-              "easeOutCubic",
-              "easeInOutCubic",
-              "easeInQuart",
-              "easeOutQuart",
-              "easeInOutQuart",
-              "easeInQuint",
-              "easeOutQuint",
-              "easeInOutQuint",
-              "easeInExpo",
-              "easeOutExpo",
-              "easeInOutExpo",
-              "easeInCirc",
-              "easeOutCirc",
-              "easeInOutCirc",
-              "easeInBack",
-              "easeOutBack",
-              "easeInOutBack",
-              "easeInElastic",
-              "easeOutElastic",
-              "easeInOutElastic",
-              "easeInBounce",
-              "easeOutBounce",
-              "easeInOutBounce"
-            ]
-          },
-          "validators": ["required"]
-        },
-        "_hideEasing": {
-          "type": "string",
-          "required": true,
-          "default": "easeInQuart",
-          "title": "Hide Easing",
-          "inputType": {
-            "type": "Select",
-            "options": [
-              "easeInSine",
-              "easeOutSine",
-              "easeInOutSine",
-              "easeInQuad",
-              "easeOutQuad",
-              "easeInOutQuad",
-              "easeInCubic",
-              "easeOutCubic",
-              "easeInOutCubic",
-              "easeInQuart",
-              "easeOutQuart",
-              "easeInOutQuart",
-              "easeInQuint",
-              "easeOutQuint",
-              "easeInOutQuint",
-              "easeInExpo",
-              "easeOutExpo",
-              "easeInOutExpo",
-              "easeInCirc",
-              "easeOutCirc",
-              "easeInOutCirc",
-              "easeInBack",
-              "easeOutBack",
-              "easeInOutBack",
-              "easeInElastic",
-              "easeOutElastic",
-              "easeInOutElastic",
-              "easeInBounce",
-              "easeOutBounce",
-              "easeInOutBounce"
-            ]
-          },
-          "validators": ["required"]
-        },
         "_duration": {
           "type": "number",
           "required": true,
@@ -358,6 +274,21 @@
           "inputType": "Text",
           "validators": [],
           "help": "CSS class name to be applied to the drawer sidebar icon."
+        }
+      }
+    },
+    "_notify": {
+      "type": "object",
+      "isSetting": false,
+      "title": "",
+      "properties": {
+        "_duration": {
+          "type": "number",
+          "required": true,
+          "default": 400,
+          "title": "Duration",
+          "inputType": "Number",
+          "validators": ["required", "number"]
         }
       }
     },
