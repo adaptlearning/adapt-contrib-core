@@ -7,6 +7,7 @@ import {
   transitionNextFrame,
   transitionsEnded
 } from '../transitions';
+import logging from '../logging';
 
 class DrawerView extends Backbone.View {
 
@@ -42,11 +43,38 @@ class DrawerView extends Backbone.View {
     this._isVisible = false;
     this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
-    this._globalDrawerPosition = Adapt.config.get('_drawer')?._position ?? 'auto';
-    const drawerDuration = Adapt.config.get('_drawer')?._duration ?? 400;
-    document.documentElement.style.setProperty('--adapt-drawer-duration', `${drawerDuration}ms`);
+    this._globalDrawerPosition = this.config?._position ?? 'auto';
+    const drawerDuration = this.config?._duration ?? 400;
+    let showEasing = this.config?._showEasing || 'easeOutQuart';
+    let hideEasing = this.config?._hideEasing || 'easeInQuart';
+    showEasing = showEasing.toLowerCase();
+    hideEasing = hideEasing.toLowerCase();
+    if (showEasing.includes('elastic')) {
+      logging.removed('drawer show elastic easing is replaced with quint');
+      showEasing = showEasing.replace('elastic', 'quint');
+    }
+    if (showEasing.includes('bounce')) {
+      logging.removed('drawer show bounce easing is replaced with back');
+      showEasing = showEasing.replace('bounce', 'back');
+    }
+    if (hideEasing.includes('elastic')) {
+      logging.removed('drawer hide elastic easing is replaced with quint');
+      hideEasing = hideEasing.replace('elastic', 'quint');
+    }
+    if (hideEasing.includes('bounce')) {
+      logging.removed('drawer hide bounce easing is replaced with back');
+      hideEasing = hideEasing.replace('bounce', 'back');
+    }
+    const documentElementStyle = document.documentElement.style;
+    documentElementStyle.setProperty('--adapt-drawer-duration', `${drawerDuration}ms`);
+    documentElementStyle.setProperty('--adapt-drawer-show-easing', `var(--adapt-cubic-bezier-${showEasing})`);
+    documentElementStyle.setProperty('--adapt-drawer-hide-easing', `var(--adapt-cubic-bezier-${hideEasing})`);
     this.setupEventListeners();
     this.render();
+  }
+
+  get config () {
+    return Adapt.config.get('_drawer');
   }
 
   setupEventListeners() {
