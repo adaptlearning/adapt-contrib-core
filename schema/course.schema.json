@@ -13,7 +13,6 @@
         },
         "heroImage": {
           "type": "string",
-          "isObjectId": true,
           "title": "Preview image",
           "description": "The image that will be shown in the dashboard for this course",
           "_adapt": {
