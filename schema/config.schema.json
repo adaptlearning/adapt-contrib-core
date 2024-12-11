@@ -317,6 +317,21 @@
         "isSetting": false
       }
     },
+    "_notify": {
+      "type": "object",
+      "title": "Notify popup animation",
+      "default": {},
+      "properties": {
+        "_duration": {
+          "type": "number",
+          "title": "Duration",
+          "default": 400
+        }
+      },
+      "_adapt": {
+        "isSetting": false
+      }
+    },
     "_generateSourcemap": {
       "type": "boolean",
       "title": "Generate source maps",

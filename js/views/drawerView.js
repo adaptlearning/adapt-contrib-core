@@ -1,9 +1,19 @@
 import Adapt from 'core/js/adapt';
+import shadow from '../shadow';
 import a11y from 'core/js/a11y';
 import DrawerItemView from 'core/js/views/drawerItemView';
 import Backbone from 'backbone';
+import {
+  transitionNextFrame,
+  transitionsEnded
+} from '../transitions';
+import logging from '../logging';
 
 class DrawerView extends Backbone.View {
+
+  tagName() {
+    return 'dialog';
+  }
 
   className() {
     return [
@@ -14,7 +24,6 @@ class DrawerView extends Backbone.View {
 
   attributes() {
     return {
-      role: 'dialog',
       'aria-modal': 'true',
       'aria-labelledby': 'drawer-heading',
       'aria-hidden': 'true',
@@ -30,17 +39,48 @@ class DrawerView extends Backbone.View {
   }
 
   initialize() {
+    _.bindAll(this, 'onShadowClicked');
     this._isVisible = false;
-    this.disableAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
-    this._globalDrawerPosition = Adapt.config.get('_drawer')?._position ?? 'auto';
-    this.drawerDuration = Adapt.config.get('_drawer')?._duration ?? 400;
+    this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
+    this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
+    this._globalDrawerPosition = this.config?._position ?? 'auto';
+    const drawerDuration = this.config?._duration ?? 400;
+    let showEasing = this.config?._showEasing || 'easeOutQuart';
+    let hideEasing = this.config?._hideEasing || 'easeInQuart';
+    showEasing = showEasing.toLowerCase();
+    hideEasing = hideEasing.toLowerCase();
+    if (showEasing.includes('elastic')) {
+      logging.removed('drawer show elastic easing is replaced with quint');
+      showEasing = showEasing.replace('elastic', 'quint');
+    }
+    if (showEasing.includes('bounce')) {
+      logging.removed('drawer show bounce easing is replaced with back');
+      showEasing = showEasing.replace('bounce', 'back');
+    }
+    if (hideEasing.includes('elastic')) {
+      logging.removed('drawer hide elastic easing is replaced with quint');
+      hideEasing = hideEasing.replace('elastic', 'quint');
+    }
+    if (hideEasing.includes('bounce')) {
+      logging.removed('drawer hide bounce easing is replaced with back');
+      hideEasing = hideEasing.replace('bounce', 'back');
+    }
+    const documentElementStyle = document.documentElement.style;
+    documentElementStyle.setProperty('--adapt-drawer-duration', `${drawerDuration}ms`);
+    documentElementStyle.setProperty('--adapt-drawer-show-easing', `var(--adapt-cubic-bezier-${showEasing})`);
+    documentElementStyle.setProperty('--adapt-drawer-hide-easing', `var(--adapt-cubic-bezier-${hideEasing})`);
     this.setupEventListeners();
     this.render();
+  }
+
+  get config () {
+    return Adapt.config.get('_drawer');
   }
 
   setupEventListeners() {
     this.onKeyUp = this.onKeyUp.bind(this);
     $(window).on('keyup', this.onKeyUp);
+    this.el.addEventListener('click', this.onShadowClicked, { capture: true });
   }
 
   onKeyUp(event) {
@@ -49,18 +89,24 @@ class DrawerView extends Backbone.View {
     this.hideDrawer();
   }
 
+  onShadowClicked(event) {
+    const dialog = this.el;
+    const rect = dialog.getBoundingClientRect();
+    const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+      rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+    if (isInDialog) return;
+    event.preventDefault();
+    this.hideDrawer();
+  }
+
   render() {
     const template = Handlebars.templates.drawer;
-    $(this.el).html(template({ _globals: Adapt.course.get('_globals') })).prependTo('body');
-    const shadowTemplate = Handlebars.templates.shadow;
-    $(shadowTemplate()).prependTo('body');
+    this.$el.html(template({ _globals: Adapt.course.get('_globals') }));
     _.defer(this.postRender.bind(this));
     return this;
   }
 
   postRender() {
-    this.$('a, button, input, select, textarea').attr('tabindex', -1);
-
     this.checkIfDrawerIsAvailable();
   }
 
@@ -74,7 +120,6 @@ class DrawerView extends Backbone.View {
       .removeClass(`is-position-${this.drawerPosition}`)
       .addClass(`is-position-${position}`);
     this.drawerPosition = position;
-    this.drawerAnimationDir = (position === 'auto') ? (isRTL ? 'left' : 'right') : position;
   }
 
   openCustomView(view, hasBackButton = true, position) {
@@ -109,7 +154,8 @@ class DrawerView extends Backbone.View {
     return (this._isVisible && this._isCustomViewVisible === false);
   }
 
-  showDrawer(emptyDrawer, position = null) {
+  async showDrawer(emptyDrawer, position = null) {
+    shadow.show();
     this.setDrawerPosition(position);
     this.$el
       .removeClass('u-display-none')
@@ -121,9 +167,6 @@ class DrawerView extends Backbone.View {
       a11y.scrollDisable('body');
       this._isVisible = true;
     }
-
-    // Sets tab index to 0 for all tabbable elements in Drawer
-    this.$('a, button, input, select, textarea').attr('tabindex', 0);
 
     if (emptyDrawer) {
       this.$('.drawer__back').addClass('u-display-none');
@@ -148,34 +191,15 @@ class DrawerView extends Backbone.View {
       Adapt.trigger('drawer:openedCustomView');
     }
 
-    $('.js-shadow').removeClass('u-display-none');
     $('.js-drawer-holder').scrollTop(0);
-    const direction = {};
-    direction[this.drawerAnimationDir] = 0;
+    $('.js-nav-drawer-btn').attr('aria-expanded', true);
+    Adapt.trigger('drawer:opened');
 
-    const complete = () => {
-      this.addShadowEvent();
-      $('.js-nav-drawer-btn').attr('aria-expanded', true);
-      Adapt.trigger('drawer:opened');
-      // focus on first tabbable element in drawer
-      a11y.focusFirst(this.$el, { defer: true });
-    };
+    this.$el.addClass('anim-show-before');
+    await transitionNextFrame();
+    this.$el.addClass('anim-show-after');
+    await transitionsEnded(this.$el);
 
-    // delay drawer animation until after background fadeout animation is complete
-    if (this.disableAnimation) {
-      this.$el.css(direction);
-      complete();
-    } else {
-      const easing = Adapt.config.get('_drawer')?._showEasing || 'easeOutQuart';
-      this.$el.velocity(direction, this.drawerDuration, easing);
-
-      $('.js-shadow').velocity({ opacity: 1 }, {
-        duration: this.drawerDuration,
-        begin: () => {
-          complete();
-        }
-      });
-    }
   }
 
   emptyDrawer() {
@@ -191,56 +215,34 @@ class DrawerView extends Backbone.View {
     this.collection.forEach(model => new DrawerItemView({ model }));
   }
 
-  hideDrawer($toElement) {
+  async hideDrawer($toElement) {
     if (!this._isVisible) return;
     this._useMenuPosition = false;
-    const direction = {};
+
+    this._isCustomViewVisible = false;
+    shadow.hide();
+
+    this.$el.addClass('anim-hide-before');
+    await transitionNextFrame();
+    this.$el.addClass('anim-hide-after');
+    await transitionsEnded(this.$el);
+
+    this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
+
     a11y.popupClosed($toElement);
     this._isVisible = false;
     a11y.scrollEnable('body');
-    direction[this.drawerAnimationDir] = -this.$el.width();
 
-    const complete = () => {
-      this.$el
-        .removeAttr('style')
-        .addClass('u-display-none')
-        .attr('aria-hidden', 'true')
-        .attr('aria-expanded', 'false');
-      this.$('.js-drawer-holder').removeAttr('role');
-      this._customView = null;
-      $('.js-nav-drawer-btn').attr('aria-expanded', false);
-      Adapt.trigger('drawer:closed');
-      this.setDrawerPosition(this._globalDrawerPosition);
-    };
-
-    if (this.disableAnimation) {
-      this.$el.css(direction);
-      $('.js-shadow').addClass('u-display-none');
-      complete();
-    } else {
-      const easing = Adapt.config.get('_drawer')?._hideEasing || 'easeInQuart';
-      this.$el.velocity(direction, this.drawerDuration, easing, () => {
-        complete();
-      });
-
-      $('.js-shadow').velocity({ opacity: 0 }, {
-        duration: this.drawerDuration,
-        complete() {
-          $('.js-shadow').addClass('u-display-none');
-        }
-      });
-    }
-
-    this._isCustomViewVisible = false;
-    this.removeShadowEvent();
-  }
-
-  addShadowEvent() {
-    $('.js-shadow').one('click touchstart', () => this.hideDrawer());
-  }
-
-  removeShadowEvent() {
-    $('.js-shadow').off('click touchstart');
+    this.$el
+      .removeAttr('style')
+      .addClass('u-display-none')
+      .attr('aria-hidden', 'true')
+      .attr('aria-expanded', 'false');
+    this.$('.js-drawer-holder').removeAttr('role');
+    this._customView = null;
+    $('.js-nav-drawer-btn').attr('aria-expanded', false);
+    Adapt.trigger('drawer:closed');
+    this.setDrawerPosition(this._globalDrawerPosition);
   }
 
   remove() {
@@ -249,7 +251,6 @@ class DrawerView extends Backbone.View {
     $(window).off('keyup', this.onKeyUp);
     Adapt.trigger('drawer:empty');
     this.collection.reset();
-    $('.js-shadow').remove();
   }
 
 }
