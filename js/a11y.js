@@ -442,9 +442,7 @@ class A11y extends Backbone.Controller {
     if (!isInDOM) return false;
 
     const isOutsideOpenPopup = this.isPopupOpen && !this.popupStack?.lastItem[0]?.contains($element[0]);
-    if (isOutsideOpenPopup) {
-      return null;
-    }
+    if (isOutsideOpenPopup) return null;
 
     const $branch = checkParents
       ? $element.add($element.parents())
