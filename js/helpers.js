@@ -318,7 +318,7 @@ const helpers = {
    */
   a11y_wrap_focus() {
     const cfg = Adapt.config.get('_accessibility');
-    if (cfg._isPopupWrapFocusEnabled === false) return '';
+    if (cfg._options?._isPopupWrapFocusEnabled === false) return '';
     return new Handlebars.SafeString('<a class="a11y-focusguard a11y-ignore a11y-ignore-focus" tabindex="0" role="presentation">&nbsp;</a>');
   },
 
