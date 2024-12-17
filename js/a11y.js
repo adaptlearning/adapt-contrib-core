@@ -438,12 +438,17 @@ class A11y extends Backbone.Controller {
     const config = this.config;
     $element = $($element).first();
 
+    const isInDOM = Boolean($element.parents('body').length);
+    if (!isInDOM) return false;
+
+    const isOutsideOpenPopup = this.isPopupOpen && !this.popupStack?.lastItem[0]?.contains($element[0]);
+    if (isOutsideOpenPopup) {
+      return null;
+    }
+
     const $branch = checkParents
       ? $element.add($element.parents())
       : $element;
-
-    const isInDOM = Boolean($element.parents('body').length);
-    if (!isInDOM) return false;
 
     const isNotVisible = $branch.toArray().some(item => {
       const style = window.getComputedStyle(item);
