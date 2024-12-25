@@ -16,7 +16,7 @@
     "title": {
       "type": "string",
       "required": true,
-      "default": "New Course Title",
+      "default": "Titlul cursului",
       "inputType": "Text",
       "validators": [
         "required"
