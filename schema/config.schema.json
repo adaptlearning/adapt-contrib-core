@@ -5,71 +5,71 @@
   "properties": {
     "_type": {
       "type": "string",
-      "title": "Type",
+      "title": "Tip",
       "default": "config"
     },
     "_extensions": {
       "type": "object",
-      "title": "Extensions",
+      "title": "Extensii",
       "default": {}
     },
     "_enabledPlugins": {
       "type": "array",
-      "title": "Enabled plugins",
+      "title": "Pluginuri activate",
       "default": []
     },
     "_theme": {
       "type": "string",
-      "title": "Theme",
+      "title": "Temă",
       "default": "adapt-contrib-vanilla"
     },
     "_menu": {
       "type": "string",
-      "title": "Menu",
+      "title": "Meniu",
       "default": "adapt-contrib-boxMenu"
     },
     "_courseId": {
       "type": "string",
       "isObjectId": true,
-      "title": "Course id"
+      "title": "ID-ul cursului"
     },
     "_completionCriteria": {
       "type": "object",
-      "title": "Completion criteria",
+      "title": "Criterii de completare",
       "default": {},
       "properties": {
         "_requireContentCompleted": {
           "type": "boolean",
-          "title": "Require all course content to be completed",
+          "title": "Solicitați finalizarea întregului conținut al cursului",
           "default": true
         },
         "_requireAssessmentCompleted": {
           "type": "boolean",
-          "title": "Require all assessments to be completed",
+          "title": "Solicitați finalizarea tuturor evaluărilor",
           "default": false
         },
         "_submitOnEveryAssessmentAttempt": {
           "type": "boolean",
-          "title": "Submit completion on every assessment attempt",
-          "description": "If enabled and the course completion criteria is met, the completion status will be reported every time the assessment is completed (regardless of whether the user passes or fails)",
+          "title": "Trimiteți finalizarea la fiecare încercare de evaluare",
+          "description": "Dacă este activat și criteriile de finalizare a cursului sunt îndeplinite, starea de finalizare va fi raportată de fiecare dată când evaluarea este finalizată (indiferent dacă utilizatorul promovează sau nu trece)",
           "default": false
         },
         "_shouldSubmitScore": {
           "type": "boolean",
-          "title": "Submit score to LMS",
-          "description": "If enabled, the score attained in any assessment attempt will be reported (regardless of whether the user passes or fails)",
+          "title": "Trimiteți scorul la LMS",
+          "description": "Dacă este activat, scorul obținut în orice încercare de evaluare va fi raportat (indiferent dacă utilizatorul trece sau nu trece)",
           "default": false
         }
       }
     },
     "_defaultLanguage": {
       "type": "string",
-      "title": "Default language code",
+      "title": "Cod de limbă implicit",
       "default": "en"
     },
     "_defaultDirection": {
       "type": "string",
-      "title": "Default text direction",
+      "title": "Direcția implicită a textului",
       "default": "ltr",
       "enum": [
         "ltr",
@@ -79,78 +79,78 @@
     },
     "_accessibility": {
       "type": "object",
-      "title": "Accessibility",
+      "title": "Accesibilitate",
       "default": {},
       "properties": {
         "_isEnabled": {
           "type": "boolean",
-          "title": "Enable accessibility support",
+          "title": "Activați asistența pentru accesibilitate",
           "default": true
         },
         "_isSkipNavigationEnabled": {
           "type": "boolean",
-          "title": "Add link to skip navigation",
-          "description": "Adds a link to the start of the page to allow assistive technology users to skip over the navigation and straight into to the page content",
+          "title": "Adăugați link pentru a sări peste navigare",
+          "description": "Adaugă un link la începutul paginii pentru a permite utilizatorilor de tehnologie de asistență să sară peste navigare și direct la conținutul paginii",
           "default": true
         },
         "_ariaLevels": {
           "type": "object",
-          "title": "Default ARIA levels",
-          "description": "Defines what value to assign to the aria-level attribute for the various elements of Adapt",
+          "title": "Niveluri ARIA implicite",
+          "description": "Definește ce valoare să atribuie atributului aria-level pentru diferitele elemente",
           "default": {},
           "properties": {
             "_menu": {
               "type": "string",
-              "title": "Menu",
+              "title": "Meniu",
               "default": "1"
             },
             "_menuGroup": {
               "type": "string",
-              "title": "Menu group",
+              "title": "Grup de meniu",
               "default": "@menu+1"
             },
             "_menuItem": {
               "type": "string",
-              "title": "Menu item",
-              "description": "This will need to be changed to 3 if menu groups are being used and A11Y support is required",
+              "title": "Element de meniu",
+              "description": "Acest lucru va trebui schimbat la 3 dacă sunt utilizate grupuri de meniu și este necesar suport A11Y",
               "default": "@menu+1"
             },
             "_page": {
               "type": "string",
-              "title": "Page",
+              "title": "Pagină",
               "default": "1"
             },
             "_article": {
               "type": "string",
-              "title": "Article",
+              "title": "Articol",
               "default": "@page+1"
             },
             "_block": {
               "type": "string",
-              "title": "Block",
+              "title": "Secțiune",
               "default": "@article+1"
             },
             "_component": {
               "type": "string",
-              "title": "Component",
+              "title": "Componentă",
               "default": "@block+1"
             },
             "_componentItem": {
               "type": "string",
-              "title": "Component item",
+              "title": "Element component",
               "default": "@component+1"
             },
             "_notify": {
               "type": "string",
-              "title": "Notify popup title",
+              "title": "Notificați titlul ferestrei pop-up",
               "default": "1"
             }
           }
         },
         "_options": {
           "type": "object",
-          "title": "Advanced options",
-          "description": "Optional object that can be used to customize the accessibility behaviour",
+          "title": "Opțiuni avansate",
+          "description": "Obiect opțional care poate fi utilizat pentru a personaliza comportamentul de accesibilitate",
           "default": {},
           "_backboneForms": {
             "type": "CodeEditor",
@@ -161,8 +161,8 @@
     },
     "_fixes": {
       "type": "object",
-      "title": "Miscellaneous fixes",
-      "description": "Optional object that can be used to customize the application of fixes",
+      "title": "Diverse remedieri",
+      "description": "Obiect opțional care poate fi utilizat pentru a personaliza aplicarea remedierilor",
       "default": {
         "_imgLazyLoad": true
       },
@@ -173,38 +173,38 @@
     },
     "screenSize": {
       "type": "object",
-      "title": "Device breakpoints",
+      "title": "Puncte de întrerupere a dispozitivului",
       "default": {},
       "properties": {
         "small": {
           "type": "number",
-          "title": "Small",
-          "description": "Pixel width for the start of the small breakpoint, e.g. cellphones",
+          "title": "Mic",
+          "description": "Lățimea pixelilor pentru începutul micului punct de întrerupere, de exemplu, telefoane mobile",
           "default": 0
         },
         "medium": {
           "type": "number",
-          "title": "Medium",
-          "description": "Pixel width for the start of the medium breakpoint, e.g. tablet devices",
+          "title": "Mediu",
+          "description": "Lățimea pixelilor pentru începutul micului punct de întrerupere, de exemplu, telefoane mobile",
           "default": 720
         },
         "large": {
           "type": "number",
-          "title": "Large",
-          "description": "Pixel width for the start of the large breakpoint, e.g. laptop/desktop computers",
+          "title": "Mare",
+          "description": "Lățimea pixelilor pentru începutul micului punct de întrerupere, de exemplu, telefoane mobile",
           "default": 960
         },
         "xlarge": {
           "type": "number",
-          "title": "Extra Large",
-          "description": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers",
+          "title": "Foarte mare",
+          "description": "Lățimea pixelilor pentru începutul micului punct de întrerupere, de exemplu, telefoane mobile",
           "default": 1280
         }
       }
     },
     "_questionWeight": {
       "type": "number",
-      "title": "Default question weight",
+      "title": "Valoarea implicită a întrebării",
       "default": 1,
       "_adapt": {
         "isSetting": true
@@ -212,12 +212,12 @@
     },
     "_drawer": {
       "type": "object",
-      "title": "Drawer animation",
+      "title": "Animație meniu",
       "default": {},
       "properties": {
         "_showEasing": {
           "type": "string",
-          "title": "Opening easing function",
+          "title": "Funcția de deschidere ușoară",
           "default": "easeOutQuart",
           "enum": [
             "easeInSine",
@@ -255,7 +255,7 @@
         },
         "_hideEasing": {
           "type": "string",
-          "title": "Closing easing function",
+          "title": "Funcția de închidere ușoară",
           "default": "easeInQuart",
           "enum": [
             "easeInSine",
@@ -293,23 +293,23 @@
         },
         "_duration": {
           "type": "number",
-          "title": "Duration",
+          "title": "Durată",
           "default": 400
         },
         "_position": {
           "type": "string",
-          "title": "Position",
+          "title": "Poziție",
           "default": "auto",
           "enum": [
             "auto",
-            "left",
-            "right"
+            "stânga",
+            "dreapta"
           ]
         },
         "_iconClass": {
           "type": "string",
-          "title": "Drawer icon class",
-          "description": "CSS class name to be applied to the drawer sidebar icon.",
+          "title": "Clasa de pictograme",
+          "description": "Numele clasei CSS va fi aplicat pictogramei barei laterale.",
           "default": "icon-list"
         }
       },
@@ -319,8 +319,8 @@
     },
     "_generateSourcemap": {
       "type": "boolean",
-      "title": "Generate source maps",
-      "description": "Allows the course JavaScript & CSS to be debugged via the browser's developer tools",
+      "title": "Generarea hărților sursă",
+      "description": "Permite depanarea cursului JavaScript și CSS prin intermediul instrumentelor de dezvoltare ale browserului",
       "default": false,
       "_adapt": {
         "isSetting": true
@@ -328,8 +328,8 @@
     },
     "_forceRouteLocking": {
       "type": "boolean",
-      "title": "Enforce route locking",
-      "description": "If locking is enabled, this setting prevents navigating to locked routes",
+      "title": "Impuneți blocarea rutei",
+      "description": "Dacă blocarea este activată, această setare împiedică navigarea la rutele blocate",
       "default": true,
       "_adapt": {
         "isSetting": true
@@ -337,8 +337,8 @@
     },
     "_disableAnimationFor": {
       "type": "array",
-      "title": "Disable animation on selectors",
-      "description": "Allows you to disable some animations (e.g. the drawer close animation) on platform(s) where they are not performing well, using CSS selectors to target the relevant platform(s) via the classes on the HTML element",
+      "title": "Dezactivați animația pe selectori",
+      "description": "Vă permite să dezactivați unele animații (de exemplu, animația de închidere a sertarului) pe platforma (platformele) unde nu funcționează bine, folosind selectori CSS pentru a viza platforma (platformele) relevantă (relevante) prin clasele de pe elementul HTML",
       "default": [],
       "_adapt": {
         "isSetting": true
@@ -347,17 +347,17 @@
     },
     "_logging": {
       "type": "object",
-      "title": "Logging",
+      "title": "Logare",
       "default": {},
       "properties": {
         "_isEnabled": {
           "type": "boolean",
-          "title": "Enable logging",
+          "title": "Activați înregistrarea în jurnal",
           "default": true
         },
         "_level": {
           "type": "string",
-          "title": "Log level",
+          "title": "Nivel de log",
           "default": "info",
           "enum": [
             "debug",
@@ -370,59 +370,59 @@
         },
         "_console": {
           "type": "boolean",
-          "title": "Log to browser console",
+          "title": "Conectați-vă la consola browserului",
           "default": true
         },
         "_warnFirstOnly": {
           "type": "boolean",
-          "title": "Suppress subsequent deprecation warnings",
+          "title": "Suprimați avertismentele de depreciere ulterioare",
           "default": true
         }
       }
     },
     "_scrollingContainer": {
       "type": "object",
-      "title": "Inline frame support",
+      "title": "Suport cadru în linie",
       "default": {},
       "properties": {
         "_isEnabled": {
           "type": "boolean",
-          "title": "Enable fixes",
+          "title": "Activați remedierile",
           "default": true
         },
         "_limitToSelector": {
           "type": "string",
-          "title": "Limit to selector",
-          "description": "CSS selector to match against the HTML element when determining whether this should be active or not",
+          "title": "Limită la selector",
+          "description": "Selector CSS pentru a se potrivi cu elementul HTML atunci când se stabilește dacă acesta ar trebui să fie activ sau nu",
           "default": ""
         }
       }
     },
     "themeSettings": {
       "type": "object",
-      "title": "Theme settings",
+      "title": "Setările temei",
       "default": {}
     },
     "_themePreset": {
       "type": "string",
       "isObjectId": true,
-      "title": "Theme preset"
+      "title": "Presetare temă"
     },
     "build": {
       "type": "object",
-      "title": "Support for setting the course build type",
+      "title": "Suport pentru setarea tipului de construcție a cursului",
       "properties" : {
         "strictMode": {
           "type": "boolean",
           "default": true,
           "inputType": "Checkbox",
-          "title": "Use strict mode?",
-          "description": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
+          "title": "Folosiți modul strict?",
+          "description": "Modul strict îmbunătățește performanța prin restricționarea strictă a declarației variabilelor din blocurile de cod și închideri, ceea ce poate face ca unele coduri mai vechi să nu mai funcționeze. Vă rugăm să lăsați acest lucru adevărat, cu excepția cazului în care întâmpinați probleme cu plugin-urile vechi sau bibliotecile terțe."
         },
         "targets": {
           "type": "string",
-          "title": "Supported browsers override",
-          "description": "Set the browsers that are supported. Overwrites the framework defaults if not empty. Current defaults are: 'last 2 chrome versions, last 2 firefox versions, last 2 safari versions, last 2 edge versions, last 2 ios_saf versions, last 2 and_chr versions, firefox esr'",
+          "title": "Înlocuirea browserelor acceptate",
+          "description": "Setați browserele acceptate. Suprascrie setările implicite ale cadrului dacă nu sunt goale. Valorile implicite actuale sunt: 'ultimele 2 versiuni Chrome, ultimele 2 versiuni Firefox, ultimele 2 versiuni safari, ultimele 2 versiuni edge, ultimele 2 versiuni ios_saf, ultimele 2 versiuni and_chr, firefox esr'",
           "default": ""
         }
       }

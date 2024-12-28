@@ -13,20 +13,20 @@
       "properties": {
         "_component": {
           "type": "string",
-          "title": "Component"
+          "title": "Componentă"
         },
         "displayTitle": {
-          "default": "Untitled"
+          "default": "Fără titlu"
         },
         "_layout": {
           "type": "string",
-          "title": "Layout",
+          "title": "Aspect",
           "default": ""
         },
         "_isResetOnRevisit": {
           "type": "string",
-          "title": "Reset state on revisit",
-          "description": "Controls whether this component will be reset when the learner leaves the page then returns to it. The 'soft' setting will reset the component to allow the learner to attempt it again, but will not require them to do so; whereas the 'hard' setting will require them to do so. The default (false) will not cause the component to be reset",
+          "title": "Resetați starea la revizitare",
+          "description": "Controlează dacă această componentă va fi resetată atunci când cursantul părăsește pagina, apoi revine la ea. Setarea 'soft' va reseta componenta pentru a permite cursantului să o încerce din nou, dar nu îi va cere să facă acest lucru; în timp ce setarea 'grea' le va cere să facă acest lucru. Valoarea implicită (false) nu va cauza resetarea componentei",
           "default": "false",
           "enum": [
             "false",
@@ -40,8 +40,8 @@
         },
         "_isA11yCompletionDescriptionEnabled": {
           "type": "boolean",
-          "title": "Enable accessibility completion description",
-          "description": "Controls whether a hidden label is appended to the component title that describes the completion state of the component.",
+          "title": "Activați descrierea de finalizare a accesibilității",
+          "description": "Controlează dacă o etichetă ascunsă este adăugată la titlul componentei care descrie starea de finalizare a componentei.",
           "default": true,
           "_adapt": {
             "isSetting": true
@@ -49,7 +49,7 @@
         },
         "properties": {
           "type": "object",
-          "title": "Properties",
+          "title": "Proprietăți",
           "default": {}
         }
       }

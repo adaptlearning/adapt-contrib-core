@@ -10,8 +10,8 @@
       "properties": {
         "_requireCompletionOf": {
           "type": "number",
-          "title": "Number of blocks required for completion",
-          "description": "The number of blocks within this article the learner must complete in order for this article to be set as completed. A value of -1 requires all of them to be completed",
+          "title": "Numărul de blocuri necesare pentru finalizare",
+          "description": "Numărul de blocuri din acest articol pe care cursantul trebuie să le completeze pentru ca acest articol să fie setat ca finalizat. O valoare de -1 necesită ca toate să fie completate",
           "default": -1,
           "_adapt": {
             "isSetting": true

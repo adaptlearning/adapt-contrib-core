@@ -5,38 +5,38 @@
   "properties": {
     "_type": {
       "type": "string",
-      "title": "Type"
+      "title": "Tip"
     },
     "_friendlyId": {
       "type": "string",
-      "title": "Friendly id",
-      "description": "A human-readable ID for this content object which will replace the standard _id field on course build (useful in instances where the _id must be specified in the config of an extension). Must be unique to this course."
+      "title": "ID prietenos",
+      "description": "Un ID care poate fi citit de om pentru acest obiect de conținut care va înlocui câmpul _id standard din construcția cursului (util în cazurile în care _id trebuie specificat în configurația unei extensii). Trebuie să fie unic pentru acest curs."
     },
     "_parentId": {
       "type": "string",
       "isObjectId": true,
-      "title": "Parent id"
+      "title": "ID-ul părintelui"
     },
     "_courseId": {
       "type": "string",
       "isObjectId": true,
-      "title": "Course id",
+      "title": "ID-ul cursului",
       "_adapt": {
         "editorOnly": true
       }
     },
     "title": {
       "type": "string",
-      "title": "Title",
-      "default": "Untitled",
+      "title": "Titlu",
+      "default": "Fără titlu",
       "_adapt": {
         "translatable": true
       }
     },
     "displayTitle": {
       "type": "string",
-      "title": "Display title",
-      "description": "When viewing an element - this is the title that will be displayed on the page",
+      "title": "Afișează titlul",
+      "description": "Când vizualizați un element - acesta este titlul care va fi afișat pe pagină",
       "default": "",
       "_adapt": {
         "translatable": true
@@ -45,7 +45,7 @@
     },
     "body": {
       "type": "string",
-      "title": "Body",
+      "title": "Corp",
       "default": "",
       "_adapt": {
         "translatable": true
@@ -54,7 +54,7 @@
     },
     "instruction": {
       "type": "string",
-      "title": "Instruction",
+      "title": "Instruire",
       "default": "",
       "_adapt": {
         "translatable": true
@@ -62,8 +62,8 @@
     },
     "_classes": {
       "type": "string",
-      "title": "Custom classes",
-      "description": "Used to style or manipulate the look and feel of this element. These are predefined in the theme or added in Project Settings > Custom CSS/Less code",
+      "title": "Clase personalizate",
+      "description": "Folosit pentru a stiliza sau manipula aspectul acestui element. Acestea sunt predefinite în temă sau adăugate în Setările proiectului > Custom CSS/Less code",
       "default": "",
       "_adapt": {
         "isSetting": true
@@ -71,8 +71,8 @@
     },
     "_isOptional": {
       "type": "boolean",
-      "title": "Make this element optional",
-      "description": "An optional element does not have to be completed, nor do any of the elements contained within it",
+      "title": "Faceți acest element opțional",
+      "description": "Un element opțional nu trebuie să fie completat și nici unul dintre elementele conținute în acesta",
       "default": false,
       "_adapt": {
         "isSetting": true
@@ -80,8 +80,8 @@
     },
     "_isAvailable": {
       "type": "boolean",
-      "title": "Make this element available",
-      "description": "Controls whether this element and its contents are available in the course or not",
+      "title": "Punerea la dispoziție a acestui element",
+      "description": "Controlează dacă acest element și conținutul său sunt disponibile în curs sau nu",
       "default": true,
       "_adapt": {
         "isSetting": true
@@ -89,8 +89,8 @@
     },
     "_isHidden": {
       "type": "boolean",
-      "title": "Hide this element",
-      "description": "Enabling this is equivalent to applying the CSS 'display:none' to the element",
+      "title": "Ascundeți acest element",
+      "description": "Activarea acestui lucru este echivalentă cu aplicarea CSS 'display:none' elementului",
       "default": false,
       "_adapt": {
         "isSetting": true
@@ -98,8 +98,8 @@
     },
     "_isVisible": {
       "type": "boolean",
-      "title": "Make this element visible",
-      "description": "Disabling this is equivalent to applying the CSS 'visibility:hidden' to the element",
+      "title": "Faceți acest element vizibil",
+      "description": "Dezactivarea acestui lucru este echivalentă cu aplicarea CSS 'visibility:hidden' elementului",
       "default": true,
       "_adapt": {
         "isSetting": true
@@ -107,8 +107,8 @@
     },
     "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
-      "title": "Enable accessibility completion description",
-      "description": "Controls whether a hidden label is appended to the element title that describes the completion state of the element.",
+      "title": "Activați descrierea de finalizare a accesibilității",
+      "description": "Controlează dacă o etichetă ascunsă este adăugată la titlul elementului care descrie starea de finalizare a elementului.",
       "default": true,
       "_adapt": {
         "isSetting": true
@@ -116,13 +116,13 @@
     },
     "_onScreen": {
       "type": "object",
-      "title": "Animation classes",
-      "description": "These settings allow you to attach classes to the element when it is within the browser's viewport; helpful for running CSS-based animations on elements as they scroll into view",
+      "title": "Cursuri de animație",
+      "description": "Aceste setări vă permit să atașați clase la element atunci când acesta se află în fereastra de vizualizare a browserului; util pentru rularea animațiilor bazate pe CSS pe elemente pe măsură ce se derulează în vizualizare",
       "default": {},
       "properties": {
         "_isEnabled": {
           "type": "boolean",
-          "title": "Add classes when this element is in view",
+          "title": "Adăugarea claselor atunci când acest element este vizualizat",
           "default": false,
           "_adapt": {
             "isSetting": true
@@ -130,8 +130,8 @@
         },
         "_classes": {
           "type": "string",
-          "title": "Classes",
-          "description": "The CSS class(es) to add to the element",
+          "title": "Clase",
+          "description": "Clasele CSS de adăugat la element",
           "default": "",
           "_adapt": {
             "isSetting": true
@@ -139,8 +139,8 @@
         },
         "_percentInviewVertical": {
           "type": "number",
-          "title": "Percent in view",
-          "description": "Controls what percentage of the element's height needs to be in the viewport in order for the CSS class(es) to be added",
+          "title": "Procentaj vizibil",
+          "description": "Controlează ce procent din înălțimea elementului trebuie să fie în fereastra de vizualizare pentru ca clasele CSS să fie adăugate",
           "default": 50,
           "_adapt": {
             "isSetting": true
@@ -150,24 +150,24 @@
     },
     "_extensions": {
       "type": "object",
-      "title": "Extensions",
+      "title": "Extensii",
       "default": {}
     },
     "_sortOrder": {
       "type": "number",
-      "title": "Sort order",
+      "title": "Ordinea de sortare",
       "_adapt": {
         "editorOnly": true
       }
     },
     "themeSettings": {
       "type": "object",
-      "title": "Theme settings",
+      "title": "Setările temei",
       "default": {}
     },
     "_colorLabel": {
       "type": "string",
-      "title": "Color label",
+      "title": "Etichetă de culoare",
       "default": "",
       "_adapt": {
         "editorOnly": true

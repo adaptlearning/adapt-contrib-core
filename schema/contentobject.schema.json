@@ -9,12 +9,12 @@
     "with": {
       "properties": {
         "displayTitle": {
-          "default": "Untitled"
+          "default": "Fără titlu"
         },
         "subtitle": {
           "type": "string",
-          "title": "Subtitle",
-          "description": "When viewing a menu/page - this is the subtitle that will be displayed on the menu/page",
+          "title": "Subtitlu",
+          "description": "Când vizualizați un meniu/pagină - aceasta este subtitlul care va fi afișat în meniu/pagină",
           "default": "",
           "_adapt": {
             "translatable": true
@@ -22,8 +22,8 @@
         },
         "pageBody": {
           "type": "string",
-          "title": "Custom page body",
-          "description": "If set, this text will be shown instead of the body text when this page is viewed",
+          "title": "Corpul paginii personalizate",
+          "description": "Dacă este setat, acest text va fi afișat în locul corpului textului atunci când această pagină este vizualizată",
           "default": "",
           "_adapt": {
             "translatable": true
@@ -32,19 +32,19 @@
         },
         "_htmlClasses": {
           "type": "string",
-          "title": "Custom HTML classes",
-          "description": "If set, this CSS class/es will be applied to the <html> element whenever this is the active page in the course. These are predefined in the theme or added in Project Settings > Custom CSS/Less code",
+          "title": "Clase HTML personalizate",
+          "description": "Dacă este setat, această clasă CSS va fi aplicată elementului <html> ori de câte ori aceasta este pagina activă din curs. Acestea sunt predefinite în temă sau adăugate în Setările proiectului > cod CSS/Less personalizat",
           "default": ""
         },
         "_graphic": {
           "type": "object",
-          "title": "Graphic",
+          "title": "Grafic",
           "default": {},
           "properties": {
             "alt": {
               "type": "string",
-              "title": "Alternative text",
-              "description": "A description of the image; required when it has meaning that must be conveyed to the learner. For 'decorative' images, leave this blank",
+              "title": "Text alternativ",
+              "description": "O descriere a imaginii; necesar atunci când are un sens care trebuie transmis elevului. Pentru imaginile 'decorative', lăsați acest spațiu necompletat",
               "default": "",
               "_adapt": {
                 "translatable": true
@@ -52,7 +52,7 @@
             },
             "src": {
               "type": "string",
-              "title": "Source",
+              "title": "Sursă",
               "_backboneForms": {
                 "type": "Asset",
                 "media": "image"
@@ -62,16 +62,16 @@
         },
         "linkText": {
           "type": "string",
-          "title": "Menu button text",
-          "default": "View",
+          "title": "Textul butonului de meniu",
+          "default": "Vizualizare",
           "_adapt": {
             "translatable": true
           }
         },
         "duration": {
           "type": "string",
-          "title": "Duration",
-          "description": "Indicates how long this page or section should take to complete",
+          "title": "Durată",
+          "description": "Indică cât timp ar trebui să dureze finalizarea acestei pagini sau secțiuni",
           "default": "",
           "_adapt": {
             "translatable": true
@@ -79,15 +79,15 @@
         },
         "_lockedBy": {
           "type": "array",
-          "title": "Elements to complete before this is unlocked",
-          "description": "If the course is using a 'custom' menu lock type, this should contain the unique ID of the item(s) which must be completed before this is unlocked",
+          "title": "Elemente de finalizat înainte de a fi deblocat",
+          "description": "Dacă cursul folosește un tip de blocare a meniului 'personalizat', acesta ar trebui să conțină ID-ul unic al elementului (articolelor) care trebuie finalizat înainte de a fi deblocat",
           "default": [],
           "_backboneForms": "List"
         },
         "_lockType": {
           "type": "string",
-          "title": "Menu lock type",
-          "description": "Defines which (if any) locking mechanism will be used. To be used only on submenus",
+          "title": "Tipul de blocare a meniului",
+          "description": "Definește ce mecanism de blocare (dacă există) va fi utilizat. A se utiliza numai în submeniuri",
           "default": "",
           "enum": [
             "",
@@ -100,8 +100,8 @@
         },
         "_requireCompletionOf": {
           "type": "number",
-          "title": "Number of articles required for completion",
-          "description": "The number of articles within this page the learner must complete in order for this page to be set as completed. A value of -1 requires all of them to be completed",
+          "title": "Numărul de articole necesare pentru finalizare",
+          "description": "Numărul de articole din această pagină pe care cursantul trebuie să le completeze pentru ca această pagină să fie setată ca finalizată. O valoare de -1 necesită ca toate să fie completate",
           "default": -1,
           "_adapt": {
             "isSetting": true
@@ -109,7 +109,7 @@
         },
         "menuSettings": {
           "type": "object",
-          "title": "Menu settings",
+          "title": "Setări meniu",
           "default": {}
         }
       }

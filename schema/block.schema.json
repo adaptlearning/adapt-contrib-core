@@ -15,7 +15,7 @@
         },
         "layoutOptions": {
           "type": "array",
-          "title": "Layout options",
+          "title": "Opțiuni de aspect",
           "default": [],
           "_adapt": {
             "editorOnly": true
@@ -23,8 +23,8 @@
         },
         "_requireCompletionOf": {
           "type": "number",
-          "title": "Number of components required for completion",
-          "description": "The number of components within this block the learner must complete in order for this block to be set as completed. A value of -1 requires all of them to be completed",
+          "title": "Numărul de componente necesare pentru finalizare",
+          "description": "Numărul de componente din acest bloc pe care cursantul trebuie să le completeze pentru ca acest bloc să fie setat ca finalizat. O valoare de -1 necesită ca toate să fie completate",
           "default": -1,
           "_adapt": {
             "isSetting": true
