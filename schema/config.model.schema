@@ -23,39 +23,39 @@
     },
     "_completionCriteria": {
       "type": "object",
-      "title": "Completion criteria",
+      "title": "Criterii de completare",
       "properties": {
         "_requireContentCompleted": {
           "type": "boolean",
           "default": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Require content completion",
-          "help": "Specifies that all content on the course must be completed"
+          "title": "Solicitați completarea conținutului",
+          "help": "Specifică faptul că tot conținutul cursului trebuie să fie finalizat"
         },
         "_requireAssessmentCompleted": {
           "type": "boolean",
           "default": false,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Require assessment completion",
-          "help": "Specifies that the assessment must be completed"
+          "title": "Solicitați finalizarea evaluării",
+          "help": "Specifică faptul că evaluarea trebuie finalizată"
         },
         "_submitOnEveryAssessmentAttempt": {
           "type": "boolean",
           "default": false,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Submit completion on every assessment attempt",
-          "help": "Specifies that the completion status will be reported every time the assessment is completed (regardless of whether the user passes or fails), assuming the course completion criteria is met"
+          "title": "Trimiteți finalizarea la fiecare încercare de evaluare",
+          "help": "Specifică faptul că starea de finalizare va fi raportată de fiecare dată când evaluarea este finalizată (indiferent dacă utilizatorul promovează sau pică), presupunând că sunt îndeplinite criteriile de finalizare a cursului"
         },
         "_shouldSubmitScore": {
           "type": "boolean",
           "default": false,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Submit score to LMS",
-          "help": "If enabled, the score attained in any assessment attempt will be reported (regardless of whether the user passes or fails)"
+          "title": "Trimiteți scorul la LMS",
+          "help": "Dacă este activat, scorul obținut în orice încercare de evaluare va fi raportat (indiferent dacă utilizatorul trece sau nu trece)"
         }
       }
     },
@@ -63,7 +63,7 @@
       "type": "string",
       "required": true,
       "default": "en",
-      "title": "Default Language",
+      "title": "Limba implicită",
       "inputType": "Text",
       "validators": ["required"]
     },
@@ -71,7 +71,7 @@
       "type": "string",
       "required": true,
       "default": "ltr",
-      "title": "Text Direction",
+      "title": "Direcția textului",
       "validators": ["required"],
       "inputType": {
         "type": "Select",
@@ -90,74 +90,74 @@
           "default": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enabled?"
+          "title": "Activat?"
         },
         "_isSkipNavigationEnabled": {
           "type": "boolean",
           "default": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enable Skip Navigation link?",
-          "help": "Adds a link to the start of the page to allow assistive technology users to skip over the navigation and straight into to the page content."
+          "title": "Activați linkul Omiteți navigarea?",
+          "help": "Adaugă un link la începutul paginii pentru a permite utilizatorilor să sară peste navigare, direct la conținutul paginii."
         },
         "_ariaLevels": {
           "type": "object",
-          "title": "ARIA Levels",
-          "help": "Defines what value to assign to the aria-level attribute for the various elements of Adapt",
+          "title": "Niveluri ARIA",
+          "help": "Definește ce valoare să atribuie atributului aria-level pentru diferitele elemente ale Adaptării",
           "properties" : {
             "_menu": {
               "type": "string",
               "default": "1",
-              "title": "Menu element ARIA level",
+              "title": "Element de meniu - nivel ARIA",
               "inputType": "Text"
             },
             "_menuGroup": {
               "type": "string",
               "default": "@menu+1",
-              "title": "Menu Group element ARIA level",
+              "title": "Element grup meniu - nivel ARIA",
               "inputType": "Text"
             },
             "_menuItem": {
               "type": "string",
               "default": "@menu+1",
-              "title": "Menu Item element ARIA level",
+              "title": "Element meniu - nivel ARIA",
               "inputType": "Text",
               "help": "The Menu Item element ARIA level will need to be changed to 3 if Menu Groups are being used and A11Y support is required."
             },
             "_page": {
               "type": "string",
               "default": "1",
-              "title": "Page element ARIA level",
+              "title": "Element pagină - nivel ARIA",
               "inputType": "Text"
             },
             "_article": {
               "type": "string",
               "default": "@page+1",
-              "title": "Article element ARIA level",
+              "title": "Element articol - nivel ARIA",
               "inputType": "Text"
             },
             "_block": {
               "type": "string",
               "default": "@article+1",
-              "title": "Block element ARIA level",
+              "title": "Element bloc - nivel ARIA",
               "inputType": "Text"
             },
             "_component": {
               "type": "string",
               "default": "@block+1",
-              "title": "Component element ARIA level",
+              "title": "Element component - nivel ARIA",
               "inputType": "Text"
             },
             "_componentItem": {
               "type": "string",
               "default": "@component+1",
-              "title": "Component Item element ARIA level",
+              "title": "Element articol component - nivel ARIA",
               "inputType": "Text"
             },
             "_notify": {
               "type": "string",
               "default": "1",
-              "title": "Notify popup title ARIA level",
+              "title": "Notificați titlul ferestrei pop-up - nivel ARIA",
               "inputType": "Text"
             }
           }
@@ -165,13 +165,13 @@
         "_options": {
           "type": "object",
           "default": {},
-          "title": "Accessibility Extended Options",
+          "title": "Opțiuni extinse de accesibilitate",
           "inputType": {
             "type": "CodeEditor",
             "mode": "json"
           },
           "validators": [],
-          "help": "Optional object that can be used to customize the accessibility behaviour"
+          "help": "Obiect opțional care poate fi utilizat pentru a personaliza comportamentul de accesibilitate"
         }
       }
     },
@@ -180,13 +180,13 @@
       "default": {
         "_imgLazyLoad": true
       },
-      "title": "Fixes Extended Options",
+      "title": "Remediază opțiunile extinse",
       "inputType": {
         "type": "CodeEditor",
         "mode": "json"
       },
       "validators": [],
-      "help": "Optional object that can be used to customize the application of fixes"
+      "help": "Obiect opțional care poate fi utilizat pentru a personaliza aplicarea remedierilor"
     },
     "screenSize": {
       "type": "object",
@@ -196,19 +196,19 @@
           "type": "number",
           "required": true,
           "default": 0,
-          "title": "Small",
+          "title": "Mic",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the start of the small breakpoint, e.g. cellphones"
+          "help": "Lățimea pixelilor pentru începutul breakpoint-ului mic, ex. telefoane mobile"
         },
         "medium": {
           "type": "number",
           "required": true,
           "default": 720,
-          "title": "Medium",
+          "title": "Mediu",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the start of the medium breakpoint, e.g. tablet devices"
+          "help": "Lățimea pixelilor pentru începutul breakpoint-ului mediu, ex. tablete"
         },
         "large": {
           "type": "number",
@@ -217,16 +217,16 @@
           "title": "Large",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the start of the large breakpoint, e.g. laptop/desktop computers"
+          "help": "Lățimea pixelilor pentru începutul breakpoint-ului mare, ex. laptop/calculatoare desktop"
         },
         "xlarge": {
           "type": "number",
           "required": true,
           "default": 1280,
-          "title": "Extra Large",
+          "title": "Foarte mare",
           "inputType": "Number",
           "validators": ["required", "number"],
-          "help": "Pixel width for the start of the extra large breakpoint, e.g. hd laptop/desktop computers"
+          "help": "Lățimea pixelilor pentru începutul breakpoint-ului foarte mare, ex. laptop/calculatoare desktop"
         }
       }
     },
@@ -235,7 +235,7 @@
       "required": true,
       "default": 1,
       "isSetting": true,
-      "title": "Question Weight",
+      "title": "Importanța întrebării",
       "inputType": "Number",
       "validators": ["required", "number"]
     },
@@ -332,7 +332,7 @@
           "type": "number",
           "required": true,
           "default": 400,
-          "title": "Duration",
+          "title": "Durată",
           "inputType": "Number",
           "validators": ["required", "number"]
         },
@@ -340,13 +340,13 @@
           "type": "string",
           "required": true,
           "default": "auto",
-          "title": "Position",
+          "title": "Poziție",
           "inputType": {
             "type": "Select",
             "options": [
               "auto",
-              "left",
-              "right"
+              "stânga",
+              "dreapta"
             ]
           }
         },
@@ -354,10 +354,10 @@
           "type": "string",
           "required": false,
           "default": "icon-list",
-          "title": "Drawer icon class",
+          "title": "Clasa de pictograme sertar",
           "inputType": "Text",
           "validators": [],
-          "help": "CSS class name to be applied to the drawer sidebar icon."
+          "help": "Numele clasei CSS va fi aplicat pictogramei barei laterale a sertarului."
         }
       }
     },
@@ -367,8 +367,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Generate sourcemaps?",
-      "help": "Allows the course JavaScript & CSS to be debugged via the browser's developer tools."
+      "title": "Generați hărți sursă??",
+      "help": "Permite depanarea JavaScript și CSS a cursului prin intermediul instrumentelor de dezvoltare ale browserului."
     },
     "_forceRouteLocking": {
       "type": "boolean",
@@ -376,20 +376,20 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Enforce route locking?",
-      "help": "If locking is enabled, this setting prevents navigating to locked routes"
+      "title": "Impuneți blocarea rutei?",
+      "help": "Dacă blocarea este activată, această setare împiedică navigarea la rutele blocate"
     },
     "_disableAnimationFor": {
       "type": "array",
       "default": [],
-      "title": "Disable animation for",
+      "title": "Dezactivați animația pentru",
       "isSetting": true,
       "inputType": "List",
-      "help": "Allows you to disable some animations (e.g. the drawer close animation) on platform(s) where they are not performing well, using CSS selectors to target the relevant platform(s) via the classes on the HTML element."
+      "help": "Vă permite să dezactivați unele animații (de exemplu, animația de închidere a sertarului) pe platforma (platformele) unde nu funcționează bine, folosind selectori CSS pentru a viza platforma (platformele) relevantă (relevante) prin clasele de pe elementul HTML."
     },
     "_logging": {
       "type": "object",
-      "title": "Logging",
+      "title": "Logare",
       "properties": {
         "_isEnabled": {
           "type": "boolean",
@@ -397,13 +397,13 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enabled?"
+          "title": "Activat?"
         },
         "_level": {
           "type": "string",
           "required": true,
           "default" : "info",
-          "title" : "Log Level",
+          "title" : "Nivel log",
           "validators": [],
           "inputType": {
             "type": "Select",
@@ -421,20 +421,20 @@
           "default": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Log to browser console?"
+          "title": "Vă conectați la consola browserului?"
         },
         "_warnFirstOnly": {
           "type": "boolean",
           "default": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Show only first deprecated and removed warnings?"
+          "title": "Afișați doar primele avertismente depreciate și eliminate?"
         }
       }
     },
     "_scrollingContainer": {
       "type": "object",
-      "title": "iFrame and Screen Reader scrolling support",
+      "title": "Suport pentru derulare iFrame și Screen Reader",
       "properties" : {
         "_isEnabled": {
           "type": "boolean",
@@ -442,16 +442,16 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enabled?"
+          "title": "Activat?"
         },
         "_limitToSelector": {
           "type": "string",
           "required": false,
           "default": "",
-          "title": "Limit to selector",
+          "title": "Limită la selector",
           "inputType": "Text",
           "validators": [],
-          "help": "CSS selector to match against the HTML element when determining whether this should be active or not."
+          "help": "Selector CSS pentru a se potrivi cu elementul HTML atunci când determină dacă acesta ar trebui să fie activ sau nu."
         }
       }
     },
@@ -472,17 +472,17 @@
           "required": false,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Use strict mode?",
-          "help": "Strict mode improves performance by tightly restricting the declaration of variables inside code blocks and closures which may cause some older code to stop working. Please leave this at true unless you are experiencing issue with old plugins or third party libraries."
+          "title": "Folosiți modul strict?",
+          "help": "Modul strict îmbunătățește performanța prin restricționarea strânsă a declarării variabilelor din blocurile de cod și închideri, ceea ce poate face ca unele coduri mai vechi să nu mai funcționeze. Vă rugăm să lăsați acest mod activat, cu excepția cazului în care întâmpinați probleme cu plugin-urile vechi sau bibliotecile terțe."
         },
         "targets": {
           "type": "string",
           "required": false,
           "default": "",
           "inputType": "Text",
-          "title": "Supported browsers override",
+          "title": "Înlocuirea browserelor acceptate",
           "validators": [],
-          "help": "Set the browsers that are supported. Overwrites the framework defaults if not empty. Current defaults are: 'last 2 chrome versions, last 2 firefox versions, last 2 safari versions, last 2 edge versions, last 2 ios_saf versions, last 2 and_chr versions, firefox esr'"
+          "help": "Setați browserele acceptate. Suprascrie setările implicite ale cadrului dacă nu sunt goale. Valorile implicite actuale sunt: "ultimele 2 versiuni Chrome, ultimele 2 versiuni Firefox, ultimele 2 versiuni safari, ultimele 2 versiuni edge, ultimele 2 versiuni ios_saf, ultimele 2 versiuni and_chr, firefox esr'"
         }
       }
     }

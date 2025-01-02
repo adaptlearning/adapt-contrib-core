@@ -7,7 +7,8 @@
     "title": {
       "type": "string",
       "required": true,
-      "default": "New Article Title",
+      "title": "Titlu articol",
+      "default": "Titlu articol",
       "inputType": "Text",
       "validators": ["required"],
       "translatable": true
@@ -15,15 +16,17 @@
     "displayTitle": {
       "type": "string",
       "required": false,
+      "title": "Afișează titlul",
       "default": "",
       "inputType": "DisplayTitle",
       "validators": [],
-      "help": "When viewing an article - this is the title that will be displayed on the page",
+      "help": "Când vizualizați un articol - acesta este titlul care va fi afișat pe pagină",
       "translatable": true
     },
     "body": {
       "type": "string",
       "default": "",
+      "title": "Descriere curs",
       "inputType": "TextArea",
       "validators": [],
       "translatable": true

@@ -24,12 +24,12 @@
     },
     "_classes": {
       "type": "string",
-      "default": "",
+      "default": "Clase",
       "isSetting": true,
       "inputType": "Text",
       "validators": [],
-      "title": "Classes",
-      "help": "Used to style or manipulate the look and feel of this Component. These are predefined in the theme or added in Project Settings > Custom CSS/Less code."
+      "title": "Clase",
+      "help": "Folosit pentru a stiliza sau manipula aspectul acestei componente. Acestea sunt predefinite în temă sau adăugate în Setările proiectului > cod CSS/Less personalizat."
     },
     "_isOptional": {
       "type": "boolean",
@@ -37,8 +37,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this optional?",
-      "help": "An optional component does not have to be completed by the user."
+      "title": "Este opțional?",
+      "help": "O componentă opțională nu trebuie să fie completată de utilizator."
     },
     "_isAvailable": {
       "type": "boolean",
@@ -46,8 +46,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this available?",
-      "help": "Controls whether this component is available in the course or not."
+      "title": "Este disponibil?",
+      "help": "Controlează dacă această componentă este disponibilă în curs sau nu."
     },
     "_isHidden": {
       "type": "boolean",
@@ -55,8 +55,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this hidden?",
-      "help": "Enabling this is equivalent to applying the CSS 'display:none' to the component."
+      "title": "Este ascuns?",
+      "help": "Activarea acestui lucru este echivalentă cu aplicarea CSS "display:none" componentei."
     },
     "_isVisible": {
       "type": "boolean",
@@ -64,8 +64,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this visible?",
-      "help": "Disabling this is equivalent to applying the CSS 'visibility:hidden' to the component."
+      "title": "Este vizibil?",
+      "help": "Dezactivarea acestui lucru este echivalentă cu aplicarea CSS "visibility:hidden" componentei."
     },
     "_isResetOnRevisit": {
       "type": "string",
@@ -79,8 +79,8 @@
           "hard"
         ]
       },
-      "title": "Reset when revisited?",
-      "help": "Controls whether this component will be reset when the learner leaves the page then returns to it. The 'soft' setting will reset the component to allow the learner to attempt it again, but will not require them to do so; whereas the 'hard' setting will require them to do so. The default (false) will not cause the component to be reset.",
+      "title": "Resetați când vă întoarceți?",
+      "help": "Controlează dacă această componentă va fi resetată atunci când cursantul părăsește pagina, apoi revine la ea. Setarea "soft" va reseta componenta pentru a permite cursantului să o încerce din nou, dar nu îi va cere să facă acest lucru; în timp ce setarea "grea" le va cere să facă acest lucru. Valoarea implicită (false) nu va cauza resetarea componentei.",
       "validators": []
     },
     "_isA11yCompletionDescriptionEnabled": {
@@ -89,8 +89,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Enable accessibility completion description",
-      "help": "Controls whether a hidden label is appended to the component title that describes the completion state of the component."
+      "title": "Activați descrierea de finalizare a accesibilității",
+      "help": "Controlează dacă o etichetă ascunsă este adăugată la titlul componentei care descrie starea de finalizare a componentei."
     },
     "_parentId": {
       "type": "objectid",
@@ -104,7 +104,7 @@
     "title": {
       "type": "string",
       "required": true,
-      "default": "New Component Title",
+      "default": "Titlul componentei noi",
       "inputType": "Text",
       "validators": ["required"],
       "translatable": true
@@ -112,23 +112,23 @@
     "displayTitle": {
       "type": "string",
       "required": false,
-      "default": "New Component Title",
+      "default": "Titlul componentei noi",
       "inputType": "DisplayTitle",
       "validators": [],
-      "help": "When viewing a component - this is the title that will be displayed",
+      "help": "Când vizualizați o componentă - acesta este titlul care va fi afișat",
       "translatable": true
     },
     "body":{
       "type": "string",
-      "default" : "",
+      "default" : "Conținut",
       "inputType": "TextArea",
       "validators": [],
       "translatable": true
     },
     "_onScreen": {
       "type": "object",
-      "title": "On-screen classes",
-      "help": "These settings allow you to attach classes to the component when it is within the browser's viewport; helpful for running CSS-based animations on components as they scroll into view.",
+      "title": "Cursuri pe ecran",
+      "help": "Aceste setări vă permit să atașați clase la componentă atunci când se află în fereastra de vizualizare a browserului; util pentru rularea animațiilor bazate pe CSS pe componente pe măsură ce derulează în vizualizare.",
       "properties": {
         "_isEnabled": {
           "type": "boolean",
@@ -136,27 +136,27 @@
           "isSetting": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enabled?"
+          "title": "Activat?"
         },
         "_classes": {
           "type": "string",
-          "default": "",
+          "default": "Clase",
           "isSetting": true,
           "required": false,
           "inputType": "Text",
           "validators": [],
-          "title": "Classes",
-          "help": "The CSS class(es) to add to the component element."
+          "title": "Clase",
+          "help": "Clasele CSS de adăugat la elementul component."
         },
         "_percentInviewVertical": {
           "type": "number",
           "required": false,
           "default": 50,
           "isSetting": true,
-          "title": "Percent in view",
+          "title": "Procentaj vizibil",
           "inputType": "Number",
           "validators": ["number"],
-          "help": "Controls what percentage of the component's height needs to be in the viewport in order for the CSS class(es) to be added."
+          "help": "Controlează ce procent din înălțimea componentei trebuie să fie în fereastra de vizualizare pentru ca clasele CSS să fie adăugate."
         }
       }
     },

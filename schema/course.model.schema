@@ -6,15 +6,16 @@
   "properties": {
     "heroImage": {
       "type": "string",
-      "title": "Preview image",
+      "title": "Previzualizați imaginea",
       "default": "",
       "inputType": "Asset:image",
       "validators": [],
       "editorOnly": true,
-      "help": "The image that will be shown in the dashboard for this course"
+      "help": "Imaginea care va fi afișată în tabloul de bord pentru acest curs"
     },
     "title": {
       "type": "string",
+      "title": "Titlul cursului",
       "required": true,
       "default": "Titlul cursului",
       "inputType": "Text",
@@ -25,36 +26,40 @@
     },
     "displayTitle": {
       "type": "string",
+      "title": "Afișează titlul",
       "required": false,
-      "default": "New Course Title",
+      "default": "Titlul cursului",
       "inputType": "DisplayTitle",
-      "validators": [],
-      "help": "This is the title that will be displayed on the course's main menu",
+      "validators": ["required"],
+      "help": "Acesta este titlul care va fi afișat în meniul principal al cursului",
       "translatable": true
     },
     "subtitle": {
       "type": "string",
+      "title": "Subtitlu",
       "required": false,
       "default": "",
       "inputType": "Text",
       "validators": [],
-      "help": "This is the subtitle that will be displayed on the course's main menu",
+      "help": "Aceasta este subtitlul care va fi afișat în meniul principal al cursului",
       "translatable": true
     },
     "description": {
       "type": "string",
+      "title": "Descriere",
       "required": false,
       "default": "",
       "inputType": "Text",
-      "validators": [],
+      "validators": ["required"],
       "translatable": true,
-      "help": "This will be added to the course's manifest file metadata. It is not (currently) displayed anywhere within the course."
+      "help": "Acesta va fi adăugat la metadatele fișierului manifest al cursului. Nu este (momentan) afișat nicăieri în cadrul cursului."
     },
     "body": {
       "type": "string",
+      "title": "Descrierea cursului",
       "default": "",
       "inputType": "TextArea",
-      "validators": [],
+      "validators": ["required"],
       "translatable": true
     },
     "instruction": {
@@ -69,11 +74,11 @@
     "_htmlClasses": {
       "type": "string",
       "required": false,
-      "title": "HTML Classes",
+      "title": "Clase HTML",
       "default": "",
       "inputType": "Text",
       "validators": [],
-      "help": "If set, this class will be applied to the <html> element when the top-level menu in the course is displayed. These are predefined in the theme or added in Custom CSS/Less code."
+      "help": "Dacă este setată, această clasă va fi aplicată <html> elementului atunci când este afișat meniul de nivel superior din curs. Acestea sunt predefinite în temă sau adăugate în cod CSS/Less personalizat."
     },
     "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
@@ -81,8 +86,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Enable accessibility completion description",
-      "help": "Controls whether a hidden label is appended to the course title that describes the completion state of the course."
+      "title": "Activați descrierea de finalizare a accesibilității",
+      "help": "Controlează dacă la titlul cursului se adaugă o etichetă ascunsă care descrie starea de finalizare a cursului."
     },
     "_extensions": {
       "type": "object"
@@ -94,8 +99,8 @@
     },
     "_start": {
       "type": "object",
-      "title": "Start settings",
-      "help": "The start settings allow you to control which page is rendered when a course loads, potentially bypassing the menu.",
+      "title": "Start setări",
+      "help": "Setările de pornire vă permit să controlați ce pagină este redată atunci când se încarcă un curs, ocolind potențial meniul.",
       "properties": {
         "_isEnabled": {
           "type": "boolean",
@@ -107,7 +112,7 @@
         },
         "_startIds": {
           "type": "array",
-          "title": "Start List",
+          "title": "Lista de pornire",
           "items": {
             "type": "object",
             "properties": {
@@ -123,15 +128,15 @@
                 "editorOnly": true,
                 "inputType": "Checkbox",
                 "validators": [],
-                "title": "Skip if complete?",
-                "help": "If enabled, the page will not be selected as the first page if it has been already viewed/completed"
+                "title": "Săriți dacă este complet?",
+                "help": "Dacă este activată, pagina nu va fi selectată ca primă pagină dacă a fost deja vizualizată/finalizată"
               },
               "_className": {
                 "type": "string",
                 "inputType": "Text",
                 "required": true,
-                "title": "Classes",
-                "help": "Optional comma-separated list of class names which will be used to select this start page"
+                "title": "Clase",
+                "help": "Lista opțională separată prin virgulă a numelor de clase care vor fi utilizate pentru a selecta această pagină de pornire"
               }
             }
           }
@@ -142,8 +147,8 @@
           "editorOnly": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Force routing",
-          "help": "If enabled, the routing will be forced to the appropriate start page, regardless of the URL"
+          "title": "Forțați rutarea",
+          "help": "Dacă este activată, rutarea va fi forțată către pagina de pornire corespunzătoare, indiferent de adresa URL"
         },
         "_isMenuDisabled": {
           "type": "boolean",
@@ -151,8 +156,8 @@
           "editorOnly": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Disable menu",
-          "help": "Allows you to prevent the user from seeing - or navigating to - the main menu"
+          "title": "Dezactivați meniul",
+          "help": "Vă permite să împiedicați utilizatorul să vadă sau să navigheze la meniul principal"
         }
       }
     },
@@ -161,13 +166,13 @@
       "properties": {
         "_accessibility": {
           "type": "object",
-          "title": "Accessibility",
+          "title": "Accesibilitate",
           "required": true,
           "properties": {
             "skipNavigationText": {
               "type": "string",
-              "title": "Skip to main content label",
-              "default": "Skip to main content",
+              "title": "Sari la eticheta conținutului principal",
+              "default": "Sari la conținutul principal",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -177,52 +182,52 @@
             },
             "_ariaLabels": {
               "type": "object",
-              "title": "ARIA labels",
+              "title": "Eticheta ARIA",
               "properties": {
                 "answeredIncorrectly": {
                   "type": "string",
-                  "title": "",
-                  "default": "You answered incorrectly",
+                  "title": "Răspuns incorect",
+                  "default": "Ai răspuns incorect",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "answeredCorrectly": {
                   "type": "string",
-                  "title": "",
-                  "default": "You answered correctly",
+                  "title": "Răspuns corect",
+                  "default": "Ai răspuns corect",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "selectedAnswer": {
                   "type": "string",
-                  "title": "",
-                  "default": "selected",
+                  "title": "Răspuns selectat",
+                  "default": "selectat",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "unselectedAnswer": {
                   "type": "string",
-                  "title": "",
-                  "default": "not selected",
+                  "title": "Răspuns neselectat",
+                  "default": "neselectat",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "skipNavigation": {
                   "type": "string",
-                  "title": "Skip Navigation",
-                  "default": "Skip Navigation",
+                  "title": "Sari navigare",
+                  "default": "Sari navigare",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "previous": {
                   "type": "string",
-                  "title": "",
-                  "default": "Back",
+                  "title": "Precedent",
+                  "default": "Înapoi",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
@@ -237,8 +242,8 @@
                 },
                 "close": {
                   "type": "string",
-                  "title": "",
-                  "default": "Close",
+                  "title": "Închide",
+                  "default": "Închide",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
@@ -253,8 +258,8 @@
                 },
                 "closeResources": {
                   "type": "string",
-                  "title": "",
-                  "default": "Close resources",
+                  "title": "Închideți resursele",
+                  "default": "Închideți resursele",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
@@ -269,80 +274,80 @@
                 },
                 "closePopup": {
                   "type": "string",
-                  "title": "",
-                  "default": "Close popup",
+                  "title": "Închideți fereastra pop-up",
+                  "default": "Închideți fereastra pop-up",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "next": {
                   "type": "string",
-                  "title": "",
-                  "default": "Next",
+                  "title": "Următorul",
+                  "default": "Următorul",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "done": {
                   "type": "string",
-                  "title": "",
-                  "default": "Done",
+                  "title": "Gata",
+                  "default": "Gata",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "complete": {
                   "type": "string",
-                  "title": "",
-                  "default": "Completed",
+                  "title": "Complet",
+                  "default": "Completat",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "incomplete": {
                   "type": "string",
-                  "title": "",
-                  "default": "Incomplete",
+                  "title": "Incomplet",
+                  "default": "Incomplet",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "incorrect": {
                   "type": "string",
-                  "title": "",
-                  "default": "Incorrect",
+                  "title": "Incorect",
+                  "default": "Incorect",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "correct": {
                   "type": "string",
-                  "title": "",
-                  "default": "Correct",
+                  "title": "Corect",
+                  "default": "Corect",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "locked": {
                   "type": "string",
-                  "title": "",
-                  "default": "Locked",
+                  "title": "Blocat",
+                  "default": "Blocat",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "visited": {
                   "type": "string",
-                  "title": "",
-                  "default": "Visited",
+                  "title": "Vizitat",
+                  "default": "Vizitat",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
                 },
                 "required": {
                   "type": "string",
-                  "title": "",
-                  "default": "Required",
+                  "title": "Necesar",
+                  "default": "Necesar",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
@@ -359,8 +364,8 @@
             },
             "altFeedbackTitle": {
               "type": "string",
-              "title": "Alternative Feedback Title",
-              "help": "Text read out by screen readers if no visual title is set for component question feedback.",
+              "title": "Titlul feedback-ului alternativ",
+              "help": "Text citit de cititoarele de ecran dacă nu este setat niciun titlu vizual pentru feedback-ul la întrebările componentelor.",
               "default": "Feedback",
               "inputType": "Text",
               "required": false,
@@ -370,7 +375,7 @@
         },
         "_extensions": {
           "type": "object",
-          "title": "Extensions",
+          "title": "Extensii",
           "default": {},
           "properties": {
             "_drawer": {
@@ -380,14 +385,14 @@
               "properties": {
                 "_navOrder": {
                   "type": "number",
-                  "title": "Navigation bar order",
-                  "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                  "title": "Ordinea barei de navigare",
+                  "help": "Determină ordinea în care este afișat obiectul în bara de navigare. Numerele negative (de exemplu, -100) sunt aliniate la stânga. Numerele pozitive (de exemplu, 100) sunt aliniate la dreapta.",
                   "default": 100,
                   "inputType": "Number"
                 },
                 "_navTooltip": {
                   "type": "object",
-                  "title": "Navigation tooltip",
+                  "title": "Sfat de navigare",
                   "default": {},
                   "properties": {
                     "_isEnabled": {
@@ -411,18 +416,18 @@
             },
             "_navigation": {
               "type": "object",
-              "title": "Navigation",
+              "title": "Navigare",
               "default": {},
               "properties": {
                 "_skipButton": {
                   "type": "object",
-                  "title": "Skip navigation button",
+                  "title": "Omite butonul de navigare",
                   "default": {},
                   "properties": {
                     "_navOrder": {
                       "type": "number",
-                      "title": "Navigation bar order",
-                      "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                      "title": "Ordinea barei de navigare",
+                      "help": "Determină ordinea în care este afișat obiectul în bara de navigare. Numerele negative (de exemplu, -100) sunt aliniate la stânga. Numerele pozitive (de exemplu, 100) sunt aliniate la dreapta.",
                       "default": -100,
                       "inputType": "Number"
                     }
@@ -430,13 +435,13 @@
                 },
                 "_backButton": {
                   "type": "object",
-                  "title": "Back button",
+                  "title": "Buton înapoi",
                   "default": {},
                   "properties": {
                     "_navOrder": {
                       "type": "number",
-                      "title": "Navigation bar order",
-                      "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                      "title": "Ordinea barei de navigare",
+                      "help": "Determină ordinea în care este afișat obiectul în bara de navigare. Numerele negative (de exemplu, -100) sunt aliniate la stânga. Numerele pozitive (de exemplu, 100) sunt aliniate la dreapta.",
                       "default": 0,
                       "inputType": "Number"
                     }
@@ -467,7 +472,7 @@
                 "_spacers": {
                   "type": "array",
                   "required": false,
-                  "title": "Spacers",
+                  "title": "Distanţiere",
                   "default": [
                     {
                       "_navOrder": 0
@@ -476,12 +481,12 @@
                   "items": {
                     "type": "object",
                     "required": false,
-                    "title": "",
+                    "title": "Elemente",
                     "properties": {
                       "_navOrder": {
                         "type": "number",
-                        "title": "Navigation bar order",
-                        "help": "Determines the order in which the object is displayed in the navigation bar. Negative numbers (e.g. -100) are left-aligned. Positive numbers (e.g. 100) are right-aligned.",
+                        "title": "Ordinea barei de navigare",
+                        "help": "Determină ordinea în care este afișat obiectul în bara de navigare. Numerele negative (de exemplu, -100) sunt aliniate la stânga. Numerele pozitive (de exemplu, 100) sunt aliniate la dreapta.",
                         "default": 0,
                         "inputType": "Number"
                       }
@@ -497,8 +502,8 @@
     "_tooltips": {
       "type": "object",
       "default": {},
-      "title": "Tooltip settings",
-      "help": "The start settings allow you to control whether tooltips can show and their default position.",
+      "title": "Tooltip setări",
+      "help": "Setările de pornire vă permit să controlați dacă se pot afișa sfaturile și poziția lor implicită.",
       "properties": {
         "_isEnabled": {
           "type": "boolean",
@@ -512,16 +517,16 @@
     "_buttons": {
       "type": "object",
       "default": "",
-      "title": "",
+      "title": "Butoane",
       "isSetting": false,
       "properties": {
         "_submit": {
           "type": "object",
-          "title": "Submit",
+          "title": "Trimite",
           "properties": {
             "buttonText": {
               "type": "string",
-              "default": "Submit",
+              "default": "Trimite",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -531,8 +536,8 @@
             },
             "ariaLabel": {
               "type": "string",
-              "title": "ARIA label",
-              "default": "Submit",
+              "title": "Etichetă ARIA",
+              "default": "Trimite",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -558,7 +563,7 @@
             },
             "ariaLabel": {
               "type": "string",
-              "title": "ARIA label",
+              "title": "Etichetă ARIA",
               "default": "Reset",
               "inputType": "Text",
               "required": true,
@@ -571,11 +576,11 @@
         },
         "_showCorrectAnswer": {
           "type": "object",
-          "title": "Show correct answer",
+          "title": "Afișează răspunsul corect",
           "properties": {
             "buttonText": {
               "type": "string",
-              "default": "Show correct answer",
+              "default": "Afișează răspunsul corect",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -585,8 +590,8 @@
             },
             "ariaLabel": {
               "type": "string",
-              "title": "ARIA label",
-              "default": "Show correct answer",
+              "title": "Etichetă ARIA",
+              "default": "Afișează răspunsul corect",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -598,11 +603,11 @@
         },
         "_hideCorrectAnswer": {
           "type": "object",
-          "title": "Hide correct answer",
+          "title": "Ascunde răspunsul corect",
           "properties": {
             "buttonText": {
               "type": "string",
-              "default": "Show your answer",
+              "default": "Afișează-ți răspunsul",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -612,8 +617,8 @@
             },
             "ariaLabel": {
               "type": "string",
-              "title": "ARIA label",
-              "default": "Show your answer",
+              "title": "Etichetă ARIA",
+              "default": "Afișează-ți răspunsul",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -625,11 +630,11 @@
         },
         "_showFeedback": {
           "type": "object",
-          "title": "Show feedback",
+          "title": "Arată feedback",
           "properties": {
             "buttonText": {
               "type": "string",
-              "default": "Show feedback",
+              "default": "Arată feedback",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -639,8 +644,8 @@
             },
             "ariaLabel": {
               "type": "string",
-              "title": "ARIA label",
-              "default": "Show feedback",
+              "title": "Etichetă ARIA",
+              "default": "Arată feedback",
               "inputType": "Text",
               "required": true,
               "validators": [
@@ -652,8 +657,8 @@
         },
         "remainingAttemptsText": {
           "type": "string",
-          "title": "Remaining attempts label",
-          "default": "attempts remaining",
+          "title": "Eticheta de încercări rămase",
+          "default": "încercări rămase",
           "inputType": "Text",
           "required": true,
           "validators": [
@@ -663,8 +668,8 @@
         },
         "remainingAttemptText": {
           "type": "string",
-          "title": "Final attempt label",
-          "default": "final attempt",
+          "title": "Etichetă de încercare finală",
+          "default": "încercare finală",
           "inputType": "Text",
           "required": true,
           "validators": [
@@ -674,8 +679,8 @@
         },
         "disabledAriaLabel": {
           "type": "string",
-          "title": "Disabled ARIA label",
-          "default": "This button is disabled at the moment",
+          "title": "Eticheta ARIA dezactivată",
+          "default": "Acest buton este dezactivat în acest moment",
           "inputType": "Text",
           "required": true,
           "validators": [
@@ -687,7 +692,7 @@
     },
     "_navigation": {
       "type": "object",
-      "title": "Navigation settings",
+      "title": "Setări de navigare",
       "properties" : {
         "_isDefaultNavigationDisabled": {
           "type": "boolean",
@@ -695,13 +700,13 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Disable default navigation bar?"
+          "title": "Dezactivați bara de navigare implicită?"
         },
         "_navigationAlignment": {
           "type": "string",
           "required": true,
           "default": "top",
-          "title": "Navigation alignment",
+          "title": "Alinierea navigării",
           "inputType": {
             "type": "Select",
             "options": [
@@ -710,7 +715,7 @@
             ]
           },
           "validators": ["required"],
-          "help": "The CSS selector that determines when the navigation bar is displayed at the bottom. Must be a selector targeting the HTML element"
+          "help": "Selectorul CSS care determină când bara de navigare este afișată în partea de jos. Trebuie să fie un selector care vizează elementul HTML"
         },
         "_isBottomOnTouchDevices": {
           "type": "boolean",
@@ -718,7 +723,7 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Is bottom on touch devices?"
+          "title": "Este partea de jos de pe dispozitivele tactile?"
         },
         "_showLabel": {
           "type": "boolean",
@@ -726,13 +731,13 @@
           "required": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Show navigation button labels"
+          "title": "Afișați etichetele butoanelor de navigare"
         },
         "_showLabelAtWidth": {
           "type": "string",
           "required": true,
           "default": "medium",
-          "title": "Show label at this breakpoint and higher",
+          "title": "Afișați eticheta la acest punct de întrerupere și mai sus",
           "inputType": {
             "type": "Select",
             "options": [
@@ -743,13 +748,13 @@
             ]
           },
           "validators": [],
-          "help": "When the user's browser window is at least this wide, the labels will be shown. Options refer to the standard Adapt breakpoints. The 'any' option will show the label at any size."
+          "help": "Când fereastra browserului utilizatorului este cel puțin atât de largă, etichetele vor fi afișate. Opțiunile se referă la punctele de întrerupere standard Adaptare. Opțiunea "orice" va afișa eticheta la orice dimensiune."
         },
         "_labelPosition": {
           "type": "string",
           "required": true,
           "default": "auto",
-          "title": "Label position",
+          "title": "Poziția etichetei",
           "inputType": {
             "type": "Select",
             "options": [
@@ -761,7 +766,7 @@
             ]
           },
           "validators": [],
-          "help": "Where to show the label in relation to the button icons"
+          "help": "Unde se afișează eticheta în raport cu pictogramele butoanelor"
         }
       }
     },
@@ -775,8 +780,8 @@
         "editorOnly": true,
         "ref": "tag"
       },
-      "title": "Tags",
-      "help": "Add tags to your course by entering one or more words, separated with a comma (,)",
+      "title": "Informații relevante - Metadate (materie, clasă, domeniu de conținut, conținut, competențe, cuvinte cheie)",
+      "help": "Adăugați etichete la curs introducând unul sau mai multe cuvinte, separate cu virgulă (,)",
       "editorOnly": true
     },
     "_classes": {
@@ -785,8 +790,8 @@
       "isSetting": true,
       "inputType": "Text",
       "validators": [],
-      "title": "Menu Classes",
-      "help": "Used to style or manipulate the look and feel of the top level Menu. These are predefined in the theme or added in Custom CSS/Less code."
+      "title": "Clase de meniu",
+      "help": "Folosit pentru a stiliza sau manipula aspectul meniului de nivel superior. Acestea sunt predefinite în temă sau adăugate în cod CSS/Less personalizat."
     },
     "_requireCompletionOf": {
       "type": "number",
@@ -794,16 +799,18 @@
       "isSetting": true,
       "inputType": "Number",
       "validators": ["number"],
-      "title": "Require completion of",
-      "help": "The number of content objects within this course the learner must complete in order for this course to be set as completed. A value of -1 requires all of them to be completed."
+      "title": "Necesită finalizarea",
+      "help": "Numărul de obiecte de conținut din acest curs pe care cursantul trebuie să le parcurgă pentru ca acest curs să fie setat ca finalizat. O valoare de -1 necesită ca toate să fie completate."
     },
     "_isSelected": {
       "type": "boolean",
+      "title": "Este selectat",
       "default": false,
       "editorOnly": true
     },
     "_hasPreview": {
       "type": "boolean",
+      "title": "Are previzualizare",
       "default": false,
       "editorOnly": true
     },
@@ -813,8 +820,8 @@
       "editorOnly": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Share with all users",
-      "help": "Defines whether this course will be editable by all users"
+      "title": "Partajați cu toți utilizatorii",
+      "help": "Definește dacă acest curs va fi editabil de către toți utilizatorii"
     },
     "_shareWithUsers": {
       "type": "array",
@@ -826,8 +833,8 @@
         "editorOnly": true,
         "ref": "user"
       },
-      "title": "Share with specific users",
-      "help": "Defines which individual users are able to edit this course"
+      "title": "Partajați cu anumiți utilizatori",
+      "help": "Definește ce utilizatori individuali pot edita acest curs"
     },
     "themeSettings": {
       "type": "object"
@@ -851,8 +858,8 @@
           "unlockFirst"
         ]
       },
-      "title": "Menu lock type",
-      "help": "Defines which (if any) locking mechanism will be used for menu items",
+      "title": "Tipul de blocare a meniului",
+      "help": "Definește ce mecanism de blocare (dacă există) va fi utilizat pentru elementele de meniu",
       "validators": []
     },
     "customStyle": {
@@ -860,8 +867,8 @@
       "default": "",
       "inputType": "CodeEditor:less",
       "validators": [],
-      "title": "Custom CSS/LESS code",
-      "help": "Add any custom CSS or valid LESS code here"
+      "title": "Cod CSS/LESS personalizat",
+      "help": "Adăugați orice cod CSS personalizat sau LESS valid aici"
     },
     "externalReferences": {
       "type" : "object"

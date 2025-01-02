@@ -7,7 +7,7 @@
     "title": {
       "type": "string",
       "required": true,
-      "default": "New Menu/Page Title",
+      "default": "Meniu nou/Titlu pagină",
       "inputType": "Text",
       "validators": ["required"],
       "translatable": true
@@ -15,10 +15,10 @@
     "displayTitle": {
       "type": "string",
       "required": false,
-      "default": "New Menu/Page Title",
+      "default": "Meniu nou/Titlu pagină",
       "inputType": "DisplayTitle",
       "validators": [],
-      "help": "When viewing a menu/page - this is the title that will be displayed on the menu/page",
+      "help": "Când vizualizați un meniu/pagină - acesta este titlul care va fi afișat în meniu/pagină",
       "translatable": true
     },
     "subtitle": {
@@ -27,7 +27,7 @@
       "default": "",
       "inputType": "Text",
       "validators": [],
-      "help": "When viewing a menu/page - this is the subtitle that will be displayed on the menu/page",
+      "help": "Când vizualizați un meniu/pagină - aceasta este subtitlul care va fi afișat în meniu/pagină",
       "translatable": true
     },
     "pageBody":{
@@ -36,7 +36,7 @@
       "inputType": "TextArea",
       "validators": [],
       "translatable": true,
-      "help": "If set, this text will be shown instead of the body text when this page is viewed."
+      "help": "Dacă este setat, acest text va fi afișat în locul corpului textului atunci când această pagină este vizualizată."
     },
     "body":{
       "type": "string",
@@ -48,7 +48,7 @@
     "instruction": {
       "type": "string",
       "required": false,
-      "title": "Instruction text",
+      "title": "Text instrucțiuni",
       "default": "",
       "inputType": "Text",
       "validators": [],
@@ -57,7 +57,7 @@
     "_htmlClasses": {
       "type": "string",
       "required": false,
-      "title": "HTML Classes",
+      "title": "Clase HTML",
       "default": "",
       "inputType": "Text",
       "validators": [],
@@ -70,11 +70,11 @@
         "alt": {
           "type": "string",
           "required": false,
-          "title": "Alternative text",
+          "title": "Text alternativ",
           "default": "",
           "inputType": "Text",
           "validators": [],
-          "help": "A description of the image; required when it has meaning that must be conveyed to the learner. For 'decorative' images, leave this blank.",
+          "help": "O descriere a imaginii; necesar atunci când are un sens care trebuie transmis elevului. Pentru imaginile "decorative", lăsați acest lucru necompletat.",
           "translatable": true
         },
         "src": {
@@ -83,14 +83,14 @@
           "default": "",
           "inputType": "Asset:image",
           "validators": [],
-          "help": "This is the link to the image."
+          "help": "Acesta este linkul către imagine."
         }
       }
     },
     "linkText": {
       "type": "string",
       "required": false,
-      "title": "Button link text",
+      "title": "Textul link-ului butonului",
       "default": "View",
       "inputType": "Text",
       "validators" : ["required"],
@@ -99,21 +99,21 @@
     "duration": {
       "type": "string",
       "required": false,
-      "title": "Duration",
+      "title": "Durată",
       "default": "",
       "inputType": "Text",
       "validators" : [""],
-      "help": "Indicates how long this page or section should take to complete",
+      "help": "Indică cât timp ar trebui să dureze finalizarea acestei pagini sau secțiuni",
       "translatable": true
     },
     "_lockedBy": {
       "type": "array",
       "required": false,
       "default": [],
-      "title": "Locked by",
+      "title": "Blocat de",
       "inputType": "List",
       "validators": [],
-      "help": "If the course is using a 'custom' Menu Lock Type, this should contain the unique ID of the item(s) which must be completed before this is unlocked"
+      "help": "Dacă cursul folosește un tip de blocare a meniului "personalizat", acesta ar trebui să conțină ID-ul unic al elementului (articolelor) care trebuie finalizat înainte de a fi deblocat"
     },
     "_lockType": {
       "type": "string",
@@ -128,8 +128,8 @@
           "unlockFirst"
         ]
       },
-      "title": "Menu lock type",
-      "help": "Defines which (if any) locking mechanism will be used. To be used only on submenus.",
+      "title": "Tipul de blocare a meniului",
+      "help": "Definește ce mecanism de blocare (dacă există) va fi utilizat. A se utiliza numai în submeniuri.",
       "validators": []
     },
     "_classes": {
@@ -138,8 +138,8 @@
       "isSetting": true,
       "inputType": "Text",
       "validators": [],
-      "title": "Page Classes",
-      "help": "Used to style or manipulate the look and feel of this Page (or submenu). These are predefined in the theme or added in Project Settings > Custom CSS/Less code."
+      "title": "Clase de pagini",
+      "help": "Folosit pentru a stiliza sau manipula aspectul acestei Pagini (sau submeniu). Acestea sunt predefinite în temă sau adăugate în Setările proiectului > cod CSS/Less personalizat."
     },
     "_isOptional": {
       "type": "boolean",
@@ -147,8 +147,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this optional?",
-      "help": "An optional page does not have to be completed, nor do any of the articles, blocks and components contained within it."
+      "title": "Este opțional?",
+      "help": "O pagină opțională nu trebuie să fie completată, nici articolele, blocurile și componentele conținute în ea."
     },
     "_isAvailable": {
       "type": "boolean",
@@ -156,8 +156,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this available?",
-      "help": "Controls whether this page and its contents are available in the course or not."
+      "title": "Este disponibil?",
+      "help": "Controlează dacă această pagină și conținutul ei sunt disponibile în curs sau nu."
     },
     "_isHidden": {
       "type": "boolean",
@@ -165,8 +165,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this hidden?",
-      "help": "Hides this page from the course menu. Needs to be supported by the menu you are using in your course."
+      "title": "Este ascuns?",
+      "help": "Ascunde această pagină din meniul cursului. Trebuie să fie susținut de meniul pe care îl utilizați în cursul dvs."
     },
     "_isVisible": {
       "type": "boolean",
@@ -174,8 +174,8 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Is this visible?",
-      "help": "Equivalent to the CSS visibility property. Unless you have custom code that uses this, it is highly unlikely you would want to change this setting at a page level."
+      "title": "Este vizibil?",
+      "help": "Echivalent cu proprietatea de vizibilitate CSS. Dacă nu aveți cod personalizat care utilizează acest lucru, este foarte puțin probabil să doriți să modificați această setare la nivel de pagină."
     },
     "_requireCompletionOf": {
       "type": "number",
@@ -183,8 +183,8 @@
       "isSetting": true,
       "inputType": "Number",
       "validators": ["number"],
-      "title": "Require completion of",
-      "help": "The number of articles within this page the learner must complete in order for this page to be set as completed. A value of -1 requires all of them to be completed."
+      "title": "Necesită finalizarea",
+      "help": "Numărul de articole din această pagină pe care cursantul trebuie să le completeze pentru ca această pagină să fie setată ca finalizată. O valoare de -1 necesită ca toate să fie completate."
     },
     "_isA11yCompletionDescriptionEnabled": {
       "type": "boolean",
@@ -192,13 +192,13 @@
       "isSetting": true,
       "inputType": "Checkbox",
       "validators": [],
-      "title": "Enable accessibility completion description",
-      "help": "Controls whether a hidden label is appended to the menu/page title that describes the completion state of the menu/page."
+      "title": "Activați descrierea de finalizare a accesibilității",
+      "help": "Controlează dacă o etichetă ascunsă este adăugată la titlul meniului/paginii care descrie starea de finalizare a meniului/paginii."
     },
     "_onScreen": {
       "type": "object",
-      "title": "On-screen classes",
-      "help": "These settings allow you to attach classes to the page when it is within the browser's viewport; helpful for running CSS-based animations on pages as they scroll into view.",
+      "title": "Cursuri pe ecran",
+      "help": "Aceste setări vă permit să atașați clase la pagină atunci când se află în fereastra de vizualizare a browserului; util pentru rularea animațiilor bazate pe CSS pe pagini pe măsură ce acestea se derulează în vizualizare.",
       "properties": {
         "_isEnabled": {
           "type": "boolean",
@@ -206,27 +206,27 @@
           "isSetting": true,
           "inputType": "Checkbox",
           "validators": [],
-          "title": "Enabled?"
+          "title": "Activat?"
         },
         "_classes": {
           "type": "string",
-          "default": "",
+          "default": "Clase",
           "isSetting": true,
           "required": false,
           "inputType": "Text",
           "validators": [],
-          "title": "Classes",
-          "help": "The CSS class(es) to add to the page element."
+          "title": "Clase",
+          "help": "Clasele CSS de adăugat la elementul de pagină."
         },
         "_percentInviewVertical": {
           "type": "number",
           "required": false,
           "default": 50,
           "isSetting": true,
-          "title": "Percent in view",
+          "title": "Procentaj vizibil",
           "inputType": "Number",
           "validators": ["number"],
-          "help": "Controls what percentage of the page's height needs to be in the viewport in order for the CSS class(es) to be added."
+          "help": "Controlează ce procent din înălțimea paginii trebuie să fie în fereastra de vizualizare pentru ca clasele CSS să fie adăugate."
         }
       }
     },
