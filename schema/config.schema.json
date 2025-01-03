@@ -302,8 +302,8 @@
           "default": "auto",
           "enum": [
             "auto",
-            "stânga",
-            "dreapta"
+            "left",
+            "right"
           ]
         },
         "_iconClass": {
