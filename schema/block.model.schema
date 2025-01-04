@@ -31,7 +31,8 @@
     },
     "body":{
       "type": "string",
-      "default" : "Conținut",
+      "title": "Conținut"
+      "default" : "",
       "inputType": "TextArea",
       "validators": [],
       "translatable": true
@@ -40,14 +41,15 @@
       "type": "string",
       "required": false,
       "title": "Text Instrucțiuni",
-      "default": "Instrucțiuni",
+      "default": "",
       "inputType": "Text",
       "validators": [],
       "translatable": true
     },
     "_classes": {
       "type": "string",
-      "default": "Clase",
+      "title": "Clase",
+      "default": "",
       "isSetting": true,
       "inputType": "Text",
       "validators": [],
@@ -123,7 +125,7 @@
         },
         "_classes": {
           "type": "string",
-          "default": "Clase",
+          "default": "",
           "isSetting": true,
           "required": false,
           "inputType": "Text",
