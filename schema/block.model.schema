@@ -23,7 +23,7 @@
     "displayTitle": {
       "type": "string",
       "required": false,
-      "default": "Titlu",
+      "default": "Titlul blocului nou",
       "inputType": "DisplayTitle",
       "validators": [],
       "help": "Când vizualizați un bloc - acesta este titlul care va fi afișat pe pagină",
