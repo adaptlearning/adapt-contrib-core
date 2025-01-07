@@ -81,12 +81,14 @@
     }
   }
   function process() {
+    if (isLocked()) return;
     const registeredCount = registered.length;
     if (registeredCount === 0) return;
     const executables = registered.slice(0)
     executables.forEach(processItem);
   }
   function processItem(item) {
+    if (isLocked()) return;
     const measurement = getMeasurement(item.element);
     const uniqueMeasurementId = measurement.uniqueMeasurementId;
     const hasMeasureChanged = (
