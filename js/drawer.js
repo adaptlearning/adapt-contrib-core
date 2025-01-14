@@ -18,6 +18,7 @@ class Drawer extends Backbone.Controller {
 
   onAdaptStart() {
     this._drawerView = new DrawerView({ collection: DrawerCollection });
+    this._drawerView.$el.insertAfter('#shadow');
   }
 
   onLanguageChanged() {

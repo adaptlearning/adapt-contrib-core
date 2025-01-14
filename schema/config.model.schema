@@ -361,6 +361,21 @@
         }
       }
     },
+    "_notify": {
+      "type": "object",
+      "isSetting": false,
+      "title": "",
+      "properties": {
+        "_duration": {
+          "type": "number",
+          "required": true,
+          "default": 400,
+          "title": "Duration",
+          "inputType": "Number",
+          "validators": ["required", "number"]
+        }
+      }
+    },
     "_generateSourcemap": {
       "type": "boolean",
       "default": false,

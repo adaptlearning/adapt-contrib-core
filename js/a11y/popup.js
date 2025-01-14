@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import logging from '../logging';
 
 /**
  * Tabindex and aria-hidden manager for popups.
@@ -94,6 +95,12 @@ export default class Popup extends Backbone.Controller {
     }
     this._floorStack.push($popupElement);
     this._focusStack.push($(document.activeElement));
+    if ($popupElement.is('dialog')) {
+      $popupElement[0].addEventListener('cancel', event => event.preventDefault());
+      $popupElement[0].showModal();
+      return;
+    }
+    logging.deprecated('a11y/popup opened: Use native dialog tag for', $popupElement);
     let $elements = $(config._options._tabbableElements).filter(config._options._tabbableElementsExcludes);
     const $branch = $popupElement.add($popupElement.parents());
     const $siblings = $branch.siblings().filter(config._options._tabbableElementsExcludes);
@@ -167,7 +174,11 @@ export default class Popup extends Backbone.Controller {
     if (this._floorStack.length <= 1) {
       return;
     }
-    this._floorStack.pop();
+    const $popupElement = this._floorStack.pop();
+    if ($popupElement.is('dialog')) {
+      $popupElement[0].close();
+      return this._focusStack.pop();
+    }
     $(config._options._tabbableElements).filter(config._options._tabbableElementsExcludes).each((index, item) => {
       const $item = $(item);
       let previousTabIndex = '';

@@ -14,12 +14,18 @@ export default class NotifyView extends Backbone.View {
     this._stack = [];
     this.notifyPushes = new NotifyPushCollection();
     this.listenTo(Adapt, {
+      'app:dataReady': this.onDataReady,
       'notify:popup': this._deprecated.bind(this, 'popup'),
       'notify:alert': this._deprecated.bind(this, 'alert'),
       'notify:prompt': this._deprecated.bind(this, 'prompt'),
       'notify:push': this._deprecated.bind(this, 'push')
     });
     this.render();
+  }
+
+  onDataReady() {
+    const notifyDuration = Adapt.config.get('_notify')?._duration ?? 400;
+    document.documentElement.style.setProperty('--adapt-notify-duration', `${notifyDuration}ms`);
   }
 
   get stack() {
