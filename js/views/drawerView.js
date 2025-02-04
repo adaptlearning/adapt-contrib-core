@@ -80,7 +80,7 @@ class DrawerView extends Backbone.View {
   setupEventListeners() {
     this.onKeyDown = this.onKeyDown.bind(this);
     $(window).on('keydown', this.onKeyDown);
-    this.el.addEventListener('click', this.onShadowClicked, { capture: true });
+    this.el.addEventListener('mousedown', this.onShadowClicked, { capture: true });
   }
 
   onKeyDown(event) {
@@ -251,6 +251,7 @@ class DrawerView extends Backbone.View {
   remove() {
     this.hideDrawer();
     super.remove();
+    this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
     $(window).off('keydown', this.onKeyDown);
     Adapt.trigger('drawer:empty');
     this.collection.reset();

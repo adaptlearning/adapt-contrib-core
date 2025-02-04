@@ -34,7 +34,7 @@ export default class NotifyPopupView extends Backbone.View {
     this.setupEventListeners();
     this.render();
     const dialog = this.$('.notify__popup')[0];
-    dialog.addEventListener('click', this.onShadowClicked, { capture: true });
+    dialog.addEventListener('mousedown', this.onShadowClicked, { capture: true });
   }
 
   setupEventListeners() {
@@ -208,6 +208,7 @@ export default class NotifyPopupView extends Backbone.View {
 
   remove(...args) {
     this.removeSubView();
+    this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
     $(window).off('keydown', this.onKeyDown);
     super.remove(...args);
   }
