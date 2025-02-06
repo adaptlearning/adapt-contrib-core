@@ -78,12 +78,12 @@ class DrawerView extends Backbone.View {
   }
 
   setupEventListeners() {
-    this.onKeyUp = this.onKeyUp.bind(this);
-    $(window).on('keyup', this.onKeyUp);
-    this.el.addEventListener('click', this.onShadowClicked, { capture: true });
+    this.onKeyDown = this.onKeyDown.bind(this);
+    $(window).on('keydown', this.onKeyDown);
+    this.el.addEventListener('mousedown', this.onShadowClicked, { capture: true });
   }
 
-  onKeyUp(event) {
+  onKeyDown(event) {
     if (event.which !== 27) return;
     event.preventDefault();
     this.hideDrawer();
@@ -196,6 +196,8 @@ class DrawerView extends Backbone.View {
     Adapt.trigger('drawer:opened');
 
     this.$el.addClass('anim-show-before');
+    // focus on first tabbable element in drawer
+    a11y.focusFirst(this.$el, { defer: true });
     await transitionNextFrame();
     this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
@@ -227,28 +229,30 @@ class DrawerView extends Backbone.View {
     this.$el.addClass('anim-hide-after');
     await transitionsEnded(this.$el);
 
-    this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
+    this._customView = null;
+    $('.js-nav-drawer-btn').attr('aria-expanded', false);
+    Adapt.trigger('drawer:closed');
 
     a11y.popupClosed($toElement);
     this._isVisible = false;
     a11y.scrollEnable('body');
+    this.$('.js-drawer-holder').removeAttr('role');
+
+    this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
 
     this.$el
       .removeAttr('style')
       .addClass('u-display-none')
       .attr('aria-hidden', 'true')
       .attr('aria-expanded', 'false');
-    this.$('.js-drawer-holder').removeAttr('role');
-    this._customView = null;
-    $('.js-nav-drawer-btn').attr('aria-expanded', false);
-    Adapt.trigger('drawer:closed');
     this.setDrawerPosition(this._globalDrawerPosition);
   }
 
   remove() {
     this.hideDrawer();
     super.remove();
-    $(window).off('keyup', this.onKeyUp);
+    this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
+    $(window).off('keydown', this.onKeyDown);
     Adapt.trigger('drawer:empty');
     this.collection.reset();
   }

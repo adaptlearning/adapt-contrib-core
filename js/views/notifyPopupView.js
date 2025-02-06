@@ -26,7 +26,7 @@ export default class NotifyPopupView extends Backbone.View {
 
   initialize({ notify }) {
     this.notify = notify;
-    _.bindAll(this, 'onShadowClicked', 'resetNotifySize', 'onKeyUp');
+    _.bindAll(this, 'onShadowClicked', 'resetNotifySize', 'onKeyDown');
     this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this.isOpen = false;
@@ -34,7 +34,7 @@ export default class NotifyPopupView extends Backbone.View {
     this.setupEventListeners();
     this.render();
     const dialog = this.$('.notify__popup')[0];
-    dialog.addEventListener('click', this.onShadowClicked, { capture: true });
+    dialog.addEventListener('mousedown', this.onShadowClicked, { capture: true });
   }
 
   setupEventListeners() {
@@ -48,10 +48,10 @@ export default class NotifyPopupView extends Backbone.View {
   }
 
   setupEscapeKey() {
-    $(window).on('keyup', this.onKeyUp);
+    $(window).on('keydown', this.onKeyDown);
   }
 
-  onKeyUp(event) {
+  onKeyDown(event) {
     if (event.which !== 27) return;
     event.preventDefault();
     this.cancelNotify();
@@ -138,6 +138,8 @@ export default class NotifyPopupView extends Backbone.View {
     $('html').addClass('notify');
 
     this.$el.addClass('anim-show-before');
+    // Set focus to first accessible element
+    a11y.focusFirst(this.$('.notify__popup'), { defer: false });
     await transitionNextFrame();
     this.resetNotifySize();
     await transitionNextFrame();
@@ -206,7 +208,8 @@ export default class NotifyPopupView extends Backbone.View {
 
   remove(...args) {
     this.removeSubView();
-    $(window).off('keyup', this.onKeyUp);
+    this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
+    $(window).off('keydown', this.onKeyDown);
     super.remove(...args);
   }
 

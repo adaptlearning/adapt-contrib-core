@@ -51,9 +51,9 @@ Adapt.on({
     logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
     drawer.remove();
   },
-  'drawer:closeDrawer'() {
+  'drawer:closeDrawer'($toElement) {
     logging.deprecated('Use drawer.close, Adapt.trigger(\'drawer:closeDrawer\') will be removed in the future');
-    drawer.close();
+    drawer.close($toElement);
   },
   'drawer:triggerCustomView'() {
     logging.deprecated('Use drawer.openCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
