@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 
 /**
- * Browser modifications to focus handling.
+ * Browser aria-disabled element interaction prevention
  * @class
  */
 export default class BrowserFocus extends Backbone.Controller {
@@ -32,7 +32,7 @@ export default class BrowserFocus extends Backbone.Controller {
   }
 
   /**
-   * Stop event handling on aria-disabled elements.
+   * Stop click handling on aria-disabled elements.
    *
    * @param {JQuery.Event} event
    */
@@ -45,7 +45,7 @@ export default class BrowserFocus extends Backbone.Controller {
   }
 
   /**
-   * Stop event handling on aria-disabled elements.
+   * Stop enter and space handling on aria-disabled elements.
    *
    * @param {JQuery.Event} event
    */
