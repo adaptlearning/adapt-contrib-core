@@ -61,23 +61,16 @@ export default class BrowserFocus extends Backbone.Controller {
   /**
    * Force focus when clicked on a tabbable element,
    * making sure `document.activeElement` is updated.
-   * Stop event handling on aria-disabled elements.
    *
    * @param {JQuery.Event} event
    */
   _onClick(event) {
     if (!event.isTrusted) return;
-    const $element = $(event.target);
-    // search element and parents for aria-disabled - see https://github.com/adaptlearning/adapt_framework/issues/3097
-    const isAriaDisabled = $element.closest('[aria-disabled=true]').length === 1;
-    if (isAriaDisabled) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isFocusOnClickEnabled) {
       return;
     }
+    const $element = $(event.target);
     const $stack = $([...$element.toArray(), ...$element.parents().toArray()]);
     const $focusable = $stack.filter(config._options._tabbableElements);
     if (!$focusable.length) {
