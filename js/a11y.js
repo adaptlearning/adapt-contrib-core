@@ -730,6 +730,12 @@ class A11y extends Backbone.Controller {
   focusFirst($element, options) {
     options = new FocusOptions(options);
     $element = $($element).first();
+    const isBodyFocus = ($element[0] === document.body);
+    if (isBodyFocus) {
+      // force focus to the body, effectively starting the tab cursor from the top
+      this.focus($element, options);
+      return;
+    }
     if (this.isReadable($element)) {
       this.focus($element, options);
       return $element;
