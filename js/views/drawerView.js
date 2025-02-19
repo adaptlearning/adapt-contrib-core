@@ -221,6 +221,8 @@ class DrawerView extends Backbone.View {
     if (!this._isVisible) return;
     this._useMenuPosition = false;
 
+    a11y.popupClosed($toElement);
+
     this._isCustomViewVisible = false;
     shadow.hide();
 
@@ -233,7 +235,6 @@ class DrawerView extends Backbone.View {
     $('.js-nav-drawer-btn').attr('aria-expanded', false);
     Adapt.trigger('drawer:closed');
 
-    a11y.popupClosed($toElement);
     this._isVisible = false;
     a11y.scrollEnable('body');
     this.$('.js-drawer-holder').removeAttr('role');
