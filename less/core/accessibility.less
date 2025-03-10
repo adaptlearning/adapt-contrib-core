@@ -1,10 +1,9 @@
 // prevent elements from being obscured by nav bar when they receive focus
-body {
-  .is-nav-bottom & {
+:not(.adapt-scrolling), .adapt-scrolling body {
+  .is-nav-bottom& {
     scroll-padding-bottom: var(--adapt-navigation-height);
   }
-
-  .is-nav-top & {
+  .is-nav-top& {
     scroll-padding-top: var(--adapt-navigation-height);
   }
 }
