@@ -1,6 +1,9 @@
 .notify-push {
   position: fixed;
-  right: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+  height: fit-content;
   width: @drawer-width;
   opacity: 0;
   z-index: 100;
@@ -11,8 +14,8 @@
   }
 
   .dir-rtl & {
-    right: auto;
-    left: 0;
+    margin-right: auto;
+    margin-left: 0;
   }
 
   &__inner {
