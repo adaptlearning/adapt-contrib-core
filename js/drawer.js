@@ -58,7 +58,7 @@ class Drawer extends Backbone.Controller {
   }
 
   close($toElement = null) {
-    this._drawerView?.hideDrawer($toElement);
+    this._drawerView?.hideDrawer($toElement, { force: true });
   }
 
   remove() {
