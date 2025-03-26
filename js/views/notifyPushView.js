@@ -23,18 +23,30 @@ export default class NotifyPushView extends Backbone.View {
   }
 
   initialize() {
+    _.bindAll(this, 'onKeyDown');
     this.listenTo(Adapt, {
       'notify:pushShown notify:pushRemoved': this.updateIndexPosition,
       remove: this.remove
     });
-
     this.listenTo(this.model.collection, {
       remove: this.updateIndexPosition,
       'change:_index': this.updatePushPosition
     });
-
+    this.setupEscapeKey();
     this.preRender();
     this.render();
+  }
+
+  setupEscapeKey() {
+    $(window).on('keydown', this.onKeyDown);
+  }
+
+  onKeyDown(event) {
+    if (event.which !== 27) return;
+    const isFocusInPopup = Boolean($(document.activeElement).closest(this.$el).length);
+    if (!isFocusInPopup) return;
+    event.preventDefault();
+    this.closePush();
   }
 
   events() {
@@ -120,5 +132,10 @@ export default class NotifyPushView extends Backbone.View {
       const positionLowerPush = (elementHeight + offset) * flippedIndex + navigationHeight + offset;
       this.$el.css('top', positionLowerPush);
     }
+  }
+
+  remove(...args) {
+    $(window).off('keydown', this.onKeyDown);
+    super.remove(...args);
   }
 }
