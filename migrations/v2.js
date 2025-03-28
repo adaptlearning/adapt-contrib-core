@@ -54,8 +54,8 @@ describe('core - update to v2.0.14', async () => {
     ]
   });
 
-  testStopWhere('no config', {
-    content: [{ _type: 'course' }]
+  testStopWhere('no course/contentObject', {
+    content: [{ _type: 'other' }]
   });
 });
 
