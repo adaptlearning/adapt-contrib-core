@@ -96,7 +96,7 @@
       item.uniqueMeasurementId !== uniqueMeasurementId
     );
     item.uniqueMeasurementId = measurement.uniqueMeasurementId;
-    if (!hasMeasureChanged || !measurement.onscreen) return;
+    if (!hasMeasureChanged) return;
     switch (item.type) {
       case TYPE.onscreen:
         processOnScreen(item, measurement);
