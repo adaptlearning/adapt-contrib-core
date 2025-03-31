@@ -265,9 +265,9 @@ describe('core - update to v2.1.0', async () => {
   });
 
   mutateContent('core - update _accessibility._isEnabledOnTouchDevices', async (content) => {
-    const originalValue = _.get(config, '_accessibility._isEnabledOnTouchDevices');
-    _.set(config, '_accessibility._isDisabledOnTouchDevices', originalValue || 'Turn accessibility on?');
-    _.unset(config, '_accessibility._isEnabledOnTouchDevices');
+    const originalValue = _.get(config, '_accessibility._isDisabledOnTouchDevices');
+    _.set(config, '_accessibility._isEnabledOnTouchDevices', originalValue || false);
+    _.unset(config, '_accessibility._isDisabledOnTouchDevices');
     return true;
   });
 
@@ -282,7 +282,7 @@ describe('core - update to v2.1.0', async () => {
       {
         _type: 'config',
         _accessibility: {
-          _isEnabledOnTouchDevices: false
+          _isDisabledOnTouchDevices: false
         }
       }
     ]
