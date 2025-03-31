@@ -214,7 +214,7 @@ describe('core - update to v2.0.18', async () => {
 
   mutateContent('core - update _globals._accessibility._accessibilityToggleTextOff', async (content) => {
     const originalValue = _.get(course, '_globals._accessibility._accessibilityToggleTextOff');
-    _.set(course, '_globals._accessibility.accessibilityToggleTextOn', originalValue || 'Turn accessibility off?');
+    _.set(course, '_globals._accessibility.accessibilityToggleTextOff', originalValue || 'Turn accessibility off?');
     _.unset(course, '_globals._accessibility._accessibilityToggleTextOff');
     return true;
   });
@@ -266,14 +266,14 @@ describe('core - update to v2.1.0', async () => {
 
   mutateContent('core - update _accessibility._isEnabledOnTouchDevices', async (content) => {
     const originalValue = _.get(config, '_accessibility._isEnabledOnTouchDevices');
-    _.set(config, '_accessibility.accessibilityToggleTextOn', originalValue || 'Turn accessibility on?');
+    _.set(config, '_accessibility._isDisabledOnTouchDevices', originalValue || 'Turn accessibility on?');
     _.unset(config, '_accessibility._isEnabledOnTouchDevices');
     return true;
   });
 
-  checkContent('core - check _accessibility.accessibilityToggleTextOn', async (content) => {
-    const isValid = _.has(config, '_accessibility.accessibilityToggleTextOn');
-    if (!isValid) throw new Error('core - _accessibility.accessibilityToggleTextOn not added');
+  checkContent('core - check _accessibility._isEnabledOnTouchDevices', async (content) => {
+    const isValid = _.has(config, '_accessibility._isEnabledOnTouchDevices');
+    if (!isValid) throw new Error('core - _accessibility._isEnabledOnTouchDevices not added');
     return true;
   });
 
