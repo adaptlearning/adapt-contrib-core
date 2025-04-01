@@ -1,10 +1,10 @@
 // Add top padding equal to the height of the navigation bar
 // --------------------------------------------------
-html.is-nav-top #wrapper {
+.html.is-nav-top #wrapper {
   padding-top: var(--adapt-navigation-height);
 }
 
-html.is-nav-bottom #wrapper {
+.html.is-nav-bottom #wrapper {
   padding-bottom: var(--adapt-navigation-height);
 }
 
@@ -13,11 +13,11 @@ html.is-nav-bottom #wrapper {
   width: 100%;
   z-index: 80;
 
-  html.is-nav-top & {
+  .html.is-nav-top & {
     top: 0;
   }
 
-  html.is-nav-bottom & {
+  .html.is-nav-bottom & {
     bottom: 0;
   }
 
@@ -96,7 +96,7 @@ html.is-nav-bottom #wrapper {
     top: 0;
     z-index: 100;
 
-    html:not(.has-accessibility) & {
+    .html:not(.has-accessibility) & {
       .u-display-none;
     }
 
