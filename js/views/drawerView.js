@@ -217,23 +217,28 @@ class DrawerView extends Backbone.View {
     this.collection.forEach(model => new DrawerItemView({ model }));
   }
 
-  async hideDrawer($toElement) {
+  async hideDrawer($toElement, {
+    force = false // close the drawer immediately
+  } = {}) {
     if (!this._isVisible) return;
     this._useMenuPosition = false;
+
+    // make sure that the HTMLDialogElement.close in a11y.popupClosed() does not hide the dialog
+    this.$el.css('display', 'block');
+    a11y.popupClosed($toElement);
 
     this._isCustomViewVisible = false;
     shadow.hide();
 
     this.$el.addClass('anim-hide-before');
-    await transitionNextFrame();
+    if (!force) await transitionNextFrame();
     this.$el.addClass('anim-hide-after');
-    await transitionsEnded(this.$el);
+    if (!force) await transitionsEnded(this.$el);
 
     this._customView = null;
     $('.js-nav-drawer-btn').attr('aria-expanded', false);
     Adapt.trigger('drawer:closed');
 
-    a11y.popupClosed($toElement);
     this._isVisible = false;
     a11y.scrollEnable('body');
     this.$('.js-drawer-holder').removeAttr('role');
@@ -249,7 +254,7 @@ class DrawerView extends Backbone.View {
   }
 
   remove() {
-    this.hideDrawer();
+    this.hideDrawer(null, { force: true });
     super.remove();
     this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
     $(window).off('keydown', this.onKeyDown);
