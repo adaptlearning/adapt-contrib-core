@@ -1,6 +1,5 @@
 import Adapt from 'core/js/adapt';
 import offlineStorage from 'core/js/offlineStorage';
-import device from 'core/js/device';
 import location from 'core/js/location';
 import AriaDisabled from './a11y/ariaDisabled';
 import BrowserConfig from './a11y/browserConfig';
@@ -9,12 +8,14 @@ import FocusOptions from 'core/js/a11y/focusOptions';
 import KeyboardFocusOutline from 'core/js/a11y/keyboardFocusOutline';
 import Log from 'core/js/a11y/log';
 import Scroll from 'core/js/a11y/scroll';
+import TopOfPage from './a11y/topOfPage';
 import WrapFocus from 'core/js/a11y/wrapFocus';
 import Popup from 'core/js/a11y/popup';
 import defaultAriaLevels from 'core/js/enums/defaultAriaLevels';
 import deprecated from 'core/js/a11y/deprecated';
 import logging from 'core/js/logging';
 import data from './data';
+import { transitionNextFrame } from './transitions';
 
 class A11y extends Backbone.Controller {
 
@@ -88,10 +89,10 @@ class A11y extends Backbone.Controller {
     this._wrapFocus = new WrapFocus({ a11y: this });
     this._popup = new Popup({ a11y: this });
     this._scroll = new Scroll({ a11y: this });
+    this._topOfPage = new TopOfPage({ a11y: this });
     this._isForcedFocus = false;
     this.log = new Log({ a11y: this });
     deprecated(this);
-
     this._removeLegacyElements();
     this.listenToOnce(Adapt, {
       'configModel:dataLoaded': this._onConfigDataLoaded,
@@ -733,7 +734,7 @@ class A11y extends Backbone.Controller {
     const isBodyFocus = ($element[0] === document.body);
     if (isBodyFocus) {
       // force focus to the body, effectively starting the tab cursor from the top
-      this.focus($element, options);
+      this.focus(document.body, options);
       return;
     }
     if (this.isReadable($element)) {
@@ -759,44 +760,40 @@ class A11y extends Backbone.Controller {
     if (!config._isEnabled || !config._options._isFocusAssignmentEnabled || $element.length === 0) {
       return this;
     }
-    const perform = () => {
-      if ($element.attr('tabindex') === undefined) {
+    const isBodyFocus = ($element[0] === document.body);
+    if (isBodyFocus) {
+      this._topOfPage.goto();
+      return;
+    }
+    const perform = async () => {
+      const isNotFocusable = ($element.attr('tabindex') === undefined);
+      if (isNotFocusable) {
         $element.attr({
           // JAWS reads better with 0, do not use -1
           tabindex: '0',
           'data-a11y-force-focus': 'true'
         });
       }
-      if (options.preventScroll) {
-        const y = $(window).scrollTop();
-        try {
-          this._isForcedFocus = true;
-          $element[0].focus({
-            preventScroll: true
-          });
-          this._isForcedFocus = false;
-        } catch (e) {
-          // Drop focus errors as only happens when the element
-          // isn't attached to the DOM.
-        }
-        switch (device.browser) {
-          case 'internet explorer':
-          case 'microsoft edge':
-          case 'safari':
-            // return to previous scroll position due to no support for preventScroll
-            window.scrollTo(null, y);
-        }
-      } else {
+      if (options.defer || isNotFocusable) {
+        await transitionNextFrame();
+      }
+      const $window = $(window);
+      const y = $window.scrollTop();
+      try {
         this._isForcedFocus = true;
-        $element[0].focus();
+        $element[0].focus(options);
         this._isForcedFocus = false;
+      } catch (e) {
+        // Drop focus errors as only happens when the element
+        // isn't attached to the DOM.
+      }
+      const hasScrollMoved = ($window.scrollTop() !== y);
+      if (options.preventScroll && hasScrollMoved) {
+        // return to previous scroll position due to no support for preventScroll
+        window.scrollTo(null, y);
       }
     };
-    if (options.defer) {
-      _.defer(perform);
-    } else {
-      perform();
-    }
+    perform();
     return this;
   }
 
