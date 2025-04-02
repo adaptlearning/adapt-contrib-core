@@ -36,7 +36,7 @@ export default class TopOfPage extends Backbone.Controller {
     json.type = json._globals._accessibility._ariaLabels[json._type] || DEFAULT_TYPE_LABEL[json._type];
     json.heading = this.a11y.normalize(Handlebars.templates.heading(json));
     json.displayTitle = this.a11y.normalize(json.displayTitle);
-    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage || 'Top of {{type}} {{displayTitle}}');
+    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage || '{{type}} {{displayTitle}}');
     this.$element.html(template(json));
   }
 
