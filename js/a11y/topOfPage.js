@@ -26,9 +26,13 @@ export default class TopOfPage extends Backbone.Controller {
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
     const json = location._currentModel.toJSON();
+    json.type = location._currentModel.isTypeGroup('menu')
+      ? 'menu'
+      : 'page';
     json._globals = Adapt.course.get('_globals');
     json.heading = this.a11y.normalize(Handlebars.templates.heading(json));
-    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage || 'Top of page {{a11y.normalize displayTitle}}');
+    json.displayTitle = this.a11y.normalize(json.displayTitle);
+    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage || 'Top of {{type}} {{displayTitle}}');
     this.$element.html(template(json));
   }
 
