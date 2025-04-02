@@ -35,7 +35,8 @@ export default class TopOfPage extends Backbone.Controller {
   goto() {
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
-    this.a11y.focus(this.$element, { preventScroll: false, defer: true });
+    if (document.activeElement === this.$element[0]) return;
+    this.$element[0].focus();
   }
 
 }
