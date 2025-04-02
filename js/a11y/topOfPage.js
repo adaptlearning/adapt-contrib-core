@@ -1,5 +1,11 @@
 import Adapt from 'core/js/adapt';
 
+const DEFAULT_TYPE_LABEL = {
+  course: 'Main menu',
+  menu: 'Sub menu',
+  page: 'Page'
+};
+
 /**
  * Add element to focus when entering a new page
  * @class
@@ -26,10 +32,8 @@ export default class TopOfPage extends Backbone.Controller {
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
     const json = location._currentModel.toJSON();
-    json.type = location._currentModel.isTypeGroup('menu')
-      ? 'menu'
-      : 'page';
     json._globals = Adapt.course.get('_globals');
+    json.type = json._globals._accessibility._ariaLabels[json._type] || DEFAULT_TYPE_LABEL[json._type];
     json.heading = this.a11y.normalize(Handlebars.templates.heading(json));
     json.displayTitle = this.a11y.normalize(json.displayTitle);
     const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage || 'Top of {{type}} {{displayTitle}}');
