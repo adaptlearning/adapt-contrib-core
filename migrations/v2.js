@@ -266,7 +266,7 @@ describe('core - update to v2.1.0', async () => {
 
   mutateContent('core - update _accessibility._isEnabledOnTouchDevices', async (content) => {
     const originalValue = _.get(config, '_accessibility._isDisabledOnTouchDevices');
-    _.set(config, '_accessibility._isEnabledOnTouchDevices', originalValue || false);
+    _.set(config, '_accessibility._isEnabledOnTouchDevices', !originalValue || false);
     _.unset(config, '_accessibility._isDisabledOnTouchDevices');
     return true;
   });
