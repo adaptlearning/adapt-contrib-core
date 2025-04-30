@@ -7,10 +7,10 @@ const DEFAULT_TYPE_LABEL = {
 };
 
 /**
- * Add element to focus when entering a new page
+ * Add element to focus when entering a new content object
  * @class
  */
-export default class TopOfPage extends Backbone.Controller {
+export default class TopOfContentObject extends Backbone.Controller {
 
   initialize({ a11y }) {
     this.a11y = a11y;
@@ -24,7 +24,7 @@ export default class TopOfPage extends Backbone.Controller {
   createElement() {
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
-    this.$element = $('<div id="a11y-topofpage" tabindex="-1" class="visually-hidden"></div>');
+    this.$element = $('<div id="a11y-topofcontentobject" tabindex="-1" class="visually-hidden"></div>');
     this.$body.prepend(this.$element);
   }
 
@@ -33,10 +33,9 @@ export default class TopOfPage extends Backbone.Controller {
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
     const json = location._currentModel.toJSON();
     json._globals = Adapt.course.get('_globals');
-    json.type = json._globals._accessibility._ariaLabels[json._type] ?? DEFAULT_TYPE_LABEL[json._type];
-    json.heading = this.a11y.normalize(Handlebars.templates.heading(json));
+    json.type = this.a11y.normalize(json._globals._accessibility._ariaLabels[json._type] ?? DEFAULT_TYPE_LABEL[json._type]);
     json.displayTitle = this.a11y.normalize(json.displayTitle);
-    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfPage ?? '{{type}} {{displayTitle}}');
+    const template = Handlebars.compile(json._globals._accessibility._ariaLabels.topOfContentObject ?? '{{type}} {{displayTitle}}');
     this.$element.html(template(json));
   }
 
