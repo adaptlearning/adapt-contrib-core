@@ -5,7 +5,7 @@ describe('core - update to v5.0.0', async () => {
   let course, contentObjects;
 
   whereContent('core - where config', async (content) => {
-    contentObjects = content.filter((item) => item._type === 'page');
+    contentObjects = content.filter((item) => ['page', 'menu'].includes(item._type));
     course = getCourse();
     return course || contentObjects.length;
   });
@@ -87,7 +87,10 @@ describe('core - update to v5.0.0', async () => {
       { _type: 'course', _htmlClassName: 'htmlClassName', subtitle: 'subtitle', instruction: 'instruction' },
       { _id: 'co-100', _type: 'page', _htmlClassName: 'htmlClassName', subtitle: 'subtitle' },
       { _id: 'co-200', _type: 'page', _htmlClassName: '', subtitle: '' },
-      { _id: 'co-300', _type: 'page' }
+      { _id: 'co-300', _type: 'page' },
+      { _id: 'co-400', _type: 'menu', _htmlClassName: 'htmlClassName', subtitle: 'subtitle' },
+      { _id: 'co-500', _type: 'menu', _htmlClassName: '', subtitle: '' },
+      { _id: 'co-600', _type: 'menu' }
     ]
   });
 
@@ -96,7 +99,10 @@ describe('core - update to v5.0.0', async () => {
       { _type: 'course', _htmlClassName: 'htmlClassName' },
       { _id: 'co-100', _type: 'page', _htmlClassName: 'htmlClassName', subtitle: 'subtitle' },
       { _id: 'co-200', _type: 'page', _htmlClassName: '', subtitle: '' },
-      { _id: 'co-300', _type: 'page' }
+      { _id: 'co-300', _type: 'page' },
+      { _id: 'co-400', _type: 'menu', _htmlClassName: 'htmlClassName', subtitle: 'subtitle' },
+      { _id: 'co-500', _type: 'menu', _htmlClassName: '', subtitle: '' },
+      { _id: 'co-600', _type: 'menu' }
     ]
   });
 
@@ -157,7 +163,7 @@ describe('core - update to v5.4.0', async () => {
   });
 
   mutateContent('core - add _requireCompletionOf to models', async (content) => {
-    const models = ['article', 'block', 'page', 'course'];
+    const models = ['article', 'block', 'page', 'menu', 'course'];
     requireCompletionOfModels = content.filter((item) => models.includes(item._type));
     requireCompletionOfModels.forEach((item) => {
       if (!_.has(item, '_requireCompletionOf')) _.set(item, '_requireCompletionOf', -1);
@@ -197,7 +203,9 @@ describe('core - update to v5.4.0', async () => {
       { _id: 'c-100', _type: 'component' },
       { _id: 'c-105', _type: 'component', _isResetOnRevisit: false },
       { _id: 'b-100', _type: 'block' },
-      { _id: 'a-100', _type: 'article' }
+      { _id: 'a-100', _type: 'article' },
+      { _id: 'co-100', _type: 'page' },
+      { _id: 'co-200', _type: 'menu' }
 
     ]
   });

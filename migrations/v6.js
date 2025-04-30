@@ -389,7 +389,7 @@ describe('core - update to v6.41.3', async () => {
   whereFromPlugin('core - from less than v6.41.3', { name: 'adapt-contrib-core', version: '<6.41.3' });
 
   whereContent('core - where configuredModels', async (content) => {
-    const acceptedTypes = ['article', 'page', 'block', 'component', 'course'];
+    const acceptedTypes = ['article', 'page', 'menu', 'block', 'component', 'course'];
     configuredModels = content.filter(obj => acceptedTypes.includes(obj._type));
     return configuredModels;
   });
@@ -428,6 +428,7 @@ describe('core - update to v6.41.3', async () => {
       { _type: 'course' },
       { _type: 'article', _disableAccessibilityState: false },
       { _type: 'page' },
+      { _type: 'menu' },
       { _type: 'block' },
       { _type: 'component' }
     ]
@@ -473,6 +474,7 @@ describe('core - update to v6.42.0', async () => {
       { _type: 'course' },
       { _type: 'article', _ariaLevel: 2 },
       { _type: 'page', _ariaLevel: 2 },
+      { _type: 'menu', _ariaLevel: 2 },
       { _type: 'block', _ariaLevel: 2 }
     ]
   });

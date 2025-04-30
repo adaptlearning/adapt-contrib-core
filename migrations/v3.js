@@ -80,7 +80,7 @@ describe('core - update to v3.0.0', async () => {
     articles = content.filter(obj => obj._type === 'article');
     blocks = content.filter(obj => obj._type === 'block');
     components = content.filter(obj => obj._type === 'component');
-    contentObjects = content.filter(obj => obj._type === 'page');
+    contentObjects = content.filter(obj => ['page', 'menu'].includes(obj._type));
     course = getCourse();
     config = getConfig();
 
@@ -233,6 +233,8 @@ describe('core - update to v3.0.0', async () => {
       { _type: 'config' },
       { _id: 'co-100', _type: 'page', _isHiddenFromMenu: true },
       { _id: 'co-200', _type: 'page' },
+      { _id: 'co-300', _type: 'menu', _isHiddenFromMenu: true },
+      { _id: 'co-400', _type: 'menu' },
       { _id: 'a-100', _type: 'article' },
       {
         _id: 'a-200',
@@ -287,7 +289,7 @@ describe('core - update to v3.1.0', async () => {
   let contentObjects;
 
   whereContent('core - where contentObjects', async (content) => {
-    contentObjects = content.filter(obj => obj._type === 'page');
+    contentObjects = content.filter(obj => ['page', 'menu'].includes(obj._type));
     return contentObjects.length;
   });
 
@@ -308,7 +310,9 @@ describe('core - update to v3.1.0', async () => {
     content: [
       { _type: 'course' },
       { _id: 'co-100', _type: 'page', _isHiddenFromMenu: true },
-      { _id: 'co-200', _type: 'page' }
+      { _id: 'co-200', _type: 'page' },
+      { _id: 'co-300', _type: 'menu', _isHiddenFromMenu: true },
+      { _id: 'co-400', _type: 'menu' }
     ]
   });
 

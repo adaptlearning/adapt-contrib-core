@@ -5,7 +5,7 @@ describe('core - update to v2.0.14', async () => {
   let contentObjects, course;
 
   whereContent('core - where contentObjects', async (content) => {
-    contentObjects = content.filter(obj => obj._type === 'page');
+    contentObjects = content.filter(obj => ['page', 'menu'].includes(obj._type));
     course = getCourse();
     return contentObjects.length || course;
   });
@@ -42,6 +42,8 @@ describe('core - update to v2.0.14', async () => {
     content: [
       { _id: 'co-100', _type: 'page', pageBody: '' },
       { _id: 'co-200', _type: 'page' },
+      { _id: 'co-300', _type: 'menu', pageBody: '' },
+      { _id: 'co-400', _type: 'menu' },
       { _type: 'course', description: '' }
     ]
   });
@@ -50,6 +52,8 @@ describe('core - update to v2.0.14', async () => {
     content: [
       { _id: 'co-100', _type: 'page', pageBody: '' },
       { _id: 'co-200', _type: 'page' },
+      { _id: 'co-300', _type: 'menu', pageBody: '' },
+      { _id: 'co-400', _type: 'menu' },
       { _type: 'course' }
     ]
   });
@@ -304,7 +308,7 @@ describe('core - update to v2.2.0', async () => {
 
   // Convert strings to boolean or return default value
   function stringToBoolean(str, defaultValue) {
-    if (typeof str !== 'string') return defaultValue;
+    if (!_.isString(str)) return defaultValue;
     return str.toLowerCase() === 'true';
   }
 
@@ -312,7 +316,7 @@ describe('core - update to v2.2.0', async () => {
     articles = content.filter(obj => obj._type === 'article');
     blocks = content.filter(obj => obj._type === 'block');
     components = content.filter(obj => obj._type === 'component');
-    contentObjects = content.filter(obj => obj._type === 'page');
+    contentObjects = content.filter(obj => ['page', 'menu'].includes(obj._type));
     config = getConfig();
     return articles.length || blocks.length || components.length || contentObjects.length || config;
   });
@@ -396,7 +400,7 @@ describe('core - update to v2.2.0', async () => {
 
   checkContent('core - check articles _isOptional/_isAvailable have been updated', async (content) => {
     const isValid = articles.every(article =>
-      typeof article._isOptional === 'boolean' && typeof article._isAvailable === 'boolean'
+      _.isBoolean(article._isOptional) && _.isBoolean(article._isAvailable)
     );
     if (!isValid) throw new Error('core - article._isOptional or article._isAvailable is not a boolean');
     return true;
@@ -404,7 +408,7 @@ describe('core - update to v2.2.0', async () => {
 
   checkContent('core - check blocks _isOptional/_isAvailable have been updated', async (content) => {
     const isValid = blocks.every(block =>
-      typeof block._isOptional === 'boolean' && typeof block._isAvailable === 'boolean'
+      _.isBoolean(block._isOptional) && _.isBoolean(block._isAvailable)
     );
     if (!isValid) throw new Error('core - block._isOptional or block._isAvailable is not a boolean');
     return true;
@@ -412,7 +416,7 @@ describe('core - update to v2.2.0', async () => {
 
   checkContent('core - check components _isOptional/_isAvailable have been updated', async (content) => {
     const isValid = components.every(component =>
-      typeof component._isOptional === 'boolean' && typeof component._isAvailable === 'boolean'
+      _.isBoolean(component._isOptional) && _.isBoolean(component._isAvailable)
     );
     if (!isValid) throw new Error('core - component._isOptional or component._isAvailable is not a boolean');
     return true;
@@ -420,62 +424,62 @@ describe('core - update to v2.2.0', async () => {
 
   checkContent('core - check contentObjects _isOptional/_isAvailable have been updated', async (content) => {
     const isValid = contentObjects.every(contentObject =>
-      typeof contentObject._isOptional === 'boolean' && typeof contentObject._isAvailable === 'boolean'
+      _.isBoolean(contentObject._isOptional) && _.isBoolean(contentObject._isAvailable)
     );
     if (!isValid) throw new Error('core - contentObject._isOptional or contentObject._isAvailable is not a boolean');
     return true;
   });
 
   checkContent('core - check config._isEnabled has been updated', async (content) => {
-    const isValid = typeof config._accessibility._isEnabled === 'boolean';
+    const isValid = _.isBoolean(config._accessibility._isEnabled);
     if (!isValid) throw new Error('core - config._isEnabled is not a boolean');
     return true;
   });
 
   checkContent('core - check config._accessibility._isEnabledOnTouchDevices has been updated', async (content) => {
-    const isValid = typeof config._accessibility._isEnabledOnTouchDevices === 'boolean';
+    const isValid = _.isBoolean(config._accessibility._isEnabledOnTouchDevices);
     if (!isValid) throw new Error('core - config._accessibility._isEnabledOnTouchDevices is not a boolean');
     return true;
   });
 
   checkContent('core - check config._accessibility._shouldSupportLegacyBrowsers has been updated', async (content) => {
-    const isValid = typeof config._accessibility._shouldSupportLegacyBrowsers === 'boolean';
+    const isValid = _.isBoolean(config._accessibility._shouldSupportLegacyBrowsers);
     if (!isValid) throw new Error('core - config._accessibility._shouldSupportLegacyBrowsers is not a boolean');
     return true;
   });
 
   checkContent('core - check config._accessibility._isTextProcessorEnabled has been updated', async (content) => {
-    const isValid = typeof config._accessibility._isTextProcessorEnabled === 'boolean';
+    const isValid = _.isBoolean(config._accessibility._isTextProcessorEnabled);
     if (!isValid) throw new Error('core - config._accessibility._isTextProcessorEnabled is not a boolean');
     return true;
   });
 
   checkContent('core - check config._accessibility._isSkipNavigationEnabled has been updated', async (content) => {
-    const isValid = typeof config._accessibility._isSkipNavigationEnabled === 'boolean';
+    const isValid = _.isBoolean(config._accessibility._isSkipNavigationEnabled);
     if (!isValid) throw new Error('core - config._accessibility._isSkipNavigationEnabled is not a boolean');
     return true;
   });
 
   checkContent('core - check config._generateSourcemap has been updated', async (content) => {
-    const isValid = typeof config._generateSourcemap === 'boolean';
+    const isValid = _.isBoolean(config._generateSourcemap);
     if (!isValid) throw new Error('core - config._generateSourcemap is not a boolean');
     return true;
   });
 
   checkContent('core - check config._forceRouteLocking has been updated', async (content) => {
-    const isValid = typeof config._forceRouteLocking === 'boolean';
+    const isValid = _.isBoolean(config._forceRouteLocking);
     if (!isValid) throw new Error('core - config._forceRouteLocking is not a boolean');
     return true;
   });
 
   checkContent('core - check config._logging._isEnabled has been updated', async (content) => {
-    const isValid = typeof config._logging._isEnabled === 'boolean';
+    const isValid = _.isBoolean(config._logging._isEnabled);
     if (!isValid) throw new Error('core - config._logging._isEnabled is not a boolean');
     return true;
   });
 
   checkContent('core - check config._logging._console has been updated', async (content) => {
-    const isValid = typeof config._logging._console === 'boolean';
+    const isValid = _.isBoolean(config._logging._console);
     if (!isValid) throw new Error('core - config._logging._console is not a boolean');
     return true;
   });
@@ -501,6 +505,8 @@ describe('core - update to v2.2.0', async () => {
       },
       { _id: 'co-100', _type: 'page', _isOptional: 'true', _isAvailable: 'false' },
       { _id: 'co-200', _type: 'page' },
+      { _id: 'co-300', _type: 'menu', _isOptional: 'true', _isAvailable: 'false' },
+      { _id: 'co-400', _type: 'menu' },
       { _id: 'a-100', _type: 'article', _isOptional: 'true', _isAvailable: 'false' },
       { _id: 'a-200', _type: 'article' },
       { _id: 'b-100', _type: 'block', _isOptional: 'true', _isAvailable: 'false' },

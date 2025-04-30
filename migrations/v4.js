@@ -29,8 +29,7 @@ describe('core - update to v4.0.0', async () => {
 
   whereContent('core - where course', async (content) => {
     course = getCourse();
-    config = getConfig();
-    return course || config;
+    return course;
   });
 
   mutateContent('core - add course._scrollingContainer', async (content) => {
@@ -57,6 +56,10 @@ describe('core - update to v4.0.0', async () => {
   });
 
   mutateContent('core - add new course._globals._accessibility._ariaLabels', async (content) => {
+    if (!_.has(course, '_globals._accessibility._ariaLabels')) {
+      _.set(course, '_globals._accessibility._ariaLabels', newAriaLabels);
+      return true;
+    };
     _.merge(course._globals._accessibility._ariaLabels, newAriaLabels);
     return true;
   });
@@ -88,9 +91,25 @@ describe('core - update to v4.0.0', async () => {
   });
 
   checkContent('core - check new course._globals._accessibility._ariaLabels', async (content) => {
-    const isValid = newAriaLabels.every((value, key) => _.get(course, `_globals._accessibility._ariaLabels.${key}`) === value);
+    const isValid = Object.keys(newAriaLabels).every(key =>
+      _.get(course, `_globals._accessibility._ariaLabels.${key}`) === newAriaLabels[key]
+    );
     if (!isValid) throw new Error('core - course._globals._accessibility._ariaLabels not added');
     return true;
+  });
+
+  testSuccessWhere('course with empty globals', {
+    content: [
+      { _type: 'course', _globals: { _accessibility: { _ariaLabels: {} } } },
+      { _type: 'config' }
+    ]
+  });
+
+  testSuccessWhere('course with globals and old defaults', {
+    content: [
+      { _type: 'course', _globals: { _accessibility: { _ariaLabels: { next: 'Next', done: 'Done' } } } },
+      { _type: 'config' }
+    ]
   });
 
   testSuccessWhere('empty course/config', {
