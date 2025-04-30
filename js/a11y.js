@@ -9,7 +9,7 @@ import FocusOptions from 'core/js/a11y/focusOptions';
 import KeyboardFocusOutline from 'core/js/a11y/keyboardFocusOutline';
 import Log from 'core/js/a11y/log';
 import Scroll from 'core/js/a11y/scroll';
-import TopOfPage from './a11y/topOfPage';
+import TopOfContentObject from './a11y/topOfContentObject';
 import WrapFocus from 'core/js/a11y/wrapFocus';
 import Popup from 'core/js/a11y/popup';
 import defaultAriaLevels from 'core/js/enums/defaultAriaLevels';
@@ -89,7 +89,7 @@ class A11y extends Backbone.Controller {
     this._wrapFocus = new WrapFocus({ a11y: this });
     this._popup = new Popup({ a11y: this });
     this._scroll = new Scroll({ a11y: this });
-    this._topOfPage = new TopOfPage({ a11y: this });
+    this._topOfContentObject = new TopOfContentObject({ a11y: this });
     this._isForcedFocus = false;
     this.log = new Log({ a11y: this });
     deprecated(this);
@@ -762,7 +762,7 @@ class A11y extends Backbone.Controller {
     }
     const isBodyFocus = ($element[0] === document.body);
     if (isBodyFocus) {
-      this._topOfPage.goto();
+      this._topOfContentObject.goto();
       return;
     }
     const perform = () => {
