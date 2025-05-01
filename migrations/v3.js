@@ -284,8 +284,12 @@ describe('core - update to v3.0.0', async () => {
     ]
   });
 
-  testStopWhere('no contentObjects/articles/blocks/components', {
-    content: [{ _type: 'config' }]
+  testSuccessWhere('no contentObjects/articles/blocks/components', {
+    content: [{ _type: 'config' }, { _type: 'course' }]
+  });
+
+  testStopWhere('no content', {
+    content: []
   });
 });
 

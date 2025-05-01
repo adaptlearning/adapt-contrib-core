@@ -4,7 +4,7 @@ import _ from 'lodash';
 describe('core - update to v2.0.14', async () => {
   let contentObjects, course;
 
-  whereContent('core - where contentObjects', async (content) => {
+  whereContent('core - where contentObjects or course', async (content) => {
     contentObjects = content.filter(obj => ['page', 'menu'].includes(obj._type));
     course = getCourse();
     return contentObjects.length || course;

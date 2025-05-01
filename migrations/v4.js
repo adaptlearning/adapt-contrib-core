@@ -2,7 +2,7 @@ import { checkContent, describe, getConfig, getCourse, mutateContent, testStopWh
 import _ from 'lodash';
 
 describe('core - update to v4.0.0', async () => {
-  let course, config;
+  let course;
   const scrollContainer = {
     _isEnabled: false,
     _limitToSelector: ''
