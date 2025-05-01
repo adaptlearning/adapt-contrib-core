@@ -76,7 +76,7 @@ describe('core - update to v3.0.0', async () => {
     'menuBack'
   ];
 
-  whereContent('core - where contentObjects', async (content) => {
+  whereContent('core - where content, course or config', async (content) => {
     articles = content.filter(obj => obj._type === 'article');
     blocks = content.filter(obj => obj._type === 'block');
     components = content.filter(obj => obj._type === 'component');
@@ -84,7 +84,11 @@ describe('core - update to v3.0.0', async () => {
     course = getCourse();
     config = getConfig();
 
-    return articles.length;
+    return (
+      [articles, blocks, components, contentObjects].some(arr => arr.length) ||
+      course ||
+      config
+    );
   });
 
   mutateContent('core - add new article attributes', async (content) => {
