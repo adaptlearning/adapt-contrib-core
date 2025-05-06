@@ -9,6 +9,7 @@ import FocusOptions from 'core/js/a11y/focusOptions';
 import KeyboardFocusOutline from 'core/js/a11y/keyboardFocusOutline';
 import Log from 'core/js/a11y/log';
 import Scroll from 'core/js/a11y/scroll';
+import TopOfContentObject from './a11y/topOfContentObject';
 import WrapFocus from 'core/js/a11y/wrapFocus';
 import Popup from 'core/js/a11y/popup';
 import defaultAriaLevels from 'core/js/enums/defaultAriaLevels';
@@ -88,10 +89,10 @@ class A11y extends Backbone.Controller {
     this._wrapFocus = new WrapFocus({ a11y: this });
     this._popup = new Popup({ a11y: this });
     this._scroll = new Scroll({ a11y: this });
+    this._topOfContentObject = new TopOfContentObject({ a11y: this });
     this._isForcedFocus = false;
     this.log = new Log({ a11y: this });
     deprecated(this);
-
     this._removeLegacyElements();
     this.listenToOnce(Adapt, {
       'configModel:dataLoaded': this._onConfigDataLoaded,
@@ -730,6 +731,12 @@ class A11y extends Backbone.Controller {
   focusFirst($element, options) {
     options = new FocusOptions(options);
     $element = $($element).first();
+    const isBodyFocus = ($element[0] === document.body);
+    if (isBodyFocus) {
+      // force focus to the body, effectively starting the tab cursor from the top
+      this.focus(document.body, options);
+      return;
+    }
     if (this.isReadable($element)) {
       this.focus($element, options);
       return $element;
@@ -752,6 +759,11 @@ class A11y extends Backbone.Controller {
     const config = this.config;
     if (!config._isEnabled || !config._options._isFocusAssignmentEnabled || $element.length === 0) {
       return this;
+    }
+    const isBodyFocus = ($element[0] === document.body);
+    if (isBodyFocus) {
+      this._topOfContentObject.goto();
+      return;
     }
     const perform = () => {
       if ($element.attr('tabindex') === undefined) {

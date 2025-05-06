@@ -354,6 +354,38 @@
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
+                },
+                "topOfContentObject": {
+                  "type": "string",
+                  "title": "",
+                  "default": "{{type}} {{displayTitle}}",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
+                },
+                "course": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Main menu",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
+                },
+                "menu": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Sub menu",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
+                },
+                "page": {
+                  "type": "string",
+                  "title": "",
+                  "default": "Page",
+                  "inputType": "Text",
+                  "required": true,
+                  "translatable": true
                 }
               }
             },
