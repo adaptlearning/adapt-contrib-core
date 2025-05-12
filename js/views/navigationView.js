@@ -119,8 +119,7 @@ class NavigationView extends Backbone.View {
       const shouldIgnore = changes.every(([key]) => [
         'attributes.data-a11y-force-focus',
         'attributes.tabindex',
-        'attributes.aria-hidden',
-        'attributes.aria-expanded'
+        'attributes.aria-hidden'
       ].includes(key));
       if (shouldIgnore) return;
     }
