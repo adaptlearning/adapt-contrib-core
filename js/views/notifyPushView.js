@@ -1,4 +1,7 @@
 import Adapt from 'core/js/adapt';
+import {
+  transitionsEnded
+} from '../transitions';
 
 export default class NotifyPushView extends Backbone.View {
 
@@ -59,6 +62,7 @@ export default class NotifyPushView extends Backbone.View {
   }
 
   postRender() {
+    this.$el[0].show();
     this.$el.addClass('is-active');
 
     _.delay(this.closePush.bind(this), this.model.get('_timeout'));
@@ -66,23 +70,20 @@ export default class NotifyPushView extends Backbone.View {
     Adapt.trigger('notify:pushShown');
   }
 
-  closePush(event) {
+  async closePush(event) {
     if (event) {
       event.preventDefault();
     }
 
-    // Check whether this view has been removed as the delay can cause it to be fired twice
+    // Check whether this view has been removed in case called multiple times whilst closing
     if (this.hasBeenRemoved === false) {
-
       this.hasBeenRemoved = true;
-
       this.$el.removeClass('is-active');
-
-      _.delay(() => {
-        this.model.collection.remove(this.model);
-        Adapt.trigger('notify:pushRemoved', this);
-        this.remove();
-      }, 600);
+      await transitionsEnded(this.$el);
+      this.$el[0].close();
+      this.model.collection.remove(this.model);
+      Adapt.trigger('notify:pushRemoved', this);
+      this.remove();
     }
   }
 
