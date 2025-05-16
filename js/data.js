@@ -34,7 +34,7 @@ class Data extends AdaptCollection {
   async init () {
     this.reset();
     this._byAdaptID = {};
-    Adapt.build = new BuildModel(null, { url: 'adapt/js/build.min.js', reset: true });
+    Adapt.build = new BuildModel(null, { url: `adapt/js/build.min.js?timestamp=${Date.now()}`, reset: true });
     await Adapt.build.whenReady();
     $('html').attr('data-adapt-framework-version', Adapt.build.get('package').version);
     this.loadConfigData();
@@ -49,7 +49,7 @@ class Data extends AdaptCollection {
   }
 
   loadConfigData() {
-    Adapt.config = new ConfigModel(null, { url: Adapt.build.get('coursedir') + '/config.' + Adapt.build.get('jsonext'), reset: true });
+    Adapt.config = new ConfigModel(null, { url: Adapt.build.get('coursedir') + '/config.' + Adapt.build.get('jsonext') + `?timestamp=${Adapt.build.get('timestamp')}`, reset: true });
     this.listenToOnce(Adapt, 'configModel:loadCourseData', this.onLoadCourseData);
     this.listenTo(Adapt.config, {
       'change:_activeLanguage': this.onLanguageChange,
@@ -134,7 +134,7 @@ class Data extends AdaptCollection {
     let allFileData;
     try {
       allFileData = await Promise.all(manifest.map(filePath => {
-        return this.getJSON(`${languagePath}${filePath}`);
+        return this.getJSON(`${languagePath}${filePath}?timestamp=${Adapt.build.get('timestamp')}`);
       }));
     } catch (error) {
       logging.error(error);
