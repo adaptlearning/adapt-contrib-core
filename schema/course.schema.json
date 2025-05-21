@@ -316,6 +316,38 @@
                       "_adapt": {
                         "translatable": true
                       }
+                    },
+                    "topOfContentObject": {
+                      "type": "string",
+                      "title": "Top of content object",
+                      "default": "{{type}} {{displayTitle}}",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "course": {
+                      "type": "string",
+                      "title": "Main menu",
+                      "default": "Main menu",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "menu": {
+                      "type": "string",
+                      "title": "Sub menu",
+                      "default": "Sub menu",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "page": {
+                      "type": "string",
+                      "title": "Page",
+                      "default": "Page",
+                      "_adapt": {
+                        "translatable": true
+                      }
                     }
                   }
                 },
