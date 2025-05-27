@@ -31,6 +31,7 @@ export default class TopOfContentObject extends Backbone.Controller {
   updateElement(location) {
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) return;
+    if (!location._currentModel) return;
     const json = location._currentModel.toJSON();
     json._globals = Adapt.course.get('_globals');
     json.type = this.a11y.normalize(json._globals._accessibility._ariaLabels[json._type] ?? DEFAULT_TYPE_LABEL[json._type]);
