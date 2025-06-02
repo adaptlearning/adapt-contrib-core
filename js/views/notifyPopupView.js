@@ -53,6 +53,8 @@ export default class NotifyPopupView extends Backbone.View {
 
   onKeyDown(event) {
     if (event.which !== 27) return;
+    const isFocusInPopup = Boolean($(document.activeElement).closest(this.$el).length);
+    if (!isFocusInPopup) return;
     event.preventDefault();
     this.cancelNotify();
   }
