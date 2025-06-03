@@ -1,4 +1,4 @@
-<div class="btn__response-container">
+<div class="btn__response-container" role="group"{{#if ariaQuestion}} aria-label="{{ariaQuestion}}"{{else}}{{#any displayTitle body instruction}} aria-labelledby="{{_id}}-header"{{/any}}{{/if}}>
 
   <div class="btn__marking js-btn-marking u-display-none">
     <div class="icon" aria-hidden="true"></div>
