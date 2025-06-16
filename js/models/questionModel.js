@@ -65,6 +65,7 @@ class QuestionModel extends ComponentModel {
   }
 
   init() {
+    this._contextActivities = [];
     this.setupDefaultSettings();
     this.updateRawScore();
     super.init();
@@ -359,6 +360,7 @@ class QuestionModel extends ComponentModel {
       _buttonState: BUTTON_STATE.SUBMIT,
       _shouldShowMarking: this.shouldShowMarking
     });
+    this._contextActivities = [];
     return true;
   }
 
@@ -406,6 +408,32 @@ class QuestionModel extends ComponentModel {
     return {};
   }
 
+  addContentObjectContextActivities() {
+    // SCORM doesn't necessarily need course context as implied in reports (exclude via spoor)
+    this.getAncestorModels()
+      .filter(model => model.isTypeGroup('contentobject'))
+      .forEach(model => {
+        const id = model.get('_id');
+        const type = model.get('_type');
+        const title = model.get('title') || model.get('displayTitle');
+        this.addContextActivity(id, type, title);
+      });
+  }
+
+  addContextActivity(id, type, title) {
+    const isIncluded = this._contextActivities.some(activity => activity.id === id);
+    if (isIncluded) return;
+    this._contextActivities.push({
+      id,
+      type,
+      title
+    });
+  }
+
+  getContextActivities() {
+    return this._contextActivities;
+  }
+
   // Returns a string detailing how the user answered the question.
   getResponse() {}
 
@@ -419,6 +447,7 @@ class QuestionModel extends ComponentModel {
     // Stores the current attempt state
     if (this.get('_shouldStoreAttempts')) this.addAttemptObject();
     this.set('_shouldShowMarking', this.shouldShowMarking);
+    this.addContentObjectContextActivities();
   }
 
   /** @type {boolean} */

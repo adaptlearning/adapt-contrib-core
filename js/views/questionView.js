@@ -211,8 +211,6 @@ class QuestionView extends ComponentView {
       this.showMarking();
     }
 
-    this.recordInteraction();
-
     // Used to setup the feedback by checking against
     // question isCorrect or isPartlyCorrect
     this._runModelCompatibleFunction('setupFeedback');
@@ -236,6 +234,8 @@ class QuestionView extends ComponentView {
     this.model.onSubmitted();
     this.onSubmitted();
     Adapt.trigger('questionView:submitted', this);
+
+    this.recordInteraction();
   }
 
   showInstructionError() {
