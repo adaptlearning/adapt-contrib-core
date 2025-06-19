@@ -25,8 +25,7 @@ class DrawerView extends Backbone.View {
   attributes() {
     return {
       'aria-modal': 'true',
-      'aria-labelledby': 'drawer-heading',
-      'aria-hidden': 'true'
+      'aria-labelledby': 'drawer-heading'
     };
   }
 
@@ -156,9 +155,7 @@ class DrawerView extends Backbone.View {
   async showDrawer(emptyDrawer, position = null) {
     shadow.show();
     this.setDrawerPosition(position);
-    this.$el
-      .removeClass('u-display-none')
-      .attr('aria-hidden', 'false');
+    this.$el.removeClass('u-display-none');
     // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
     if (!this._isVisible) {
       a11y.popupOpened(this.$el);
@@ -168,6 +165,9 @@ class DrawerView extends Backbone.View {
 
     if (emptyDrawer) {
       this.$('.drawer__back').addClass('u-display-none');
+      this.$('.js-drawer-aria-label')
+        .attr('id', 'drawer-heading')
+        .removeClass('u-display-none');
       this._isCustomViewVisible = false;
       this.emptyDrawer();
       if (this.collection.models.length === 1) {
@@ -186,6 +186,9 @@ class DrawerView extends Backbone.View {
     } else {
       const hideDrawerBackButton = (!this._hasBackButton || this.collection.models.length <= 1);
       this.$('.drawer__back').toggleClass('u-display-none', hideDrawerBackButton);
+      this.$('.js-drawer-aria-label')
+        .attr('id', null)
+        .addClass('u-display-none');
       Adapt.trigger('drawer:openedCustomView');
     }
 
@@ -238,13 +241,15 @@ class DrawerView extends Backbone.View {
     this._isVisible = false;
     a11y.scrollEnable('body');
     this.$('.js-drawer-holder').removeAttr('role');
+    this.$('.js-drawer-aria-label')
+      .attr('id', null)
+      .addClass('u-display-none');
 
     this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
 
     this.$el
       .removeAttr('style')
-      .addClass('u-display-none')
-      .attr('aria-hidden', 'true');
+      .addClass('u-display-none');
     this.setDrawerPosition(this._globalDrawerPosition);
   }
 
