@@ -262,7 +262,7 @@
                 "drawer": {
                   "type": "string",
                   "title": "",
-                  "default": "Top of side drawer",
+                  "default": "Course resources",
                   "inputType": "Text",
                   "required": true,
                   "translatable": true
