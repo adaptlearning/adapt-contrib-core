@@ -224,7 +224,7 @@
                     "drawer": {
                       "type": "string",
                       "title": "Drawer",
-                      "default": "Top of side drawer",
+                      "default": "Course resources",
                       "_adapt": {
                         "translatable": true
                       }
