@@ -454,7 +454,7 @@ class QuestionModel extends ComponentModel {
 
   /**
    * Returns the `ContextActivity` collection for the question
-   * @returns ContextActivity[]
+   * @returns {ContextActivity[]}
    */
   getContextActivities() {
     return this._contextActivities;
