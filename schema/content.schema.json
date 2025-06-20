@@ -114,6 +114,15 @@
         "isSetting": true
       }
     },
+    "_ariaLevel": {
+      "type": "number",
+      "title": "Aria level",
+      "description": "The aria-level attribute of the title. This is used to determine the heading level of the title. When set to 0, the heading level will be determined by the element type.",
+      "default": 0,
+      "_adapt": {
+        "isSetting": true
+      }
+    },
     "_onScreen": {
       "type": "object",
       "title": "Animation classes",
