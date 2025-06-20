@@ -2,6 +2,12 @@ import Adapt from 'core/js/adapt';
 import components from 'core/js/components';
 import ComponentModel from 'core/js/models/componentModel';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
+/**
+ * @typedef {Object} ContextActivity
+ * @property {string} id
+ * @property {string} type
+ * @property {string} title
+ */
 
 class QuestionModel extends ComponentModel {
 
@@ -65,6 +71,7 @@ class QuestionModel extends ComponentModel {
   }
 
   init() {
+    /** @type {ContextActivity[]} */
     this._contextActivities = [];
     this.setupDefaultSettings();
     this.updateRawScore();
@@ -408,9 +415,13 @@ class QuestionModel extends ComponentModel {
     return {};
   }
 
+  /**
+   * Add a `ContextActivity` for the content object ancestors assocaited with the question
+   */
   addContentObjectContextActivities() {
     // SCORM doesn't necessarily need course context as implied in reports (exclude via spoor)
     this.getAncestorModels()
+      .reverse()
       .filter(model => model.isTypeGroup('contentobject'))
       .forEach(model => {
         const id = model.get('_id');
@@ -420,16 +431,31 @@ class QuestionModel extends ComponentModel {
       });
   }
 
+  /**
+   * Add a `ContextActivity` to the collection
+   * @param {string} id
+   * @param {string} type
+   * @param {string} title
+   */
   addContextActivity(id, type, title) {
-    const isIncluded = this._contextActivities.some(activity => activity.id === id);
-    if (isIncluded) return;
-    this._contextActivities.push({
+    const entry = {
       id,
       type,
       title
-    });
+    };
+    const index = this._contextActivities.findIndex(activity => activity.id === id);
+    const isIncluded = index !== -1;
+    if (isIncluded) {
+      this._contextActivities[index] = entry;
+      return;
+    }
+    this._contextActivities.push(entry);
   }
 
+  /**
+   * Returns the `ContextActivity` collection for the question
+   * @returns ContextActivity[]
+   */
   getContextActivities() {
     return this._contextActivities;
   }
