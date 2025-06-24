@@ -443,20 +443,20 @@ class QuestionModel extends ComponentModel {
       type,
       title
     };
-    const index = this._contextActivities.findIndex(activity => activity.id === id);
+    const index = this.contextActivities.findIndex(activity => activity.id === id);
     const isIncluded = index !== -1;
     if (isIncluded) {
-      this._contextActivities[index] = entry;
+      this.contextActivities[index] = entry;
       return;
     }
-    this._contextActivities.push(entry);
+    this.contextActivities.push(entry);
   }
 
   /**
    * Returns the `ContextActivity` collection for the question
    * @returns {ContextActivity[]}
    */
-  getContextActivities() {
+  get contextActivities() {
     return this._contextActivities;
   }
 
