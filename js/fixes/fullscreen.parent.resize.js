@@ -16,11 +16,11 @@ function overrideFullscreenRequest(name) {
 ].forEach(overrideFullscreenRequest);
 
 function onPreRequestFullscreen(event) {
-  if (document.fullscreenElement) return;
   try {
     const target = event.target;
     const parent = target?.parentElement;
     if (!parent) return;
+    parent.dataset.preFullscreenHeight = parent.style.height;
     parent.style.height = `${target.clientHeight}px`;
   } catch (e) {}
 }
@@ -33,7 +33,8 @@ function onFullscreenChange(event) {
     const target = event.target;
     const parent = target?.parentElement;
     if (!parent) return;
-    parent.style.height = '';
+    parent.style.height = parent.dataset.preFullscreenHeight ?? '';
+    delete parent.dataset.preFullscreenHeight;
   } catch (e) {}
 }
 
