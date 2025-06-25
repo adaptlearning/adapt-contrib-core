@@ -3,6 +3,7 @@ import logging from 'core/js/logging';
 import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 import NotifyModel from 'core/js/models/notifyModel';
+import a11y from '../a11y';
 
 export default class NotifyView extends Backbone.View {
 
@@ -60,9 +61,11 @@ export default class NotifyView extends Backbone.View {
 
     switch (notifyObject._type) {
       case 'a11y-push':
-      case 'push':
-        this.notifyPushes.push(notifyObject);
-        return;
+      case 'push': {
+        const model = new NotifyModel(notifyObject);
+        this.notifyPushes.push(model);
+        return model;
+      }
     }
 
     return new NotifyPopupView({
@@ -130,6 +133,26 @@ export default class NotifyView extends Backbone.View {
    */
   push(notifyObject) {
     return this.create(notifyObject, { _type: 'push' });
+  }
+
+  /**
+   * Creates and waits for an a11y-push notify to read.
+   * @param {string} body
+   */
+  async read (body) {
+    // Allow time enough for the message to be read before focusing.
+    // Rough estimate: 200ms per word + buffer
+    // Delay until 200ms after last focus event
+    const timeSinceLastFocus = a11y.timeSinceLastFocus;
+    const delayTime = Math.max(200 - timeSinceLastFocus, 0);
+    const words = body.split(' ').length;
+    const item = this.create({
+      _type: 'a11y-push',
+      _timeout: (words * 200) + 150,
+      _delay: delayTime,
+      body
+    });
+    await item.onClosed();
   }
 
 }

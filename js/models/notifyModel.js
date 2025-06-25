@@ -6,8 +6,25 @@ export default class NotifyModel extends LockingModel {
     return {
       _isActive: false,
       _showIcon: false,
-      _timeout: 3000
+      _timeout: 3000,
+      _delay: 0,
+      _hasClosed: false
     };
+  }
+
+  close() {
+    if (this.get('_hasClosed')) return;
+    this.trigger('closed');
+  }
+
+  async onClosed() {
+    if (this.get('_hasClosed')) return;
+    return new Promise(resolve => {
+      this.once('closed', () => {
+        this.set('_hasClosed', true);
+        resolve();
+      });
+    });
   }
 
 }

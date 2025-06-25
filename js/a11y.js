@@ -103,6 +103,8 @@ class A11y extends Backbone.Controller {
       'router:location': this._onNavigationStart,
       'contentObjectView:ready router:plugin': this._onNavigationEnd
     });
+    this._lastFocusTime = 0;
+    $(document.body).on('focusin', () => (this._lastFocusTime = Date.now()));
   }
 
   _onConfigDataLoaded() {
@@ -171,6 +173,10 @@ class A11y extends Backbone.Controller {
 
   isEnabled() {
     return this.config?._isEnabled;
+  }
+
+  get timeSinceLastFocus() {
+    return Date.now() - this._lastFocusTime;
   }
 
   /**
