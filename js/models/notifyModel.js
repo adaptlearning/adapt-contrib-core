@@ -14,17 +14,13 @@ export default class NotifyModel extends LockingModel {
 
   close() {
     if (this.get('_hasClosed')) return;
+    this.set('_hasClosed', true);
     this.trigger('closed');
   }
 
   async onClosed() {
     if (this.get('_hasClosed')) return;
-    return new Promise(resolve => {
-      this.once('closed', () => {
-        this.set('_hasClosed', true);
-        resolve();
-      });
-    });
+    return new Promise(resolve => this.once('closed', resolve));
   }
 
 }
