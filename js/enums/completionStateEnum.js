@@ -3,7 +3,8 @@ const COMPLETION_STATE = ENUM([
   'INCOMPLETE',
   'COMPLETED',
   'PASSED',
-  'FAILED'
+  'FAILED',
+  'UNKNOWN'
 ]);
 
 export default COMPLETION_STATE;

@@ -2,6 +2,12 @@ import Adapt from 'core/js/adapt';
 import components from 'core/js/components';
 import ComponentModel from 'core/js/models/componentModel';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
+/**
+ * @typedef {Object} ContextActivity
+ * @property {string} id
+ * @property {string} type
+ * @property {string} title
+ */
 
 class QuestionModel extends ComponentModel {
 
@@ -65,6 +71,8 @@ class QuestionModel extends ComponentModel {
   }
 
   init() {
+    /** @type {ContextActivity[]} */
+    this._contextActivities = [];
     this.setupDefaultSettings();
     this.updateRawScore();
     super.init();
@@ -359,6 +367,7 @@ class QuestionModel extends ComponentModel {
       _buttonState: BUTTON_STATE.SUBMIT,
       _shouldShowMarking: this.shouldShowMarking
     });
+    this._contextActivities = [];
     return true;
   }
 
@@ -406,6 +415,51 @@ class QuestionModel extends ComponentModel {
     return {};
   }
 
+  /**
+   * Add a `ContextActivity` for the content object ancestors assocaited with the question
+   */
+  addContentObjectContextActivities() {
+    // SCORM doesn't necessarily need course context as implied in reports (exclude via spoor)
+    this.getAncestorModels()
+      .reverse()
+      .filter(model => model.isTypeGroup('contentobject'))
+      .forEach(model => {
+        const id = model.get('_id');
+        const type = model.get('_type');
+        const title = model.get('title') || model.get('displayTitle');
+        this.addContextActivity(id, type, title);
+      });
+  }
+
+  /**
+   * Add a `ContextActivity` to the collection
+   * @param {string} id
+   * @param {string} type
+   * @param {string} title
+   */
+  addContextActivity(id, type, title) {
+    const entry = {
+      id,
+      type,
+      title
+    };
+    const index = this.contextActivities.findIndex(activity => activity.id === id);
+    const isIncluded = index !== -1;
+    if (isIncluded) {
+      this.contextActivities[index] = entry;
+      return;
+    }
+    this.contextActivities.push(entry);
+  }
+
+  /**
+   * Returns the `ContextActivity` collection for the question
+   * @returns {ContextActivity[]}
+   */
+  get contextActivities() {
+    return this._contextActivities;
+  }
+
   // Returns a string detailing how the user answered the question.
   getResponse() {}
 
@@ -419,6 +473,7 @@ class QuestionModel extends ComponentModel {
     // Stores the current attempt state
     if (this.get('_shouldStoreAttempts')) this.addAttemptObject();
     this.set('_shouldShowMarking', this.shouldShowMarking);
+    this.addContentObjectContextActivities();
   }
 
   /** @type {boolean} */
