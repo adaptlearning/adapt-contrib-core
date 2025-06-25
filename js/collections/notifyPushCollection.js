@@ -27,16 +27,17 @@ export default class NotifyPushCollection extends Backbone.Collection {
   }
 
   showPush(model) {
-    new NotifyPushView({
-      model
-    });
+    _.delay(() => {
+      new NotifyPushView({
+        model
+      });
+    }, model.get('_delay'));
   }
 
   onRemovePush(view) {
     const inactivePushNotifications = this.where({ _isActive: false });
-    if (inactivePushNotifications.length > 0) {
-      this.checkPushCanShow(inactivePushNotifications[0]);
-    }
+    if (inactivePushNotifications.length === 0) return;
+    this.checkPushCanShow(inactivePushNotifications[0]);
   }
 
 }
