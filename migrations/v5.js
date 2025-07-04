@@ -174,7 +174,7 @@ describe('core - update to v5.4.0', async () => {
   mutateContent('core - add _isResetOnRevisit to component', async (content) => {
     components = content.filter((item) => item._type === 'component');
     components.forEach((item) => {
-      if (!_.has(item, '_isResetOnRevisit')) _.set(item, '_isResetOnRevisit', false);
+      if (!_.has(item, '_isResetOnRevisit')) _.set(item, '_isResetOnRevisit', 'false');
     });
     return true;
   });
@@ -201,7 +201,7 @@ describe('core - update to v5.4.0', async () => {
     content: [
       { _type: 'config' },
       { _id: 'c-100', _type: 'component' },
-      { _id: 'c-105', _type: 'component', _isResetOnRevisit: false },
+      { _id: 'c-105', _type: 'component', _isResetOnRevisit: 'false' },
       { _id: 'b-100', _type: 'block' },
       { _id: 'a-100', _type: 'article' },
       { _id: 'co-100', _type: 'page' },
