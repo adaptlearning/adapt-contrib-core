@@ -20,9 +20,11 @@ class Router extends Backbone.Router {
 
   initialize({ model }) {
     this.navigateToElement = this.navigateToElement.bind(this);
-    this._isBackward = false;
     this.model = model;
     this._navigationRoot = null;
+    this._isBackward = false;
+    this._isInNavigateTo = false;
+    this._shouldIgnoreNextRouteAction = false;
     // Flag to indicate if the router has tried to redirect to the current location.
     this._isCircularNavigationInProgress = false;
     this.isPreviewMode = false;
@@ -87,6 +89,10 @@ class Router extends Backbone.Router {
   }
 
   handleRoute(...args) {
+    if (this._shouldIgnoreNextRouteAction) {
+      this._shouldIgnoreNextRouteAction = false;
+      return;
+    }
     args = args.filter(v => v !== null);
 
     if (this.model.get('_canNavigate')) {
@@ -157,7 +163,7 @@ class Router extends Backbone.Router {
     }
 
     // Keep the routed id incase it needs to be scrolled to later
-    const isContentObject = model.isTypeGroup?.('contentobject');
+    const isContentObject = model.isTypeGroup?.('contentobject') && !model.isTypeGroup?.('group');
     const navigateToId = model.get('_id');
 
     // Ensure that the router is rendering a contentobject
@@ -183,6 +189,13 @@ class Router extends Backbone.Router {
       return this.navigateBack();
     }
 
+    const isNavigateTo = (model === location._currentModel);
+    if (isNavigateTo) {
+      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
+      return;
+    }
+
     // Move to a content object
     this.showLoading();
     await Adapt.remove();
@@ -204,9 +217,15 @@ class Router extends Backbone.Router {
     });
     await this.updateLocation(newLocation, type, id, model);
 
-    Adapt.once('contentObjectView:ready', () => {
+    Adapt.once('contentObjectView:ready', async () => {
       // Allow navigation.
       this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      if (this._isInNavigateTo) return;
+      if (!isContentObject) {
+        // Scroll to element if not a content object or not already trying to
+        await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
+        return;
+      }
       this.handleNavigationFocus();
     });
     Adapt.trigger(`router:${type} router:contentObject`, model);
@@ -226,11 +245,6 @@ class Router extends Backbone.Router {
     }
 
     this.$wrapper.append(new ViewClass({ model }).$el);
-
-    if (!isContentObject && !this.isScrolling) {
-      // Scroll to element if not a content object or not already trying to
-      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
-    }
 
   }
 
@@ -486,24 +500,30 @@ class Router extends Backbone.Router {
     const currentModelId = typeof selector === 'string' && selector.replace(/\./g, '').split(' ')[0];
     const isSelectorAnId = data.hasId(currentModelId);
 
+    let shouldAddRouteToHistory = false;
     if (isSelectorAnId) {
       const currentModel = data.findById(currentModelId);
-      const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
+      const contentObject = currentModel.isTypeGroup?.('contentobject') && !currentModel.isTypeGroup?.('group')
+        ? currentModel
+        : currentModel.findAncestor('contentobject');
       const contentObjectId = contentObject.get('_id');
-      const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
+      const isInCurrentContentObject = (contentObjectId === location._currentId);
 
-      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
+      shouldAddRouteToHistory = (isInCurrentContentObject);
+      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || !isInCurrentContentObject)) {
         const shouldReplace = settings.replace || false;
-        if (isNotInCurrentContentObject) {
-          this.isScrolling = true;
+        if (!isInCurrentContentObject) {
+          this._isInNavigateTo = true;
+          shouldAddRouteToHistory = false;
           this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
           this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
           await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
             this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
             resolve();
           }, 1)));
-          this.isScrolling = false;
-          if (currentModel.isTypeGroup('contentobject')) {
+          this._isInNavigateTo = false;
+          const shouldFocusOnBody = (location._currentId === currentModelId);
+          if (shouldFocusOnBody) {
             a11y.focusFirst(document.body);
             return;
           }
@@ -521,6 +541,10 @@ class Router extends Backbone.Router {
     if (isElementUnavailable) {
       logging.warn(`router.navigateToElement, selector not found in document: ${selector}`);
       return;
+    }
+
+    if (shouldAddRouteToHistory) {
+      this.addRouteToHistory(`#/id/${currentModelId}`);
     }
 
     // Get the current location - this is set in the router
@@ -564,6 +588,17 @@ class Router extends Backbone.Router {
         Adapt.trigger(`${newLocation}:scrolledTo`, selector);
         resolve();
       }, settings.duration + 300);
+    });
+  }
+
+  addRouteToHistory(hash) {
+    const isCurrentRoute = (window.location.hash === hash);
+    if (isCurrentRoute) return;
+    // Add the route to the browser history without causing a change of content
+    this._shouldIgnoreNextRouteAction = true;
+    this.navigate(hash, {
+      trigger: false,
+      replace: false
     });
   }
 
