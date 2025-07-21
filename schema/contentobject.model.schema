@@ -202,7 +202,7 @@
       "inputType": "Number",
       "validators": [ "number" ],
       "title": "Aria level",
-      "help": "The aria-level attribute of the title. This is used to determine the heading level of the title. When set to 0, the heading level will be determined by the element type."
+      "help": "The aria-level attribute of the title used to determine the heading level. When set to 0 (default), the level will be automatically determined by the element type. Only override if content does not properly use the CO/A/B/C structure."
     },
     "_onScreen": {
       "type": "object",
