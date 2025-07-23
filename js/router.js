@@ -543,7 +543,7 @@ class Router extends Backbone.Router {
       return;
     }
 
-    const isSubContent = currentModel && (!currentModel?.isTypeGroup('contentobject') || currentModel?.isTypeGroup('group'));
+    const isSubContent = currentModel && (!currentModel.isTypeGroup('contentobject') || currentModel.isTypeGroup('group'));
     const addSubContentRouteToHistory = (settings?.addSubContentRouteToHistory && isSubContent);
     if (addSubContentRouteToHistory) {
       this.addRouteToHistory(`#/id/${currentModelId}`);
