@@ -104,7 +104,13 @@ class A11y extends Backbone.Controller {
       'contentObjectView:ready router:plugin': this._onNavigationEnd
     });
     this._lastFocusTime = 0;
-    $(document.body).on('focusin', () => (this._lastFocusTime = Date.now()));
+    this._activeElements = [];
+    $(document.body).on('focusin', () => {
+      this._activeElements.unshift(document.activeElement);
+      this._activeElements = this._activeElements.filter(this.isReadable);
+      this._activeElements.length = 10;
+      this._lastFocusTime = Date.now();
+    });
   }
 
   _onConfigDataLoaded() {
@@ -177,6 +183,10 @@ class A11y extends Backbone.Controller {
 
   get timeSinceLastFocus() {
     return Date.now() - this._lastFocusTime;
+  }
+
+  get previousActiveElement() {
+    return this._activeElements[1];
   }
 
   /**
@@ -810,6 +820,15 @@ class A11y extends Backbone.Controller {
       perform();
     }
     return this;
+  }
+
+  /**
+   * Sends focus to previous active element
+   * Useful for returning from a close notify push
+   */
+  gotoPreviousActiveElement() {
+    if (!this.previousActiveElement) return a11y.focusFirst(Adapt.navigation);
+    a11y.focusFirst(this.previousActiveElement);
   }
 
   /**

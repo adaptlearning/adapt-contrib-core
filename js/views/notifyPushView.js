@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import a11y from '../a11y';
 import {
   transitionsEnded
 } from '../transitions';
@@ -93,7 +94,8 @@ export default class NotifyPushView extends Backbone.View {
       this.hasBeenRemoved = true;
       this.$el.removeClass('is-active');
       await transitionsEnded(this.$el);
-      this.$el[0].close();
+      this.$el[0].open = false;
+      a11y.gotoPreviousActiveElement();
       this.model.collection.remove(this.model);
       Adapt.trigger('notify:pushRemoved', this);
       this.model.close();
