@@ -66,7 +66,7 @@ export default class NotifyPushView extends Backbone.View {
   render() {
     const data = this.model.toJSON();
     const template = Handlebars.templates.notifyPush;
-    this.$el.html(template(data)).appendTo('.notify__push-container');
+    this.$el.html(template(data));
 
     _.defer(this.postRender.bind(this));
 
@@ -74,7 +74,8 @@ export default class NotifyPushView extends Backbone.View {
   }
 
   postRender() {
-    this.$el[0].show();
+    this.$el[0].open = true;
+    this.$el.appendTo('.notify__push-container');
     this.$el.addClass('is-active');
 
     _.delay(this.closePush.bind(this), this.model.get('_timeout'));
@@ -95,6 +96,7 @@ export default class NotifyPushView extends Backbone.View {
       this.$el[0].close();
       this.model.collection.remove(this.model);
       Adapt.trigger('notify:pushRemoved', this);
+      this.model.close();
       this.remove();
     }
   }
