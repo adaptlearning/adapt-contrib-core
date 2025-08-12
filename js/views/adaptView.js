@@ -146,12 +146,24 @@ class AdaptView extends Backbone.View {
    * views are added before resolving asynchronously.
    * Will trigger 'view:addChild'(ChildEvent), 'view:requestChild'(ChildEvent)
    * and 'view:childAdded'(ParentView, ChildView) accordingly.
-   * @returns {number} Count of views added
+   * @param {object} [options]
+   * @param {boolean} [options.returnNewDescendants=false]
+   * @returns {number|AdaptView[]} Count of views added or a list of the views
    */
-  async addChildren() {
+  async addChildren({ returnNewDescendants = false } = {}) {
+    const newChildren = [];
     this.nthChild = this.nthChild || 0;
     // Check descendants first
-    let addedCount = await this.addDescendants(false);
+    let addedCount = 0;
+    // addDescendants may return either an array or an integer
+    // Due to backward compatibility, it should processed accordingly
+    const result = await this.addDescendants({ returnNewDescendants });
+    if (Array.isArray(result)) {
+      addedCount = result.length;
+      newChildren.push(...result);
+    } else {
+      addedCount = result;
+    }
     // Iterate through existing available children and/or request new children
     // if required and allowed
     while (true) {
@@ -182,6 +194,7 @@ class AdaptView extends Backbone.View {
         throw new Error(`The component '${model.attributes._id}' ('${model.attributes._component}') has not been installed, and so is not available in your project.`);
       }
       const childView = new ChildView({ model });
+      newChildren.push(childView);
       this.addChildView(childView);
       addedCount++;
       if (event.isStoppedNext) {
@@ -190,12 +203,12 @@ class AdaptView extends Backbone.View {
     }
 
     if (!addedCount) {
-      return addedCount;
+      return returnNewDescendants ? [] : addedCount;
     }
 
     // Children were added, unset _isReady
     this.model.set('_isReady', false);
-    return addedCount;
+    return returnNewDescendants ? newChildren : addedCount;
   }
 
   /**
@@ -231,28 +244,43 @@ class AdaptView extends Backbone.View {
   /**
    * Iterates through existing childViews and runs addChildren on them, resolving
    * the total count of views added asynchronously.
-   * @returns {number} Count of views added
+   * @param {object} [options]
+   * @param {boolean} [options.returnNewDescendants=false]
+   * @returns {number|[AdaptView]} Count of views added or a list of the views
    */
-  async addDescendants() {
+  async addDescendants({ returnNewDescendants = false } = {}) {
     let addedDescendantCount = 0;
     const childViews = this.getChildViews();
     if (!childViews) {
-      return addedDescendantCount;
+      return returnNewDescendants
+        ? []
+        : addedDescendantCount;
     }
+    const newDescendants = [];
     for (let i = 0, l = childViews.length; i < l; i++) {
       const view = childViews[i];
-      addedDescendantCount = view.addChildren ? await view.addChildren() : 0;
+      // addChildren may return either an array or an integer
+      // Due to backward compatibility, it should be processed accordingly
+      const result = view.addChildren
+        ? await view.addChildren({ returnNewDescendants: true })
+        : 0;
+      if (Array.isArray(result)) {
+        addedDescendantCount += result.length;
+        newDescendants.push(...result);
+      } else {
+        addedDescendantCount += result;
+      }
       if (addedDescendantCount) {
         break;
       }
     }
     if (!addedDescendantCount) {
       this.model.checkReadyStatus();
-      return addedDescendantCount;
+      return returnNewDescendants ? [] : addedDescendantCount;
     }
     // Descendants were added, unset _isReady
     this.model.set('_isReady', false);
-    return addedDescendantCount;
+    return returnNewDescendants ? newDescendants : addedDescendantCount;
   }
 
   /**
