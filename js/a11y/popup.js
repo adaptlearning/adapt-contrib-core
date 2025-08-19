@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import logging from '../logging';
+import wait from 'core/js/wait';
 
 /**
  * Tabindex and aria-hidden manager for popups.
