@@ -189,8 +189,8 @@ class Router extends Backbone.Router {
       return this.navigateBack();
     }
 
-    const isNavigateTo = (model === location._currentModel);
-    if (isNavigateTo) {
+    const isNavigateToSubContent = (model === location._currentModel && !isContentObject);
+    if (isNavigateToSubContent) {
       this.model.set('_canNavigate', true, { pluginName: 'adapt' });
       await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
       return;
@@ -217,17 +217,6 @@ class Router extends Backbone.Router {
     });
     await this.updateLocation(newLocation, type, id, model);
 
-    Adapt.once('contentObjectView:ready', async () => {
-      // Allow navigation.
-      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
-      if (this._isInNavigateTo) return;
-      if (!isContentObject) {
-        // Scroll to element if not a content object or not already trying to
-        await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
-        return;
-      }
-      this.handleNavigationFocus();
-    });
     Adapt.trigger(`router:${type} router:contentObject`, model);
 
     const ViewClass = components.getViewClass(model);
@@ -245,6 +234,18 @@ class Router extends Backbone.Router {
     }
 
     this.$wrapper.append(new ViewClass({ model }).$el);
+
+    await new Promise(resolve => Adapt.once('contentObjectView:ready', resolve));
+
+    // Allow navigation.
+    this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+    if (this._isInNavigateTo || this._isInScroll) return;
+    if (!isContentObject) {
+      // Scroll to element if not a content object or not already trying to
+      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
+      return;
+    }
+    this.handleNavigationFocus();
 
   }
 
@@ -494,27 +495,26 @@ class Router extends Backbone.Router {
    * asynchronously when the element has been navigated to.
    * @param {JQuery|string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
    * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
-   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
+   * @param {boolean} [settings.addSubContentRouteToHistory=false] Set to `true` if you want to add a sub content route to the browser's history.
+   * @param {boolean} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
    */
   async navigateToElement(selector, settings = {}) {
     const currentModelId = typeof selector === 'string' && selector.replace(/\./g, '').split(' ')[0];
     const isSelectorAnId = data.hasId(currentModelId);
+    let currentModel;
 
-    let shouldAddRouteToHistory = false;
     if (isSelectorAnId) {
-      const currentModel = data.findById(currentModelId);
+      currentModel = data.findById(currentModelId);
       const contentObject = currentModel.isTypeGroup?.('contentobject') && !currentModel.isTypeGroup?.('group')
         ? currentModel
         : currentModel.findAncestor('contentobject');
       const contentObjectId = contentObject.get('_id');
       const isInCurrentContentObject = (contentObjectId === location._currentId);
 
-      shouldAddRouteToHistory = (isInCurrentContentObject);
       if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || !isInCurrentContentObject)) {
         const shouldReplace = settings.replace || false;
         if (!isInCurrentContentObject) {
           this._isInNavigateTo = true;
-          shouldAddRouteToHistory = false;
           this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
           this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
           await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
@@ -543,7 +543,9 @@ class Router extends Backbone.Router {
       return;
     }
 
-    if (shouldAddRouteToHistory) {
+    const isSubContent = currentModel && (!currentModel.isTypeGroup('contentobject') || currentModel.isTypeGroup('group'));
+    const addSubContentRouteToHistory = (settings?.addSubContentRouteToHistory && isSubContent);
+    if (addSubContentRouteToHistory) {
       this.addRouteToHistory(`#/id/${currentModelId}`);
     }
 
@@ -552,6 +554,7 @@ class Router extends Backbone.Router {
       ? location._contentType
       : location._currentLocation;
     // Trigger initial scrollTo event
+    this._isInScroll = true;
     Adapt.trigger(`${newLocation}:scrollTo`, selector);
     // Setup duration variable
     const disableScrollToAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
@@ -586,6 +589,7 @@ class Router extends Backbone.Router {
       _.delay(() => {
         a11y.focusNext(selector);
         Adapt.trigger(`${newLocation}:scrolledTo`, selector);
+        this._isInScroll = false;
         resolve();
       }, settings.duration + 300);
     });
