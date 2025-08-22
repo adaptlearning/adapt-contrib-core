@@ -1,5 +1,6 @@
 /**
- * 2021-09-07
+ * 2025-08-15
+ * CSP fixes
  * https://github.com/adaptlearning/adapt_framework/issues/2697
  * https://github.com/adaptlearning/adapt_framework/issues/3236
  * Added ES6-style constructor and static property inheritance rather than just
@@ -12,11 +13,6 @@ define('backbone.es6', [
 ], function(_, Backbone) {
 
   var hasNativeClassSupport = true;
-  try {
-    eval('class A {}');
-  } catch (err) {
-    hasNativeClassSupport = false;
-  }
 
   var classes = [
     Backbone.View,
@@ -27,29 +23,21 @@ define('backbone.es6', [
     Backbone.Controller
   ];
 
-  if (hasNativeClassSupport) {
     // Transform Backbone classes into ES6 Classes
     ['View', 'Model', 'Collection', 'Router', 'History', 'Controller'].forEach(function(name) {
       Backbone['_' + name] = Backbone[name];
-      Backbone[name] = eval('class ' + name + ' extends Backbone["_' + name + '"] { }; ' + name + ';');
+      Backbone[name] = class extends Backbone[`_${name}`] {}
     });
-  }
 
   var getChild = function (parent, protoProps) {
     // The constructor function for the new subclass is either defined by you
     // (the "constructor" property in your `extend` definition), or defaulted
     // by us to simply call the parent constructor.
     var hasConstructor = protoProps && _.has(protoProps, 'constructor');
-    if (hasNativeClassSupport && hasConstructor) {
-      return eval('class e extends protoProps.constructor { }; e;');
-    }
-    if (hasNativeClassSupport) {
-      return eval('class e extends parent { }; e;');
-    }
     if (hasConstructor) {
-      return protoProps.constructor;
+      return class extends protoProps.constructor {}
     }
-    return function () { return parent.apply(this, arguments); };
+    return class extends parent {}
   };
 
   // Helper function to correctly set up the prototype chain for subclasses.
