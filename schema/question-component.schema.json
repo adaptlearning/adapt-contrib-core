@@ -8,6 +8,7 @@
     },
     "with": {
       "required": [
+        "_attempts"
       ],
       "properties": {
         "instruction": {
@@ -303,3 +304,4 @@
     }
   }
 }
+
