@@ -108,6 +108,15 @@
       "title": "Enable accessibility completion description",
       "help": "Controls whether a hidden label is appended to the block title that describes the completion state of the block."
     },
+    "_ariaLevel": {
+      "type": "number",
+      "default": 0,
+      "isSetting": true,
+      "inputType": "Number",
+      "validators": [ "number" ],
+      "title": "Aria level",
+      "help": "The aria-level attribute of the title used to determine the heading level. When set to 0 (default), the level will be automatically determined by the element type. Only override if content does not properly use the CO/A/B/C structure."
+    },
     "_onScreen": {
       "type": "object",
       "title": "On-screen classes",

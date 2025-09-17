@@ -654,3 +654,50 @@ describe('core - update to v6.60.3', async () => {
     content: [{ _type: 'course' }]
   });
 });
+
+describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
+  let contentModels;
+
+  whereFromPlugin('core - from @@CURRENT_VERSION', { name: 'adapt-contrib-core', version: '<@@RELEASE_VERSION' });
+
+  whereContent('core - where content models', async (content) => {
+    const acceptedTypes = ['article', 'page', 'menu', 'block', 'component'];
+    contentModels = content.filter(obj => acceptedTypes.includes(obj._type));
+    return contentModels.length;
+  });
+
+  mutateContent('core - add _ariaLevel attribute', async (content) => {
+    contentModels.forEach(model => {
+      _.set(model, '_ariaLevel', 0);
+    });
+    return true;
+  });
+
+  checkContent('core - check _ariaLevel added', async (content) => {
+    const isValid = contentModels.every(model => _.has(model, '_ariaLevel') && model._ariaLevel === 0);
+    if (!isValid) throw new Error('core - _ariaLevel not added to all content models');
+    return true;
+  });
+
+  updatePlugin('core - update to @@RELEASE_VERSION', { name: 'adapt-contrib-core', version: '@@RELEASE_VERSION', framework: '>=5.20.2' });
+
+  testSuccessWhere('correct version with content models', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
+    content: [
+      { _type: 'course' },
+      { _type: 'article' },
+      { _type: 'page' },
+      { _type: 'menu' },
+      { _type: 'block' },
+      { _type: 'component', _component: 'text' }
+    ]
+  });
+
+  testStopWhere('incorrect version', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@RELEASE_VERSION' }]
+  });
+
+  testStopWhere('no content models', {
+    content: [{ _type: 'config' }]
+  });
+});
