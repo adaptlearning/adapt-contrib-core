@@ -38,7 +38,7 @@ export default class ButtonsView extends Backbone.View {
 
   render() {
     const data = this.model.toJSON();
-    const template = Handlebars.templates.buttons;
+    const template = Handlebars.templates[data._buttonsTemplate || 'buttons'];
     _.defer(() => {
       this.postRender();
       Adapt.trigger('buttonsView:postRender', this);
