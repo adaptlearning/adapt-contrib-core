@@ -126,8 +126,6 @@ export default class NotifyPopupView extends Backbone.View {
     await this.addSubView();
     // Add to the list of open popups
     this.notify.stack.push(this);
-    // Keep focus from previous action
-    this.$previousActiveElement = $(document.activeElement);
     Adapt.trigger('notify:opened', this);
     this.$el.imageready(this.onLoaded.bind(this));
   }
@@ -203,7 +201,7 @@ export default class NotifyPopupView extends Backbone.View {
     a11y.scrollEnable('body');
     $('html').removeClass('notify');
     // Return focus to previous active element
-    a11y.popupClosed(this.$previousActiveElement);
+    await a11y.popupClosed();
     // Return reference to the notify view
     Adapt.trigger('notify:closed', this);
   }
