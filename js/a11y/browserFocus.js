@@ -75,8 +75,9 @@ export default class BrowserFocus extends Backbone.Controller {
     const $focusable = $stack.filter(config._options._tabbableElements);
     if (!$focusable.length) {
       const element = this.a11y.currentActiveElement;
+      if (!element) return;
       // refocus on the existing active element to stop jaws from scrolling
-      element?.focus();
+      this.a11y.focus(element, { preventScroll: true });
       return;
     }
     const $closestFocusable = $element.closest(config._options._tabbableElements);
