@@ -1,6 +1,5 @@
 import Adapt from 'core/js/adapt';
 import 'core/js/templates';
-import ItemModel from '../models/itemModel';
 
 /**
   In Safari, a click triggers a mousedown, a blur, a mouseup, a focus, then a click,
