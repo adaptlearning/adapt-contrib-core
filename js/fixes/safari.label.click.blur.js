@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import 'core/js/templates';
+import ItemModel from '../models/itemModel';
 
 /**
   In Safari, a click triggers a mousedown, a blur, a mouseup, a focus, then a click,
@@ -25,6 +26,8 @@ function onLabelClick (event) {
   const input = document.querySelector(`[id="${event.currentTarget.getAttribute('for')}"]`);
   if (!input) return;
   event.preventDefault();
+  // focus first so that jaws doesn't jump scroll to the top
+  input.focus();
   input.click();
 };
 
