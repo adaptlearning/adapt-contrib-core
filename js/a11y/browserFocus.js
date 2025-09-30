@@ -90,10 +90,12 @@ export default class BrowserFocus extends Backbone.Controller {
     }
     if (!config._options._isClickDelayedAfterFocusEnabled) return;
     // Add a small delay to each click to allow screen readers to process focus
+    const element = $element[0];
     event.preventDefault();
     event.stopImmediatePropagation();
     setTimeout(() => {
-      $element[0].click();
+      element.focus();
+      element.click();
     }, 50);
   }
 
