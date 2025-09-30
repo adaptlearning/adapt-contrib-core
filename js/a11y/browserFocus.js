@@ -45,17 +45,29 @@ export default class BrowserFocus extends Backbone.Controller {
     if (event.target !== event.currentTarget) {
       return;
     }
-    // Do not auto next if the focus isn't returning to the body
-    if (!$(event.relatedTarget).is('body')) {
+    // Do not auto next if the focus isn't returning to the body or html element
+    if (!$(event.relatedTarget).is('body, html')) {
       return;
     }
     // Check if element losing focus is losing focus
-    // due to the addition of a disabled class
-    if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden') {
+    // due to the addition of a disabled class, display none, visibility hidden,
+    // or because it has been removed from the dom
+    if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden' && $element.parents('html').length) {
+      // the element is still available, refocus
+      // this can happen when jaws screen reader on role=group takes enter click
+      //   when the focus was on the input element
+      this._refocusCurrentActiveElement();
       return;
     }
     // Move focus to next readable element
     this.a11y.focusNext($element);
+  }
+
+  _refocusCurrentActiveElement() {
+    const element = this.a11y.currentActiveElement;
+    if (!element) return;
+    // refocus on the existing active element to stop jaws from scrolling
+    this.a11y.focus(element, { preventScroll: true });
   }
 
   /**
@@ -74,10 +86,7 @@ export default class BrowserFocus extends Backbone.Controller {
     const $stack = $([...$element.toArray(), ...$element.parents().toArray()]);
     const $focusable = $stack.filter(config._options._tabbableElements);
     if (!$focusable.length) {
-      const element = this.a11y.currentActiveElement;
-      if (!element) return;
-      // refocus on the existing active element to stop jaws from scrolling
-      this.a11y.focus(element, { preventScroll: true });
+      this._refocusCurrentActiveElement();
       return;
     }
     const $closestFocusable = $element.closest(config._options._tabbableElements);
