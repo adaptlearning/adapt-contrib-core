@@ -23,6 +23,11 @@ function applyHarden() {
       writable: true,
       enumerable: true,
       value: undefined
+    },
+    define: {
+      writable: true,
+      enumerable: true,
+      value: undefined
     }
   });
 }
