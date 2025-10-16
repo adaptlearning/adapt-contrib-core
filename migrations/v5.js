@@ -156,9 +156,9 @@ describe('core - update to v5.4.0', async () => {
     return config;
   });
 
-  mutateContent('core - add config._accessibility._fixes._imgLazyLoad', async (content) => {
-    if (_.has(config, '_accessibility._fixes._imgLazyLoad')) return true;
-    _.set(config, '_accessibility._fixes._imgLazyLoad', true);
+  mutateContent('core - add config._fixes._imgLazyLoad', async (content) => {
+    if (_.has(config, '_fixes._imgLazyLoad')) return true;
+    _.set(config, '_fixes._imgLazyLoad', true);
     return true;
   });
 
@@ -179,9 +179,9 @@ describe('core - update to v5.4.0', async () => {
     return true;
   });
 
-  checkContent('core - check config._accessibility._fixes._imgLazyLoad', async (content) => {
-    const isValid = _.has(config, '_accessibility._fixes._imgLazyLoad');
-    if (!isValid) throw new Error('core - _accessibility._fixes._imgLazyLoad not added');
+  checkContent('core - check config._fixes._imgLazyLoad', async (content) => {
+    const isValid = _.has(config, '_fixes._imgLazyLoad');
+    if (!isValid) throw new Error('core - _fixes._imgLazyLoad not added');
     return true;
   });
 
@@ -210,9 +210,9 @@ describe('core - update to v5.4.0', async () => {
     ]
   });
 
-  testSuccessWhere('default config._accessibility._fixes._imgLazyLoad', {
+  testSuccessWhere('default config._fixes._imgLazyLoad', {
     content: [
-      { _type: 'config', _accessibility: { _fixes: { _imgLazyLoad: true } } }
+      { _type: 'config', _fixes: { _imgLazyLoad: true } }
     ]
   });
 
