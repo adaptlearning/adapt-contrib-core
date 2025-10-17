@@ -88,7 +88,7 @@ class Data extends AdaptCollection {
     if (Adapt.get('_isStarted')) {
       Adapt.set('_isStarted', false);
     }
-    this.loadCourseData(language, previousLanguage);
+    await this.loadCourseData(language, previousLanguage);
   }
 
   async loadCourseData(newLanguage, previousLanguage) {
@@ -188,6 +188,7 @@ class Data extends AdaptCollection {
     try {
       // Setup the newly added models
       this.forEach(model => model.setupModel?.());
+      await wait.queue();
       Adapt.trigger('app:dataLoaded');
     } catch (e) {
       logging.error('Error during app:dataLoading trigger', e);
