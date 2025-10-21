@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import logging from '../logging';
+import wait from 'core/js/wait';
 
 /**
  * Tabindex and aria-hidden manager for popups.
@@ -146,12 +147,16 @@ export default class Popup extends Backbone.Controller {
    * Close the last popup on the stack, restoring tabindex and aria-hidden
    * attributes.
    *
-   * @param {Object} [$focusElement] Element at which to move focus.
+   * @param {Object} [$forceFocusElement] Element at which to move focus.
    * @returns {Object} Returns `a11y._popup`.
    */
-  closed($focusElement, silent) {
+  async closed($forceFocusElement, silent) {
+    if (!silent) {
+      Adapt.trigger('popup:closing');
+      await wait.queue();
+    }
     const $previousFocusElement = this._removeLastPopupLayer();
-    $focusElement = $focusElement || $previousFocusElement || $('body');
+    const $focusElement = $forceFocusElement || $previousFocusElement || $('body');
     if (!silent) {
       Adapt.trigger('popup:closed', $focusElement, true);
     }
