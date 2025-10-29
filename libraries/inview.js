@@ -319,7 +319,7 @@
   });
   // force an inview check - standard trigger event jquery api behaviour
   $.inview = $.onscreen = function() {
-    console.log('calling $.inview or $.onscreen directly is deprecate');
+    console.warn('Calling $.inview or $.onscreen directly is deprecated. Reference can be removed without any substitution.');
   };
   // attach locking interface to $.inview.lock(name); etc
   Object.assign($.inview, { lock, unlock, isLocked }, config);
