@@ -185,6 +185,10 @@ class A11y extends Backbone.Controller {
     return Date.now() - this._lastFocusTime;
   }
 
+  get currentActiveElement() {
+    return this._activeElements[0];
+  }
+
   get previousActiveElement() {
     return this._activeElements[1];
   }
