@@ -53,7 +53,8 @@ export default class BrowserFocus extends Backbone.Controller {
     // Check if element losing focus is losing focus
     // due to the addition of a disabled class, display none, visibility hidden,
     // or because it has been removed from the dom
-    if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden' && $element.parents('html').length) {
+    const isNotDisabledHiddenOrDetached = (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden' && $element.parents('html').length);
+    if (isNotDisabledHiddenOrDetached) {
       // the element is still available, refocus
       // this can happen when jaws screen reader on role=group takes enter click
       //   when the focus was on the input element
