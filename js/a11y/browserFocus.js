@@ -45,17 +45,32 @@ export default class BrowserFocus extends Backbone.Controller {
     if (event.target !== event.currentTarget) {
       return;
     }
-    // Do not auto next if the focus isn't returning to the body
-    if (!$(event.relatedTarget).is('body')) {
+    // Do not auto next if the focus isn't returning to the body or html element
+    // or if we're not losing focus
+    const isNotBodyHTMLOrLostFocus = (!$(event.relatedTarget).is('body, html') && event.relatedTarget !== null);
+    if (isNotBodyHTMLOrLostFocus) {
       return;
     }
     // Check if element losing focus is losing focus
-    // due to the addition of a disabled class
-    if (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden') {
+    // due to the addition of a disabled class, display none, visibility hidden,
+    // or because it has been removed from the dom
+    const isNotDisabledHiddenOrDetached = (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden' && $element.parents('html').length);
+    if (isNotDisabledHiddenOrDetached) {
+      // the element is still available, refocus
+      // this can happen when jaws screen reader on role=group takes enter click
+      //   when the focus was on the input element
+      this._refocusCurrentActiveElement();
       return;
     }
     // Move focus to next readable element
     this.a11y.focusNext($element);
+  }
+
+  _refocusCurrentActiveElement() {
+    const element = this.a11y.currentActiveElement;
+    if (!element) return;
+    // refocus on the existing active element to stop jaws from scrolling
+    this.a11y.focus(element, { preventScroll: true });
   }
 
   /**
@@ -74,6 +89,7 @@ export default class BrowserFocus extends Backbone.Controller {
     const $stack = $([...$element.toArray(), ...$element.parents().toArray()]);
     const $focusable = $stack.filter(config._options._tabbableElements);
     if (!$focusable.length) {
+      this._refocusCurrentActiveElement();
       return;
     }
     const $closestFocusable = $element.closest(config._options._tabbableElements);
@@ -86,10 +102,12 @@ export default class BrowserFocus extends Backbone.Controller {
     }
     if (!config._options._isClickDelayedAfterFocusEnabled) return;
     // Add a small delay to each click to allow screen readers to process focus
+    const element = $element[0];
     event.preventDefault();
     event.stopImmediatePropagation();
     setTimeout(() => {
-      $element[0].click();
+      element.focus();
+      element.click();
     }, 50);
   }
 
