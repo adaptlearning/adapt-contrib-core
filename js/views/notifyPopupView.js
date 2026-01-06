@@ -30,29 +30,18 @@
  * 7. View removed from DOM
  *
  * **Known Issues & Improvements:**
- *   - ⚠️ **Focus restoration**: Can fail if original element was removed from DOM
- *   - ⚠️ **Animation timing**: Disabled animation still has CSS transition delay
- *   - ⚠️ **Resize handling**: Excessive resize calculations on every window resize
- *   - ⚠️ **Memory leak risk**: Event listeners not always cleaned up on rapid close
- *   - 💡 **Improvement**: Debounce resize handler to reduce calculations
- *   - 💡 **Improvement**: Use IntersectionObserver for visibility detection
- *   - 💡 **Improvement**: Add `_maxHeight` option to constrain popup size
- *   - 💡 **Improvement**: Support `_position` option (top/center/bottom)
+ * - **Issue:** Focus restoration - Can fail if original element was removed from DOM
+ * - **Issue:** Animation timing - Disabled animation still has CSS transition delay
+ * - **Issue:** Resize handling - Excessive resize calculations on every window resize
+ * - **Issue:** Memory leak risk - Event listeners not always cleaned up on rapid close
+ * - **Enhancement:** Debounce resize handler to reduce calculations
+ * - **Enhancement:** Use IntersectionObserver for visibility detection
+ * - **Enhancement:** Add `_maxHeight` option to constrain popup size
+ * - **Enhancement:** Support `_position` option (top/center/bottom)
  *
- * @example
- * // Popup with custom view
- * import NotifyPopupView from 'core/js/views/notifyPopupView';
- * import NotifyModel from 'core/js/models/notifyModel';
- *
- * const model = new NotifyModel({
- *   _view: myCustomView,
- *   _closeOnShadowClick: true
- * });
- *
- * const popupView = new NotifyPopupView({
- *   model,
- *   notify: notifyViewInstance
- * });
+ * **Important:** Do NOT manually instantiate with `new NotifyPopupView()`.
+ * Views are created internally by {@link NotifyView}. Use `notify.popup()`, `notify.alert()`,
+ * or `notify.prompt()` instead.
  */
 
 import Adapt from 'core/js/adapt';
@@ -66,13 +55,8 @@ import { transitionNextFrame, transitionsEnded } from '../transitions';
 /**
  * @class NotifyPopupView
  * @classdesc Stack-based modals (only top closeable). Focus managed (moved on open, restored on close).
+ * Created internally by NotifyView - do not instantiate directly.
  * @extends {Backbone.View}
- * @example
- * // Constructor (normally called by NotifyView internally)
- * const popup = new NotifyPopupView({
- *   model: notifyModel,
- *   notify: notifyViewInstance  // Required: parent NotifyView for stack management
- * });
  */
 export default class NotifyPopupView extends Backbone.View {
 
@@ -150,17 +134,18 @@ export default class NotifyPopupView extends Backbone.View {
    * Closes popup and triggers callback event specified in model.
    * @param {jQuery.Event} event - Click event
    * @example
-   * // In notification creation:
-   * notify.alert({
+   * const view = notify.alert({
    *   title: 'Confirmation',
    *   body: 'Your action was successful',
    *   _callbackEvent: 'action:confirmed'
    * });
    *
-   * // Handler:
-   * Adapt.on('action:confirmed', (notifyView) => {
+   * const onConfirmed = (notifyView) => {
+   *   if (notifyView !== view) return;
    *   console.log('User clicked OK');
-   * });
+   *   Adapt.off('action:confirmed', onConfirmed);
+   * };
+   * Adapt.on('action:confirmed', onConfirmed);
    */
   onAlertButtonClicked(event) {
     event.preventDefault();
@@ -174,8 +159,7 @@ export default class NotifyPopupView extends Backbone.View {
    * Closes popup and triggers event specified in button's `data-event` attribute.
    * @param {jQuery.Event} event - Click event
    * @example
-   * // In notification creation:
-   * notify.prompt({
+   * const view = notify.prompt({
    *   title: 'Confirm Action',
    *   body: 'Are you sure?',
    *   _prompts: [
@@ -184,13 +168,22 @@ export default class NotifyPopupView extends Backbone.View {
    *   ]
    * });
    *
-   * // Handlers:
-   * Adapt.on('action:confirmed', (notifyView) => {
+   * const onConfirmed = (notifyView) => {
+   *   if (notifyView !== view) return;
    *   console.log('User clicked Yes');
-   * });
-   * Adapt.on('action:cancelled', (notifyView) => {
+   *   cleanUp();
+   * };
+   * const onCancelled = (notifyView) => {
+   *   if (notifyView !== view) return;
    *   console.log('User clicked No');
-   * });
+   *   cleanUp();
+   * };
+   * Adapt.on('action:confirmed', onConfirmed);
+   * Adapt.on('action:cancelled', onCancelled);
+   * function cleanUp() {
+   *   Adapt.off('action:confirmed', onConfirmed);
+   *   Adapt.off('action:cancelled', onCancelled);
+   * }
    */
   onPromptButtonClicked(event) {
     event.preventDefault();
@@ -208,14 +201,9 @@ export default class NotifyPopupView extends Backbone.View {
   /**
    * Handles clicks on the shadow overlay outside the popup.
    * Closes popup if `_closeOnShadowClick` is true (default).
+   * Set `_closeOnShadowClick: false` to prevent closing on shadow click.
    * @param {MouseEvent} event - Native mouse event
    * @private
-   * @example
-   * // Prevent shadow click from closing:
-   * notify.popup({
-   *   _view: myView,
-   *   _closeOnShadowClick: false
-   * });
    */
   onShadowClicked(event) {
     const dialog = this.$('.notify__popup')[0];
@@ -231,10 +219,12 @@ export default class NotifyPopupView extends Backbone.View {
   /**
    * Cancels the notification without triggering callback.
    * Respects `_isCancellable` flag - cannot cancel if false.
+   * 
+   * Triggered by Escape key press or by `Adapt.trigger('notify:cancel')` event.
+   * Set `_isCancellable: false` to prevent cancellation.
+   * 
    * @fires notify:cancelled
    * @example
-   * Adapt.trigger('notify:cancel');
-   *
    * notify.alert({
    *   title: 'Required',
    *   body: 'You must read this',
@@ -310,25 +300,24 @@ export default class NotifyPopupView extends Backbone.View {
 
   /**
    * Renders subview if specified in model.
-   * Supports three patterns:
-   * 1. Custom view passed via `_view` property
-   * 2. Component auto-render via `_shouldRenderId` and `_id`
-   * 3. No subview (text-only notification)
+   * 
+   * **Supports three patterns:**
+   * 1. **Custom view** - Pass Backbone.View via `_view` property
+   * 2. **Auto-render component** - Set `_shouldRenderId: true` and provide `_id`
+   * 3. **Text-only notification** - Omit `_view` and `_shouldRenderId`
+   * 
    * @async
    * @private
    * @example
-   * // Pattern 1: Custom view
    * notify.popup({
    *   _view: new MyView({ model: myModel })
    * });
    *
-   * // Pattern 2: Auto-render component
    * notify.popup({
    *   _id: 'c-05',
    *   _shouldRenderId: true
    * });
    *
-   * // Pattern 3: Text only
    * notify.alert({
    *   title: 'Hello',
    *   body: 'World'
@@ -361,12 +350,14 @@ export default class NotifyPopupView extends Backbone.View {
    * Closes the popup notification.
    * Only closes if this is the top-most popup in the stack.
    * Waits for opening animation to complete if necessary.
-   * @example
-   * // Programmatically close notification:
-   * Adapt.trigger('notify:close');
-   *
-   * // Or close specific notification:
-   * notifyPopupView.closeNotify();
+   * 
+   * **Note:** This is an internal method. Notifications close automatically when:
+   * - User clicks alert/prompt button
+   * - User clicks close button
+   * - User presses Escape key (if `_isCancellable` is true)
+   * - User clicks shadow overlay (if `_closeOnShadowClick` is true)
+   * 
+   * @private
    */
   closeNotify() {
     // Make sure that only the top most notify is closed
