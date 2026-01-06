@@ -20,42 +20,14 @@
  *   - {@link module:core/js/a11y} - Accessibility coordination
  *
  * **Known Issues & Improvements:**
- *   - ⚠️ **Stack management**: Rapid open/close can orphan modals in stack
- *   - ⚠️ **Deprecated API**: Still supports event-based API (`notify:popup`) for backwards compatibility
- *   - ⚠️ **No promise support**: `popup()`, `alert()`, `prompt()` don't return promises (only `read()` does)
- *   - 💡 **Improvement**: Unify API - all methods should return promises for consistency
- *   - 💡 **Improvement**: Add `closeAll()` method for bulk dismissal
- *   - 💡 **Improvement**: Add modal queueing like push notifications (currently unlimited stack)
- *   - 💡 **Improvement**: Remove deprecated event-based API in v7.0
- *   - 💡 **Performance**: Stack array manipulation could be optimized with Set
- *
- * @example
- * import notify from 'core/js/notify';
- *
- * // Popup with custom styling
- * notify.popup({
- *   title: 'Welcome',
- *   body: 'Course introduction',
- *   _classes: 'welcome-popup'
- * });
- *
- * // Alert with confirmation callback
- * notify.alert({
- *   title: 'Confirm Delete',
- *   body: 'This cannot be undone.',
- *   confirmText: 'Delete',
- *   _callbackEvent: 'item:deleted'
- * });
- *
- * // Push notification (auto-closes after timeout)
- * notify.push({
- *   title: 'Page Complete',
- *   body: 'Great job!',
- *   _timeout: 5000
- * });
- *
- * // Announce to screen readers
- * await notify.read('Loading complete');
+ * - **Issue:** Stack management - Rapid open/close can orphan modals in stack
+ * - **Issue:** Deprecated API - Still supports event-based API (`notify:popup`) for backwards compatibility
+ * - **Issue:** No promise support - `popup()`, `alert()`, `prompt()` don't return promises (only `read()` does)
+ * - **Enhancement:** Unify API - all methods should return promises for consistency
+ * - **Enhancement:** Add `closeAll()` method for bulk dismissal
+ * - **Enhancement:** Add modal queueing like push notifications (currently unlimited stack)
+ * - **Enhancement:** Remove deprecated event-based API in v7.0
+ * - **Enhancement:** Stack array manipulation could be optimized with Set
  */
 
 import Adapt from 'core/js/adapt';
