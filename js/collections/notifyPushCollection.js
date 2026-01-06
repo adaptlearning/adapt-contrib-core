@@ -1,8 +1,12 @@
 /**
  * @file Push Notification Collection - Manages queue of push notifications
  * @module core/js/collections/notifyPushCollection
- * @description Collection managing the queue and display of push notifications.
- * Ensures maximum of 2 push notifications are visible simultaneously.
+ *
+ * Collection managing the queue and display of push notifications.
+ * Ensures maximum of **2 push notifications** are visible simultaneously.
+ *
+ * **SINGLETON PATTERN**: Only ONE instance of NotifyPushCollection should exist
+ * in the application. Do NOT instantiate this class directly.
  *
  * **Side Effects (Important):**
  * - Adding a model **automatically triggers display logic** (not just storage)
@@ -18,30 +22,23 @@
  * - Delayed display via model `_delay` property
  *
  * **Dependencies:**
- * - Requires NotifyPushView for rendering
- * - Listens to Adapt global event bus
+ * - Requires {@link NotifyPushView} for rendering
+ * - Listens to {@link module:core/js/adapt Adapt} global event bus
  * - Expects models to have `_isActive` and `_delay` properties
  *
  * **Known Issues & Improvements:**
- *   - ⚠️ **No queue limit**: Could queue unlimited notifications (memory leak risk)
- *   - ⚠️ **Race condition**: Rapid add/remove can trigger duplicate displays
- *   - ⚠️ **Hardcoded limit**: Max 2 visible is not configurable
- *   - 💡 **Improvement**: Add max queue size with overflow handling
- *   - 💡 **Improvement**: Make visible limit configurable via `_maxVisible` option
- *   - 💡 **Improvement**: Add `clearQueue()` method to dismiss all queued notifications
- *   - 💡 **Improvement**: Return view instance from `showPush()` for external control
+ * - **Issue:** Max queue size hardcoded to 2 - should be configurable
+ * - **Issue:** No queue overflow handling or limits
+ * - **Enhancement:** Add configurable `_maxVisible` option
+ * - **Enhancement:** Add `clearQueue()` method to dismiss all queued notifications
+ * - **Enhancement:** Return view instance from `showPush()` for external control
+ * - **Enhancement:** Handle race conditions when rapid add/remove occurs
  *
- * @example
- * import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
+ * **Important:** Do NOT manually instantiate with `new NotifyPushCollection()`.
+ * The singleton instance is accessed internally via `notify.notifyPushes`.
+ * Developers should use `notify.push(options)` instead of `notify.notifyPushes.add(model)`.
  *
- * const pushes = new NotifyPushCollection();
- *
- * pushes.add(new NotifyModel({
- *   title: 'First',
- *   body: 'First notification',
- *   _timeout: 3000,
- *   _delay: 500  // Optional: wait 500ms before showing
- * }));
+ * @see {@link NotifyPushView} for rendering implementation
  */
 
 import Adapt from 'core/js/adapt';
@@ -51,6 +48,11 @@ import NotifyModel from 'core/js/models/notifyModel';
 /**
  * @class NotifyPushCollection
  * @extends {Backbone.Collection}
+ * @singleton
+ *
+ * Only **one instance** should exist in the application.
+ * Do not use `new NotifyPushCollection()` directly.
+ * Access through Adapt's internal notification system.
  */
 export default class NotifyPushCollection extends Backbone.Collection {
 
@@ -72,7 +74,11 @@ export default class NotifyPushCollection extends Backbone.Collection {
 
   /**
    * Determines if another push notification can be shown.
-   * @returns {boolean} True if fewer than 2 active notifications
+   *
+   * **Logic:** Counts active notifications (where `_isActive === true`)
+   * and returns `true` if fewer than 2 are currently displayed.
+   *
+   * @returns {boolean} `true` if fewer than 2 active notifications, `false` otherwise
    * @private
    */
   canShowPush() {
@@ -82,16 +88,16 @@ export default class NotifyPushCollection extends Backbone.Collection {
 
   /**
    * Displays a push notification by creating its view.
-   * **Side effect:** Creates new NotifyPushView instance.
+   *
+   * **Side effect:** Creates new {@link NotifyPushView} instance.
+   *
+   * **Delay Behavior:**
+   * - If `model._delay` is set, waits that many milliseconds before showing
+   * - Useful for staggering multiple notifications
+   *
    * @param {NotifyModel} model - The notification model to display
    * @param {number} [model._delay=0] - Milliseconds to wait before showing
    * @private
-   * @example
-   * const model = new NotifyModel({
-   *   body: 'Delayed message',
-   *   _delay: 1000
-   * });
-   * collection.add(model);
    */
   showPush(model) {
     _.delay(() => {
