@@ -16,22 +16,15 @@
  * - `_hasClosed` - Tracks if notification already closed
  *
  * **Known Issues & Improvements:**
- *   - ⚠️ **No validation**: Accepts any property without schema validation
- *   - ⚠️ **Silent failures**: Invalid `_timeout` or `_delay` values don't throw errors
- *   - 💡 **Improvement**: Add property validation for `_timeout`/`_delay` (must be numbers >= 0)
- *   - 💡 **Improvement**: Add `isActive()` getter method instead of direct property access
- *   - 💡 **Improvement**: Support cancellation tokens for `onClosed()` promise
+ * - **Issue:** No validation - accepts any property without schema validation
+ * - **Issue:** Silent failures - invalid `_timeout` or `_delay` values don't throw errors
+ * - **Enhancement:** Add property validation for `_timeout`/`_delay` (must be numbers >= 0)
+ * - **Enhancement:** Add `isActive()` getter method instead of direct property access
+ * - **Enhancement:** Support cancellation tokens for `onClosed()` promise
  *
- * @example
- * import NotifyModel from 'core/js/models/notifyModel';
- *
- * const notification = new NotifyModel({
- *   title: 'Alert',
- *   body: 'Important message',
- *   _timeout: 5000
- * });
- *
- * await notification.onClosed();
+ * **Important:** Do NOT manually instantiate with `new NotifyModel()`.
+ * Models are created internally by notify service methods: `notify.push()`, `notify.popup()`,
+ * `notify.alert()`, and `notify.prompt()`.
  */
 
 import LockingModel from 'core/js/models/lockingModel';
