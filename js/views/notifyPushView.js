@@ -19,26 +19,17 @@
  * - Automatically repositions when notifications added/removed
  *
  * **Known Issues & Improvements:**
- *   - ⚠️ **Hardcoded positioning**: Assumes navigation bar exists and is fixed height
- *   - ⚠️ **No mobile optimization**: Top-right position may be obscured on mobile
- *   - ⚠️ **Race condition**: updatePushPosition() can be called before render completes
- *   - ⚠️ **No Z-index management**: Multiple notifications can overlap with other UI
- *   - 💡 **Improvement**: Make position configurable (_position: 'top-right' | 'top-left' | 'bottom-right')
- *   - 💡 **Improvement**: Calculate nav height dynamically instead of hardcoding
- *   - 💡 **Improvement**: Add mobile-specific positioning (bottom of screen)
- *   - 💡 **Improvement**: Support `_priority` to control stacking order
+ * - **Issue:** Hardcoded positioning - Assumes navigation bar exists and is fixed height
+ * - **Issue:** No mobile optimization - Top-right position may be obscured on mobile
+ * - **Issue:** Race condition - updatePushPosition() can be called before render completes
+ * - **Issue:** No Z-index management - Multiple notifications can overlap with other UI
+ * - **Enhancement:** Make position configurable (_position: 'top-right' | 'top-left' | 'bottom-right')
+ * - **Enhancement:** Calculate nav height dynamically instead of hardcoding
+ * - **Enhancement:** Add mobile-specific positioning (bottom of screen)
+ * - **Enhancement:** Support `_priority` to control stacking order
  *
- * @example
- * import NotifyPushView from 'core/js/views/notifyPushView';
- * import NotifyModel from 'core/js/models/notifyModel';
- *
- * const model = new NotifyModel({
- *   title: 'Success',
- *   body: 'Your changes have been saved',
- *   _timeout: 5000
- * });
- *
- * const pushView = new NotifyPushView({ model });
+ * **Important:** Do NOT manually instantiate with `new NotifyPushView()`.
+ * Views are created internally by {@link NotifyPushCollection}. Use `notify.push()` instead.
  */
 
 import Adapt from 'core/js/adapt';
@@ -149,10 +140,7 @@ export default class NotifyPushView extends Backbone.View {
    * Can be triggered by: timeout, close button, Esc key, or notification click.
    * @async
    * @param {jQuery.Event} [event] - Click event if triggered by user interaction
-   * @example
-   * pushView.closePush();
-   *
-   * _.delay(() => this.closePush(), this.model.get('_timeout'));
+   * @private
    */
   async closePush(event) {
     if (event) {
@@ -176,18 +164,22 @@ export default class NotifyPushView extends Backbone.View {
   /**
    * Triggers the callback event associated with this notification.
    * Called when user clicks the notification body (not the close button).
+   * Specify callback event using `_callbackEvent` option when creating notification.
+   *
+   * **Important:** Unlike `notify.popup()` which passes the view instance to callbacks,
+   * push notification event handlers receive NO arguments. The callback cannot identify
+   * which notification triggered it. Store model reference if identification needed.
+   *
    * @param {jQuery.Event} event - Click event
    * @example
-   * // In notification creation:
-   * notify.push({
+   * const pushModel = notify.push({
    *   title: 'New Message',
    *   body: 'Click to view',
    *   _callbackEvent: 'messages:show'
    * });
    *
-   * // Handler:
    * Adapt.on('messages:show', () => {
-   *   console.log('User clicked notification');
+   *   console.log('Push notification clicked');
    * });
    */
   triggerEvent(event) {
