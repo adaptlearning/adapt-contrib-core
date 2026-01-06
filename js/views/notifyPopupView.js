@@ -219,10 +219,10 @@ export default class NotifyPopupView extends Backbone.View {
   /**
    * Cancels the notification without triggering callback.
    * Respects `_isCancellable` flag - cannot cancel if false.
-   * 
+   *
    * Triggered by Escape key press or by `Adapt.trigger('notify:cancel')` event.
    * Set `_isCancellable: false` to prevent cancellation.
-   * 
+   *
    * @fires notify:cancelled
    * @example
    * notify.alert({
@@ -300,12 +300,12 @@ export default class NotifyPopupView extends Backbone.View {
 
   /**
    * Renders subview if specified in model.
-   * 
+   *
    * **Supports three patterns:**
    * 1. **Custom view** - Pass Backbone.View via `_view` property
    * 2. **Auto-render component** - Set `_shouldRenderId: true` and provide `_id`
    * 3. **Text-only notification** - Omit `_view` and `_shouldRenderId`
-   * 
+   *
    * @async
    * @private
    * @example
@@ -350,13 +350,13 @@ export default class NotifyPopupView extends Backbone.View {
    * Closes the popup notification.
    * Only closes if this is the top-most popup in the stack.
    * Waits for opening animation to complete if necessary.
-   * 
+   *
    * **Note:** This is an internal method. Notifications close automatically when:
    * - User clicks alert/prompt button
    * - User clicks close button
    * - User presses Escape key (if `_isCancellable` is true)
    * - User clicks shadow overlay (if `_closeOnShadowClick` is true)
-   * 
+   *
    * @private
    */
   closeNotify() {
