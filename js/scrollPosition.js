@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import scrolling from 'core/js/scrolling';
 
-class ScrollPositionTracker extends Backbone.Controller {
+class ScrollPosition extends Backbone.Controller {
 
   initialize() {
     this.$html = $('html');
@@ -25,12 +25,12 @@ class ScrollPositionTracker extends Backbone.Controller {
   }
 
   onContentObjectReady() {
-    $(this._scrollContainer).on('scroll.scrollPositionTracker', this.onScroll);
+    $(this._scrollContainer).on('scroll.scrollPosition', this.onScroll);
     this.checkScrollPosition();
   }
 
   onContentObjectPreRemove() {
-    $(this._scrollContainer).off('scroll.scrollPositionTracker');
+    $(this._scrollContainer).off('scroll.scrollPosition');
   }
 
   onScroll() {
@@ -52,4 +52,4 @@ class ScrollPositionTracker extends Backbone.Controller {
 
 }
 
-export default new ScrollPositionTracker();
+export default new ScrollPosition();
