@@ -17,7 +17,7 @@ import 'core/js/models/lockingModel';
 import 'core/js/mpabc';
 import 'core/js/helpers';
 import 'core/js/scrolling';
-import 'core/js/scrollPositionTracker';
+import 'core/js/scrollPosition';
 import 'core/js/headings';
 import 'core/js/navigation';
 import 'core/js/startController';
