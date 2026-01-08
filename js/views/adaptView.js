@@ -37,6 +37,9 @@ class AdaptView extends Backbone.View {
       _globals: Adapt.course.get('_globals'),
       _isReady: false
     });
+
+    this.setPriorityLabels();
+
     this._isRemoved = false;
 
     if (location._currentId === this.model.get('_id')) {
@@ -417,6 +420,38 @@ class AdaptView extends Backbone.View {
 
   toggleHidden() {
     this.$el.toggleClass('u-display-none', this.model.get('_isHidden'));
+  }
+
+  /**
+   * Calculate and set priority label data on the model based on global configuration.
+   * Handles all the logic internally: checks type, gets config, and sets model data.
+   */
+  setPriorityLabels() {
+    const type = this.constructor.type;
+
+    // Early exit if not a supported content type
+    if (!['menuItem', 'page', 'article', 'block', 'component'].includes(type)) {
+      return;
+    }
+
+    const _globals = Adapt.course.get('_globals');
+    const _priorityLabels = _globals?._priorityLabels?.[`_${type}`];
+    if (!_priorityLabels) return;
+
+    const _isOptional = this.model.get('_isOptional');
+    const optionalLabel = _globals?._accessibility?._ariaLabels?.optional;
+    const requiredLabel = _globals?._accessibility?._ariaLabels?.required;
+
+    const showWhenOptional = _priorityLabels._showWhenOptional && _isOptional && optionalLabel;
+    const showWhenRequired = _priorityLabels._showWhenRequired && !_isOptional && requiredLabel;
+
+    if (!showWhenOptional && !showWhenRequired) return;
+
+    // Set priority data on model
+    this.model.set({
+      priorityClass: _isOptional ? 'is-optional' : 'is-required',
+      priorityLabel: _isOptional ? optionalLabel : requiredLabel
+    });
   }
 
   onIsCompleteChange(model, isComplete) {

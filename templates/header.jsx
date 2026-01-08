@@ -29,6 +29,8 @@ export default function Header(props) {
     _component,
     _extension,
     _isA11yComponentDescriptionEnabled,
+    priorityLabel,
+    priorityClass,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
       _component && _component.toLowerCase(),
@@ -44,6 +46,7 @@ export default function Header(props) {
   const _globals = Adapt.course.get('_globals');
   const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion ??
                      _globals?._extensions?.[`_${_extension}`]?.ariaRegion;
+
   const isSet = (displayTitle || body || sizedInstruction);
   if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
     // If no title, displaytitle, body or instruction is specified
@@ -63,6 +66,19 @@ export default function Header(props) {
       ])}
     >
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
+        {priorityLabel &&
+        <div className={classes([
+          prefixClasses(classNamePrefixes, ['__priority']),
+          priorityClass
+        ])}>
+          <span className="icon" aria-hidden="true" />
+          <div
+            className={prefixClasses(classNamePrefixes, ['__priority-label'])}
+            dangerouslySetInnerHTML={{ __html: compile(priorityLabel, props) }}
+          />
+        </div>
+        }
+
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
           <div className={prefixClasses(classNamePrefixes, ['__title-inner']) + ' js-heading'} ref={jsxHeading}></div>
