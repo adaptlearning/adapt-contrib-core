@@ -43,7 +43,7 @@ class ScrollPositionTracker extends Backbone.Controller {
     this._isCheckingScroll = false;
     this.$html.toggleClass('is-scroll-at-top', this.isAtTop);
   }
-  
+
   get isAtTop() {
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isAtTop = (scrollY === 0);
