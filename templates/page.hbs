@@ -11,6 +11,15 @@
 
       <div class="page__header-content">
 
+        {{#if priorityLabel}}
+        <div class="page__priority {{priorityClass}}">
+          <span class="icon" aria-hidden="true"></span>
+          <div class="page__priority-label">
+            {{{compile priorityLabel}}}
+          </div>
+        </div>
+        {{/if}}
+
         {{#if displayTitle}}
         <div class="page__title">
           <div class="page__title-inner js-heading"></div>

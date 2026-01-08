@@ -477,6 +477,99 @@
             }
           }
         },
+        "_priorityLabels": {
+          "type": "object",
+          "title": "Priority Labels",
+          "description": "Configure visual display of required/optional labels on content type headings",
+          "default": {},
+          "properties": {
+            "_menuItem": {
+              "type": "object",
+              "title": "Menu Item Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional menu items",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required menu items",
+                  "default": false
+                }
+              }
+            },
+            "_page": {
+              "type": "object",
+              "title": "Page Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional pages",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required pages",
+                  "default": false
+                }
+              }
+            },
+            "_article": {
+              "type": "object",
+              "title": "Article Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional articles",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required articles",
+                  "default": false
+                }
+              }
+            },
+            "_block": {
+              "type": "object",
+              "title": "Block Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional blocks",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required blocks",
+                  "default": false
+                }
+              }
+            },
+            "_component": {
+              "type": "object",
+              "title": "Component Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional components",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required components",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
         "_tooltips": {
           "type": "object",
           "title": "Tooltips",

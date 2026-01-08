@@ -523,6 +523,119 @@
               }
             }
           }
+        },
+        "_priorityLabels": {
+          "type": "object",
+          "title": "Priority Labels",
+          "help": "Configure visual display of required/optional labels on content type headings",
+          "default": {},
+          "properties": {
+            "_menuItem": {
+              "type": "object",
+              "title": "Menu Item Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional menu items",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required menu items",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                }
+              }
+            },
+            "_page": {
+              "type": "object",
+              "title": "Page Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional pages",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required pages",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                }
+              }
+            },
+            "_article": {
+              "type": "object",
+              "title": "Article Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional articles",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required articles",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                }
+              }
+            },
+            "_block": {
+              "type": "object",
+              "title": "Block Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional blocks",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required blocks",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                }
+              }
+            },
+            "_component": {
+              "type": "object",
+              "title": "Component Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional components",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required components",
+                  "default": false,
+                  "inputType": "Checkbox",
+                  "validators": []
+                }
+              }
+            }
+          }
         }
       }
     },
