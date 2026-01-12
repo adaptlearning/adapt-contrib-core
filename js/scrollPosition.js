@@ -46,8 +46,7 @@ class ScrollPosition extends Backbone.Controller {
 
   get isAtTop() {
     const scrollY = window.scrollY || window.pageYOffset || 0;
-    const isAtTop = (scrollY === 0);
-    return isAtTop;
+    return (scrollY === 0);
   }
 
 }
