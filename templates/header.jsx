@@ -30,7 +30,7 @@ export default function Header(props) {
     _extension,
     _isA11yComponentDescriptionEnabled,
     priorityLabel,
-    priorityClass,
+    _priorityClass,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
       _component && _component.toLowerCase(),
@@ -69,7 +69,7 @@ export default function Header(props) {
         {priorityLabel &&
         <div className={classes([
           prefixClasses(classNamePrefixes, ['__priority']),
-          priorityClass
+          _priorityClass
         ])}>
           <span className="icon" aria-hidden="true" />
           <div

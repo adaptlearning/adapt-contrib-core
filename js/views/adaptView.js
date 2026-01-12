@@ -449,7 +449,7 @@ class AdaptView extends Backbone.View {
 
     // Set priority data on model
     this.model.set({
-      priorityClass: _isOptional ? 'is-optional' : 'is-required',
+      _priorityClass: _isOptional ? 'is-optional' : 'is-required',
       priorityLabel: _isOptional ? optionalLabel : requiredLabel
     });
   }
