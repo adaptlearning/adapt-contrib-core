@@ -14,7 +14,7 @@ class ScrollPosition extends Backbone.Controller {
   }
 
   setup() {
-    this._scrollContainer = scrolling.isLegacyScrolling ? window : document.body;
+    this._$scrollContainer = $(scrolling.isLegacyScrolling ? window : document.body);
 
     this.checkScrollPosition();
 
