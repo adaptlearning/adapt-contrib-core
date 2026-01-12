@@ -5,7 +5,7 @@ class ScrollPosition extends Backbone.Controller {
 
   initialize() {
     this.$html = $('html');
-    this._scrollContainer = null;
+    this._$scrollContainer = null;
     this._isCheckingScroll = false;
     this.checkScrollPosition = this.checkScrollPosition.bind(this);
     this.onScroll = this.onScroll.bind(this);
