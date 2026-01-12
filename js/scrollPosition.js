@@ -25,12 +25,12 @@ class ScrollPosition extends Backbone.Controller {
   }
 
   onContentObjectReady() {
-    $(this._scrollContainer).on('scroll.scrollPosition', this.onScroll);
+    this._$scrollContainer.on('scroll.scrollPosition', this.onScroll);
     this.checkScrollPosition();
   }
 
   onContentObjectPreRemove() {
-    $(this._scrollContainer).off('scroll.scrollPosition');
+    this._$scrollContainer.off('scroll.scrollPosition');
   }
 
   onScroll() {
