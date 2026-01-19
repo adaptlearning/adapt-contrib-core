@@ -427,13 +427,11 @@ class AdaptView extends Backbone.View {
    * Handles all the logic internally: checks type, gets config, and sets model data.
    */
   setPriorityLabels() {
-    const SUPPORTED_TYPES = ['menuItem', 'page', 'article', 'block', 'component'];
     const type = this.constructor.type;
 
     // Early exit if not a supported content type
-    if (!SUPPORTED_TYPES.includes(type)) {
-      return;
-    }
+    const SUPPORTED_TYPES = ['menuItem', 'page', 'article', 'block', 'component'];
+    if (!SUPPORTED_TYPES.includes(type)) return;
 
     const _globals = Adapt.course.get('_globals');
     const _priorityLabels = _globals?._priorityLabels?.[`_${type}`];
