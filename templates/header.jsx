@@ -31,6 +31,7 @@ export default function Header(props) {
     _isA11yComponentDescriptionEnabled,
     priorityLabel,
     _priorityClass,
+    _priorityIconClass,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
       _component && _component.toLowerCase(),
@@ -71,7 +72,9 @@ export default function Header(props) {
           prefixClasses(classNamePrefixes, ['__priority']),
           _priorityClass
         ])}>
-          <span className="icon" aria-hidden="true" />
+          {_priorityIconClass &&
+            <span className={classes(['icon', _priorityIconClass])} aria-hidden="true" />
+          }
           <div
             className={prefixClasses(classNamePrefixes, ['__priority-label'])}
             dangerouslySetInnerHTML={{ __html: compile(priorityLabel, props) }}

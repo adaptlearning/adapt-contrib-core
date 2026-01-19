@@ -483,6 +483,18 @@
           "description": "Configure visual display of required/optional labels on content type headings",
           "default": {},
           "properties": {
+            "_iconClassOptional": {
+              "type": "string",
+              "title": "Icon class for optional content",
+              "description": "CSS class for the icon shown on optional content (e.g., 'icon-info'). Leave empty for no icon.",
+              "default": ""
+            },
+            "_iconClassRequired": {
+              "type": "string",
+              "title": "Icon class for required content",
+              "description": "CSS class for the icon shown on required content (e.g., 'icon-exclamation'). Leave empty for no icon.",
+              "default": ""
+            },
             "_menuItem": {
               "type": "object",
               "title": "Menu Item Priority Labels",

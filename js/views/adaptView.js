@@ -434,7 +434,8 @@ class AdaptView extends Backbone.View {
     if (!SUPPORTED_TYPES.includes(type)) return;
 
     const _globals = Adapt.course.get('_globals');
-    const _priorityLabels = _globals?._priorityLabels?.[`_${type}`];
+    const _priorityLabelsConfig = _globals?._priorityLabels;
+    const _priorityLabels = _priorityLabelsConfig?.[`_${type}`];
     if (!_priorityLabels) return;
 
     const _isOptional = this.model.get('_isOptional');
@@ -446,9 +447,13 @@ class AdaptView extends Backbone.View {
 
     if (!showWhenOptional && !showWhenRequired) return;
 
+    const _iconClassOptional = _priorityLabelsConfig._iconClassOptional ?? '';
+    const _iconClassRequired = _priorityLabelsConfig._iconClassRequired ?? '';
+
     // Set priority data on model
     this.model.set({
       _priorityClass: _isOptional ? 'is-optional' : 'is-required',
+      _priorityIconClass: _isOptional ? _iconClassOptional : _iconClassRequired,
       priorityLabel: _isOptional ? optionalLabel : requiredLabel
     });
   }

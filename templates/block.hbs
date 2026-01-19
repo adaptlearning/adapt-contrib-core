@@ -9,7 +9,9 @@
 
       {{#if priorityLabel}}
       <div class="block__priority {{_priorityClass}}">
-        <span class="icon" aria-hidden="true"></span>
+        {{#if _priorityIconClass}}
+        <span class="icon {{_priorityIconClass}}" aria-hidden="true"></span>
+        {{/if}}
         <div class="block__priority-label">
           {{{compile priorityLabel}}}
         </div>
