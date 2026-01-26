@@ -423,34 +423,41 @@ class AdaptView extends Backbone.View {
   }
 
   /**
-   * Calculate and set priority label data on the model based on global configuration.
+   * Calculate and set priority label data on the model based on configuration.
+   * Supports per-element override via model's _priorityLabels with _isOverride: true.
    * Handles all the logic internally: checks type, gets config, and sets model data.
    */
   setPriorityLabels() {
     const type = this.constructor.type;
 
-    // Early exit if not a supported content type
     const SUPPORTED_TYPES = ['menuItem', 'page', 'article', 'block', 'component'];
     if (!SUPPORTED_TYPES.includes(type)) return;
 
     const _globals = Adapt.course.get('_globals');
-    const _priorityLabelsConfig = _globals?._priorityLabels;
-    const _priorityLabels = _priorityLabelsConfig?.[`_${type}`];
-    if (!_priorityLabels) return;
+    const globalConfig = _globals?._priorityLabels;
+    const localConfig = this.model.get('_priorityLabels');
+
+    // Use local override if _isOverride is explicitly true
+    const isLocalOverride = localConfig?._isOverride === true;
+    const typeConfig = isLocalOverride
+      ? localConfig
+      : globalConfig?.[`_${type}`];
+
+    if (!typeConfig) return;
 
     const _isOptional = this.model.get('_isOptional');
     const optionalLabel = _globals?._accessibility?._ariaLabels?.optional;
     const requiredLabel = _globals?._accessibility?._ariaLabels?.required;
 
-    const showWhenOptional = _priorityLabels._showWhenOptional && _isOptional && optionalLabel;
-    const showWhenRequired = _priorityLabels._showWhenRequired && !_isOptional && requiredLabel;
+    const showWhenOptional = typeConfig._showWhenOptional && _isOptional && optionalLabel;
+    const showWhenRequired = typeConfig._showWhenRequired && !_isOptional && requiredLabel;
 
     if (!showWhenOptional && !showWhenRequired) return;
 
-    const _iconClassOptional = _priorityLabelsConfig._iconClassOptional ?? '';
-    const _iconClassRequired = _priorityLabelsConfig._iconClassRequired ?? '';
+    // Icon classes always come from global config
+    const _iconClassOptional = globalConfig?._iconClassOptional ?? '';
+    const _iconClassRequired = globalConfig?._iconClassRequired ?? '';
 
-    // Set priority data on model
     this.model.set({
       _priorityClass: _isOptional ? 'is-optional' : 'is-required',
       _priorityIconClass: _isOptional ? _iconClassOptional : _iconClassRequired,
