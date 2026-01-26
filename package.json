@@ -38,20 +38,18 @@
           "preset": "eslint"
         }
       ],
-      "@semantic-release/npm",
-      "@semantic-release/github",
       [
         "semantic-release-replace-plugin",
         {
           "replacements": [
             {
-              "files": ["migrations/*.js"],
+              "files": "migrations/*.js",
               "from": "@@CURRENT_VERSION",
               "to": "${lastRelease.version}",
               "countMatches": true
             },
             {
-              "files": ["migrations/*.js"],
+              "files": "migrations/*.js",
               "from": "@@RELEASE_VERSION",
               "to": "${nextRelease.version}",
               "countMatches": true
@@ -59,6 +57,8 @@
           ]
         }
       ],
+      "@semantic-release/npm",
+      "@semantic-release/github",
       [
         "@semantic-release/git",
         {
