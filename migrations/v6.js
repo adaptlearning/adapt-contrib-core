@@ -655,10 +655,10 @@ describe('core - update to v6.60.3', async () => {
   });
 });
 
-describe('core - v6.68.1 to v6.69.0', async () => {
+describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
   let contentModels;
 
-  whereFromPlugin('core - from v6.68.1', { name: 'adapt-contrib-core', version: '<6.69.0' });
+  whereFromPlugin('core - from @@CURRENT_VERSION', { name: 'adapt-contrib-core', version: '<@@RELEASE_VERSION' });
 
   whereContent('core - where content models', async (content) => {
     const acceptedTypes = ['article', 'page', 'menu', 'block', 'component'];
@@ -679,10 +679,10 @@ describe('core - v6.68.1 to v6.69.0', async () => {
     return true;
   });
 
-  updatePlugin('core - update to v6.69.0', { name: 'adapt-contrib-core', version: '6.69.0', framework: '>=5.20.2' });
+  updatePlugin('core - update to @@RELEASE_VERSION', { name: 'adapt-contrib-core', version: '@@RELEASE_VERSION', framework: '>=5.20.2' });
 
   testSuccessWhere('correct version with content models', {
-    fromPlugins: [{ name: 'adapt-contrib-core', version: '6.68.1' }],
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
     content: [
       { _type: 'course' },
       { _type: 'article' },
@@ -694,7 +694,7 @@ describe('core - v6.68.1 to v6.69.0', async () => {
   });
 
   testStopWhere('incorrect version', {
-    fromPlugins: [{ name: 'adapt-contrib-core', version: '6.69.0' }]
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@RELEASE_VERSION' }]
   });
 
   testStopWhere('no content models', {
