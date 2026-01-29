@@ -40,8 +40,7 @@ export default function Image(props) {
           props?._srcFocalPoint && `object-position-${props?._srcFocalPoint}`
         ])}
         src={src}
-        aria-label={props.alt ? a11y.normalize(props.alt) : null}
-        aria-hidden={!props.alt}
+        alt={a11y.normalize(props.alt)}
         loading='eager'
         aria-describedby={props.longdescription ? props.longDescriptionId : undefined}
         draggable={props.draggable ?? null}
