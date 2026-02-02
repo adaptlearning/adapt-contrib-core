@@ -1,27 +1,28 @@
 /**
- * @file Drawer Service - Sidebar navigation system with menu items and custom views
+ * @file Drawer Service - Sidebar with drawer items and custom views
  * @module core/js/drawer
- * @description Singleton service managing the drawer sidebar navigation system. Provides API
- * for registering menu items and displaying custom views. Handles drawer lifecycle, state management,
- * and integration with navigation toolbar.
+ * @description Singleton service managing the drawer sidebar. Provides API
+ * for registering drawer items and displaying custom views. Handles drawer lifecycle, state management,
+ * and integration with toolbar.
  *
  * **Architecture:**
  * - Singleton controller (exported as instance)
- * - Manages {@link DrawerCollection} of menu items (sorted by drawerOrder)
+ * - Manages {@link DrawerCollection} of drawer items (sorted by drawerOrder)
  * - Creates/destroys {@link DrawerView} on language change
- * - Two operational modes: menu list or custom view
+ * - Two operational modes: drawer list or custom view
  *
  * **Public Events Triggered:**
  * - `drawer:opened` - Drawer opened (any mode)
- * - `drawer:openedItemView` - Menu mode shown
+ * - `drawer:openedItemView` - Drawer shown
  * - `drawer:openedCustomView` - Custom view shown
  * - `drawer:closed` - Drawer closed
  * - `drawer:empty` - Drawer content cleared
- * - `drawer:noItems` - No menu items registered
+ * - `drawer:noItems` - No drawer items registered
  *
- * **Usage Pattern:**
- * ```javascript
- * // Register menu item
+ * @example
+ * import drawer from 'core/js/drawer';
+ *
+ * // Register drawer item
  * drawer.addItem({
  *   title: 'Resources',
  *   description: 'View course resources',
@@ -33,15 +34,6 @@
  * Adapt.on('resources:showDrawer', () => {
  *   drawer.openCustomView(new ResourcesView());
  * });
- * ```
- *
- * **Known Issues & Improvements:**
- * - **Issue:** DrawerCollection is module-scoped but not accessible via API
- * - **Issue:** No way to update existing item without remove/add
- * - **Issue:** No validation of drawerObject structure
- * - **Enhancement:** Add `updateItem(eventCallback, drawerObject)` method
- * - **Enhancement:** Add `getItem(eventCallback)` to retrieve item data
- * - **Enhancement:** Add `getAllItems()` to get current menu items
  */
 
 import Backbone from 'backbone';
@@ -53,7 +45,7 @@ const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrde
 
 /**
  * @class Drawer
- * @classdesc Singleton service for drawer navigation system. Only one instance exists per course.
+ * @classdesc Singleton service managing drawer sidebar. Only one instance exists per course.
  * @extends {Backbone.Controller}
  */
 class Drawer extends Backbone.Controller {
@@ -82,10 +74,7 @@ class Drawer extends Backbone.Controller {
 
   /**
    * Toggles drawer open/closed based on current state.
-   * Convenience method for open/close logic.
    * @example
-   * Adapt.trigger('navigation:toggleDrawer');
-   *
    * drawer.toggle();
    */
   toggle() {
@@ -93,12 +82,12 @@ class Drawer extends Backbone.Controller {
   }
 
   /**
-   * Checks if drawer is currently open in menu mode.
+   * Checks if drawer is currently open showing drawer.
    * Returns false if drawer is showing custom view or closed.
-   * @returns {boolean} True if drawer is visible in menu mode
+   * @returns {boolean} True if drawer is visible showing drawer
    * @example
    * if (drawer.isOpen) {
-   *   console.log('Menu is showing');
+   *   console.log('Drawer is showing');
    * }
    */
   get isOpen() {
@@ -106,7 +95,7 @@ class Drawer extends Backbone.Controller {
   }
 
   /**
-   * Opens drawer in menu mode showing list of registered items.
+   * Opens drawer showing registered drawer items.
    * If only one item registered, automatically triggers its callback.
    * @fires drawer:opened
    * @fires drawer:openedItemView
@@ -119,9 +108,9 @@ class Drawer extends Backbone.Controller {
 
   /**
    * Opens drawer with custom view content.
-   * Called by plugins in response to menu item click.
+   * Called by plugins in response to drawer item click.
    * @param {Backbone.View|jQuery|HTMLElement|string} view - View instance or HTML content to display
-   * @param {boolean} [hasBackButton=true] - Show back button to return to menu
+   * @param {boolean} [hasBackButton=true] - Show back button to return to drawer list
    * @param {string} [position] - Override drawer position ('left'|'right', null uses global config)
    * @fires drawer:opened
    * @fires drawer:openedCustomView
@@ -132,6 +121,7 @@ class Drawer extends Backbone.Controller {
    *   drawer.openCustomView(resourcesView, true, 'right');
    * });
    *
+   * // Or use simple HTML
    * drawer.openCustomView('<div>Simple HTML</div>', false);
    */
   openCustomView(view, hasBackButton, position) {
@@ -139,9 +129,9 @@ class Drawer extends Backbone.Controller {
   }
 
   /**
-   * Registers a menu item in the drawer.
+   * Registers a drawer item.
    * Replaces existing item with same eventCallback.
-   * @param {Object} drawerObject - Menu item configuration
+   * @param {Object} drawerObject - Drawer item configuration
    * @param {string} drawerObject.title - Display title
    * @param {string} drawerObject.description - Description text
    * @param {string} [drawerObject.className] - CSS class for styling
@@ -168,12 +158,15 @@ class Drawer extends Backbone.Controller {
   }
 
   /**
-   * Checks if menu item is registered.
+   * Checks if drawer item is registered.
    * @param {string} eventCallback - Event callback to check
    * @returns {boolean} True if item exists
    * @example
    * if (!drawer.hasItem('resources:showDrawer')) {
-   *   drawer.addItem({ title: 'Resources' }, 'resources:showDrawer');
+   *   drawer.addItem({
+   *     title: 'Resources',
+   *     drawerOrder: 10
+   *   }, 'resources:showDrawer');
    * }
    */
   hasItem(eventCallback) {
@@ -188,6 +181,7 @@ class Drawer extends Backbone.Controller {
    * @example
    * drawer.close();
    *
+   * // Close and focus specific element
    * drawer.close($('.js-nav-home-btn'));
    */
   close($toElement = null) {

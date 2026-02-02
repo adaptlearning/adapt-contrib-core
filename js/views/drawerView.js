@@ -1,12 +1,12 @@
 /**
  * @file Drawer View - Main controller for sidebar drawer display and content
  * @module core/js/views/drawerView
- * @description View managing the drawer sidebar with two operational modes: menu list showing
+ * @description View managing the drawer sidebar with two operational modes: drawer list showing
  * registered items via {@link DrawerItemView} or custom view content. Handles positioning,
  * animations, accessibility, and lifecycle management.
  *
  * **Operational Modes:**
- * 1. **Menu Mode** - Shows list of {@link DrawerItemView} instances from collection
+ * 1. **Drawer Mode** - Shows {@link DrawerItemView} instances from collection
  * 2. **Custom Mode** - Shows arbitrary view/HTML with optional back button
  *
  * **Display Behavior:**
@@ -32,21 +32,11 @@
  *
  * **Public Events Triggered:**
  * - `drawer:opened` - Drawer opened (any mode)
- * - `drawer:openedItemView` - Menu mode shown
+ * - `drawer:openedItemView` - Drawer shown
  * - `drawer:openedCustomView` - Custom view shown
  * - `drawer:empty` - Drawer content cleared
  * - `drawer:closed` - Drawer closed
- * - `drawer:noItems` - No menu items in collection
- *
- * **Known Issues & Improvements:**
- * - **Issue:** Single-item workaround (lines 180-188) - Sets `_isCustomViewVisible` to true then immediately false to fix toggle bug, indicates state management problem
- * - **Issue:** Force close hack (line 222) - Uses `css('display', 'block')` to prevent HTMLDialogElement.close() from hiding dialog
- * - **Issue:** Hardcoded selector `.js-nav-drawer-btn` couples view to navigation implementation
- * - **Issue:** Direct DOM manipulation of `$('.js-nav-drawer-btn')` violates separation of concerns
- * - **Enhancement:** Refactor state management to eliminate single-item toggle workaround
- * - **Enhancement:** Use event system instead of direct DOM manipulation for nav button visibility
- * - **Enhancement:** Support configurable drawer button selector
- * - **Enhancement:** Add `drawer:beforeOpen` and `drawer:beforeClose` events for cancellation
+ * - `drawer:noItems` - No drawer items in collection
  *
  * **Important:** Created internally by {@link module:core/js/drawer}. Use drawer service API, not direct instantiation.
  */
@@ -193,7 +183,7 @@ class DrawerView extends Backbone.View {
    * Opens drawer with custom view content.
    * Called by {@link module:core/js/drawer#openCustomView}.
    * @param {Backbone.View|jQuery|HTMLElement|string} view - View instance or HTML content
-   * @param {boolean} [hasBackButton=true] - Show back button to return to menu
+   * @param {boolean} [hasBackButton=true] - Show back button to return to drawer.
    * @param {string} [position] - Override drawer position ('left'|'right')
    * @fires drawer:empty
    * @fires drawer:opened
@@ -213,8 +203,8 @@ class DrawerView extends Backbone.View {
   }
 
   /**
-   * Checks if drawer has menu items and updates nav button visibility.
-   * Directly manipulates nav button DOM (couples to navigation implementation).
+   * Checks if drawer has drawer items and updates drawer button visibility.
+   * Directly manipulates drawer button DOM (couples to toolbar implementation).
    * @fires drawer:noItems
    * @private
    */
@@ -237,9 +227,9 @@ class DrawerView extends Backbone.View {
   }
 
   /**
-   * Checks if drawer is open in menu mode.
+   * Checks if drawer is open showing drawer.
    * Returns false if showing custom view or closed.
-   * @returns {boolean} True if visible in menu mode (not custom view)
+   * @returns {boolean} True if visible showing drawer (not custom view)
    */
   get isOpen() {
     return (this._isVisible && this._isCustomViewVisible === false);
@@ -247,9 +237,9 @@ class DrawerView extends Backbone.View {
 
   /**
    * Opens and displays the drawer with animation.
-   * Handles both menu mode and custom view mode.
+   * Handles both drawer mode and custom view mode.
    * @async
-   * @param {boolean} [emptyDrawer] - True for menu mode, false/null for custom mode
+   * @param {boolean} [emptyDrawer] - True for drawer mode, false/null for custom mode
    * @param {string} [position=null] - Override drawer position
    * @fires drawer:opened
    * @fires drawer:openedItemView
@@ -310,17 +300,23 @@ class DrawerView extends Backbone.View {
   /**
    * Clears drawer content container.
    * @private
+   * @example
+   * this.emptyDrawer();
+   * Adapt.trigger('drawer:empty');
    */
   emptyDrawer() {
     this.$('.drawer__holder').empty();
   }
 
   /**
-   * Renders menu items from collection.
+   * Renders drawer items from collection.
    * Creates {@link DrawerItemView} for each model.
    * Sets ARIA role='list' if multiple items.
    * @fires drawer:empty
    * @private
+   * @example
+   * this.renderItems();
+   * // Triggers drawer:empty and populates drawer with DrawerItemView instances
    */
   renderItems() {
     Adapt.trigger('drawer:empty');
@@ -381,7 +377,8 @@ class DrawerView extends Backbone.View {
    * Cleanup when view is removed.
    * Forces drawer closed, removes event listeners, resets collection.
    * @fires drawer:empty
-   * @param {...*} args - Arguments passed to Backbone's remove method
+   * @example
+   * drawerView.remove();
    */
   remove() {
     this.hideDrawer(null, { force: true });
