@@ -37,14 +37,6 @@
  *   - Requires: Config integration, a11y coordination, template system access
  *   - Breaking Change Risk: High - Widely used throughout framework and plugins
  *
- * **Known Issues & Improvements:**
- * - **Issue:** Modal stack edge case - Rapid open/close can leave orphaned modals (rare)
- * - **Issue:** Push positioning - Assumes fixed navigation bar height (breaks with custom navs)
- * - **Issue:** API inconsistency - `read()` returns promise, but `popup()`/`alert()` don't
- * - **Enhancement:** Could return promises from all methods for better async control
- * - **Enhancement:** Add `notify.closeAll()` method for bulk dismissal
- * - **Enhancement:** Support notification queueing for modals (currently push only)
- *
  * @example
  * import notify from 'core/js/notify';
  *
