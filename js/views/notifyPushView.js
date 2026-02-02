@@ -18,16 +18,6 @@
  * - Second notification: below first notification + offset
  * - Automatically repositions when notifications added/removed
  *
- * **Known Issues & Improvements:**
- * - **Issue:** Hardcoded positioning - Assumes navigation bar exists and is fixed height
- * - **Issue:** No mobile optimization - Top-right position may be obscured on mobile
- * - **Issue:** Race condition - updatePushPosition() can be called before render completes
- * - **Issue:** No Z-index management - Multiple notifications can overlap with other UI
- * - **Enhancement:** Make position configurable (_position: 'top-right' | 'top-left' | 'bottom-right')
- * - **Enhancement:** Calculate nav height dynamically instead of hardcoding
- * - **Enhancement:** Add mobile-specific positioning (bottom of screen)
- * - **Enhancement:** Support `_priority` to control stacking order
- *
  * **Important:** Do NOT manually instantiate with `new NotifyPushView()`.
  * Views are created internally by {@link NotifyPushCollection}. Use `notify.push()` instead.
  */
@@ -178,9 +168,10 @@ export default class NotifyPushView extends Backbone.View {
    *   _callbackEvent: 'messages:show'
    * });
    *
-   * Adapt.on('messages:show', () => {
-   *   console.log('Push notification clicked');
-   * });
+   * const onMessagesShow = () => {
+   *   Adapt.off('messages:show', onMessagesShow);
+   * };
+   * Adapt.on('messages:show', onMessagesShow);
    */
   triggerEvent(event) {
     Adapt.trigger(this.model.get('_callbackEvent'));

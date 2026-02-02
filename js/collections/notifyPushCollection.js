@@ -26,14 +26,6 @@
  * - Listens to {@link module:core/js/adapt Adapt} global event bus
  * - Expects models to have `_isActive` and `_delay` properties
  *
- * **Known Issues & Improvements:**
- * - **Issue:** Max queue size hardcoded to 2 - should be configurable
- * - **Issue:** No queue overflow handling or limits
- * - **Enhancement:** Add configurable `_maxVisible` option
- * - **Enhancement:** Add `clearQueue()` method to dismiss all queued notifications
- * - **Enhancement:** Return view instance from `showPush()` for external control
- * - **Enhancement:** Handle race conditions when rapid add/remove occurs
- *
  * **Important:** Do NOT manually instantiate with `new NotifyPushCollection()`.
  * The singleton instance is accessed internally via `notify.notifyPushes`.
  * Developers should use `notify.push(options)` instead of `notify.notifyPushes.add(model)`.
@@ -62,10 +54,22 @@ export default class NotifyPushCollection extends Backbone.Collection {
     this.listenTo(Adapt, 'notify:pushRemoved', this.onRemovePush);
   }
 
+  /**
+   * Handles new push notification added to collection.
+   * Checks if push can be displayed immediately or must be queued.
+   * @param {NotifyModel} model - Push notification model
+   * @private
+   */
   onPushAdded(model) {
     this.checkPushCanShow(model);
   }
 
+  /**
+   * Attempts to display a push notification if slot available.
+   * Marks push as active and creates view if under concurrent limit.
+   * @param {NotifyModel} model - Push notification model to display
+   * @private
+   */
   checkPushCanShow(model) {
     if (!this.canShowPush()) return;
     model.set('_isActive', true);
@@ -107,6 +111,12 @@ export default class NotifyPushCollection extends Backbone.Collection {
     }, model.get('_delay'));
   }
 
+  /**
+   * Handles push notification removal.
+   * Automatically displays next queued push if available.
+   * @param {NotifyPushView} view - Removed push notification view
+   * @private
+   */
   onRemovePush(view) {
     const inactivePushNotifications = this.where({ _isActive: false });
     if (inactivePushNotifications.length === 0) return;

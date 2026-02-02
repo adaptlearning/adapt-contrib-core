@@ -29,16 +29,6 @@
  * 6. Focus restored to previous element
  * 7. View removed from DOM
  *
- * **Known Issues & Improvements:**
- * - **Issue:** Focus restoration - Can fail if original element was removed from DOM
- * - **Issue:** Animation timing - Disabled animation still has CSS transition delay
- * - **Issue:** Resize handling - Excessive resize calculations on every window resize
- * - **Issue:** Memory leak risk - Event listeners not always cleaned up on rapid close
- * - **Enhancement:** Debounce resize handler to reduce calculations
- * - **Enhancement:** Use IntersectionObserver for visibility detection
- * - **Enhancement:** Add `_maxHeight` option to constrain popup size
- * - **Enhancement:** Support `_position` option (top/center/bottom)
- *
  * **Important:** Do NOT manually instantiate with `new NotifyPopupView()`.
  * Views are created internally by {@link NotifyView}. Use `notify.popup()`, `notify.alert()`,
  * or `notify.prompt()` instead.
@@ -79,7 +69,6 @@ export default class NotifyPopupView extends Backbone.View {
   initialize({ notify }) {
     this.notify = notify;
     _.bindAll(this, 'onShadowClicked', 'resetNotifySize', 'onKeyDown');
-
     this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
 
@@ -142,7 +131,6 @@ export default class NotifyPopupView extends Backbone.View {
    *
    * const onConfirmed = (notifyView) => {
    *   if (notifyView !== view) return;
-   *   console.log('User clicked OK');
    *   Adapt.off('action:confirmed', onConfirmed);
    * };
    * Adapt.on('action:confirmed', onConfirmed);
@@ -170,20 +158,16 @@ export default class NotifyPopupView extends Backbone.View {
    *
    * const onConfirmed = (notifyView) => {
    *   if (notifyView !== view) return;
-   *   console.log('User clicked Yes');
-   *   cleanUp();
+   *   Adapt.off('action:confirmed', onConfirmed);
+   *   Adapt.off('action:cancelled', onCancelled);
    * };
    * const onCancelled = (notifyView) => {
    *   if (notifyView !== view) return;
-   *   console.log('User clicked No');
-   *   cleanUp();
+   *   Adapt.off('action:confirmed', onConfirmed);
+   *   Adapt.off('action:cancelled', onCancelled);
    * };
    * Adapt.on('action:confirmed', onConfirmed);
    * Adapt.on('action:cancelled', onCancelled);
-   * function cleanUp() {
-   *   Adapt.off('action:confirmed', onConfirmed);
-   *   Adapt.off('action:cancelled', onCancelled);
-   * }
    */
   onPromptButtonClicked(event) {
     event.preventDefault();

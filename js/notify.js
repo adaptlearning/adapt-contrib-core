@@ -68,25 +68,21 @@
  *
  * await notify.read('Page navigation complete');
  *
- * // Customization examples
  * notify.popup({
  *   title: 'Warning',
  *   body: 'Check your work',
- *   _classes: 'my-custom-warning'  // Add CSS class for styling
+ *   _classes: 'my-custom-warning'
  * });
  *
  * notify.popup({
  *   title: 'Custom Content',
- *   _view: new MyCustomView({ model: myModel })  // Inject Backbone.View
+ *   _view: new MyCustomView({ model: myModel })
  * });
  *
- * // Listen to events for tracking
- * Adapt.on('notify:closed', (notifyView) => {
- *   console.log('User closed notification');
- * });
- *
- * // Override defaults in config.json:
- * // "_notify": { "_duration": 5000 }
+ * const onNotifyClosed = (notifyView) => {
+ *   Adapt.off('notify:closed', onNotifyClosed);
+ * };
+ * Adapt.on('notify:closed', onNotifyClosed);
  */
 
 import NotifyView from 'core/js/views/notifyView';

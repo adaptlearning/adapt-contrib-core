@@ -1,38 +1,29 @@
 /**
- * @file Notification Model - Data model for notification instances
+ * @file Notify Model - Data model for popup and push notifications
  * @module core/js/models/notifyModel
- * @description Model representing a single notification (popup, alert, prompt, or push).
- * Manages notification state, timing, and lifecycle.
+ * @description Model representing a single notification (popup or push) with display configuration
+ * and lifecycle state. Extends {@link LockingModel} to prevent simultaneous interactions.
  *
- * **Side Effects:**
- * - `close()` can only be called once (idempotent - subsequent calls ignored)
- * - Triggers `'closed'` event when closed
- * - Automatically sets `_hasClosed: true` on close
+ * **Model Properties:**
+ * - `_isActive` {boolean} - Whether notification is currently displayed (default: false)
+ * - `_showIcon` {boolean} - Whether to show notification icon (default: false)
+ * - `_timeout` {number} - Auto-dismiss timeout in milliseconds (default: 3000)
+ * - `_delay` {number} - Delay before showing notification in milliseconds (default: 0)
+ * - `_hasClosed` {boolean} - Whether notification has been closed (default: false)
  *
- * **Important Properties:**
- * - `_isActive` - Whether notification is currently displayed
- * - `_timeout` - Auto-close delay in milliseconds (default: 3000)
- * - `_delay` - Display delay before showing (default: 0)
- * - `_hasClosed` - Tracks if notification already closed
+ * **Lifecycle Events:**
+ * - `closed` - Triggered when notification is closed via {@link close}
  *
- * **Known Issues & Improvements:**
- * - **Issue:** No validation - accepts any property without schema validation
- * - **Issue:** Silent failures - invalid `_timeout` or `_delay` values don't throw errors
- * - **Enhancement:** Add property validation for `_timeout`/`_delay` (must be numbers >= 0)
- * - **Enhancement:** Add `isActive()` getter method instead of direct property access
- * - **Enhancement:** Support cancellation tokens for `onClosed()` promise
- *
- * **Important:** Do NOT manually instantiate with `new NotifyModel()`.
- * Models are created internally by notify service methods: `notify.push()`, `notify.popup()`,
- * `notify.alert()`, and `notify.prompt()`.
+ * **Important:** Created by {@link module:core/js/notify} service.
+ * Not intended for direct instantiation by plugins.
  */
 
 import LockingModel from 'core/js/models/lockingModel';
 
 /**
  * @class NotifyModel
- * @classdesc Lifecycle: Created → Rendered → Displayed → Closed → Removed
- * @extends {module:core/js/models/lockingModel.LockingModel}
+ * @classdesc Data model for notification configuration and state tracking.
+ * @extends {LockingModel}
  */
 export default class NotifyModel extends LockingModel {
 
@@ -47,11 +38,11 @@ export default class NotifyModel extends LockingModel {
   }
 
   /**
-   * Closes the notification and triggers 'closed' event.
-   * **Idempotent:** Can be called multiple times safely (subsequent calls ignored).
-   * @fires closed
+   * Closes the notification and triggers cleanup.
+   * Idempotent - safe to call multiple times.
+   * @fires closed When notification is closed (first call only)
    * @example
-   * notification.close();
+   * notifyModel.close();
    */
   close() {
     if (this.get('_hasClosed')) return;
@@ -60,19 +51,10 @@ export default class NotifyModel extends LockingModel {
   }
 
   /**
-   * Returns a promise that resolves when the notification is closed.
-   * Useful for waiting on notification completion before proceeding.
+   * Returns a promise that resolves when notification is closed.
+   * Useful for waiting on user interaction or timeout completion.
    * @async
    * @returns {Promise<void>} Resolves when notification closes
-   * @example
-   * await notification.onClosed();
-   * console.log('Notification closed');
-   *
-   * @example
-   * const notif1 = notify.popup({ title: 'First' });
-   * await notif1.onClosed();
-   * const notif2 = notify.popup({ title: 'Second' });
-   * await notif2.onClosed();
    */
   async onClosed() {
     if (this.get('_hasClosed')) return;

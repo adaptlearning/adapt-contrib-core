@@ -18,16 +18,6 @@
  *   - {@link module:core/js/views/notifyPushView} - Push rendering
  *   - {@link module:core/js/collections/notifyPushCollection} - Push queue management
  *   - {@link module:core/js/a11y} - Accessibility coordination
- *
- * **Known Issues & Improvements:**
- * - **Issue:** Stack management - Rapid open/close can orphan modals in stack
- * - **Issue:** Deprecated API - Still supports event-based API (`notify:popup`) for backwards compatibility
- * - **Issue:** No promise support - `popup()`, `alert()`, `prompt()` don't return promises (only `read()` does)
- * - **Enhancement:** Unify API - all methods should return promises for consistency
- * - **Enhancement:** Add `closeAll()` method for bulk dismissal
- * - **Enhancement:** Add modal queueing like push notifications (currently unlimited stack)
- * - **Enhancement:** Remove deprecated event-based API in v7.0
- * - **Enhancement:** Stack array manipulation could be optimized with Set
  */
 
 import Adapt from 'core/js/adapt';
@@ -71,9 +61,6 @@ export default class NotifyView extends Backbone.View {
   /**
    * Gets the current modal notification stack.
    * @returns {NotifyPopupView[]} Array of open modal notifications
-   * @example
-   * const openModals = notify.stack;
-   * console.log(`${openModals.length} modals open`);
    */
   get stack() {
     return this._stack;
@@ -84,7 +71,7 @@ export default class NotifyView extends Backbone.View {
    * @returns {boolean} True if one or more modals are open
    * @example
    * if (notify.isOpen) {
-   *   console.log('Modal is open');
+   *   return;
    * }
    */
   get isOpen() {
@@ -157,8 +144,8 @@ export default class NotifyView extends Backbone.View {
    * @param {boolean} [notifyObject._showCloseButton=true] - If set to `false` the popup will not have a close button. The learner will still be able to dismiss the popup by clicking outside of it or by pressing the Esc key. This setting is typically used mainly for popups that have a subview (where the subview contains the close button)
    * @param {boolean} [notifyObject._isCancellable=true] - If set to `false` the learner will not be able to close the popup - use with caution!
    * @param {boolean} [notifyObject._closeOnShadowClick=true] - Whether clicking outside popup closes it
-   * @param {string} [notifyObject._classes] - A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`
-   * @param {Backbone.View} [notifyObject._view] - Subview to display in the popup instead of the standard view
+   * @param {string} [notifyObject._classes] - A class name or (space separated) list of class names you'd like to be applied to the popup's `<div>`. Use this for styling and custom CSS targeting
+   * @param {Backbone.View} [notifyObject._view] - Subview to display in the popup instead of the standard view. Inject a Backbone.View instance for custom content rendering
    * @param {Object} [notifyObject._attributes] - HTML attributes to apply to popup element
    * @param {string} [notifyObject._id] - Content ID to auto-render (when `_shouldRenderId` is true)
    * @param {boolean} [notifyObject._shouldRenderId=false] - Auto-render content model by ID
@@ -201,24 +188,10 @@ export default class NotifyView extends Backbone.View {
    * @example
    * import notify from 'core/js/notify';
    *
-   * // Simple alert
    * notify.alert({
    *   title: 'Complete',
    *   body: 'You have finished this section.',
    *   confirmText: 'Continue'
-   * });
-   *
-   * // Alert with callback
-   * notify.alert({
-   *   title: 'Confirm Action',
-   *   body: 'Are you sure you want to reset your progress?',
-   *   confirmText: 'Yes, Reset',
-   *   _callbackEvent: 'course:reset',
-   *   _showIcon: true
-   * });
-   *
-   * Adapt.on('course:reset', () => {
-   *   console.log('User confirmed reset');
    * });
    */
   alert(notifyObject) {
@@ -247,24 +220,15 @@ export default class NotifyView extends Backbone.View {
    *   body: 'How would you like to proceed?',
    *   _prompts: [
    *     {
-   *       promptText: 'Save and Continue',
-   *       _callbackEvent: 'course:save'
+   *       promptText: 'Option 1',
+   *       _callbackEvent: 'pluginName:option1'
    *     },
    *     {
-   *       promptText: 'Continue Without Saving',
-   *       _callbackEvent: 'course:continue'
-   *     },
-   *     {
-   *       promptText: 'Exit Course',
-   *       _callbackEvent: 'course:exit'
+   *       promptText: 'Option 2',
+   *       _callbackEvent: 'pluginName:option2'
    *     }
    *   ],
-   *   _isCancellable: false,
    *   _showIcon: true
-   * });
-   *
-   * Adapt.on('course:save', () => {
-   *   console.log('User chose to save');
    * });
    */
   prompt(notifyObject) {
@@ -278,37 +242,23 @@ export default class NotifyView extends Backbone.View {
    * @param {string} notifyObject.title - Title of the push notification
    * @param {string} notifyObject.body - Body content of the push notification
    * @param {number} [notifyObject._timeout=3000] - Length of time (in milliseconds) the notification should be displayed before automatically fading away
-   * @param {number} [notifyObject._delay=0] - Delay (in milliseconds) before showing the notification
+   * @param {number} [notifyObject._delay=0] - Delay (in milliseconds) before displaying the notification. Useful for showing notifications after a specific user action completes
    * @param {string} [notifyObject._callbackEvent] - Event to be triggered if the learner clicks on the push notification (not triggered if they use the close button)
    * @param {string} [notifyObject._classes] - A class name or (space separated) list of class names you'd like to be applied to the notification's `<div>`
    * @returns {NotifyModel} The created notification model (queued for display)
    * @example
    * import notify from 'core/js/notify';
    *
-   * // Simple push notification
    * notify.push({
    *   title: 'Page Complete',
    *   body: 'You have completed this page.',
    *   _timeout: 5000
    * });
    *
-   * // Push with click callback
-   * notify.push({
-   *   title: 'New Achievement',
-   *   body: 'Click to view your badges.',
-   *   _callbackEvent: 'badges:show',
-   *   _timeout: 8000
-   * });
-   *
-   * Adapt.on('badges:show', () => {
-   *   console.log('User clicked push notification');
-   * });
-   *
-   * // Delayed push
    * notify.push({
    *   title: 'Reminder',
    *   body: 'Don't forget to complete the assessment.',
-   *   _delay: 10000,  // Show after 10 seconds
+   *   _delay: 10000,
    *   _timeout: 5000
    * });
    */
@@ -326,12 +276,9 @@ export default class NotifyView extends Backbone.View {
    * @example
    * import notify from 'core/js/notify';
    *
-   * // Announce to screen readers
    * await notify.read('Page navigation complete');
    *
-   * // Sequential announcements
    * await notify.read('Loading content');
-   * await asyncOperation();
    * await notify.read('Content loaded successfully');
    */
   async read (body) {
