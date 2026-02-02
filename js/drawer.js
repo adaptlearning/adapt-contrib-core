@@ -87,7 +87,7 @@ class Drawer extends Backbone.Controller {
    * @returns {boolean} True if drawer is visible showing drawer
    * @example
    * if (drawer.isOpen) {
-   *   console.log('Drawer is showing');
+   *   return;
    * }
    */
   get isOpen() {
