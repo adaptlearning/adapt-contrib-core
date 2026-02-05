@@ -53,6 +53,11 @@ import {
 import logging from '../logging';
 
 /**
+ * @typedef {Object} DrawerCloseOptions
+ * @property {boolean} [force=false] - Skip animation and close drawer immediately
+ */
+
+/**
  * @class DrawerView
  * @classdesc Main drawer controller managing display, positioning, and content rendering.
  * Lifecycle: Created → Positioned → Animated in → User interaction → Animated out → Removed
@@ -332,8 +337,7 @@ class DrawerView extends Backbone.View {
    * Can force immediate close (skip animation).
    * @async
    * @param {jQuery} [$toElement] - Element to focus after closing
-   * @param {Object} [options] - Close options
-   * @param {boolean} [options.force=false] - Skip animation, close immediately
+   * @param {DrawerCloseOptions} [options] - Close options
    * @fires drawer:closed
    * @example
    * await this.hideDrawer();

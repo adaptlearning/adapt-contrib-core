@@ -44,6 +44,14 @@ import tooltips from './tooltips';
 const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrder' });
 
 /**
+ * @typedef {Object} DrawerItemConfig
+ * @property {string} title - Display title for the drawer item
+ * @property {string} description - Description text shown below title
+ * @property {string} [className] - CSS class name for custom styling
+ * @property {number} [drawerOrder=0] - Sort order (lower numbers appear first)
+ */
+
+/**
  * @class Drawer
  * @classdesc Singleton service managing drawer sidebar. Only one instance exists per course.
  * @extends {Backbone.Controller}
@@ -131,11 +139,7 @@ class Drawer extends Backbone.Controller {
   /**
    * Registers a drawer item.
    * Replaces existing item with same eventCallback.
-   * @param {Object} drawerObject - Drawer item configuration
-   * @param {string} drawerObject.title - Display title
-   * @param {string} drawerObject.description - Description text
-   * @param {string} [drawerObject.className] - CSS class for styling
-   * @param {number} [drawerObject.drawerOrder=0] - Sort order (lower numbers first)
+   * @param {DrawerItemConfig} drawerObject - Drawer item configuration
    * @param {string} eventCallback - Event name to trigger when clicked
    * @example
    * drawer.addItem({
