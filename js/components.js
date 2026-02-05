@@ -58,6 +58,12 @@ import Backbone from 'backbone';
 import logging from 'core/js/logging';
 
 /**
+ * @typedef {Object} ComponentRegistration
+ * @property {Function} [model] - Backbone.Model subclass or factory function
+ * @property {Function} [view] - Backbone.View subclass or factory function
+ */
+
+/**
  * @class Components
  * @classdesc Component registry controller managing Backbone Model and View class
  * registration and retrieval. Singleton instance exported as `components`.
@@ -80,12 +86,6 @@ class Components extends Backbone.Controller {
    * Automatically assigns template name to view if not specified. Validates that classes extend
    * appropriate Backbone base classes.
    *
-   * **Registration Patterns:**
-   * - Single: `register('hotgraphic', { model, view })`
-   * - Multiple: `register(['article', 'page'], { view })`
-   * - Space-separated: `register('menu course', { model })`
-   * - View-only (deprecated): `register('name', { view })` or `register('name', ViewClass)`
-   *
    * **Validation:**
    * - Model must extend `Backbone.Model` or be a Function
    * - View must extend `Backbone.View` or be a Function
@@ -96,9 +96,7 @@ class Components extends Backbone.Controller {
    * - Merges with existing registration (allows separate model/view registration)
    *
    * @param {string|Array<string>} name - Component name(s) to register
-   * @param {Object} object - Registration object containing model and/or view classes
-   * @param {Function} [object.model] - Backbone.Model subclass or factory function
-   * @param {Function} [object.view] - Backbone.View subclass or factory function
+   * @param {ComponentRegistration} object - Registration object containing model and/or view classes
    * @returns {Object} The registered object (for chaining)
    * @throws {Error} If model is not Backbone.Model subclass or Function
    * @throws {Error} If view is not Backbone.View subclass or Function

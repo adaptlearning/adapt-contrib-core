@@ -116,14 +116,9 @@ class Data extends AdaptCollection {
    * Loads build metadata, sets framework version, and loads config data.
    * Called by app.js during framework bootstrap.
    *
-   * **Initialization Steps:**
-   * 1. Reset collection (clear any existing data)
-   * 2. Reset _byAdaptID lookup index
-   * 3. Load build.min.js (framework version, course directory)
-   * 4. Set data-adapt-framework-version attribute on html element
-   * 5. Load config.json and set up language change listeners
-   *
    * @async
+   * @throws {Error} If build.min.js cannot be loaded
+   * @throws {Error} If config.json cannot be loaded
    * @example
    * import data from 'core/js/data';
    * await data.init();
@@ -264,6 +259,8 @@ class Data extends AdaptCollection {
    * Wraps jQuery.getJSON in a Promise and adds __path__ property to loaded data.
    * @param {string} path - Path to JSON file
    * @returns {Promise<Object>} Loaded JSON data with __path__ property
+   * @throws {Error} If file not found (404) or network request fails
+   * @throws {SyntaxError} If JSON data is malformed
    * @private
    */
   getJSON(path) {
@@ -283,23 +280,15 @@ class Data extends AdaptCollection {
    * Reads manifest file for list of JSON files, loads them in parallel,
    * flattens data, creates models, and validates integrity.
    *
-   * **Process:**
-   * 1. Trigger 'loading' event
-   * 2. Reset collection and lookup index
-   * 3. Load language_data_manifest.js
-   * 4. Load all JSON files listed in manifest (parallel)
-   * 5. Flatten array/object data into single model array
-   * 6. Create course model first (other models need course config)
-   * 7. Create remaining models using component registry
-   * 8. Validate data integrity (checkData)
-   * 9. Trigger 'reset' and 'loaded' events
-   *
    * **Manifest Fallback:**
    * If manifest file not found, falls back to traditional file list:
    * course.json, contentObjects.json, articles.json, blocks.json, components.json
    *
    * @param {string} languagePath - Path to language folder (e.g., 'course/en/')
    * @async
+   * @throws {Error} If manifest file not found and fallback files not found
+   * @throws {Error} If JSON files fail to load
+   * @throws {SyntaxError} If JSON data is malformed
    * @fires loading
    * @fires reset
    * @fires loaded

@@ -135,10 +135,6 @@ class AdaptSingleton extends LockingModel {
    * Decrements the outstanding completion check counter.
    * Call when exiting an asynchronous completion check.
    * When counter reaches zero, initialization can proceed.
-   * @example
-   * Adapt.checkingCompletion();
-   * await someAsyncCompletionCheck();
-   * Adapt.checkedCompletion();
    */
   checkedCompletion() {
     const outstandingChecks = this.get('_outstandingCompletionChecks');
@@ -192,6 +188,13 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
+   * @typedef {Object} ParsedDirective
+   * @property {string} type - Content type (component, block, article, page, menu)
+   * @property {number} [offset] - Number of siblings to offset (+/-)
+   * @property {number} [inset] - Child index to select (0-indexed, -1 for last)
+   */
+
+  /**
    * Parses relative navigation strings into structured directives.
    * Used by Trickle to determine scroll targets and by Branching to resolve navigation paths.
    *
@@ -206,7 +209,7 @@ class AdaptSingleton extends LockingModel {
    * - Omit number: Defaults to 0 (current/first)
    *
    * @param {string} relativeString - Navigation directive string
-   * @returns {Object|Array<Object>} Parsed directive(s) with `type`, `offset`, `inset` properties
+   * @returns {ParsedDirective|Array<ParsedDirective>} Single directive or array for multi-step navigation
    * @example
    * Adapt.parseRelativeString('@component+1');
    *
@@ -331,71 +334,99 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * @deprecated Please use core/js/a11y instead
+   * @see module:core/js/a11y
+   * @readonly
    */
   get a11y() {}
 
   /**
    * @deprecated Please use core/js/components instead
+   * @see module:core/js/components
+   * @readonly
    */
   get componentStore() {}
 
   /**
    * @deprecated Please use core/js/data instead
+   * @see module:core/js/data
+   * @readonly
    */
   get data() {}
 
   /**
    * @deprecated Please use core/js/device instead
+   * @see module:core/js/device
+   * @readonly
    */
   get device() {}
 
   /**
    * @deprecated Please use core/js/drawer instead
+   * @see module:core/js/drawer
+   * @readonly
    */
   get drawer() {}
 
   /**
    * @deprecated Please use core/js/location instead
+   * @see module:core/js/location
+   * @readonly
    */
   get location() {}
 
   /**
    * @deprecated Please use core/js/notify instead
+   * @see module:core/js/notify
+   * @readonly
    */
   get notify() {}
 
   /**
    * @deprecated Please use core/js/offlineStorage instead
+   * @see module:core/js/offlineStorage
+   * @readonly
    */
   get offlineStorage() {}
 
   /**
    * @deprecated Please use core/js/router instead
+   * @see module:core/js/router
+   * @readonly
    */
   get router() {}
 
   /**
    * @deprecated Please use core/js/scrolling instead
+   * @see module:core/js/scrolling
+   * @readonly
    */
   get scrolling() {}
 
   /**
    * @deprecated Please use core/js/startController instead
+   * @see module:core/js/startController
+   * @readonly
    */
   get startController() {}
 
   /**
    * @deprecated Please use core/js/components instead
+   * @see module:core/js/components
+   * @readonly
    */
   get store() {}
 
   /**
    * @deprecated Please use core/js/tracking instead
+   * @see module:core/js/tracking
+   * @readonly
    */
   get tracking() {}
 
   /**
    * @deprecated Please use core/js/wait instead
+   * @see module:core/js/wait
+   * @readonly
    */
   get wait() {}
 

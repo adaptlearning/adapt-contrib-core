@@ -60,6 +60,22 @@ import router from 'core/js/router';
 import data from 'core/js/data';
 
 /**
+ * @typedef {Object} StartIdConfig
+ * @property {string} _id - Content object ID to use as start location
+ * @property {boolean} [_skipIfComplete=false] - Skip this start location if content is complete
+ * @property {string} [_className] - CSS selector to match against html element
+ */
+
+/**
+ * @typedef {Object} StartConfiguration
+ * @property {boolean} _isEnabled - Whether start location control is enabled
+ * @property {boolean} [_force=false] - Force start location ignoring URL hash
+ * @property {string} _id - Default start content object ID
+ * @property {Array<StartIdConfig>} [_startIds] - Conditional start location configurations
+ * @property {boolean} [_isMenuDisabled=false] - Prevent navigation to root menu when _isEnabled
+ */
+
+/**
  * @class StartController
  * @classdesc Controller managing course start location based on _start configuration.
  * Singleton instance exported as `startController`. Do not instantiate directly.
@@ -96,11 +112,6 @@ class StartController extends Backbone.Controller {
    * - Respects _isEnabled flag (falls back to default routing if disabled)
    *
    * @private
-   * @example
-   * this.setStartLocation();
-   *
-   * @example
-   * this.setStartLocation();
    */
   setStartLocation() {
     if (!this._isSessionInProgress) {
