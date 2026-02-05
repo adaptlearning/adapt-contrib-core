@@ -2,7 +2,7 @@
  * @file Aria Disabled - Prevents interaction with aria-disabled elements
  * @module core/js/a11y/ariaDisabled
  * @description Intercepts keyboard and click events on elements marked with
- * aria-disabled="true" to prevent their activation. Also checks for aria-disabled
+ * aria-disabled="true" to prevent their activation. Checks for aria-disabled
  * on associated label 'for' attributes. Only responds to trusted user events.
  */
 
