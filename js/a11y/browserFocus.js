@@ -1,11 +1,35 @@
+/**
+ * @file Browser Focus - Accessibility focus handling modifications
+ * @module core/js/a11y/browserFocus
+ * @description Manages browser focus behavior for accessibility compliance.
+ * Handles focus movement when elements become disabled, hidden, or removed.
+ * Ensures screen readers properly track focus on click interactions.
+ *
+ * **Responsibilities:**
+ * - Moves focus forward when focused element becomes disabled/hidden/removed
+ * - Forces focus updates on click for screen reader compatibility
+ * - Manages `data-a11y-force-focus` attribute cleanup on blur
+ * - Adds click delay for screen reader focus processing when configured
+ *
+ * @example
+ * import BrowserFocus from 'core/js/a11y/browserFocus';
+ * const browserFocus = new BrowserFocus({ a11y });
+ */
 import Adapt from 'core/js/adapt';
 
 /**
- * Browser modifications to focus handling.
- * @class
+ * @class BrowserFocus
+ * @classdesc Modifies browser focus behavior for accessibility and screen reader support.
+ * @extends Backbone.Controller
  */
 export default class BrowserFocus extends Backbone.Controller {
 
+  /**
+   * Initializes the browser focus controller.
+   * Binds event handlers, caches body element, and sets up accessibility ready listener.
+   * @param {Object} options - Configuration options
+   * @param {Object} options.a11y - Reference to the parent A11y module instance
+   */
   initialize({ a11y }) {
     this.a11y = a11y;
     this._onBlur = this._onBlur.bind(this);
@@ -16,6 +40,11 @@ export default class BrowserFocus extends Backbone.Controller {
     });
   }
 
+  /**
+   * Attaches blur and click event listeners to the document body.
+   * Uses event capturing for click to intercept before bubbling.
+   * @private
+   */
   _attachEventListeners() {
     this.$body
       .on('blur', '*', this._onBlur)
@@ -25,12 +54,12 @@ export default class BrowserFocus extends Backbone.Controller {
   }
 
   /**
-   * When any element in the document receives a blur event,
-   * check to see if it needs the `data-a11y-force-focus` attribute removing
-   * and check to see if it was blurred because a disabled attribute was added.
-   * If a disabled attribute was added, the focus will be moved forward.
-   *
-   * @param {JQuery.Event} event
+   * Handles blur events to manage focus transitions.
+   * Removes `data-a11y-force-focus` attribute when element loses focus,
+   * and moves focus to next readable element if the blurred element
+   * became disabled, hidden, or was removed from the DOM.
+   * @param {jQuery.Event} event - The blur event
+   * @private
    */
   _onBlur(event) {
     const config = this.a11y.config;
@@ -51,14 +80,14 @@ export default class BrowserFocus extends Backbone.Controller {
     if (isNotBodyHTMLOrLostFocus) {
       return;
     }
-    // Check if element losing focus is losing focus
+    // Check if element is losing focus
     // due to the addition of a disabled class, display none, visibility hidden,
-    // or because it has been removed from the dom
+    // or because it has been removed from the DOM
     const isNotDisabledHiddenOrDetached = (!$element.is('[disabled]') && $element.css('display') !== 'none' && $element.css('visibility') !== 'hidden' && $element.parents('html').length);
     if (isNotDisabledHiddenOrDetached) {
-      // the element is still available, refocus
-      // this can happen when jaws screen reader on role=group takes enter click
-      //   when the focus was on the input element
+      // The element is still available, refocus
+      // This can happen when JAWS screen reader on `role="group"` takes enter click
+      // when the focus was on the input element
       this._refocusCurrentActiveElement();
       return;
     }
@@ -66,18 +95,23 @@ export default class BrowserFocus extends Backbone.Controller {
     this.a11y.focusNext($element);
   }
 
+  /**
+   * Refocuses the current active element without scrolling.
+   * Prevents JAWS screen reader from scrolling when focus is temporarily lost.
+   * @private
+   */
   _refocusCurrentActiveElement() {
     const element = this.a11y.currentActiveElement;
     if (!element) return;
-    // refocus on the existing active element to stop jaws from scrolling
     this.a11y.focus(element, { preventScroll: true });
   }
 
   /**
-   * Force focus when clicked on a tabbable element,
-   * making sure `document.activeElement` is updated.
-   *
-   * @param {JQuery.Event} event
+   * Handles click events to force focus updates for screen readers.
+   * Ensures `document.activeElement` is updated when clicking tabbable elements.
+   * Delay click to allow screen readers to process focus changes.
+   * @param {MouseEvent} event - The click event (uses native event for isTrusted check)
+   * @private
    */
   _onClick(event) {
     if (!event.isTrusted) return;
