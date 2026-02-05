@@ -7,6 +7,17 @@
   <div class="block__header">
     <div class="block__header-inner">
 
+      {{#if priorityLabel}}
+      <div class="block__priority {{_priorityClass}}">
+        {{#if _priorityIconClass}}
+        <span class="icon {{_priorityIconClass}}" aria-hidden="true"></span>
+        {{/if}}
+        <div class="block__priority-label">
+          {{{compile priorityLabel}}}
+        </div>
+      </div>
+      {{/if}}
+
       {{#if displayTitle}}
       <div class="block__title">
         <div class="block__title-inner js-heading"></div>

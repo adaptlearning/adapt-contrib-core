@@ -144,6 +144,40 @@
         }
       }
     },
+    "_priorityLabels": {
+      "type": "object",
+      "title": "Priority Labels Override",
+      "help": "Override the global priority labels settings for this specific element",
+      "properties": {
+        "_isOverride": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Override global settings",
+          "help": "When enabled, this element will use the local settings instead of the global priority labels configuration"
+        },
+        "_showWhenRequired": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Show label when required",
+          "help": "Display a 'Required' label when this element is not optional"
+        },
+        "_showWhenOptional": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Show label when optional",
+          "help": "Display an 'Optional' label when this element is optional"
+        }
+      }
+    },
     "_extensions": {
       "type": "object"
     },
