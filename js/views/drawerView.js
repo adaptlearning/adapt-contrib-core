@@ -1,3 +1,46 @@
+/**
+ * @file Drawer View - Main controller for sidebar drawer display and content
+ * @module core/js/views/drawerView
+ * @description View managing the drawer sidebar with two operational modes: drawer list showing
+ * registered items via {@link DrawerItemView} or custom view content. Handles positioning,
+ * animations, accessibility, and lifecycle management.
+ *
+ * **Operational Modes:**
+ * 1. **Drawer Mode** - Shows {@link DrawerItemView} instances from collection
+ * 2. **Custom Mode** - Shows arbitrary view/HTML with optional back button
+ *
+ * **Display Behavior:**
+ * - Uses `<dialog>` element for semantic HTML
+ * - Position: left/right/auto (with RTL support)
+ * - Animated entrance/exit via CSS transitions
+ * - Backdrop shadow coordination
+ * - Keyboard support (Escape to close)
+ * - Click outside to close
+ * - Scroll locking while open
+ * - Auto-focus management
+ *
+ * **Configuration** (via `Adapt.config._drawer`):
+ * - `_position` - 'left', 'right', 'auto' (default: 'auto')
+ * - `_duration` - Animation duration in ms (default: 400)
+ * - `_showEasing` - Show easing function (default: 'easeOutQuart')
+ * - `_hideEasing` - Hide easing function (default: 'easeInQuart')
+ *
+ * **Position Logic:**
+ * - If custom position provided AND global is 'auto' AND RTL: flip left↔right
+ * - Else if global is not 'auto': use global position
+ * - Else: use provided position
+ *
+ * **Public Events Triggered:**
+ * - `drawer:opened` - Drawer opened (any mode)
+ * - `drawer:openedItemView` - Drawer shown
+ * - `drawer:openedCustomView` - Custom view shown
+ * - `drawer:empty` - Drawer content cleared
+ * - `drawer:closed` - Drawer closed
+ * - `drawer:noItems` - No drawer items in collection
+ *
+ * **Important:** Created internally by {@link module:core/js/drawer}. Use drawer service API, not direct instantiation.
+ */
+
 import Adapt from 'core/js/adapt';
 import shadow from '../shadow';
 import a11y from 'core/js/a11y';
@@ -9,6 +52,17 @@ import {
 } from '../transitions';
 import logging from '../logging';
 
+/**
+ * @typedef {Object} DrawerCloseOptions
+ * @property {boolean} [force=false] - Skip animation and close drawer immediately
+ */
+
+/**
+ * @class DrawerView
+ * @classdesc Main drawer controller managing display, positioning, and content rendering.
+ * Lifecycle: Created → Positioned → Animated in → User interaction → Animated out → Removed
+ * @extends {Backbone.View}
+ */
 class DrawerView extends Backbone.View {
 
   tagName() {
@@ -109,6 +163,15 @@ class DrawerView extends Backbone.View {
     this.checkIfDrawerIsAvailable();
   }
 
+  /**
+   * Sets drawer position (left/right) with RTL and global config support.
+   * Complex resolution: custom position + auto mode + RTL = flipped position.
+   * @param {string} [position] - Desired position ('left'|'right', null uses global config)
+   * @private
+   * @example
+   * this.setDrawerPosition('right');
+   * this.setDrawerPosition(null);
+   */
   setDrawerPosition(position) {
     if (this._useMenuPosition) position = null;
     const isGlobalPositionAuto = this._globalDrawerPosition === 'auto';
@@ -121,6 +184,19 @@ class DrawerView extends Backbone.View {
     this.drawerPosition = position;
   }
 
+  /**
+   * Opens drawer with custom view content.
+   * Called by {@link module:core/js/drawer#openCustomView}.
+   * @param {Backbone.View|jQuery|HTMLElement|string} view - View instance or HTML content
+   * @param {boolean} [hasBackButton=true] - Show back button to return to drawer.
+   * @param {string} [position] - Override drawer position ('left'|'right')
+   * @fires drawer:empty
+   * @fires drawer:opened
+   * @fires drawer:openedCustomView
+   * @example
+   * this.openCustomView(new ResourcesView(), true, 'right');
+   * this.openCustomView($('<div>Content</div>'), false);
+   */
   openCustomView(view, hasBackButton = true, position) {
     this.$('.js-drawer-holder').removeAttr('role');
     this._hasBackButton = hasBackButton;
@@ -131,6 +207,12 @@ class DrawerView extends Backbone.View {
     this.$('.drawer__holder').html(view instanceof Backbone.View ? view.$el : view);
   }
 
+  /**
+   * Checks if drawer has drawer items and updates drawer button visibility.
+   * Directly manipulates drawer button DOM (couples to toolbar implementation).
+   * @fires drawer:noItems
+   * @private
+   */
   checkIfDrawerIsAvailable() {
     const isEmptyDrawer = (this.collection.length === 0);
     $('.js-nav-drawer-btn').toggleClass('u-display-none', isEmptyDrawer);
@@ -149,10 +231,29 @@ class DrawerView extends Backbone.View {
     this.hideDrawer();
   }
 
+  /**
+   * Checks if drawer is open showing drawer.
+   * Returns false if showing custom view or closed.
+   * @returns {boolean} True if visible showing drawer (not custom view)
+   */
   get isOpen() {
     return (this._isVisible && this._isCustomViewVisible === false);
   }
 
+  /**
+   * Opens and displays the drawer with animation.
+   * Handles both drawer mode and custom view mode.
+   * @async
+   * @param {boolean} [emptyDrawer] - True for drawer mode, false/null for custom mode
+   * @param {string} [position=null] - Override drawer position
+   * @fires drawer:opened
+   * @fires drawer:openedItemView
+   * @fires drawer:openedCustomView
+   * @fires drawer:empty
+   * @example
+   * await this.showDrawer(true);
+   * await this.showDrawer(null, 'right');
+   */
   async showDrawer(emptyDrawer, position = null) {
     shadow.show();
     this.setDrawerPosition(position);
@@ -201,10 +302,27 @@ class DrawerView extends Backbone.View {
 
   }
 
+  /**
+   * Clears drawer content container.
+   * @private
+   * @example
+   * this.emptyDrawer();
+   * Adapt.trigger('drawer:empty');
+   */
   emptyDrawer() {
     this.$('.drawer__holder').empty();
   }
 
+  /**
+   * Renders drawer items from collection.
+   * Creates {@link DrawerItemView} for each model.
+   * Sets ARIA role='list' if multiple items.
+   * @fires drawer:empty
+   * @private
+   * @example
+   * this.renderItems();
+   * // Triggers drawer:empty and populates drawer with DrawerItemView instances
+   */
   renderItems() {
     Adapt.trigger('drawer:empty');
     this.emptyDrawer();
@@ -214,6 +332,17 @@ class DrawerView extends Backbone.View {
     this.collection.forEach(model => new DrawerItemView({ model }));
   }
 
+  /**
+   * Closes and hides the drawer with animation.
+   * Can force immediate close (skip animation).
+   * @async
+   * @param {jQuery} [$toElement] - Element to focus after closing
+   * @param {DrawerCloseOptions} [options] - Close options
+   * @fires drawer:closed
+   * @example
+   * await this.hideDrawer();
+   * await this.hideDrawer($('.js-nav-home-btn'), { force: true });
+   */
   async hideDrawer($toElement, {
     force = false // close the drawer immediately
   } = {}) {
@@ -248,6 +377,13 @@ class DrawerView extends Backbone.View {
     this.setDrawerPosition(this._globalDrawerPosition);
   }
 
+  /**
+   * Cleanup when view is removed.
+   * Forces drawer closed, removes event listeners, resets collection.
+   * @fires drawer:empty
+   * @example
+   * drawerView.remove();
+   */
   remove() {
     this.hideDrawer(null, { force: true });
     super.remove();
