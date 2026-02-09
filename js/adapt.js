@@ -1,6 +1,54 @@
+/**
+ * @file Adapt Singleton - Core framework controller and event bus
+ * @module core/js/adapt
+ * @description The Adapt singleton is the central controller for the Adapt Learning Framework.
+ * It extends {@link LockingModel} to provide state management, event coordination, and lifecycle
+ * control for the entire course.
+ *
+ * **Architecture:**
+ * - Singleton instance (only one exists per course)
+ * - Global event bus (all framework events flow through Adapt.trigger/on/off)
+ * - Lifecycle coordinator (initialization, navigation, teardown)
+ * - State manager (_canScroll, _isStarted, completion tracking)
+ * - Plugin coordination (manages plugin wait queues and readiness)
+ *
+ * **Key Responsibilities:**
+ * - Framework initialization and startup sequence
+ * - Completion checking coordination across components
+ * - View lifecycle management (create/remove)
+ * - RTL/LTR direction handling
+ * - Animation control
+ * - Relative string parsing for navigation
+ *
+ * **Public Events Triggered:**
+ * - `adapt:preInitialize` - Before initialization begins
+ * - `adapt:start` - Framework starting
+ * - `adapt:initialize` - Framework initialized and ready
+ * - `preRemove` - Before view removal
+ * - `remove` - During view removal
+ * - `postRemove` - After view removal
+ * - `plugins:ready` - All plugins loaded (deprecated)
+ *
+ * **State Properties:**
+ * - `_canScroll` {boolean} - Whether scrolling is allowed (lockable)
+ * - `_outstandingCompletionChecks` {number} - Pending async completion checks
+ * - `_pluginWaitCount` {number} - Plugins still loading (deprecated)
+ * - `_isStarted` {boolean} - Framework has completed initialization
+ * - `_shouldDestroyContentObjects` {boolean} - Whether to destroy views on navigation
+ *
+ * **Important:** Many properties have been moved to dedicated services.
+ * Use `import service from 'core/js/service'` instead of `Adapt.service`.
+ */
+
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
 
+/**
+ * @class AdaptSingleton
+ * @classdesc Core framework singleton managing lifecycle, state, and event coordination.
+ * Exported as single instance. Do not instantiate directly.
+ * @extends {LockingModel}
+ */
 class AdaptSingleton extends LockingModel {
 
   initialize() {
@@ -23,6 +71,27 @@ class AdaptSingleton extends LockingModel {
     };
   }
 
+  /**
+   * Initializes the Adapt framework.
+   * Orchestrates the complete startup sequence: direction setup, animation config,
+   * plugin loading, and history initialization.
+   *
+   * **Initialization Sequence:**
+   * 1. Apply RTL/LTR direction to DOM
+   * 2. Configure animation settings
+   * 3. Trigger `adapt:preInitialize` event
+   * 4. Wait for all async operations
+   * 5. Wait for completion checks to finish
+   * 6. Trigger `adapt:start` event
+   * 7. Start Backbone history (routing)
+   * 8. Mark as started
+   * 9. Trigger `adapt:initialize` event
+   *
+   * @async
+   * @fires adapt:preInitialize
+   * @fires adapt:start
+   * @fires adapt:initialize
+   */
   async init() {
     this.addDirection();
     this.disableAnimation();
@@ -49,7 +118,13 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * call when entering an asynchronous completion check
+   * Increments the outstanding completion check counter.
+   * Call when entering an asynchronous completion check to prevent framework
+   * initialization from proceeding until the check completes.
+   * @example
+   * Adapt.checkingCompletion();
+   * await someAsyncCompletionCheck();
+   * Adapt.checkedCompletion();
    */
   checkingCompletion() {
     const outstandingChecks = this.get('_outstandingCompletionChecks');
@@ -57,7 +132,9 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * call when exiting an asynchronous completion check
+   * Decrements the outstanding completion check counter.
+   * Call when exiting an asynchronous completion check.
+   * When counter reaches zero, initialization can proceed.
    */
   checkedCompletion() {
     const outstandingChecks = this.get('_outstandingCompletionChecks');
@@ -65,8 +142,16 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * wait until there are no outstanding completion checks
-   * @param {Function} [callback] Function to be called after all completion checks have been completed
+   * Waits until all outstanding completion checks have finished.
+   * Used internally during initialization to ensure all async completion
+   * checks complete before framework starts.
+   * @async
+   * @param {Function} [callback=() => {}] - Callback invoked when all checks complete
+   * @returns {Promise<void>} Resolves when all completion checks finished
+   * @example
+   * await Adapt.deferUntilCompletionChecked(() => {
+   *   Adapt.trigger('adapt:start');
+   * });
    */
   async deferUntilCompletionChecked(callback = () => {}) {
     if (this.get('_outstandingCompletionChecks') === 0) return callback();
@@ -81,11 +166,19 @@ class AdaptSingleton extends LockingModel {
     });
   }
 
+  /**
+   * @deprecated Use wait.isWaiting() instead
+   * @returns {boolean} True if waiting for plugins
+   */
   isWaitingForPlugins() {
     this.log.deprecated('Use wait.isWaiting() as Adapt.isWaitingForPlugins() will be removed in the future');
     return wait.isWaiting();
   }
 
+  /**
+   * @deprecated Use wait.isWaiting() instead
+   * @returns {void}
+   */
   checkPluginsReady() {
     this.log.deprecated('Use wait.isWaiting() as Adapt.checkPluginsReady() will be removed in the future');
     if (this.isWaitingForPlugins()) {
@@ -95,46 +188,44 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * Relative strings describe the number and type of hops in the model hierarchy
-   * @param {string} relativeString
-   * Trickle uses this function to determine where it should scrollTo after it unlocks.
-   * Branching uses this function to determine where it should branch to.
-   * This function would return the following for a single offset directive:
-   * {
-   *     type: "component",
-   *     offset: 1,
-   *     inset: null
-   * }
-   * "@component+1" returns the next component outside this container, or undefined
-   * "@component-1" returns the previous component outside of this container, or undefined
-   * "@block+0" or "@block" returns this block, the first ancestor block, or undefined
-   * "@type+0" or "@type" returns this of type, the first ancestor of type, or undefined
-   * This function would return the following for a single inset directive:
-   * {
-   *     type: "component",
-   *     offset: null,
-   *     inset: 0
-   * }
-   * "@article=0" returns the first article inside this container, or undefined
-   * "@article=-1" returns the last article inside this container, or undefined
-   * "@type=n" returns the relatively positioned of type inside this container, or undefined
-   * This function would return the following for multiple inset and offset directives:
-   * [
-   *   {
-   *     type: "block",
-   *     offset: 2,
-   *     inset: null
-   *   },
-   *   {
-   *     type: "component",
-   *     offset: null,
-   *     inset: 0
-   *   }
-   * ]
-   * "@block+2 @component=0" move two blocks forward and return its first component
-   * "@block-1 @component=-2" move one block backward and return its second to last component
-   * "@article+2 @block=1 @component=-1" move two articles forward, find the second block and return its last component
-   * "@article @component=-1" find the first ancestor article and return its last component
+   * @typedef {Object} ParsedDirective
+   * @property {string} type - Content type (component, block, article, page, menu)
+   * @property {number} [offset] - Number of siblings to offset (+/-)
+   * @property {number} [inset] - Child index to select (0-indexed, -1 for last)
+   */
+
+  /**
+   * Parses relative navigation strings into structured directives.
+   * Used by Trickle to determine scroll targets and by Branching to resolve navigation paths.
+   *
+   * **Syntax:**
+   * - **Offset directives**: `@type+n` or `@type-n` (move n steps forward/back)
+   * - **Inset directives**: `@type=n` (select nth child, 0-indexed, -1 for last)
+   * - **Multiple directives**: Space-separated for nested navigation
+   *
+   * **Directive Behavior:**
+   * - Offset (`+`/`-`): Navigate to ancestor or sibling
+   * - Inset (`=`): Navigate to descendant
+   * - Omit number: Defaults to 0 (current/first)
+   *
+   * @param {string} relativeString - Navigation directive string
+   * @returns {ParsedDirective|Array<ParsedDirective>} Single directive or array for multi-step navigation
+   * @example
+   * Adapt.parseRelativeString('@component+1');
+   *
+   * Adapt.parseRelativeString('@block+0');
+   *
+   * Adapt.parseRelativeString('@article=0');
+   *
+   * Adapt.parseRelativeString('@article=-1');
+   *
+   * Adapt.parseRelativeString('@block+2 @component=0');
+   *
+   * Adapt.parseRelativeString('@block-1 @component=-2');
+   *
+   * Adapt.parseRelativeString('@article+2 @block=1 @component=-1');
+   *
+   * Adapt.parseRelativeString('@article @component=-1');
    */
   parseRelativeString(relativeString) {
     const parts = relativeString
@@ -167,6 +258,12 @@ class AdaptSingleton extends LockingModel {
       : parsed;
   }
 
+  /**
+   * Applies text direction (LTR/RTL) to the DOM.
+   * Sets `dir` attribute and CSS class on `<html>` element based on config.
+   * Called during initialization.
+   * @private
+   */
   addDirection() {
     const defaultDirection = this.config.get('_defaultDirection');
 
@@ -175,10 +272,16 @@ class AdaptSingleton extends LockingModel {
       .attr('dir', defaultDirection);
   }
 
+  /**
+   * Configures animation settings based on config and browser detection.
+   * Checks `_disableAnimationFor` array for CSS selectors matching `<html>`.
+   * If match found, disables animations globally.
+   * Called during initialization.
+   * @private
+   */
   disableAnimation() {
     const disableAnimationArray = this.config.get('_disableAnimationFor');
     const disableAnimation = this.config.get('_disableAnimation');
-
     // Check if animations should be disabled
     if (disableAnimationArray) {
       for (let i = 0, l = disableAnimationArray.length; i < l; i++) {
@@ -193,6 +296,24 @@ class AdaptSingleton extends LockingModel {
     $('html').toggleClass('disable-animation', (disableAnimation === true));
   }
 
+  /**
+   * Removes the current view and resets child state.
+   * Called during navigation to clean up previous content before rendering new content.
+   * Triggers lifecycle events for view teardown coordination.
+   *
+   * **Removal Sequence:**
+   * 1. Mark children as not ready/rendered
+   * 2. Trigger `preRemove` event
+   * 3. Wait for async operations
+   * 4. Destroy view if `_shouldDestroyContentObjects` is true
+   * 5. Trigger `remove` event
+   * 6. Trigger `postRemove` event (deferred)
+   *
+   * @async
+   * @fires preRemove
+   * @fires remove
+   * @fires postRemove
+   */
   async remove() {
     const currentView = this.parentView;
     if (currentView) {
@@ -213,77 +334,105 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * @deprecated Please use core/js/a11y instead
+   * @see module:core/js/a11y
+   * @readonly
    */
   get a11y() {}
 
   /**
    * @deprecated Please use core/js/components instead
+   * @see module:core/js/components
+   * @readonly
    */
   get componentStore() {}
 
   /**
    * @deprecated Please use core/js/data instead
+   * @see module:core/js/data
+   * @readonly
    */
   get data() {}
 
   /**
    * @deprecated Please use core/js/device instead
+   * @see module:core/js/device
+   * @readonly
    */
   get device() {}
 
   /**
    * @deprecated Please use core/js/drawer instead
+   * @see module:core/js/drawer
+   * @readonly
    */
   get drawer() {}
 
   /**
    * @deprecated Please use core/js/location instead
+   * @see module:core/js/location
+   * @readonly
    */
   get location() {}
 
   /**
    * @deprecated Please use core/js/notify instead
+   * @see module:core/js/notify
+   * @readonly
    */
   get notify() {}
 
   /**
    * @deprecated Please use core/js/offlineStorage instead
+   * @see module:core/js/offlineStorage
+   * @readonly
    */
   get offlineStorage() {}
 
   /**
    * @deprecated Please use core/js/router instead
+   * @see module:core/js/router
+   * @readonly
    */
   get router() {}
 
   /**
    * @deprecated Please use core/js/scrolling instead
+   * @see module:core/js/scrolling
+   * @readonly
    */
   get scrolling() {}
 
   /**
    * @deprecated Please use core/js/startController instead
+   * @see module:core/js/startController
+   * @readonly
    */
   get startController() {}
 
   /**
    * @deprecated Please use core/js/components instead
+   * @see module:core/js/components
+   * @readonly
    */
   get store() {}
 
   /**
    * @deprecated Please use core/js/tracking instead
+   * @see module:core/js/tracking
+   * @readonly
    */
   get tracking() {}
 
   /**
    * @deprecated Please use core/js/wait instead
+   * @see module:core/js/wait
+   * @readonly
    */
   get wait() {}
 
   /**
-   * Allows a selector to be passed in and Adapt will navigate to this element. Resolves
-   * asynchronously when the element has been navigated to.  /**
+   * Allows a selector to be passed in and Adapt will navigate to this element.
+   * Resolves asynchronously when the element has been navigated to.
    * @deprecated Please use router.navigateToElement instead.
    * @param {string} selector CSS selector of the Adapt element you want to navigate to e.g. `".co-05"`
    * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
