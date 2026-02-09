@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import location from 'core/js/location';
 import logging from 'core/js/logging';
-
+import PRIORITY_LABEL_SUPPORTED_TYPE from 'core/js/enums/priorityLabelSupportedType';
 class AdaptView extends Backbone.View {
 
   attributes() {
@@ -429,9 +429,7 @@ class AdaptView extends Backbone.View {
    */
   setPriorityLabels() {
     const type = this.constructor.type;
-
-    const SUPPORTED_TYPES = ['menuItem', 'page', 'article', 'block', 'component'];
-    if (!SUPPORTED_TYPES.includes(type)) return;
+    if (!PRIORITY_LABEL_SUPPORTED_TYPE.includes(type)) return;
 
     const _globals = Adapt.course.get('_globals');
     const globalConfig = _globals?._priorityLabels;
