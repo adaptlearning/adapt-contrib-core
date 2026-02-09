@@ -53,7 +53,11 @@ const DrawerCollection = new Backbone.Collection(null, { comparator: 'drawerOrde
 
 /**
  * @class Drawer
- * @classdesc Singleton service managing drawer sidebar. Only one instance exists per course.
+ * @classdesc Singleton service managing the drawer sidebar. The drawer is a vertical
+ * sidebar that displays registered drawer items (plugin launcher buttons). Clicking
+ * a drawer item switches the sidebar from list view to the plugin's custom view.
+ * Custom views include a back button to return to the drawer item list. Manages
+ * item registration, view lifecycle, and mode switching between list and custom views.
  * @extends {Backbone.Controller}
  */
 class Drawer extends Backbone.Controller {
