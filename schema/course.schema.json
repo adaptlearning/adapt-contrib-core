@@ -495,6 +495,23 @@
               "description": "CSS class for the icon shown on required content (e.g., 'icon-exclamation'). Leave empty for no icon.",
               "default": ""
             },
+            "_menu": {
+              "type": "object",
+              "title": "Sub Menu Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional sub menus",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required sub menus",
+                  "default": false
+                }
+              }
+            },
             "_menuItem": {
               "type": "object",
               "title": "Menu Item Priority Labels",

@@ -728,6 +728,11 @@ describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
     return true;
   });
 
+  mutateContent('core - add course._globals._priorityLabels._menu', async (content) => {
+    _.set(course, '_globals._priorityLabels._menu', defaultTypeConfig);
+    return true;
+  });
+
   mutateContent('core - add course._globals._priorityLabels._menuItem', async (content) => {
     _.set(course, '_globals._priorityLabels._menuItem', defaultTypeConfig);
     return true;
@@ -768,6 +773,12 @@ describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
   checkContent('core - check course._globals._priorityLabels._iconClassRequired', async (content) => {
     const isValid = _.has(course, '_globals._priorityLabels._iconClassRequired');
     if (!isValid) throw new Error('core - missing _globals._priorityLabels._iconClassRequired');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._menu', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._menu');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._menu');
     return true;
   });
 
