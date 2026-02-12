@@ -25,12 +25,6 @@ import Adapt from 'core/js/adapt';
  */
 export default class KeyboardFocusOutline extends Backbone.Controller {
 
-  /**
-   * Initializes the keyboard focus outline controller.
-   * Binds event handler, caches HTML element, and defines trigger key map.
-   * @param {Object} options - Configuration options
-   * @param {Object} options.a11y - Reference to the parent A11y module instance
-   */
   initialize({ a11y }) {
     this.a11y = a11y;
     this._onKeyDown = this._onKeyDown.bind(this);
@@ -49,10 +43,6 @@ export default class KeyboardFocusOutline extends Backbone.Controller {
     });
   }
 
-  /**
-   * Attaches keydown listener and applies initial styling.
-   * @private
-   */
   _attachEventListeners() {
     document.addEventListener('keydown', this._onKeyDown);
     this._start();

@@ -25,13 +25,6 @@ import Adapt from '../adapt';
  */
 export default class BrowserConfig extends Backbone.Controller {
 
-  /**
-   * Initializes the browser configuration controller.
-   * Stores reference to the A11y module and sets up event listeners
-   * for accessibility ready state.
-   * @param {Object} options - Configuration options
-   * @param {Object} options.a11y - Reference to the parent A11y module instance
-   */
   initialize({ a11y }) {
     this.a11y = a11y;
     this.listenTo(Adapt, {
@@ -39,18 +32,10 @@ export default class BrowserConfig extends Backbone.Controller {
     });
   }
 
-  /**
-   * Handles accessibility ready event.
-   * @private
-   */
   _onReady() {
     if (this.a11y.config._options._isPrefersReducedMotionEnabled) this._enablePrefersReducedMotion();
   }
 
-  /**
-   * Enables prefers-reduced-motion detection and applies CSS class.
-   * @private
-   */
   _enablePrefersReducedMotion() {
     if (!window.matchMedia) return;
     const isEnabledInBrowser = window.matchMedia('(prefers-reduced-motion: reduce');

@@ -49,13 +49,6 @@ export default class BrowserFocus extends Backbone.Controller {
     return isAriaDisabled;
   }
 
-  /**
-   * Prevents click events from being processed on aria-disabled elements.
-   * Only responds to trusted user events, not synthetic events.
-   * @private
-   * @param {jQuery.Event} event - The click event object
-   * @returns {void}
-   */
   _onClick(event) {
     if (!event.isTrusted) return;
     const $element = $(event.target);
@@ -64,13 +57,6 @@ export default class BrowserFocus extends Backbone.Controller {
     event.stopImmediatePropagation();
   }
 
-  /**
-   * Prevent Enter and Space key presses from activating aria-disabled elements.
-   * Only responds to trusted user events, not synthetic events.
-   * @private
-   * @param {jQuery.Event} event - The keydown event object
-   * @returns {void}
-   */
   _onKeyDown(event) {
     if (!event.isTrusted) return;
     if (!['Enter', ' '].includes(event.key)) return;

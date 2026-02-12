@@ -24,12 +24,6 @@ import Adapt from 'core/js/adapt';
  */
 export default class BrowserFocus extends Backbone.Controller {
 
-  /**
-   * Initializes the browser focus controller.
-   * Binds event handlers, caches body element, and sets up accessibility ready listener.
-   * @param {Object} options - Configuration options
-   * @param {Object} options.a11y - Reference to the parent A11y module instance
-   */
   initialize({ a11y }) {
     this.a11y = a11y;
     this._onBlur = this._onBlur.bind(this);
