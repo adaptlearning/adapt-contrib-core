@@ -157,6 +157,35 @@
         }
       }
     },
+    "_priorityLabels": {
+      "type": "object",
+      "title": "Priority Labels Override",
+      "description": "Override the global priority labels settings for this specific element",
+      "default": {},
+      "_adapt": {
+        "isSetting": true
+      },
+      "properties": {
+        "_isOverride": {
+          "type": "boolean",
+          "title": "Override global settings",
+          "description": "When enabled, this element will use the local settings instead of the global priority labels configuration",
+          "default": false
+        },
+        "_showWhenRequired": {
+          "type": "boolean",
+          "title": "Show label when required",
+          "description": "Display a 'Required' label when this element is not optional",
+          "default": false
+        },
+        "_showWhenOptional": {
+          "type": "boolean",
+          "title": "Show label when optional",
+          "description": "Display an 'Optional' label when this element is optional",
+          "default": false
+        }
+      }
+    },
     "_extensions": {
       "type": "object",
       "title": "Extensions",

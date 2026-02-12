@@ -701,3 +701,131 @@ describe('core - v6.68.1 to 6.73.1', async () => {
     content: [{ _type: 'config' }]
   });
 });
+
+describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
+  let course;
+  const defaultTypeConfig = { _showWhenOptional: false, _showWhenRequired: false };
+
+  whereFromPlugin('core - from @@CURRENT_VERSION', { name: 'adapt-contrib-core', version: '<@@RELEASE_VERSION' });
+
+  whereContent('core - where course', async (content) => {
+    course = getCourse();
+    return course;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels', async (content) => {
+    _.set(course, '_globals._priorityLabels', {});
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._iconClassOptional', async (content) => {
+    _.set(course, '_globals._priorityLabels._iconClassOptional', '');
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._iconClassRequired', async (content) => {
+    _.set(course, '_globals._priorityLabels._iconClassRequired', '');
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._menu', async (content) => {
+    _.set(course, '_globals._priorityLabels._menu', defaultTypeConfig);
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._menuItem', async (content) => {
+    _.set(course, '_globals._priorityLabels._menuItem', defaultTypeConfig);
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._page', async (content) => {
+    _.set(course, '_globals._priorityLabels._page', defaultTypeConfig);
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._article', async (content) => {
+    _.set(course, '_globals._priorityLabels._article', defaultTypeConfig);
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._block', async (content) => {
+    _.set(course, '_globals._priorityLabels._block', defaultTypeConfig);
+    return true;
+  });
+
+  mutateContent('core - add course._globals._priorityLabels._component', async (content) => {
+    _.set(course, '_globals._priorityLabels._component', defaultTypeConfig);
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._iconClassOptional', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._iconClassOptional');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._iconClassOptional');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._iconClassRequired', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._iconClassRequired');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._iconClassRequired');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._menu', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._menu');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._menu');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._menuItem', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._menuItem');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._menuItem');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._page', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._page');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._page');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._article', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._article');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._article');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._block', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._block');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._block');
+    return true;
+  });
+
+  checkContent('core - check course._globals._priorityLabels._component', async (content) => {
+    const isValid = _.has(course, '_globals._priorityLabels._component');
+    if (!isValid) throw new Error('core - missing _globals._priorityLabels._component');
+    return true;
+  });
+
+  updatePlugin('core - update to @@RELEASE_VERSION', { name: 'adapt-contrib-core', version: '@@RELEASE_VERSION', framework: '>=5.20.2' });
+
+  testSuccessWhere('correct version with empty course', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
+    content: [
+      { _type: 'course' }
+    ]
+  });
+
+  testStopWhere('incorrect version', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@RELEASE_VERSION' }]
+  });
+
+  testStopWhere('no course', {
+    content: [{ _type: 'config' }]
+  });
+});
