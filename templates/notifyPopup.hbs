@@ -19,7 +19,7 @@
             {{#if _graphic._src}}
             {{#any (equals _imageAlignment 'left') (equals _imageAlignment 'top')}}
             <div class="notify__image-container{{#if _graphic.attribution}} has-attribution{{/if}}">
-              <img class="notify__image" src="{{_graphic._src}}" {{#if _graphic.alt}}aria-label="{{{_graphic.alt}}}"{{else}}aria-hidden="true"{{/if}}>
+              <img class="notify__image" src="{{_graphic._src}}" alt="{{{_graphic.alt}}}">
               {{#if _graphic.attribution}}
               <div class="notify__attribution">
                 <div class="notify__attribution-inner">
@@ -52,7 +52,7 @@
             {{~#if _graphic._src~}}
             {{~#any (equals _imageAlignment 'right') (equals _imageAlignment 'bottom')~}}
             <div class="notify__image-container{{#if _graphic.attribution}} has-attribution{{/if}}">
-              <img class="notify__image" src="{{_graphic._src}}" {{#if _graphic.alt}}aria-label="{{{_graphic.alt}}}"{{else}}aria-hidden="true"{{/if}}>
+              <img class="notify__image" src="{{_graphic._src}}" alt="{{{_graphic.alt}}}">
               {{#if _graphic.attribution}}
               <div class="notify__attribution">
                 <div class="notify__attribution-inner">
