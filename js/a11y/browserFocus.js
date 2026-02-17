@@ -15,6 +15,7 @@
  * import BrowserFocus from 'core/js/a11y/browserFocus';
  * const browserFocus = new BrowserFocus({ a11y });
  */
+
 import Adapt from 'core/js/adapt';
 
 /**
