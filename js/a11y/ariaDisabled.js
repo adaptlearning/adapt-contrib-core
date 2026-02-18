@@ -9,13 +9,13 @@
 import Adapt from 'core/js/adapt';
 
 /**
- * @class BrowserFocus
+ * @class AriaDisabled
  * @classdesc Prevents activation of elements marked with aria-disabled="true".
  * @extends Backbone.Controller
  * @see https://github.com/adaptlearning/adapt_framework/issues/3097
  * @see https://github.com/adaptlearning/adapt-contrib-core/issues/623
  */
-export default class BrowserFocus extends Backbone.Controller {
+export default class AriaDisabled extends Backbone.Controller {
   initialize({ a11y }) {
     this.a11y = a11y;
     this._onKeyDown = this._onKeyDown.bind(this);
