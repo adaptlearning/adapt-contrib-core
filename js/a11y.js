@@ -572,7 +572,7 @@ class A11y extends Backbone.Controller {
   }
 
   /**
-   * Finds the first element that is both keyboard tabbable and screen-reader accessible.
+   * Finds the first element that is both keyboard tabbable and screen reader accessible.
    * Searches forward using tree traversal for the first element where `isFocusable()`
    * returns true (must pass both `isTabbable()` and `isReadable()` checks). Most restrictive
    * of the first* find methods. Primary method used by {@link A11y#focusFirst focusFirst()} for focus management.
