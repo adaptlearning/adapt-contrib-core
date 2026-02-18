@@ -51,7 +51,7 @@ function onLabelClick (event) {
   const input = document.querySelector(`[id="${event.currentTarget.getAttribute('for')}"]`);
   if (!input) return;
   event.preventDefault();
-  // focus first so that jaws doesn't jump scroll to the top
+  // focus first so that JAWS doesn't jump scroll to the top
   input.focus();
   input.click();
 };
