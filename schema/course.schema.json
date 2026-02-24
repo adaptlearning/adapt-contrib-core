@@ -477,6 +477,128 @@
             }
           }
         },
+        "_priorityLabels": {
+          "type": "object",
+          "title": "Priority Labels",
+          "description": "Configure visual display of required/optional labels on content type headings",
+          "default": {},
+          "properties": {
+            "_iconClassOptional": {
+              "type": "string",
+              "title": "Icon class for optional content",
+              "description": "CSS class for the icon shown on optional content (e.g., 'icon-info'). Leave empty for no icon.",
+              "default": ""
+            },
+            "_iconClassRequired": {
+              "type": "string",
+              "title": "Icon class for required content",
+              "description": "CSS class for the icon shown on required content (e.g., 'icon-exclamation'). Leave empty for no icon.",
+              "default": ""
+            },
+            "_menu": {
+              "type": "object",
+              "title": "Sub Menu Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional sub menus",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required sub menus",
+                  "default": false
+                }
+              }
+            },
+            "_menuItem": {
+              "type": "object",
+              "title": "Menu Item Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional menu items",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required menu items",
+                  "default": false
+                }
+              }
+            },
+            "_page": {
+              "type": "object",
+              "title": "Page Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional pages",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required pages",
+                  "default": false
+                }
+              }
+            },
+            "_article": {
+              "type": "object",
+              "title": "Article Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional articles",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required articles",
+                  "default": false
+                }
+              }
+            },
+            "_block": {
+              "type": "object",
+              "title": "Block Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional blocks",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required blocks",
+                  "default": false
+                }
+              }
+            },
+            "_component": {
+              "type": "object",
+              "title": "Component Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional components",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required components",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
         "_tooltips": {
           "type": "object",
           "title": "Tooltips",

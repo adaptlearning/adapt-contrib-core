@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import location from 'core/js/location';
 import logging from 'core/js/logging';
-
+import PRIORITY_LABEL_SUPPORTED_TYPE from 'core/js/enums/priorityLabelSupportedType';
 class AdaptView extends Backbone.View {
 
   attributes() {
@@ -37,6 +37,9 @@ class AdaptView extends Backbone.View {
       _globals: Adapt.course.get('_globals'),
       _isReady: false
     });
+
+    this.setPriorityLabels();
+
     this._isRemoved = false;
 
     if (location._currentId === this.model.get('_id')) {
@@ -417,6 +420,47 @@ class AdaptView extends Backbone.View {
 
   toggleHidden() {
     this.$el.toggleClass('u-display-none', this.model.get('_isHidden'));
+  }
+
+  /**
+   * Calculate and set priority label data on the model based on configuration.
+   * Supports per-element override via model's _priorityLabels with _isOverride: true.
+   * Handles all the logic internally: checks type, gets config, and sets model data.
+   */
+  setPriorityLabels() {
+    const type = this.constructor.type;
+    if (!PRIORITY_LABEL_SUPPORTED_TYPE.includes(type)) return;
+
+    const _globals = Adapt.course.get('_globals');
+    const globalConfig = _globals?._priorityLabels;
+    const localConfig = this.model.get('_priorityLabels');
+
+    // Use local override if _isOverride is explicitly true
+    const isLocalOverride = localConfig?._isOverride === true;
+    const typeConfig = isLocalOverride
+      ? localConfig
+      : globalConfig?.[`_${type}`];
+
+    if (!typeConfig) return;
+
+    const _isOptional = this.model.get('_isOptional');
+    const optionalLabel = _globals?._accessibility?._ariaLabels?.optional;
+    const requiredLabel = _globals?._accessibility?._ariaLabels?.required;
+
+    const showWhenOptional = typeConfig._showWhenOptional && _isOptional && optionalLabel;
+    const showWhenRequired = typeConfig._showWhenRequired && !_isOptional && requiredLabel;
+
+    if (!showWhenOptional && !showWhenRequired) return;
+
+    // Icon classes always come from global config
+    const _iconClassOptional = globalConfig?._iconClassOptional ?? '';
+    const _iconClassRequired = globalConfig?._iconClassRequired ?? '';
+
+    this.model.set({
+      _priorityClass: _isOptional ? 'is-optional' : 'is-required',
+      _priorityIconClass: _isOptional ? _iconClassOptional : _iconClassRequired,
+      priorityLabel: _isOptional ? optionalLabel : requiredLabel
+    });
   }
 
   onIsCompleteChange(model, isComplete) {
