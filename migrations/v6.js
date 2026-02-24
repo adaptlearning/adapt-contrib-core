@@ -702,11 +702,11 @@ describe('core - v6.68.1 to 6.73.1', async () => {
   });
 });
 
-describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
+describe('core - 6.74.0 to 6.75.0', async () => {
   let course;
   const defaultTypeConfig = { _showWhenOptional: false, _showWhenRequired: false };
 
-  whereFromPlugin('core - from @@CURRENT_VERSION', { name: 'adapt-contrib-core', version: '<@@RELEASE_VERSION' });
+  whereFromPlugin('core - from 6.74.0', { name: 'adapt-contrib-core', version: '<6.75.0' });
 
   whereContent('core - where course', async (content) => {
     course = getCourse();
@@ -812,17 +812,17 @@ describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
     return true;
   });
 
-  updatePlugin('core - update to @@RELEASE_VERSION', { name: 'adapt-contrib-core', version: '@@RELEASE_VERSION', framework: '>=5.20.2' });
+  updatePlugin('core - update to 6.75.0', { name: 'adapt-contrib-core', version: '6.75.0', framework: '>=5.20.2' });
 
   testSuccessWhere('correct version with empty course', {
-    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '6.74.0' }],
     content: [
       { _type: 'course' }
     ]
   });
 
   testStopWhere('incorrect version', {
-    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@RELEASE_VERSION' }]
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '6.75.0' }]
   });
 
   testStopWhere('no course', {
