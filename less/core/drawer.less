@@ -1,10 +1,12 @@
+:root {
+  --adapt-drawer-width: @drawer-width;
+}
+
 .drawer {
   position: fixed;
   top: 0;
-  // Update JS to set start point
-  // Update animation to be css rather than js
   height: 100%;
-  width: @drawer-width;
+  width: var(--adapt-drawer-width);
   overflow: hidden;
   z-index: 100;
 
@@ -75,3 +77,31 @@
     .icon-cross;
   }
 }
+
+// Push mode wrapper and nav transition
+.is-drawer-push #wrapper,
+.is-drawer-push .nav {
+  transition-property: margin;
+  transition-duration: var(--adapt-drawer-duration, 400ms);
+  transition-timing-function: var(--adapt-drawer-show-easing);
+}
+
+// Nav is position:fixed with width:100%, so margins don't contract it.
+// Switch to inset positioning so margin-inline-end shrinks the nav.
+// Uses .html prefix to match specificity of .html.adapt-scrolling .nav
+// in scrolling.less (0,3,0).
+.html.is-drawer-push .nav {
+  width: auto;
+  inset-inline: 0;
+}
+
+// Scrollbar offset: nav normally uses width:calc(100% - scrollbar).
+// In push mode, override width and use inset-inline-end instead.
+// (0,4,0) specificity beats .html.adapt-scrolling .nav (0,3,0).
+.html.is-drawer-push.adapt-scrolling .nav {
+  width: auto;
+  inset-inline: 0;
+  inset-inline-end: var(--adapt-scrollbar-width, 0);
+}
+
+

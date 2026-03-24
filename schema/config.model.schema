@@ -358,6 +358,53 @@
           "inputType": "Text",
           "validators": [],
           "help": "CSS class name to be applied to the drawer sidebar icon."
+        },
+        "_mode": {
+          "type": "string",
+          "required": false,
+          "default": "overlay",
+          "title": "Display mode",
+          "inputType": {
+            "type": "Select",
+            "options": [
+              "overlay",
+              "push"
+            ]
+          },
+          "help": "Controls whether the drawer overlays content or pushes it aside."
+        },
+        "_pushBreakpoint": {
+          "type": "string",
+          "required": false,
+          "default": "medium",
+          "title": "Push mode breakpoint",
+          "inputType": {
+            "type": "Select",
+            "options": [
+              "small",
+              "medium",
+              "large"
+            ]
+          },
+          "help": "Minimum screen size for push mode. Below this, falls back to overlay."
+        },
+        "_startOpen": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "title": "Start open",
+          "inputType": "Checkbox",
+          "validators": [],
+          "help": "When enabled, the drawer opens automatically on course load."
+        },
+        "_startOpenItem": {
+          "type": "string",
+          "required": false,
+          "default": "",
+          "title": "Start open item",
+          "inputType": "Text",
+          "validators": [],
+          "help": "Event callback name of the drawer item to auto-open on load (e.g. 'resources:showResources')."
         }
       }
     },

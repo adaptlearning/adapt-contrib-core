@@ -1,4 +1,5 @@
 import Adapt from 'core/js/adapt';
+import device from 'core/js/device';
 import shadow from '../shadow';
 import a11y from 'core/js/a11y';
 import DrawerItemView from 'core/js/views/drawerItemView';
@@ -24,7 +25,6 @@ class DrawerView extends Backbone.View {
 
   attributes() {
     return {
-      'aria-modal': 'true',
       'aria-labelledby': 'drawer-heading',
       'aria-hidden': 'true'
     };
@@ -43,6 +43,11 @@ class DrawerView extends Backbone.View {
     this.disableAnimation = Adapt.config.get('_disableAnimation') ?? false;
     this.$el.toggleClass('disable-animation', Boolean(this.disableAnimation));
     this._globalDrawerPosition = this.config?._position ?? 'auto';
+    this._configMode = this.config?._mode ?? 'overlay';
+    this._pushBreakpoint = this.config?._pushBreakpoint ?? 'medium';
+    this._startOpen = this.config?._startOpen ?? false;
+    this._effectiveMode = this.calculateEffectiveMode();
+    this.updateModeAttributes();
     const drawerDuration = this.config?._duration ?? 400;
     let showEasing = this.config?._showEasing || 'easeOutQuart';
     let hideEasing = this.config?._hideEasing || 'easeInQuart';
@@ -72,6 +77,36 @@ class DrawerView extends Backbone.View {
     this.render();
   }
 
+  calculateEffectiveMode() {
+    if (this._configMode !== 'push') return 'overlay';
+    return device.isScreenSizeMin(this._pushBreakpoint)
+      ? 'push'
+      : 'overlay';
+  }
+
+  get isPush() {
+    return this._effectiveMode === 'push';
+  }
+
+  updateModeAttributes() {
+    const $html = $('html');
+    $html.toggleClass('is-drawer-push', this.isPush);
+    this.$el.attr('aria-modal', this.isPush ? 'false' : 'true');
+  }
+
+  onDeviceChanged() {
+    const previousMode = this._effectiveMode;
+    this._effectiveMode = this.calculateEffectiveMode();
+    if (previousMode === this._effectiveMode) return;
+    this.updateModeAttributes();
+    if (this._isVisible) {
+      this.hideDrawer(null, { force: true });
+      if (this._startOpen && this.isPush) {
+        _.defer(() => this.showDrawer(true));
+      }
+    }
+  }
+
   get config () {
     return Adapt.config.get('_drawer');
   }
@@ -80,6 +115,9 @@ class DrawerView extends Backbone.View {
     this.onKeyDown = this.onKeyDown.bind(this);
     $(window).on('keydown', this.onKeyDown);
     this.el.addEventListener('mousedown', this.onShadowClicked, { capture: true });
+    if (this._configMode === 'push') {
+      this.listenTo(Adapt, 'device:changed', this.onDeviceChanged);
+    }
   }
 
   onKeyDown(event) {
@@ -154,15 +192,28 @@ class DrawerView extends Backbone.View {
   }
 
   async showDrawer(emptyDrawer, position = null) {
-    shadow.show();
+    this._effectiveMode = this.calculateEffectiveMode();
+    this.updateModeAttributes();
+
+    if (this.isPush) {
+      this.applyPushMargin();
+    } else {
+      shadow.show();
+    }
+
     this.setDrawerPosition(position);
     this.$el
       .removeClass('u-display-none')
       .attr('aria-hidden', 'false');
-    // Only trigger popup:opened if drawer is visible, pass popup manager drawer element
+
     if (!this._isVisible) {
-      a11y.popupOpened(this.$el);
-      a11y.scrollDisable('body');
+      if (this.isPush) {
+        this.el.show();
+        a11y.focusFirst(this.$el, { defer: true });
+      } else {
+        a11y.popupOpened(this.$el);
+        a11y.scrollDisable('body');
+      }
       this._isVisible = true;
     }
 
@@ -193,12 +244,25 @@ class DrawerView extends Backbone.View {
     Adapt.trigger('drawer:opened');
 
     this.$el.addClass('anim-show-before');
-    // focus on first tabbable element in drawer
-    a11y.focusFirst(this.$el, { defer: true });
+    if (!this.isPush) a11y.focusFirst(this.$el, { defer: true });
     await transitionNextFrame();
     this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
+  }
 
+  applyPushMargin() {
+    const prop = (this.drawerPosition === 'left')
+      ? 'margin-inline-start'
+      : 'margin-inline-end';
+    const value = 'var(--adapt-drawer-width, 20rem)';
+    $('#wrapper, .nav').css(prop, value);
+  }
+
+  removePushMargin() {
+    $('#wrapper, .nav').css({
+      'margin-inline-start': '',
+      'margin-inline-end': ''
+    });
   }
 
   emptyDrawer() {
@@ -220,12 +284,17 @@ class DrawerView extends Backbone.View {
     if (!this._isVisible) return;
     this._useMenuPosition = false;
 
-    // make sure that the HTMLDialogElement.close in a11y.popupClosed() does not hide the dialog
-    this.$el.css('display', 'block');
-    a11y.popupClosed($toElement);
+    if (this.isPush) {
+      this.removePushMargin();
+      if (this.el.open) this.el.close();
+    } else {
+      // make sure that the HTMLDialogElement.close in a11y.popupClosed() does not hide the dialog
+      this.$el.css('display', 'block');
+      a11y.popupClosed($toElement);
+      shadow.hide();
+    }
 
     this._isCustomViewVisible = false;
-    shadow.hide();
 
     this.$el.addClass('anim-hide-before');
     if (!force) await transitionNextFrame();
@@ -236,7 +305,7 @@ class DrawerView extends Backbone.View {
     Adapt.trigger('drawer:closed');
 
     this._isVisible = false;
-    a11y.scrollEnable('body');
+    if (!this.isPush) a11y.scrollEnable('body');
     this.$('.js-drawer-holder').removeAttr('role');
 
     this.$el.removeClass('anim-show-before anim-show-after anim-hide-before anim-hide-after');
@@ -250,6 +319,8 @@ class DrawerView extends Backbone.View {
 
   remove() {
     this.hideDrawer(null, { force: true });
+    this.removePushMargin();
+    $('html').removeClass('is-drawer-push');
     super.remove();
     this.el.removeEventListener('mousedown', this.onShadowClicked, { capture: true });
     $(window).off('keydown', this.onKeyDown);

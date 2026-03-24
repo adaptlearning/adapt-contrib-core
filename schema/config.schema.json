@@ -311,6 +311,41 @@
           "title": "Drawer icon class",
           "description": "CSS class name to be applied to the drawer sidebar icon.",
           "default": "icon-list"
+        },
+        "_mode": {
+          "type": "string",
+          "title": "Display mode",
+          "description": "Controls whether the drawer overlays content or pushes it aside.",
+          "default": "overlay",
+          "enum": [
+            "overlay",
+            "push"
+          ],
+          "_backboneForms": "Select"
+        },
+        "_pushBreakpoint": {
+          "type": "string",
+          "title": "Push mode breakpoint",
+          "description": "Minimum screen size for push mode. Below this, falls back to overlay.",
+          "default": "medium",
+          "enum": [
+            "small",
+            "medium",
+            "large"
+          ],
+          "_backboneForms": "Select"
+        },
+        "_startOpen": {
+          "type": "boolean",
+          "title": "Start open",
+          "description": "When enabled, the drawer opens automatically on course load.",
+          "default": false
+        },
+        "_startOpenItem": {
+          "type": "string",
+          "title": "Start open item",
+          "description": "Event callback name of the drawer item to auto-open on load (e.g. 'resources:showResources').",
+          "default": ""
         }
       },
       "_adapt": {
