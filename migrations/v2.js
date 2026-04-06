@@ -308,6 +308,7 @@ describe('core - update to v2.2.0', async () => {
 
   // Convert strings to boolean or return default value
   function stringToBoolean(str, defaultValue) {
+    if (_.isBoolean(str)) return str;
     if (!_.isString(str)) return defaultValue;
     return str.toLowerCase() === 'true';
   }

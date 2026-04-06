@@ -55,7 +55,7 @@ describe('core - update to v6.24.2', async () => {
     return course;
   });
 
-  mutateContent('core - add course._extensions._drawer._navTooltip', async (content) => {
+  mutateContent('core - add course._extensions._drawer._navOrder', async (content) => {
     if (_.get(course, '_extensions._drawer._navOrder', 0) !== 0) return true;
     _.set(course, '_extensions._drawer._navOrder', 100);
     return true;
@@ -82,9 +82,9 @@ describe('core - update to v6.24.2', async () => {
     return true;
   });
 
-  checkContent('core - check course._extensions._drawer._navTooltip', async (content) => {
-    const isInvalid = _.get(course, '_extensions._drawer._navTooltip') === 0;
-    if (isInvalid) throw new Error('core - missing _extensions._drawer._navTooltip');
+  checkContent('core - check course._extensions._drawer._navOrder', async (content) => {
+    const isValid = _.has(course, '_extensions._drawer._navOrder');
+    if (!isValid) throw new Error('core - missing _extensions._drawer._navOrder');
     return true;
   });
 
