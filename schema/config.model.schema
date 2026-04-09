@@ -425,6 +425,7 @@
             "options": [
               "debug",
               "info",
+              "success",
               "warn",
               "error",
               "fatal"
@@ -444,6 +445,13 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Show only first deprecated and removed warnings?"
+        },
+        "_colors": {
+          "type": "boolean",
+          "default": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Enable colored console output?"
         }
       }
     },
