@@ -71,6 +71,10 @@ export default class BrowserFocus extends Backbone.Controller {
     if (!element) return;
     // refocus on the existing active element to stop jaws from scrolling
     this.a11y.focus(element, { preventScroll: true });
+    // Firefox sets a persistent selection anchor when focus is assigned
+    // programmatically, causing text to be unexpectedly selected on subsequent
+    // clicks. Clear any selection to prevent this.
+    window.getSelection()?.removeAllRanges();
   }
 
   /**
