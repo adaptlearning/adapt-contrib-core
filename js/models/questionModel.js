@@ -83,6 +83,7 @@ class QuestionModel extends ComponentModel {
     // Not sure this is needed anymore, keeping to maintain API
     this.setupWeightSettings();
     this.setupButtonSettings();
+    this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
   // Used to setup either global or local button text
