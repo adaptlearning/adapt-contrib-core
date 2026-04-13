@@ -62,18 +62,21 @@ export default class BrowserFocus extends Backbone.Controller {
       return;
     }
     const $element = $(event.target);
-    if ($element.is('[data-a11y-force-focus]')) {
+    const finish = () => {
+      const hasFocus = ($element[0] === this.a11y.currentActiveElement);
+      if (hasFocus) return;
+      if (!$element.is('[data-a11y-force-focus]')) return;
       $element.removeAttr('tabindex data-a11y-force-focus');
-    }
+    };
     // From here, only check source elements
     if (event.target !== event.currentTarget) {
-      return;
+      return finish();
     }
     // Do not auto next if the focus isn't returning to the body or html element
     // or if we're not losing focus
     const isNotBodyHTMLOrLostFocus = (!$(event.relatedTarget).is('body, html') && event.relatedTarget !== null);
     if (isNotBodyHTMLOrLostFocus) {
-      return;
+      return finish();
     }
     // Check if element is losing focus
     // due to the addition of a disabled class, display none, visibility hidden,
@@ -84,10 +87,12 @@ export default class BrowserFocus extends Backbone.Controller {
       // This can happen when JAWS screen reader on `role="group"` takes enter click
       // when the focus was on the input element
       this._refocusCurrentActiveElement();
+      finish();
       return;
     }
     // Move focus to next readable element
     this.a11y.focusNext($element);
+    finish();
   }
 
   /**
@@ -120,17 +125,20 @@ export default class BrowserFocus extends Backbone.Controller {
     }
     const $element = $(event.target);
     const $stack = $([...$element.toArray(), ...$element.parents().toArray()]);
-    const $focusable = $stack.filter(config._options._tabbableElements);
+    const $focusable = $stack.filter((i, el) => {
+      const $el = $(el);
+      // Allow label clicks to focus their associated control
+      return $el.is(config._options._tabbableElements) || $el.is('label[for]');
+    });
     if (!$focusable.length) {
       this._refocusCurrentActiveElement();
       return;
     }
-    const $closestFocusable = $element.closest(config._options._tabbableElements);
     // Force focus for screen reader enter / space press
-    if ($closestFocusable[0] !== document.activeElement) {
+    if ($focusable[0] !== document.activeElement) {
       // Focus on the nearest focusable element if not already with focus
       this.a11y._isForcedFocus = true;
-      $closestFocusable[0].focus();
+      $focusable[0].focus();
       this.a11y._isForcedFocus = false;
     }
     if (!config._options._isClickDelayedAfterFocusEnabled) return;
