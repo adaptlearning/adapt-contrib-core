@@ -22,8 +22,8 @@ class Tracking extends Backbone.Controller {
     this.listenTo(Adapt, {
       'assessment:complete': this.onAssessmentComplete,
       'assessment:restored': this.onAssessmentRestored,
-      'scoring:complete': this.onScoringComplete,
-      'scoring:restored': this.onScoringRestored
+      'scoring:total:complete scoring:complete': this.onScoringComplete,
+      'scoring:total:restored scoring:restored': this.onScoringRestored
     });
 
     if (this._config._requireContentCompleted) {
@@ -32,10 +32,13 @@ class Tracking extends Backbone.Controller {
   }
 
   submitScore() {
+    // todo: account for null if no passmark - requires update to spoor
     const isPassed = Boolean(this._assessmentState?.isPass ?? this._assessmentState?.isPassed);
     Adapt.course.set('_isAssessmentPassed', isPassed);
     if (!this._config._shouldSubmitScore) return;
-    offlineStorage.set('score', this._assessmentState.score, this._assessmentState.minScore, this._assessmentState.maxScore, this._assessmentState.isPercentageBased);
+    const state = this._assessmentState;
+    const isPercentageBased = state.isPercentageBased ?? state.passmark.isScaled;
+    offlineStorage.set('score', state.score, state.minScore, state.maxScore, isPercentageBased);
   }
 
   /**
@@ -44,7 +47,7 @@ class Tracking extends Backbone.Controller {
   checkCompletion() {
     const completionData = this.getCompletionData();
     if (completionData.status === COMPLETION_STATE.INCOMPLETE) return;
-    const canRetry = completionData.assessment?.canRetry;
+    const canRetry = completionData.assessment?.canRetry ?? completionData.assessment?.canReset;
     if (!this._config._submitOnEveryAssessmentAttempt && completionData.status === COMPLETION_STATE.FAILED && canRetry) return;
     Adapt.trigger('tracking:complete', completionData);
     logging.debug('tracking:complete', completionData);
@@ -61,14 +64,16 @@ class Tracking extends Backbone.Controller {
     };
 
     if (this._config._requireContentCompleted && !Adapt.course.get('_isComplete')) return completionData;
-    if (this._config._requireAssessmentCompleted) {
-      if (!this._assessmentState) return completionData;
-      const isPassed = this._assessmentState?.isPass ?? this._assessmentState?.isPassed;
-      completionData.status = isPassed ? COMPLETION_STATE.PASSED : COMPLETION_STATE.FAILED;
-      completionData.assessment = this._assessmentState;
-      return completionData;
-    }
+    if (this._config._requireAssessmentCompleted && !this._assessmentState) return completionData;
     completionData.status = COMPLETION_STATE.COMPLETED;
+    if (this._config._requireAssessmentCompleted) {
+      const hasPassmark = this._assessmentState.hasPassmark !== false;
+      if (hasPassmark) {
+        const isPassed = this._assessmentState.isPass ?? this._assessmentState.isPassed;
+        completionData.status = isPassed ? COMPLETION_STATE.PASSED : COMPLETION_STATE.FAILED;
+      }
+      completionData.assessment = this._assessmentState;
+    }
     return completionData;
   }
 
