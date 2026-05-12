@@ -1,3 +1,11 @@
+/**
+ * @file Navigation Button View - Renders a single navigation bar button
+ * @module core/js/views/NavigationButtonView
+ * @description Supports three rendering modes: standard Handlebars, JSX (React), and
+ * injected (an existing DOM element promoted to a managed view). Handles navigation
+ * events for built-in actions (back, home, parent, skip, return-to-start) and
+ * delegates custom events to `Adapt.trigger`.
+ */
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import { compile, templates } from 'core/js/reactHelpers';
@@ -8,6 +16,11 @@ import startController from 'core/js/startController';
 import a11y from 'core/js/a11y';
 import location from 'core/js/location';
 
+/**
+ * @class NavigationButtonView
+ * @classdesc Backbone view for one button in the navigation bar. Managed by
+ * {@link module:core/js/views/navigationView NavigationView}.
+ */
 export default class NavigationButtonView extends Backbone.View {
 
   tagName() {
@@ -51,6 +64,11 @@ export default class NavigationButtonView extends Backbone.View {
     };
   }
 
+  /**
+   * @param {object} options - Backbone view options
+   * @param {HTMLElement} [options.el] - When provided the view adopts an existing DOM
+   *   element and is treated as an injected button (no framework rendering).
+   */
   initialize({ el }) {
     if (el) {
       this.isInjectedButton = true;
@@ -63,6 +81,12 @@ export default class NavigationButtonView extends Backbone.View {
     this.render();
   }
 
+  /**
+   * Name of the Handlebars or JSX template used to render the button.
+   * Subclasses can override this to supply a custom template.
+   * A `.jsx` extension enables React rendering mode.
+   * @type {string}
+   */
   static get template() {
     return 'navButton.jsx';
   }
@@ -104,8 +128,11 @@ export default class NavigationButtonView extends Backbone.View {
   }
 
   /**
-   * Re-render
-   * @param {string} eventName=null Backbone change event name
+   * Re-renders the button in response to model changes. For JSX buttons a full
+   * React render is performed; for injected buttons only attributes and the
+   * label text are updated; for Handlebars buttons only view properties are synced.
+   * Bubbling Backbone events (names starting with `"bubble"`) are ignored.
+   * @param {string|null} [eventName=null] - Backbone change event name
    */
   changed(eventName = null) {
     if (typeof eventName === 'string' && eventName.startsWith('bubble')) {
@@ -134,6 +161,18 @@ export default class NavigationButtonView extends Backbone.View {
     ReactDOM.render(<Template {...props} />, this.el);
   }
 
+  /**
+   * Handles button click, prevents default, and fires `navigation:<eventName>` on
+   * `Adapt`. Built-in `currentEvent` values handled internally:
+   * `backButton`, `homeButton`, `parentButton`, `skipNavigation`, `returnToStart`.
+   * Any other value is forwarded as a plain Adapt event.
+   * @param {jQuery.Event} event - The click event
+   * @fires navigation:backButton
+   * @fires navigation:homeButton
+   * @fires navigation:parentButton
+   * @fires navigation:skipNavigation
+   * @fires navigation:returnToStart
+   */
   triggerEvent(event) {
     event.preventDefault();
     const currentEvent = $(event.currentTarget).attr('data-event');
@@ -160,6 +199,12 @@ export default class NavigationButtonView extends Backbone.View {
     }
   }
 
+  /**
+   * Stops listening, unmounts any React component, and removes the element from
+   * the DOM. Uses {@link module:core/js/wait wait} to ensure the unmount completes
+   * before the element is detached.
+   * @returns {this}
+   */
   remove() {
     this._isRemoved = true;
     this.stopListening();
