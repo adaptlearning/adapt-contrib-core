@@ -36,8 +36,8 @@
  * - `_isStarted` {boolean} - Framework has completed initialization
  * - `_shouldDestroyContentObjects` {boolean} - Whether to destroy views on navigation
  *
- * **Important:** Many properties have been moved to dedicated services.
- * Use `import service from 'core/js/service'` instead of `Adapt.service`.
+ * **Important:** Many properties have been moved to dedicated modules.
+ * Use `import module from 'core/js/module'` instead of `Adapt.module`.
  */
 
 import wait from 'core/js/wait';
