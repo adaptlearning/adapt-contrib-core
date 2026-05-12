@@ -1,3 +1,12 @@
+/**
+ * @file Content Object View - Base view for page and menu content objects
+ * @module core/js/views/contentObjectView
+ * @description Renders top-level Adapt content objects (pages and menus). Manages the
+ * async ready lifecycle, animated fade-in, scroll position reset on load, and the
+ * full hierarchy of child article/block/component views. Fires prefixed events for
+ * both the concrete type (e.g. `pageView:ready`) and the base type
+ * (`contentObjectView:ready`) so plugins can target either level.
+ */
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import AdaptView from 'core/js/views/adaptView';
@@ -5,6 +14,24 @@ import ReactDOM from 'react-dom';
 import data from 'core/js/data';
 import router from 'core/js/router';
 
+/**
+ * @class ContentObjectView
+ * @classdesc Base view for Adapt content objects. Handles the full render lifecycle:
+ * template or JSX rendering, async ready state (triggered by `model.change:_isReady`),
+ * scroll-to-top, velocity fade-in animation, and recursive child-view removal via
+ * ReactDOM or standard DOM cleanup. Subclassed by {@link module:core/js/views/pageView~PageView}
+ * and menu views.
+ * @extends AdaptView
+ * @fires contentObjectView:preRender
+ * @fires contentObjectView:render
+ * @fires contentObjectView:postRender
+ * @fires contentObjectView:preReady
+ * @fires contentObjectView:ready
+ * @fires contentObjectView:postReady
+ * @fires contentObjectView:preRemove
+ * @fires contentObjectView:remove
+ * @fires contentObjectView:postRemove
+ */
 export default class ContentObjectView extends AdaptView {
 
   attributes() {
@@ -34,6 +61,13 @@ export default class ContentObjectView extends AdaptView {
     this._loadingErrorTimeout = setTimeout(() => data.logReadyError(this), 10000);
   }
 
+  /**
+   * Renders the view using either a JSX template (via `this.changed()`) or a
+   * Handlebars template, then defers a `postRender` call. Fires the
+   * `preRender`, `render`, and `postRender` lifecycle events for both the
+   * concrete type (e.g. `pageView:render`) and `contentObjectView:render`.
+   * @returns {ContentObjectView} This view instance
+   */
   render() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRender contentObjectView:preRender view:preRender`, this);
@@ -97,8 +131,14 @@ export default class ContentObjectView extends AdaptView {
   }
 
   /**
-   * Force render up to specified id. Resolves when views are ready.
-   * @param {string} id
+   * Force-renders descendant views down to the specified model ID. All models
+   * between the content object root and `id` (inclusive) are forced to render
+   * even when lazy-rendering would normally skip them.
+   * @param {string} id - The `_id` of the target descendant model
+   * @returns {Promise<void>} Resolves once the target view is rendered and ready
+   * @throws {Error} If `id` is not a descendant of this content object
+   * @throws {Error} If any model up to `id` is locked
+   * @throws {Error} If the target view fails to reach a rendered and ready state
    */
   async renderTo(id) {
     const isRenderToSelf = (id === this.model.get('_id'));
@@ -141,6 +181,14 @@ export default class ContentObjectView extends AdaptView {
     this.trigger('preRemove');
   }
 
+  /**
+   * Removes the view and all descendant views from the DOM. Unmounts React
+   * components via `ReactDOM.unmountComponentAtNode` when JSX is in use,
+   * otherwise removes descendant views in reverse order. Fires the `remove`
+   * and deferred `postRemove` lifecycle events. Uses {@link module:core/js/wait}
+   * to ensure removal completes before the next queued operation.
+   * @returns {ContentObjectView} This view instance
+   */
   remove() {
     const type = this.constructor.type;
     this.preRemove();
