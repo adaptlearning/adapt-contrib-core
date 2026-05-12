@@ -1,6 +1,26 @@
+/**
+ * @file ItemsComponentModel - Base model for components backed by an item collection
+ * @module core/js/models/itemsComponentModel
+ * @description Extends ComponentModel to manage a Backbone.Collection of
+ * {@link module:core/js/models/itemModel|ItemModel} children. Provides item lookup,
+ * active/visited state management, user-answer persistence, and completion tracking.
+ * Used as a base class by tab, accordion, and carousel-style components.
+ *
+ * **Known Issues & Improvements:**
+ *   - `Backbone` is referenced as a global rather than imported, which may cause issues in strict module environments.
+ *   - Items are initialised from `_items` JSON but collection changes are not written back automatically (only via `toJSON`).
+ */
 import ComponentModel from 'core/js/models/componentModel';
 import ItemModel from 'core/js/models/itemModel';
 
+/**
+ * @class ItemsComponentModel
+ * @classdesc Base model for Adapt components that manage a collection of interactive items.
+ * Sets up a `Backbone.Collection` of {@link module:core/js/models/itemModel|ItemModel} instances
+ * accessible via `getChildren()`. Handles user-answer storage, visited-state tracking, and
+ * completion detection.
+ * @extends ComponentModel
+ */
 export default class ItemsComponentModel extends ComponentModel {
 
   toJSON() {
@@ -21,12 +41,20 @@ export default class ItemsComponentModel extends ComponentModel {
     super.init();
   }
 
+  /**
+   * Restore `_isVisited` flags on child items from the stored `_userAnswer` boolean array.
+   * Called during revisit to reinstate the learner's previous interaction state.
+   */
   restoreUserAnswers() {
     const booleanArray = this.get('_userAnswer');
     if (!booleanArray) return;
     this.getChildren().forEach(child => child.set('_isVisited', booleanArray[child.get('_index')]));
   }
 
+  /**
+   * Persist the current visited state of all items as a sorted boolean array in `_userAnswer`.
+   * Items are sorted by `_index` before serialisation to ensure consistent order.
+   */
   storeUserAnswer() {
     const items = this.getChildren().slice(0);
     items.sort((a, b) => a.get('_index') - b.get('_index'));
@@ -41,6 +69,11 @@ export default class ItemsComponentModel extends ComponentModel {
     this.setChildren(new Backbone.Collection(items, { model: ItemModel }));
   }
 
+  /**
+   * Return the child ItemModel at the given index.
+   * @param {number} index - Zero-based item index
+   * @returns {ItemModel|undefined}
+   */
   getItem(index) {
     return this.getChildren().findWhere({ _index: index });
   }
@@ -83,6 +116,11 @@ export default class ItemsComponentModel extends ComponentModel {
     this.getChildren().each(item => item.toggleActive(false));
   }
 
+  /**
+   * Deactivate the current active item and activate the item at the given index.
+   * Does nothing if no item exists at `index`.
+   * @param {number} index - Zero-based index of the item to activate
+   */
   setActiveItem(index) {
     const item = this.getItem(index);
     if (!item) return;

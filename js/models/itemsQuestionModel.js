@@ -1,3 +1,17 @@
+/**
+ * @file ItemsQuestionModel - Question model for item-selection question types
+ * @module core/js/models/itemsQuestionModel
+ * @description Combines {@link module:core/js/models/questionModel|QuestionModel} and
+ * {@link module:core/js/models/itemsComponentModel|ItemsComponentModel} to support
+ * item-selection question types (e.g. MCQ, matching). Handles single- and multi-select modes,
+ * optional item-level scoring, randomisation, and individual item feedback.
+ *
+ * **Known Issues & Improvements:**
+ *   - `BlendedItemsComponentQuestionModel` uses `Object.getOwnPropertyNames` to mix in
+ *     `ItemsComponentModel` methods; a proper mixin utility would be cleaner.
+ *   - `storeUserAnswer` overrides the `ItemsComponentModel` version to track `_isActive`
+ *     instead of `_isVisited`; this asymmetry can be confusing.
+ */
 import Adapt from 'core/js/adapt';
 import QuestionModel from 'core/js/models/questionModel';
 import ItemsComponentModel from 'core/js/models/itemsComponentModel';
@@ -28,6 +42,13 @@ Object.getOwnPropertyNames(ItemsComponentModel.prototype).forEach(name => {
   });
 });
 
+/**
+ * @class ItemsQuestionModel
+ * @classdesc Question model for item-selection components such as MCQ and matching.
+ * Extends the blended QuestionModel + ItemsComponentModel base to support selectable items,
+ * single/multi-select modes, item-level scoring, and per-item feedback.
+ * @extends BlendedItemsComponentQuestionModel
+ */
 export default class ItemsQuestionModel extends BlendedItemsComponentQuestionModel {
 
   init() {
@@ -37,6 +58,10 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     this.checkCanSubmit();
   }
 
+  /**
+   * Restore the learner's previous active selections from the stored `_userAnswer` array,
+   * then mark the question as submitted and recalculate score and feedback.
+   */
   restoreUserAnswers() {
     if (!this.get('_isSubmitted')) return;
 
@@ -53,20 +78,24 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     this.setupFeedback();
   }
 
+  /**
+   * Shuffle the child item collection if `_isRandom` is enabled and the question is still enabled.
+   */
   setupRandomisation() {
     if (!this.get('_isRandom') || !this.get('_isEnabled')) return;
     const children = this.getChildren();
     children.set(children.shuffle());
   }
 
-  // check if the user is allowed to submit the question
   canSubmit() {
     const activeItems = this.getActiveItems();
     return activeItems.length > 0;
   }
 
-  // This is important for returning or showing the users answer
-  // This should preserve the state of the users answers
+  /**
+   * Persist the active state of all items as a sorted boolean array in `_userAnswer`.
+   * Overrides `ItemsComponentModel#storeUserAnswer` to track `_isActive` rather than `_isVisited`.
+   */
   storeUserAnswer() {
     const items = this.getChildren().slice(0);
     items.sort((a, b) => a.get('_index') - b.get('_index'));
@@ -74,6 +103,11 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     this.set('_userAnswer', userAnswer);
   }
 
+  /**
+   * Evaluate whether the learner's active selections match the correct answer.
+   * Sets `_numberOfCorrectAnswers`, `_numberOfIncorrectAnswers`, and related props on the model.
+   * @returns {boolean} `true` if all required items are selected with no incorrect selections
+   */
   isCorrect() {
     const allChildren = this.getChildren();
     const activeChildren = allChildren.filter(itemModel => itemModel.get('_isActive'));
@@ -116,12 +150,22 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     this.set('_score', score);
   }
 
+  /**
+   * When `_hasItemScoring` is enabled, returns the sum of `_score` values for active items.
+   * Otherwise falls back to the standard `QuestionModel` score logic.
+   * @type {number}
+   */
   get score() {
     if (!this.get('_hasItemScoring')) return super.score;
     const children = this.getChildren()?.toArray() || [];
     return children.reduce((score, child) => (score += child.get('_isActive') ? child.get('_score') || 0 : 0), 0);
   }
 
+  /**
+   * When `_hasItemScoring` is enabled, returns the sum of the top `_selectable` positive item scores.
+   * Otherwise falls back to `QuestionModel#maxScore`.
+   * @type {number}
+   */
   get maxScore() {
     if (!this.get('_hasItemScoring')) return super.maxScore;
     const children = this.getChildren()?.toArray() || [];
@@ -130,6 +174,11 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return scores.reverse().slice(0, this.get('_selectable')).filter(score => score > 0).reduce((maxScore, score) => (maxScore += score), 0);
   }
 
+  /**
+   * When `_hasItemScoring` is enabled, returns the sum of the lowest `_selectable` negative item scores.
+   * Otherwise falls back to `QuestionModel#minScore`.
+   * @type {number}
+   */
   get minScore() {
     if (!this.get('_hasItemScoring')) return super.minScore;
     const children = this.getChildren()?.toArray() || [];
@@ -138,6 +187,12 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return scores.slice(0, this.get('_selectable')).filter(score => score < 0).reduce((minScore, score) => (minScore += score), 0);
   }
 
+  /**
+   * Return feedback config for the current state, merging individual item feedback when
+   * the question is incorrect, single-select, and the active item provides its own `feedback` data.
+   * @param {Object} [_feedback] - Feedback config; defaults to `this.get('_feedback')`
+   * @returns {{ title: string, body: string, _classes: string, _graphic?: Object, _imageAlignment?: string }}
+   */
   getFeedback (_feedback = this.get('_feedback')) {
     if (!_feedback) return {};
     const activeItem = this.getActiveItem();
@@ -185,9 +240,6 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return selectedItems[selectedItems.length - 1];
   }
 
-  /**
-   * Reset the question items for another attempt
-   */
   resetQuestion() {
     this.resetItems();
   }
@@ -210,6 +262,10 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     this.set('_isAtLeastOneCorrectSelection', Boolean(this.getLastActiveItem()));
   }
 
+  /**
+   * Return a SCORM interactions object describing the correct responses and available choices.
+   * @returns {{ correctResponsesPattern: string[], choices: Array<{id: string, description: string}> }}
+   */
   getInteractionObject() {
     const interactions = {
       correctResponsesPattern: [],
@@ -238,9 +294,10 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   }
 
   /**
-  * used by adapt-contrib-spoor to get the user's answers in the format required by the cmi.interactions.n.student_response data field
-  * returns the user's answers as a string in the format '1,5,2'
-  */
+   * Return the learner's active item indexes (1-based) as a comma-separated string
+   * for the `cmi.interactions.n.student_response` SCORM field.
+   * @returns {string} e.g. `'1,5,2'`
+   */
   getResponse() {
     const activeItems = this.getActiveItems();
     const activeIndexes = activeItems.map(itemModel => {
@@ -251,8 +308,9 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   }
 
   /**
-  * used by adapt-contrib-spoor to get the type of this question in the format required by the cmi.interactions.n.type data field
-  */
+   * Return `'choice'` as the SCORM interaction type for the `cmi.interactions.n.type` field.
+   * @returns {string}
+   */
   getResponseType() {
     return 'choice';
   }
