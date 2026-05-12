@@ -1,7 +1,23 @@
+/**
+ * @file Block Model - Block data model
+ * @module core/js/models/blockModel
+ * @description Data model for block content. Extends
+ * {@link module:core/js/models/adaptModel~AdaptModel} to represent blocks in the
+ * Adapt content hierarchy. Blocks are children of articles and parents of components.
+ * Registered as the 'block' component type.
+ */
+
 import components from 'core/js/components';
 import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
+/**
+ * @class BlockModel
+ * @classdesc Data model for a block. Blocks are the direct containers of components
+ * in the Adapt hierarchy. Each block holds one or more components and sits within
+ * an article.
+ * @extends AdaptModel
+ */
 class BlockModel extends AdaptModel {
 
   get _parent() {
