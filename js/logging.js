@@ -24,12 +24,12 @@ import LOG_LEVEL from 'core/js/enums/logLevelEnum';
 /**
  * @class Logging
  * @classdesc Singleton logging service. Wraps `console` output with log-level
- * filtering, coloured scoped output for plugins, and once-only deduplication
+ * filtering, levelled scoped output for plugins, and once-only deduplication
  * for deprecation and removal warnings.
  *
  * **Note:** Course config (`_logging`) is applied at `configModel:dataLoaded`.
  * Any log calls made before that event use the constructor defaults, so early
- * output may not reflect the configured level, colors, or console settings.
+ * output may not reflect the configured level or console settings.
  * @fires log
  * @fires log:debug
  * @fires log:info
@@ -47,8 +47,7 @@ class Logging extends Backbone.Controller {
       _isEnabled: true,
       _level: LOG_LEVEL.INFO.asLowerCase, // Default log level
       _console: true, // Log to console
-      _warnFirstOnly: true, // Show only first of identical removed and deprecated warnings
-      _colors: true // Enable colored console output
+      _warnFirstOnly: true // Show only first of identical removed and deprecated warnings
     };
     this._warned = {};
     this._scopedLoggers = {};
@@ -76,8 +75,8 @@ class Logging extends Backbone.Controller {
    * the default config. Also checks for a `loglevel` query string override.
    *
    * **Note:** This runs at `configModel:dataLoaded`. Logs emitted before this
-   * point use constructor defaults, so `_colors`, `_level`, and `_console` may
-   * differ from the course-configured values for early output.
+   * point use constructor defaults, so `_level` and `_console` may differ from
+   * the course-configured values for early output.
    */
   loadConfig() {
 
@@ -159,8 +158,7 @@ class Logging extends Backbone.Controller {
 
   /**
    * Creates a cached, namespaced logger for a plugin or module.
-   * Every message is prefixed `[source]` in the console and coloured by level
-   * when `_colors` is enabled. Repeated calls with the same `source` return
+ * Every message is prefixed `[source]` in the console. Repeated calls with the same `source` return
    * the same cached instance.
    * @param {string} source - Cache key and console display name (e.g. `'xAPI'`, `'spoor'`)
    * @returns {ScopedLogger} Scoped logger instance
@@ -264,8 +262,7 @@ class Logging extends Backbone.Controller {
   }
 
   /**
-   * Writes a log entry to the browser console, applying coloured CSS styling
-   * for scoped loggers when `_colors` is enabled.
+   * Writes a log entry to the browser console.
    * @param {*} level - LOG_LEVEL enum value
    * @param {Array} data - Arguments to log
    * @param {string|null} [source] - Optional source/plugin name
@@ -276,45 +273,15 @@ class Logging extends Backbone.Controller {
     const shouldLogToConsole = this._config._console;
     if (!shouldLogToConsole) return;
 
-    const useColors = this._config._colors && source;
     const prefix = source ? `[${source}]` : level.asUpperCase + ':';
+    const consoleMethod = this._getConsoleMethod(level);
 
-    if (useColors) {
-      const color = this._getColorForLevel(level);
-      const consoleMethod = this._getConsoleMethod(level);
-      console[consoleMethod](`%c${prefix}`, `background: WhiteSmoke; color: ${color}`, ...data);
+    if (typeof console[consoleMethod] === 'function') {
+      console[consoleMethod](prefix, ...data);
     } else {
-      // Standard output
-      const log = [prefix];
-      if (data && data.length > 0) {
-        log.push(...data);
-      }
-
-      const consoleMethod = this._getConsoleMethod(level);
-      if (typeof console[consoleMethod] === 'function') {
-        console[consoleMethod](...log);
-      } else {
-        console.log(...log);
-      }
+      console.log(prefix, ...data);
     }
-  }
 
-  /**
-   * Returns a CSS named colour for the given log level.
-   * @param {*} level - LOG_LEVEL enum value
-   * @returns {string} CSS colour name
-   * @private
-   */
-  _getColorForLevel(level) {
-    const colors = {
-      debug: 'RoyalBlue',
-      info: 'Indigo',
-      success: 'DarkGreen',
-      warn: 'Chocolate',
-      error: 'Crimson',
-      fatal: 'DarkRed'
-    };
-    return colors[level.asLowerCase] || 'black';
   }
 
   /**
