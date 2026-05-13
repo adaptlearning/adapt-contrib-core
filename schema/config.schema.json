@@ -393,11 +393,6 @@
           "type": "boolean",
           "title": "Suppress subsequent deprecation warnings",
           "default": true
-        },
-        "_colors": {
-          "type": "boolean",
-          "title": "Enable colored console output",
-          "default": true
         }
       }
     },
