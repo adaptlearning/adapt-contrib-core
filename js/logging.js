@@ -26,6 +26,10 @@ import LOG_LEVEL from 'core/js/enums/logLevelEnum';
  * @classdesc Singleton logging service. Wraps `console` output with log-level
  * filtering, coloured scoped output for plugins, and once-only deduplication
  * for deprecation and removal warnings.
+ *
+ * **Note:** Course config (`_logging`) is applied at `configModel:dataLoaded`.
+ * Any log calls made before that event use the constructor defaults, so early
+ * output may not reflect the configured level, colors, or console settings.
  * @fires log
  * @fires log:debug
  * @fires log:info
@@ -70,6 +74,10 @@ class Logging extends Backbone.Controller {
   /**
    * Reads `_logging` config from the course config model and merges it with
    * the default config. Also checks for a `loglevel` query string override.
+   *
+   * **Note:** This runs at `configModel:dataLoaded`. Logs emitted before this
+   * point use constructor defaults, so `_colors`, `_level`, and `_console` may
+   * differ from the course-configured values for early output.
    */
   loadConfig() {
 
@@ -154,42 +162,32 @@ class Logging extends Backbone.Controller {
    * Every message is prefixed `[source]` in the console and coloured by level
    * when `_colors` is enabled. Repeated calls with the same `source` return
    * the same cached instance.
-   * @param {string} source - Cache key and default display name (e.g. `'xAPI'`, `'spoor'`)
-   * @param {string} [name] - Optional display label; only applied on first call for a given source
+   * @param {string} source - Cache key and console display name (e.g. `'xAPI'`, `'spoor'`)
    * @returns {ScopedLogger} Scoped logger instance
    * @throws {Error} If source is not a non-empty string
    * @example
    * const logger = logging.scope('MyPlugin');
    * logger.success('Data loaded');
    * logger.error('Connection failed', err);
-   * @example
-   * const logger = logging.scope('MyPlugin', 'Feature-X');
-   * logger.warn('Retrying…');
    */
-  scope(source, name) {
+  scope(source) {
     if (!source || typeof source !== 'string') {
       throw new Error('logging.scope() requires a source name string parameter');
     }
 
-    const displayName = name || source;
-
     // Return cached scoped logger if it exists
     if (this._scopedLoggers[source]) {
-      if (name && this._scopedLoggers[source]._displayName !== displayName) {
-        this.warn(`logging.scope('${source}'): already cached with a different display name, ignoring '${name}'`);
-      }
       return this._scopedLoggers[source];
     }
 
     // Create new scoped logger
     const scopedLogger = {
-      _displayName: displayName,
-      debug: (...args) => this._log(LOG_LEVEL.DEBUG, args, displayName),
-      info: (...args) => this._log(LOG_LEVEL.INFO, args, displayName),
-      success: (...args) => this._log(LOG_LEVEL.SUCCESS, args, displayName),
-      warn: (...args) => this._log(LOG_LEVEL.WARN, args, displayName),
-      error: (...args) => this._log(LOG_LEVEL.ERROR, args, displayName),
-      fatal: (...args) => this._log(LOG_LEVEL.FATAL, args, displayName)
+      debug: (...args) => this._log(LOG_LEVEL.DEBUG, args, source),
+      info: (...args) => this._log(LOG_LEVEL.INFO, args, source),
+      success: (...args) => this._log(LOG_LEVEL.SUCCESS, args, source),
+      warn: (...args) => this._log(LOG_LEVEL.WARN, args, source),
+      error: (...args) => this._log(LOG_LEVEL.ERROR, args, source),
+      fatal: (...args) => this._log(LOG_LEVEL.FATAL, args, source)
     };
 
     // Cache the scoped logger
