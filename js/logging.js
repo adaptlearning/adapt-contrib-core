@@ -2,6 +2,11 @@
  * @file Core logging service providing levelled console output, scoped plugin
  * loggers, and event hooks for error-reporting integrations.
  * @module core/js/logging
+ * @example
+ * import logging from 'core/js/logging';
+ * logging.info('Course ready');
+ * const logger = logging.scope('MyPlugin');
+ * logger.warn('Something unexpected happened');
  */
 import Adapt from 'core/js/adapt';
 import LOG_LEVEL from 'core/js/enums/logLevelEnum';
@@ -17,17 +22,19 @@ import LOG_LEVEL from 'core/js/enums/logLevelEnum';
  */
 
 /**
+ * @class Logging
  * @classdesc Singleton logging service. Wraps `console` output with log-level
  * filtering, coloured scoped output for plugins, and once-only deduplication
  * for deprecation and removal warnings.
- * @fires module:core/js/logging~log
- * @fires module:core/js/logging~log:debug
- * @fires module:core/js/logging~log:info
- * @fires module:core/js/logging~log:success
- * @fires module:core/js/logging~log:warn
- * @fires module:core/js/logging~log:error
- * @fires module:core/js/logging~log:fatal
- * @fires module:core/js/logging~log:ready
+ * @fires log
+ * @fires log:debug
+ * @fires log:info
+ * @fires log:success
+ * @fires log:warn
+ * @fires log:error
+ * @fires log:fatal
+ * @fires log:ready
+ * @extends {Backbone.Controller}
  */
 class Logging extends Backbone.Controller {
 
@@ -44,6 +51,12 @@ class Logging extends Backbone.Controller {
     this.listenToOnce(Adapt, 'configModel:dataLoaded', this.onLoadConfigData);
   }
 
+  /**
+   * Handles the `configModel:dataLoaded` event. Loads logging config from the
+   * course config model and fires `log:ready` to signal that the service is
+   * fully configured.
+   * @fires log:ready
+   */
   onLoadConfigData() {
 
     this.loadConfig();
@@ -54,6 +67,10 @@ class Logging extends Backbone.Controller {
 
   }
 
+  /**
+   * Reads `_logging` config from the course config model and merges it with
+   * the default config. Also checks for a `loglevel` query string override.
+   */
   loadConfig() {
 
     if (Adapt.config.has('_logging')) {
@@ -184,6 +201,7 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a one-time WARN message prefixed with `REMOVED`.
    * Use when an API or feature has been removed entirely.
+   * @param {...*} args - Values to log
    * @example
    * logging.removed('myPlugin.oldMethod(), use myPlugin.newMethod() instead');
    */
@@ -194,6 +212,7 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a one-time WARN message prefixed with `DEPRECATED`.
    * Use when an API or feature still works but should no longer be used.
+   * @param {...*} args - Values to log
    * @example
    * logging.deprecated('myPlugin.oldProp, use myPlugin.newProp instead');
    */
@@ -204,6 +223,7 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a WARN message only the first time it is called with a given set of arguments.
    * Subsequent calls with identical arguments are silently discarded when `_warnFirstOnly` is enabled.
+   * @param {...*} args - Values to log
    */
   warnOnce(...args) {
     if (this._hasWarned(args)) {
@@ -218,13 +238,13 @@ class Logging extends Backbone.Controller {
    * @param {*} level - LOG_LEVEL enum value
    * @param {Array} data - Arguments to log
    * @param {string|null} [source] - Optional source/plugin name
-   * @fires module:core/js/logging~log
-   * @fires module:core/js/logging~log:debug
-   * @fires module:core/js/logging~log:info
-   * @fires module:core/js/logging~log:success
-   * @fires module:core/js/logging~log:warn
-   * @fires module:core/js/logging~log:error
-   * @fires module:core/js/logging~log:fatal
+   * @fires log
+   * @fires log:debug
+   * @fires log:info
+   * @fires log:success
+   * @fires log:warn
+   * @fires log:error
+   * @fires log:fatal
    * @private
    */
   _log(level, data, source = null) {
