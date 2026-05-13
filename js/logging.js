@@ -280,12 +280,9 @@ class Logging extends Backbone.Controller {
     const prefix = source ? `[${source}]` : level.asUpperCase + ':';
 
     if (useColors) {
-      // Use colored output for scoped loggers - format entire message as string
       const color = this._getColorForLevel(level);
-      const message = data.map(item => this._serializeArg(item)).join(' ');
       const consoleMethod = this._getConsoleMethod(level);
-
-      console[consoleMethod](`%c${prefix} ${message}`, `background: WhiteSmoke; color: ${color}`);
+      console[consoleMethod](`%c${prefix}`, `background: WhiteSmoke; color: ${color}`, ...data);
     } else {
       // Standard output
       const log = [prefix];
@@ -299,24 +296,6 @@ class Logging extends Backbone.Controller {
       } else {
         console.log(...log);
       }
-    }
-  }
-
-  /**
-   * Converts a single log argument to a string, safely serialising objects
-   * and truncating oversized JSON to prevent console spam.
-   * @param {*} item - Value to serialise
-   * @returns {string} String representation of the value
-   * @private
-   */
-  _serializeArg(item) {
-    if (typeof item !== 'object' || item === null) return String(item);
-    try {
-      const str = JSON.stringify(item, null, 2);
-      // Cap output length to prevent console spam
-      return str.length > 500 ? str.substring(0, 500) + '...' : str;
-    } catch {
-      return '[Circular or non-serializable object]';
     }
   }
 
