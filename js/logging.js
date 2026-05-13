@@ -11,6 +11,15 @@
 import Adapt from 'core/js/adapt';
 import LOG_LEVEL from 'core/js/enums/logLevelEnum';
 
+const CONSOLE_METHOD = {
+  [LOG_LEVEL.DEBUG.asLowerCase]: 'debug',
+  [LOG_LEVEL.INFO.asLowerCase]: 'info',
+  [LOG_LEVEL.SUCCESS.asLowerCase]: 'log',
+  [LOG_LEVEL.WARN.asLowerCase]: 'warn',
+  [LOG_LEVEL.ERROR.asLowerCase]: 'error',
+  [LOG_LEVEL.FATAL.asLowerCase]: 'error'
+};
+
 /**
  * @typedef {Object} ScopedLogger
  * @property {Function} debug - Log at DEBUG level with plugin prefix
@@ -111,6 +120,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at DEBUG level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:debug
    */
   debug(...args) {
     this._log(LOG_LEVEL.DEBUG, args);
@@ -119,6 +130,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at INFO level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:info
    */
   info(...args) {
     this._log(LOG_LEVEL.INFO, args);
@@ -127,6 +140,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at SUCCESS level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:success
    */
   success(...args) {
     this._log(LOG_LEVEL.SUCCESS, args);
@@ -135,6 +150,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at WARN level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:warn
    */
   warn(...args) {
     this._log(LOG_LEVEL.WARN, args);
@@ -143,6 +160,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at ERROR level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:error
    */
   error(...args) {
     this._log(LOG_LEVEL.ERROR, args);
@@ -151,6 +170,8 @@ class Logging extends Backbone.Controller {
   /**
    * Logs a message at FATAL level.
    * @param {...*} args - Values to log
+   * @fires log
+   * @fires log:fatal
    */
   fatal(...args) {
     this._log(LOG_LEVEL.FATAL, args);
@@ -158,7 +179,7 @@ class Logging extends Backbone.Controller {
 
   /**
    * Creates a cached, namespaced logger for a plugin or module.
- * Every message is prefixed `[source]` in the console. Repeated calls with the same `source` return
+   * Every message is prefixed `[source]` in the console. Repeated calls with the same `source` return
    * the same cached instance.
    * @param {string} source - Cache key and console display name (e.g. `'xAPI'`, `'spoor'`)
    * @returns {ScopedLogger} Scoped logger instance
@@ -245,13 +266,11 @@ class Logging extends Backbone.Controller {
    */
   _log(level, data, source = null) {
 
-    const isEnabled = this._config._isEnabled;
-    if (!isEnabled) return;
+    if (!this._config._isEnabled) return;
 
     const configLevel = LOG_LEVEL((this._config._level ?? LOG_LEVEL.INFO.asLowerCase).toUpperCase());
 
-    const isLogLevelAllowed = level >= configLevel;
-    if (!isLogLevelAllowed) return;
+    if (level < configLevel) return;
 
     this._logToConsole(level, data, source);
 
@@ -291,15 +310,7 @@ class Logging extends Backbone.Controller {
    * @private
    */
   _getConsoleMethod(level) {
-    const mapping = {
-      [LOG_LEVEL.DEBUG.asLowerCase]: 'debug',
-      [LOG_LEVEL.INFO.asLowerCase]: 'info',
-      [LOG_LEVEL.SUCCESS.asLowerCase]: 'log',
-      [LOG_LEVEL.WARN.asLowerCase]: 'warn',
-      [LOG_LEVEL.ERROR.asLowerCase]: 'error',
-      [LOG_LEVEL.FATAL.asLowerCase]: 'error'
-    };
-    return mapping[level.asLowerCase] || 'log';
+    return CONSOLE_METHOD[level.asLowerCase] ?? 'log';
   }
 
   /**
