@@ -310,7 +310,7 @@ describe('core - update to v3.1.0', async () => {
 
   checkContent('core - check contentObjects._isHiddenFromMenu', async (content) => {
     const isValid = contentObjects.every(contentObject => !_.has(contentObject, '_isHiddenFromMenu'));
-    if (!isValid) throw new Error('core - contentObjects._isHiddenFromMenu not added');
+    if (!isValid) throw new Error('core - contentObjects._isHiddenFromMenu not removed');
     return true;
   });
 

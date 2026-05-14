@@ -1,43 +1,67 @@
+/**
+ * @file Popup - Popup accessibility manager
+ * @module core/js/a11y/popup
+ * @description Manages focus containment, tabindex and aria-hidden attributes for
+ * modal popups. Supports native dialog elements and custom popup implementations,
+ * preserving and restoring accessibility attributes when popups are opened and closed.
+ *
+ * **Features:**
+ * - Stack-based management for multiple nested popups
+ * - Automatic focus restoration to previously active element
+ * - Supports native HTML dialog elements with showModal()
+ * - Provides unique identifiers for DOM elements to track attribute state
+ * - Backward compatibility with legacy 'popup:opened' and 'popup:closed' events
+ */
+
 import Adapt from 'core/js/adapt';
 import logging from '../logging';
 import wait from 'core/js/wait';
 
 /**
- * Tabindex and aria-hidden manager for popups.
- * @class
+ * @class Popup
+ * @classdesc Manages accessibility for modal popups, including focus containment and attribute management.
+ * @extends Backbone.Controller
  */
 export default class Popup extends Backbone.Controller {
 
+  /**
+   * Initializes the Popup controller with accessibility configuration.
+   * Sets up the stack-based system for managing popups, including focus tracking,
+   * tabindex management, and aria-hidden state preservation.
+   * Listens to legacy 'popup:opened' and 'popup:closed' events for backward compatibility,
+   * logging deprecation warnings when used.
+   * @param {Object} options - Configuration options
+   * @param {Object} options.a11y - The accessibility module instance
+   *
+   * @returns {void}
+   */
   initialize({ a11y }) {
     this.a11y = a11y;
     /**
-     * List of elements which form the base at which elements are generally tabbale
+     * List of elements which form the base at which elements are generally tabbable
      * and aria-hidden='false'.
-     *
      * @type {Array<Object>}
      */
     this._floorStack = [$('body')];
     /**
      * List of elements to return the focus to once leaving each stack.
-     *
      * @type {Array<Object>}
      */
     this._focusStack = [];
     /**
      * Hash of tabindex states for each tabbable element in the popup stack.
-     *
      * @type {Object}
      */
     this._tabIndexes = {};
     /**
      * Hash of aria-hidden states for each tabbable element in the popup stack.
-     *
      * @type {Object}
      */
     this._ariaHiddens = {};
     /**
      * Incremented unique ids for elements belonging to a popup stack with saved
-     * states,
+     * states.
+     * @type {number}
      */
     this._elementUIDIndex = 0;
     this.listenTo(Adapt, {
@@ -67,14 +91,16 @@ export default class Popup extends Backbone.Controller {
   }
 
   /**
-   * Reorganise the tabindex and aria-hidden attributes in the document to
-   * restrict user interaction to the element specified.
-   *
-   * @param {Object} [$popupElement] Element encapulating the popup.
-   * @returns {Object} Returns `a11y._popup`.
+   * Opens a popup and reorganizes tabindex and aria-hidden attributes to
+   * restrict user interaction to the specified element.
+   * Adds the popup to the stack, saves the currently active element for later focus
+   * restoration, and triggers a global 'popup:opened' event (unless silent mode is enabled).
+   * @param {jQuery|HTMLElement} [$popupElement] - Element encapsulating the popup.
+   *                                               Defaults to the currently active element.
+   * @param {boolean} [silent=false] - If true, suppresses the 'popup:opened' event trigger.
+   * @returns {Popup} Returns this for method chaining.
    */
   opened($popupElement, silent) {
-    // Capture currently active element or element specified
     $popupElement = $popupElement || $(document.activeElement);
     this._addPopupLayer($popupElement);
     if (!silent) {
@@ -84,9 +110,16 @@ export default class Popup extends Backbone.Controller {
   }
 
   /**
-   * Restrict tabbing and screen reader access to selected element only.
-   *
-   * @param {Object} $popupElement Element encapulating the popup.
+   * Restricts tabbing and screen reader access to the specified popup element.
+   * Adds a new layer to the popup stack and saves the current focus. For HTML dialog
+   * elements, directly uses the native showModal() API. For other elements, manages
+   * tabindex and aria-hidden attributes on sibling and ancestor elements to isolate
+   * the popup from the rest of the document.
+   * Stores original attribute values using unique element IDs for restoration when
+   * the popup is closed.
+   * @private
+   * @param {jQuery|HTMLElement} $popupElement - Element encapsulating the popup.
+   * @returns {jQuery} Returns the popup element as a jQuery object.
    */
   _addPopupLayer($popupElement) {
     $popupElement = $($popupElement);
@@ -144,11 +177,14 @@ export default class Popup extends Backbone.Controller {
   }
 
   /**
-   * Close the last popup on the stack, restoring tabindex and aria-hidden
-   * attributes.
-   *
-   * @param {Object} [$forceFocusElement] Element at which to move focus.
-   * @returns {Object} Returns `a11y._popup`.
+   * Closes the last popup on the stack and restores tabindex and aria-hidden attributes
+   * to the specified element or the previously active element.
+   * Triggers 'popup:closing' and 'popup:closed' events (unless silent mode is enabled).
+   * @async
+   * @param {jQuery|HTMLElement} [$forceFocusElement] - Element to receive focus after popup closes.
+   *                                                    Defaults to the previously focused element.
+   * @param {boolean} [silent=false] - If true, suppresses the 'popup:closing' and 'popup:closed' event triggers.
+   * @returns {Promise<Popup>} Returns a promise that resolves to this for method chaining.
    */
   async closed($forceFocusElement, silent) {
     if (!silent) {
@@ -167,8 +203,12 @@ export default class Popup extends Backbone.Controller {
   /**
    * Restores tabbing and screen reader access to the state before the last
    * `_addPopupLayer` call.
-   *
-   * @returns {Object} Returns previously active element.
+   * Removes the topmost popup from the stack and restores the original tabindex and
+   * aria-hidden attribute values for all affected elements. For native dialog elements,
+   * closes them using the dialog.close() API.
+   * @private
+   * @returns {jQuery|undefined} Returns the previously active element as a jQuery object,
+   *                            or undefined if no popup was open.
    */
   _removeLastPopupLayer() {
     // the body layer is the first element and must always exist
@@ -226,11 +266,10 @@ export default class Popup extends Backbone.Controller {
   }
 
   /**
-   * When a popup is open, this function makes it possible to swap the element
-   * that should receive focus on popup close.
-   *
-   * @param {Object} $focusElement Set a new element to focus on.
-   * @returns {Object} Returns previously set focus element.
+   * Changes which element should receive focus when the current popup is closed.
+   * @param {jQuery|HTMLElement} $focusElement - Element that should receive focus when closing.
+   * @returns {jQuery|undefined} Returns the previously set focus element,
+   *                            or undefined if no popup was open.
    */
   setCloseTo($focusElement) {
     const $original = this._focusStack.pop();

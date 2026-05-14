@@ -1,9 +1,43 @@
+/**
+ * @file Deprecated A11y API - Backward compatibility shims for legacy jQuery methods
+ * @module core/js/a11y/deprecated
+ * @description Provides backward compatibility by mapping deprecated jQuery accessibility
+ * methods to the new A11y module API. All deprecated methods log warnings directing
+ * developers to the modern replacements.
+ *
+ * **Method Categories:**
+ * - **Removed**: Methods that no longer serve a purpose (log removal notice, return stub)
+ * - **Deprecated**: Methods that map to new API equivalents (log warning, call new API)
+ *
+ * **jQuery Instance Methods ($.fn):**
+ * - `a11y_on` → `a11y.findTabbable()` + `a11y.toggleAccessible()`
+ * - `a11y_popup` → `a11y.popupOpened()`
+ * - `a11y_cntrl` → `a11y.toggleAccessible()` + `a11y.toggleEnabled()`
+ * - `a11y_cntrl_enabled` → `a11y.toggleAccessibleEnabled()`
+ * - `isReadable` → `a11y.isReadable()`
+ * - `focusNoScroll` → `a11y.focus()`
+ * - `focusNext` → `a11y.focusNext()` or `a11y.findFirstReadable()`
+ * - `focusOrNext` → `a11y.focusFirst()`
+ * - `a11y_focus` → `a11y.focusFirst()`
+ * - `scrollDisable` → `a11y.scrollDisable()`
+ * - `scrollEnable` → `a11y.scrollEnable()`
+ *
+ * **jQuery Static Methods ($):**
+ * - `a11y_on` → `a11y.toggleHidden()`
+ * - `a11y_popdown` → `a11y.popupClosed()`
+ * - `a11y_focus` → `a11y.focusFirst()`
+ * - `a11y_normalize` → `a11y.normalize()`
+ * - `a11y_remove_breaks` → `a11y.removeBreaks()`
+ */
+
+/**
+ * Registers deprecated jQuery methods that map to the new A11y API.
+ * Called during A11y module initialization to maintain backward compatibility.
+ * @param {Object} a11y - The A11y module instance for API delegation and logging
+ */
 export default function(a11y) {
 
-  /**
-   * The old API is rerouted to the new API with warnings.
-   */
-
+  // Extend jQuery prototype with deprecated instance methods
   Object.assign($.fn, {
 
     isFixedPostion() {
@@ -124,6 +158,7 @@ export default function(a11y) {
 
   });
 
+  // Extend jQuery static object with deprecated static methods
   Object.assign($, {
 
     a11y_alert() {

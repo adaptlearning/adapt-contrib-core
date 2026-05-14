@@ -99,8 +99,10 @@ export class DOMElementModifications extends Backbone.View {
     const hasReAdded = (lastRemovedIndex !== -1 && lastAddedIndex !== -1 && lastRemovedIndex < lastAddedIndex);
     // Element was moved, not added or removed
     if (!isNew && hasReAdded) return ['changed'];
+    const isRemoved = (!isNew && lastRemovedIndex !== -1);
     const events = _.uniq([
       isNew && 'added',
+      isRemoved && 'removed',
       eventNames[eventNames.length - 1]
     ].filter(Boolean));
     return events;
