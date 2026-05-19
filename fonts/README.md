@@ -7,8 +7,8 @@ The `vanilla` icon font is generated via [IcoMoon](https://icomoon.io). It is re
 | File | Purpose |
 |------|---------|
 | `vanilla.woff` / `vanilla.woff2` | Compiled font files used at runtime |
-| `icomoon-project.json` | IcoMoon app project state - import this to resume editing in the app |
-| `icomoon-export.json` | IcoMoon font definition (new app format) - use this to regenerate the font |
+| `Vanilla icons.json` | IcoMoon app project state - import this to resume editing in the app |
+| `vanilla-icons.icomoon.json` | IcoMoon font definition (new app format) - use this to regenerate the font |
 | `selection.json` | Legacy IcoMoon backup (old app format) - kept for backwards compatibility |
 
 ## Updating the core icon set
