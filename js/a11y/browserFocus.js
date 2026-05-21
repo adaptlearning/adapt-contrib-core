@@ -84,6 +84,11 @@ export default class BrowserFocus extends Backbone.Controller {
       // This can happen when JAWS screen reader on `role="group"` takes enter click
       // when the focus was on the input element
       this._refocusCurrentActiveElement();
+      // Firefox sets a persistent selection anchor when focus is assigned
+      // programmatically during blur, causing text to be unexpectedly selected
+      // on subsequent clicks. Clear it here only - the click path must not
+      // touch the selection or it wipes user drag-selections on mouseup.
+      window.getSelection()?.removeAllRanges();
       return;
     }
     // Move focus to next readable element
@@ -99,12 +104,6 @@ export default class BrowserFocus extends Backbone.Controller {
     const element = this.a11y.currentActiveElement;
     if (!element) return;
     this.a11y.focus(element, { preventScroll: true });
-    // Firefox sets a persistent selection anchor when focus is assigned
-    // programmatically, causing text to be unexpectedly selected on subsequent
-    // clicks. Clear only when the selection is collapsed (a stray anchor with
-    // no range) so genuine user drag-selections are preserved.
-    const selection = window.getSelection();
-    if (selection?.isCollapsed) selection.removeAllRanges();
   }
 
   /**
