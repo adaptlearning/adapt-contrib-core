@@ -48,9 +48,15 @@ export default class BrowserFocus extends Backbone.Controller {
   _attachEventListeners() {
     this.$body
       .on('blur', '*', this._onBlur)
-      .on('blur', this._onBlur)
+      .on('blur', this._onBlur);
+    // Mouse state is tracked at the document/window level so that a
+    // pointer released outside the body, or focus leaving the window
+    // mid drag, cannot leave _isMouseDown stuck true.
+    $(document)
       .on('mousedown', this._onMouseDown)
-      .on('mouseup', this._onMouseUp);
+      .on('mouseup', this._onMouseUp)
+      .on('mouseleave', this._onMouseUp);
+    $(window).on('blur', this._onMouseUp);
     // 'Capture' event attachment for click
     this.$body[0].addEventListener('click', this._onClick, true);
   }
