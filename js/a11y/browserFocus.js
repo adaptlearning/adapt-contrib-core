@@ -138,7 +138,12 @@ export default class BrowserFocus extends Backbone.Controller {
     const $stack = $([...$element.toArray(), ...$element.parents().toArray()]);
     const $focusable = $stack.filter(config._options._tabbableElements);
     if (!$focusable.length) {
-      this._refocusCurrentActiveElement();
+      // Preserve user text selection - refocusing here moves focus away
+      // from the selected text and the browser drops the selection.
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) {
+        this._refocusCurrentActiveElement();
+      }
       return;
     }
     const $closestFocusable = $element.closest(config._options._tabbableElements);
