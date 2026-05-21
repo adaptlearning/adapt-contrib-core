@@ -29,6 +29,9 @@ export default class BrowserFocus extends Backbone.Controller {
     this.a11y = a11y;
     this._onBlur = this._onBlur.bind(this);
     this._onClick = this._onClick.bind(this);
+    this._onMouseDown = this._onMouseDown.bind(this);
+    this._onMouseUp = this._onMouseUp.bind(this);
+    this._isMouseDown = false;
     this.$body = $('body');
     this.listenTo(Adapt, {
       'accessibility:ready': this._attachEventListeners
@@ -36,16 +39,28 @@ export default class BrowserFocus extends Backbone.Controller {
   }
 
   /**
-   * Attaches blur and click event listeners to the document body.
+   * Attaches blur, click and mouse tracking event listeners to the document body.
    * Uses event capturing for click to intercept before bubbling.
+   * Mouse state is tracked so that focus is not stolen back to the previously
+   * active element while the user is mid drag-selection.
    * @private
    */
   _attachEventListeners() {
     this.$body
       .on('blur', '*', this._onBlur)
-      .on('blur', this._onBlur);
+      .on('blur', this._onBlur)
+      .on('mousedown', this._onMouseDown)
+      .on('mouseup', this._onMouseUp);
     // 'Capture' event attachment for click
     this.$body[0].addEventListener('click', this._onClick, true);
+  }
+
+  _onMouseDown() {
+    this._isMouseDown = true;
+  }
+
+  _onMouseUp() {
+    this._isMouseDown = false;
   }
 
   /**
@@ -82,13 +97,13 @@ export default class BrowserFocus extends Backbone.Controller {
     if (isNotDisabledHiddenOrDetached) {
       // The element is still available, refocus
       // This can happen when JAWS screen reader on `role="group"` takes enter click
-      // when the focus was on the input element
-      this._refocusCurrentActiveElement();
-      // Firefox sets a persistent selection anchor when focus is assigned
-      // programmatically during blur, causing text to be unexpectedly selected
-      // on subsequent clicks. Clear it here only - the click path must not
-      // touch the selection or it wipes user drag-selections on mouseup.
-      window.getSelection()?.removeAllRanges();
+      // when the focus was on the input element.
+      // Skip while the user is mid drag-selection - stealing focus back during
+      // mousedown sets a programmatic selection anchor (Firefox) and aborts the
+      // in-progress text selection.
+      if (!this._isMouseDown) {
+        this._refocusCurrentActiveElement();
+      }
       return;
     }
     // Move focus to next readable element
