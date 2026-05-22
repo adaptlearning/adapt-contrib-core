@@ -143,7 +143,10 @@ export default class NotifyPushView extends Backbone.View {
       this.$el.removeClass('is-active');
       await transitionsEnded(this.$el);
       this.$el[0].open = false;
-      a11y.gotoPreviousActiveElement();
+      const isFocusInPush = Boolean($(document.activeElement).closest(this.$el).length);
+      if (isFocusInPush) {
+        a11y.gotoPreviousActiveElement();
+      }
       this.model.collection.remove(this.model);
       Adapt.trigger('notify:pushRemoved', this);
       this.model.close();
