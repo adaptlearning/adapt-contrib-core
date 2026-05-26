@@ -88,20 +88,17 @@
 
 // Nav is position:fixed with width:100%, so margins don't contract it.
 // Switch to inset positioning so margin-inline-end shrinks the nav.
-// Uses .html prefix to match specificity of .html.adapt-scrolling .nav
-// in scrolling.less (0,3,0).
-.html.is-drawer-push .nav {
-  width: auto;
-  inset-inline: 0;
-}
-
-// Scrollbar offset: nav normally uses width:calc(100% - scrollbar).
-// In push mode, override width and use inset-inline-end instead.
-// (0,4,0) specificity beats .html.adapt-scrolling .nav (0,3,0).
+// In .adapt-scrolling, nav normally uses width:calc(100% - scrollbar) to
+// clear the body scrollbar; in push mode the open drawer sits at
+// inset-inline-end:0 and covers that scrollbar, so the offset would leave a
+// scrollbar-sized gap between the nav and the drawer. inset-inline:0 resets
+// it - margin-inline-end (applied in JS) already clears the drawer width.
+// The .adapt-scrolling selector gives (0,4,0), beating .html.adapt-scrolling
+// .nav (0,3,0) in scrolling.less.
+.html.is-drawer-push .nav,
 .html.is-drawer-push.adapt-scrolling .nav {
   width: auto;
   inset-inline: 0;
-  inset-inline-end: var(--adapt-scrollbar-width, 0);
 }
 
 
