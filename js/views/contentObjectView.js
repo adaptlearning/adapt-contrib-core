@@ -3,6 +3,7 @@ import wait from 'core/js/wait';
 import AdaptView from 'core/js/views/adaptView';
 import ReactDOM from 'react-dom';
 import data from 'core/js/data';
+import router from 'core/js/router';
 
 export default class ContentObjectView extends AdaptView {
 
@@ -68,16 +69,15 @@ export default class ContentObjectView extends AdaptView {
     const performIsReady = async () => {
       Adapt.trigger(`${type}View:preReady contentObjectView:preReady view:preReady`, this);
       await wait.queue();
-      $('.js-loading').hide();
+      router.hideLoading();
       if (Adapt.get('_shouldContentObjectScrollTop') !== false) {
         $(window).scrollTop(0);
       }
       Adapt.trigger(`${type}View:ready contentObjectView:ready view:ready`, this);
-      $.inview.unlock(`${type}View`);
       const styleOptions = { opacity: 1 };
       if (this.disableAnimation) {
         this.$el.css(styleOptions);
-        $.inview();
+        $.inview.unlock(`${type}View`);
         _.defer(() => {
           Adapt.trigger(`${type}View:postReady contentObjectView:postReady view:postReady`, this);
         });
@@ -85,7 +85,7 @@ export default class ContentObjectView extends AdaptView {
         this.$el.velocity(styleOptions, {
           duration: 'fast',
           complete: () => {
-            $.inview();
+            $.inview.unlock(`${type}View`);
             Adapt.trigger(`${type}View:postReady contentObjectView:postReady view:postReady`, this);
           }
         });
@@ -138,12 +138,14 @@ export default class ContentObjectView extends AdaptView {
   preRemove() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRemove contentObjectView:preRemove view:preRemove`, this);
+    this.trigger('preRemove');
   }
 
   remove() {
     const type = this.constructor.type;
     this.preRemove();
     Adapt.trigger(`${type}View:remove contentObjectView:remove view:remove`, this);
+    this.trigger('remove');
     this._isRemoved = true;
 
     wait.for(end => {

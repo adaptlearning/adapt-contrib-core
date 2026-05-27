@@ -34,7 +34,7 @@ function applyImgLoadingFix() {
   Adapt.on('reactElement:preRender', event => {
     if (event.name !== 'img') return;
     const options = event.args[1] = event.args[1] || {};
-    if (options && options.hasOwnProperty('loading')) return;
+    if (options && Object.prototype.hasOwnProperty.call(options, 'loading')) return;
     options.loading = 'eager';
   });
 }

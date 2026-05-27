@@ -38,7 +38,7 @@ export default class ButtonsView extends Backbone.View {
 
   render() {
     const data = this.model.toJSON();
-    const template = Handlebars.templates.buttons;
+    const template = Handlebars.templates[data._buttonsTemplate || 'buttons'];
     _.defer(() => {
       this.postRender();
       Adapt.trigger('buttonsView:postRender', this);
@@ -125,8 +125,9 @@ export default class ButtonsView extends Backbone.View {
     const ariaLabel = this.model.get('_buttons')['_' + propertyName].ariaLabel;
     const buttonText = this.model.get('_buttons')['_' + propertyName].buttonText;
 
+    const isEnabled = (buttonState === BUTTON_STATE.SUBMIT && this.model.get('_canSubmit')) || buttonState !== BUTTON_STATE.SUBMIT;
     // Enable the button, make accessible and update aria labels and text
-    a11y.toggleEnabled($buttonsAction, this.model.get('_canSubmit'));
+    a11y.toggleEnabled($buttonsAction, isEnabled);
     $buttonsAction.html(buttonText).attr('aria-label', ariaLabel);
   }
 
@@ -134,9 +135,9 @@ export default class ButtonsView extends Backbone.View {
     const canShowFeedback = this.model.get('_canShowFeedback');
     const canShowMarking = this.model.get('_canShowMarking');
 
-    this.$('.js-btn-action').toggleClass('is-full-width', !canShowFeedback);
+    this.$('.js-btn-action, .js-btn-marking').toggleClass('is-full-width', !canShowFeedback);
     this.$('.js-btn-feedback').toggleClass('u-display-none', !canShowFeedback);
-    this.$('.js-btn-marking, .js-btn-marking-label').toggleClass('is-full-width u-display-none', !canShowMarking);
+    this.$('.js-btn-marking, .js-btn-marking-label').toggleClass('u-display-none', !canShowMarking);
   }
 
   updateAttemptsCount() {
@@ -177,6 +178,7 @@ export default class ButtonsView extends Backbone.View {
     if (!this.model.shouldShowMarking) return;
 
     const isCorrect = this.model.get('_isCorrect');
+    const isPartlyCorrect = this.model.get('_isPartlyCorrect');
     const ariaLabels = Adapt.course.get('_globals')._accessibility._ariaLabels;
 
     const $marking = this.$('.js-btn-marking, .js-btn-marking-label')
@@ -185,13 +187,19 @@ export default class ButtonsView extends Backbone.View {
 
     const $ariaLabel = this.$('.js-btn-marking-label');
     const hasSpanAriaLabel = Boolean($ariaLabel.length);
+    const correctnessAriaLabel = isCorrect
+      ? ariaLabels.answeredCorrectly
+      : isPartlyCorrect
+        ? (ariaLabels.answeredPartlyCorrect ?? ariaLabels.answeredIncorrectly)
+        : ariaLabels.answeredIncorrectly;
+
     if (!hasSpanAriaLabel) {
       // Backward compability
-      $marking.attr('aria-label', isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+      $marking.attr('aria-label', correctnessAriaLabel);
       return;
     }
 
-    $ariaLabel.html(isCorrect ? ariaLabels.answeredCorrectly : ariaLabels.answeredIncorrectly);
+    $ariaLabel.html(correctnessAriaLabel);
   }
 
   refresh() {

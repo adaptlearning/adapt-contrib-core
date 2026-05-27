@@ -37,7 +37,7 @@
       "type": "string",
       "title": "Display title",
       "description": "When viewing an element - this is the title that will be displayed on the page",
-      "default": "Untitled",
+      "default": "",
       "_adapt": {
         "translatable": true
       },
@@ -105,10 +105,19 @@
         "isSetting": true
       }
     },
+    "_isA11yCompletionDescriptionEnabled": {
+      "type": "boolean",
+      "title": "Enable accessibility completion description",
+      "description": "Controls whether a hidden label is appended to the element title that describes the completion state of the element.",
+      "default": true,
+      "_adapt": {
+        "isSetting": true
+      }
+    },
     "_ariaLevel": {
       "type": "number",
-      "title": "Custom ARIA level",
-      "description": "If you need to override the default element ARIA level (as defined in Configuration Settings), set this to any number greater than 0",
+      "title": "Aria level",
+      "description": "The aria-level attribute of the title used to determine the heading level. When set to 0 (default), the level will be automatically determined by the element type. Only override if content does not properly use the CO/A/B/C structure.",
       "default": 0,
       "_adapt": {
         "isSetting": true
@@ -145,6 +154,35 @@
           "_adapt": {
             "isSetting": true
           }
+        }
+      }
+    },
+    "_priorityLabels": {
+      "type": "object",
+      "title": "Priority Labels Override",
+      "description": "Override the global priority labels settings for this specific element",
+      "default": {},
+      "_adapt": {
+        "isSetting": true
+      },
+      "properties": {
+        "_isOverride": {
+          "type": "boolean",
+          "title": "Override global settings",
+          "description": "When enabled, this element will use the local settings instead of the global priority labels configuration",
+          "default": false
+        },
+        "_showWhenRequired": {
+          "type": "boolean",
+          "title": "Show label when required",
+          "description": "Display a 'Required' label when this element is not optional",
+          "default": false
+        },
+        "_showWhenOptional": {
+          "type": "boolean",
+          "title": "Show label when optional",
+          "description": "Display an 'Optional' label when this element is optional",
+          "default": false
         }
       }
     },

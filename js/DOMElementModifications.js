@@ -99,8 +99,10 @@ export class DOMElementModifications extends Backbone.View {
     const hasReAdded = (lastRemovedIndex !== -1 && lastAddedIndex !== -1 && lastRemovedIndex < lastAddedIndex);
     // Element was moved, not added or removed
     if (!isNew && hasReAdded) return ['changed'];
+    const isRemoved = (!isNew && lastRemovedIndex !== -1);
     const events = _.uniq([
       isNew && 'added',
+      isRemoved && 'removed',
       eventNames[eventNames.length - 1]
     ].filter(Boolean));
     return events;
@@ -213,11 +215,13 @@ export class DOMElementModifications extends Backbone.View {
       const eventWithNoSelector = (selector === undefined);
       if (eventWithNoSelector) return () => { return true; };
       if (Element.prototype.matches) {
-        // eslint-disable-next-line no-new-func
-        return new Function('el', `return el.matches("${selector}") && "${selector}";`);
+        return function(el) {
+          return el.matches(selector) && selector;
+        };
       }
-      // eslint-disable-next-line no-new-func
-      return new Function('el', `return $(el).is("${selector}") && "${selector}";`);
+      return function(el) {
+        return $(el).is(selector) && selector;
+      };
     };
     const eventNames = Object.keys(this._events);
     const eventNameParts = eventNames.map(name => name.split(':'));

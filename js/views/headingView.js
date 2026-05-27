@@ -2,7 +2,10 @@ import Adapt from 'core/js/adapt';
 
 class HeadingView extends Backbone.View {
 
-  initialize() {
+  initialize({
+    parentView
+  }) {
+    this.listenTo(parentView, 'preRemove', this.remove);
     this.listenTo(Adapt.parentView, 'postRemove', this.remove);
     this.listenTo(this.model, 'change:_isComplete', this.updateAria);
     this.render();
@@ -15,7 +18,6 @@ class HeadingView extends Backbone.View {
     const isBackwardCompatible = [...this.$el[0].classList].every(name => !name.includes('-inner'));
     data._isBackwardCompatible = isBackwardCompatible;
     if (customHeadingType) data._type = customHeadingType;
-    if (data._type === 'course') data._type = 'menu';
     this.$el.html(template(data));
     this.checkCompletion();
   }
@@ -24,7 +26,7 @@ class HeadingView extends Backbone.View {
     const template = Handlebars.templates[this.constructor.template];
     const data = this.model.toJSON();
     const $rendered = $(`<div>${template(data)}</div>`);
-    this.$('.aria-label').html($rendered.find('.aria-label').html());
+    this.$('.js-a11y-completion-description').html($rendered.find('.js-a11y-completion-description').html());
     this.checkCompletion();
   }
 

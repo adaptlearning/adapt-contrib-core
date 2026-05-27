@@ -8,9 +8,11 @@
     },
     "with": {
       "properties": {
+        "displayTitle": {
+          "default": "Untitled"
+        },
         "heroImage": {
           "type": "string",
-          "isObjectId": true,
           "title": "Preview image",
           "description": "The image that will be shown in the dashboard for this course",
           "_adapt": {
@@ -298,7 +300,64 @@
                       "_adapt": {
                         "translatable": true
                       }
+                    },
+                    "required": {
+                      "type": "string",
+                      "title": "Required",
+                      "default": "Required",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "optional": {
+                      "type": "string",
+                      "title": "Optional",
+                      "default": "Optional",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "topOfContentObject": {
+                      "type": "string",
+                      "title": "Top of content object",
+                      "default": "{{type}} {{displayTitle}}",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "course": {
+                      "type": "string",
+                      "title": "Main menu",
+                      "default": "Main menu",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "menu": {
+                      "type": "string",
+                      "title": "Sub menu",
+                      "default": "Sub menu",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "page": {
+                      "type": "string",
+                      "title": "Page",
+                      "default": "Page",
+                      "_adapt": {
+                        "translatable": true
+                      }
                     }
+                  }
+                },
+                "altFeedbackTitle": {
+                  "type": "string",
+                  "title": "Alternative Feedback Title",
+                  "description": "Text read out by screen readers if no visual title is set for component question feedback.",
+                  "default": "Feedback",
+                  "_adapt": {
+                    "translatable": true
                   }
                 }
               }
@@ -413,6 +472,128 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        },
+        "_priorityLabels": {
+          "type": "object",
+          "title": "Priority Labels",
+          "description": "Configure visual display of required/optional labels on content type headings",
+          "default": {},
+          "properties": {
+            "_iconClassOptional": {
+              "type": "string",
+              "title": "Icon class for optional content",
+              "description": "CSS class for the icon shown on optional content (e.g., 'icon-info'). Leave empty for no icon.",
+              "default": ""
+            },
+            "_iconClassRequired": {
+              "type": "string",
+              "title": "Icon class for required content",
+              "description": "CSS class for the icon shown on required content (e.g., 'icon-exclamation'). Leave empty for no icon.",
+              "default": ""
+            },
+            "_menu": {
+              "type": "object",
+              "title": "Sub Menu Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional sub menus",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required sub menus",
+                  "default": false
+                }
+              }
+            },
+            "_menuItem": {
+              "type": "object",
+              "title": "Menu Item Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional menu items",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required menu items",
+                  "default": false
+                }
+              }
+            },
+            "_page": {
+              "type": "object",
+              "title": "Page Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional pages",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required pages",
+                  "default": false
+                }
+              }
+            },
+            "_article": {
+              "type": "object",
+              "title": "Article Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional articles",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required articles",
+                  "default": false
+                }
+              }
+            },
+            "_block": {
+              "type": "object",
+              "title": "Block Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional blocks",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required blocks",
+                  "default": false
+                }
+              }
+            },
+            "_component": {
+              "type": "object",
+              "title": "Component Priority Labels",
+              "default": {},
+              "properties": {
+                "_showWhenOptional": {
+                  "type": "boolean",
+                  "title": "Show label for optional components",
+                  "default": false
+                },
+                "_showWhenRequired": {
+                  "type": "boolean",
+                  "title": "Show label for required components",
+                  "default": false
                 }
               }
             }

@@ -42,8 +42,9 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
     const itemModels = this.getChildren();
     const userAnswer = this.get('_userAnswer');
+    if (!userAnswer) return;
     itemModels.each(item => {
-      item.toggleActive(userAnswer[item.get('_index')]);
+      item.toggleActive(Boolean(userAnswer[item.get('_index')]));
     });
 
     this.setQuestionAsSubmitted();
@@ -92,7 +93,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
 
     activeChildren.forEach(itemModel => itemModel.set('_isCorrect', itemModel.get('_shouldBeSelected')));
 
-    props._isAtLeastOneCorrectSelection = (props._numberOfCorrectAnswers || props._numberOfPartlyCorrectAnswers);
+    props._isAtLeastOneCorrectSelection = Boolean(props._numberOfCorrectAnswers || props._numberOfPartlyCorrectAnswers);
 
     const numberOfSelectableAnswers = this.get('_selectable');
     const hasSelectableCorrectAnswers = (props._numberOfCorrectAnswers === numberOfSelectableAnswers);
@@ -140,7 +141,7 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
   getFeedback (_feedback = this.get('_feedback')) {
     if (!_feedback) return {};
     const activeItem = this.getActiveItem();
-    const activeItemFeedback = activeItem.get('feedback');
+    const activeItemFeedback = activeItem?.get?.('feedback');
     const isIndividualFeedback = (!this.isCorrect() && !this.isPartlyCorrect() && this.isSingleSelect() && activeItemFeedback);
     const feedback = super.getFeedback(_feedback);
     if (!isIndividualFeedback) return feedback;

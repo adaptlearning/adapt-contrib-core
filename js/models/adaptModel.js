@@ -3,6 +3,7 @@ import data from 'core/js/data';
 import ModelEvent from 'core/js/modelEvent';
 import LockingModel from 'core/js/models/lockingModel';
 import logging from 'core/js/logging';
+import { toggleModelClass } from '../modelHelpers';
 
 export default class AdaptModel extends LockingModel {
 
@@ -46,6 +47,12 @@ export default class AdaptModel extends LockingModel {
       _isVisited: false,
       _isLocked: false,
       _isHidden: false
+    };
+  }
+
+  lockedAttributes() {
+    return {
+      _isLocked: true
     };
   }
 
@@ -108,6 +115,16 @@ export default class AdaptModel extends LockingModel {
       'change:_isActive',
       'change:_isVisited'
     ];
+  }
+
+  /**
+   * Toggle a className in the _classes attribute
+   * @param className {string} Name or names of class to add/remove to _classes attribute, space separated list
+   * @param hasClass {boolean|null|undefined} true to add a class, false to remove, null or undefined to toggle
+   */
+  toggleClass(className, hasClass) {
+    toggleModelClass(this, className, hasClass);
+    return this;
   }
 
   setupModel() {
@@ -780,7 +797,7 @@ export default class AdaptModel extends LockingModel {
           !previousChild.get('_isComplete') &&
           !previousChild.get('_isOptional')
         );
-      child.set('_isLocked', isLockedByPreviousChild);
+      child.set('_isLocked', isLockedByPreviousChild, { pluginName: 'adapt' });
     }, false);
   }
 
@@ -788,19 +805,19 @@ export default class AdaptModel extends LockingModel {
     const children = this.getAvailableChildModels();
     const firstChild = children.shift();
     const isLockedByFirstChild = (!firstChild.get('_isComplete') && !firstChild.get('_isOptional'));
-    children.forEach(child => child.set('_isLocked', isLockedByFirstChild));
+    children.forEach(child => child.set('_isLocked', isLockedByFirstChild, { pluginName: 'adapt' }));
   }
 
   setLockLastLocking() {
     const children = this.getAvailableChildModels();
     const lastChild = children.pop();
     const isLockedByChildren = children.some(child => (!child.get('_isComplete') && !child.get('_isOptional')));
-    lastChild.set('_isLocked', isLockedByChildren);
+    lastChild.set('_isLocked', isLockedByChildren, { pluginName: 'adapt' });
   }
 
   setCustomLocking() {
     const children = this.getAvailableChildModels();
-    children.forEach(child => child.set('_isLocked', this.shouldLock(child)));
+    children.forEach(child => child.set('_isLocked', this.shouldLock(child), { pluginName: 'adapt' }));
   }
 
   shouldLock(child) {
@@ -850,6 +867,8 @@ export default class AdaptModel extends LockingModel {
     const ModelClass = this.constructor;
     // Clone the model
     const clonedModel = new ModelClass(this.toJSON());
+    clonedModel._lockedAttributes = { ...this._lockedAttributes };
+    clonedModel._lockedAttributesValues = { ...this._lockedAttributesValues };
     // Run the custom modifier on the clone
     if (modifier) {
       modifier(clonedModel, this);

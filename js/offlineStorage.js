@@ -66,6 +66,7 @@ class OfflineStorage extends Backbone.Controller {
   }
 
   set(name, value) {
+    this.trigger('offlineStorage:set', name, value);
     if (this._handler?.set) {
       return this._handler.set(...arguments);
     }

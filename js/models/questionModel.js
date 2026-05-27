@@ -2,6 +2,12 @@ import Adapt from 'core/js/adapt';
 import components from 'core/js/components';
 import ComponentModel from 'core/js/models/componentModel';
 import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
+/**
+ * @typedef {Object} ContextActivity
+ * @property {string} id
+ * @property {string} type
+ * @property {string} title
+ */
 
 class QuestionModel extends ComponentModel {
 
@@ -16,6 +22,7 @@ class QuestionModel extends ComponentModel {
       _isQuestionType: true,
       _shouldDisplayAttempts: false,
       _shouldShowMarking: false,
+      _canShowCorrectness: false,
       _canShowModelAnswer: true,
       _canShowFeedback: true,
       _canShowMarking: true,
@@ -34,7 +41,8 @@ class QuestionModel extends ComponentModel {
       '_isSubmitted',
       '_score',
       '_isCorrect',
-      '_attemptsLeft'
+      '_attemptsLeft',
+      '_isPartlyCorrect'
     ]);
   }
 
@@ -43,8 +51,15 @@ class QuestionModel extends ComponentModel {
       Boolean,
       Number,
       Boolean,
-      Number
+      Number,
+      Boolean
     ]);
+  }
+
+  lockedAttributes() {
+    return ComponentModel.resultExtend('lockedAttributes', {
+      _canSubmit: true
+    });
   }
 
   /**
@@ -56,8 +71,9 @@ class QuestionModel extends ComponentModel {
   }
 
   init() {
+    /** @type {ContextActivity[]} */
+    this._contextActivities = [];
     this.setupDefaultSettings();
-    this.setLocking('_canSubmit', true);
     this.updateRawScore();
     super.init();
   }
@@ -67,6 +83,7 @@ class QuestionModel extends ComponentModel {
     // Not sure this is needed anymore, keeping to maintain API
     this.setupWeightSettings();
     this.setupButtonSettings();
+    this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
   // Used to setup either global or local button text
@@ -211,10 +228,11 @@ class QuestionModel extends ComponentModel {
     const isEnabled = this.get('_isEnabled');
     const buttonState = this.get('_buttonState');
     const canShowModelAnswer = this.get('_canShowModelAnswer');
+    const canShowCorrectness = this.get('_canShowCorrectness');
 
     if (isInteractionComplete) {
 
-      if (isCorrect || !canShowModelAnswer) {
+      if (isCorrect || (!canShowModelAnswer || canShowCorrectness)) {
         // Use correct instead of complete to signify button state
         this.set('_buttonState', BUTTON_STATE.CORRECT);
 
@@ -242,116 +260,73 @@ class QuestionModel extends ComponentModel {
 
   }
 
-  getFeedback (_feedback = this.get('_feedback')) {
-    if (!_feedback) return {};
+  getFeedback(feedback = this.get('_feedback')) {
+    if (!feedback) return {};
+
     const isFinal = (this.get('_attemptsLeft') === 0);
-    const correctness = this.get('_isCorrect')
+    const isCorrect = this.get('_isCorrect');
+    const correctness = isCorrect
       ? 'correct'
       : this.isPartlyCorrect()
         ? 'partlyCorrect'
         : 'incorrect';
 
-    // global feedback altTitle / title / _classes
-    let {
-      altTitle,
-      title,
-      _classes
-    } = _feedback;
+    const isLegacyConfig = (typeof feedback.correct === 'string') ||
+      (typeof feedback._partlyCorrect === 'object') ||
+      (typeof feedback._incorrect === 'object');
 
-    altTitle = altTitle || Adapt.course.get('_globals')._accessibility.altFeedbackTitle || '';
-    title = title || this.get('displayTitle') || this.get('title') || '';
+    const getLegacyConfigObject = () => {
+      const subPart = isFinal ? 'final' : 'notFinal';
+      return {
+        body: (
+          isCorrect
+            ? feedback.correct
+            : feedback[`_${correctness}`]?.[subPart] ||
+              feedback[`_${correctness}`]?.final ||
+              feedback._incorrect?.final
+        ) || ''
+      };
+    };
 
-    switch (correctness) {
-      case 'correct': {
-        if (typeof _feedback.correct === 'string') {
-          // old style
-          return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
-            body: _feedback.correct
-          };
-        }
-        // new style
-        const feedbackCorrect = _feedback._correct;
-        const feedbackConfig = {
-          // add higher values
-          ...feedbackCorrect || {},
-          altTitle: feedbackCorrect?.altTitle || altTitle,
-          title: feedbackCorrect?.title || title,
-          _classes: feedbackCorrect?._classes || _classes
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
-      }
+    const getConfigObject = () => {
+      const subPart = isFinal ? 'Final' : 'NotFinal';
+      return (
+        isCorrect
+          ? feedback._correct
+          : feedback[`_${correctness}${subPart}`] ||
+            feedback[`_${correctness}Final`] ||
+            feedback._incorrectFinal
+      ) || {};
+    };
 
-      case 'partlyCorrect': {
-        if (typeof _feedback._partlyCorrect === 'object') {
-          // old style
-          return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
-            body: !isFinal
-              ? _feedback._partlyCorrect?.notFinal || _feedback._incorrect?.notFinal || ''
-              : _feedback._partlyCorrect?.final || _feedback._incorrect?.final || ''
-          };
-        }
-        // new style
-        const feedbackPartlyCorrect = !isFinal ? _feedback._partlyCorrectNotFinal || _feedback._incorrectNotFinal : _feedback._partlyCorrectFinal || _feedback._incorrectFinal;
-        const feedbackConfig = {
-          // add higher values
-          ...feedbackPartlyCorrect || {},
-          altTitle: feedbackPartlyCorrect?.altTitle || altTitle,
-          title: feedbackPartlyCorrect?.title || title,
-          _classes: feedbackPartlyCorrect?._classes || _classes
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
-      }
-      case 'incorrect': {
-        if (typeof _feedback._incorrect === 'object') {
-          // old style
-          return {
-            // add higher values
-            altTitle,
-            title,
-            _classes,
-            body: !isFinal
-              ? (_feedback._incorrect.notFinal || _feedback._incorrect.final)
-              : _feedback._incorrect.final
-          };
-        }
-        // new style
-        const feedbackIncorrect = !isFinal ? (_feedback._incorrectNotFinal || _feedback._incorrectFinal) : _feedback._incorrectFinal;
-        const feedbackConfig = {
-          // add higher values
-          ...feedbackIncorrect || {},
-          altTitle: feedbackIncorrect?.altTitle || altTitle,
-          title: feedbackIncorrect?.title || title,
-          _classes: feedbackIncorrect?._classes || _classes
-        };
-        if (feedbackConfig?._graphic?._src && !feedbackConfig?._imageAlignment) {
-          feedbackConfig._imageAlignment = 'right';
-        }
-        return feedbackConfig;
-      }
+    const altFeedbackTitle = Adapt.course.get('_globals')._accessibility.altFeedbackTitle;
+    const hasTitle = Boolean(feedback.title || this.get('title'));
+    const isAltTitle = Boolean(feedback.altTitle) || (!hasTitle && altFeedbackTitle);
+    const title = (feedback.altTitle || feedback.title || this.get('title') || altFeedbackTitle || '');
+
+    const feedbackConfig = {
+      isAltTitle,
+      title: Handlebars.compile(title)(this.toJSON()),
+      _classes: feedback._classes,
+      ...(isLegacyConfig
+        ? getLegacyConfigObject()
+        : getConfigObject()
+      )
+    };
+
+    if (feedbackConfig._graphic?._src && !feedbackConfig._imageAlignment) {
+      feedbackConfig._imageAlignment = 'right';
     }
-    return {};
+
+    return feedbackConfig;
   }
 
   // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
     if (!this.has('_feedback')) return;
-    const { altTitle = '', title = '', body = '' } = this.getFeedback();
+    const { title = '', body = '' } = this.getFeedback();
+
     this.set({
-      altFeedbackTitle: Handlebars.compile(altTitle)(this.toJSON()),
       feedbackTitle: Handlebars.compile(title)(this.toJSON()),
       feedbackMessage: Handlebars.compile(body)(this.toJSON())
     });
@@ -393,6 +368,7 @@ class QuestionModel extends ComponentModel {
       _buttonState: BUTTON_STATE.SUBMIT,
       _shouldShowMarking: this.shouldShowMarking
     });
+    this._contextActivities = [];
     return true;
   }
 
@@ -422,7 +398,11 @@ class QuestionModel extends ComponentModel {
     }
 
     if (this.get('_attemptsLeft') === 0) {
-      return this.get('_canShowModelAnswer') ? BUTTON_STATE.SHOW_CORRECT_ANSWER : BUTTON_STATE.INCORRECT;
+      const canShowModelAnswer = this.get('_canShowModelAnswer');
+      const canShowCorrectness = this.get('_canShowCorrectness');
+      return canShowModelAnswer && !canShowCorrectness
+        ? BUTTON_STATE.SHOW_CORRECT_ANSWER
+        : BUTTON_STATE.INCORRECT;
     }
 
     return this.get('_isSubmitted') ? BUTTON_STATE.RESET : BUTTON_STATE.SUBMIT;
@@ -434,6 +414,51 @@ class QuestionModel extends ComponentModel {
   // - choices[]
   getInteractionObject() {
     return {};
+  }
+
+  /**
+   * Add a `ContextActivity` for the content object ancestors assocaited with the question
+   */
+  addContentObjectContextActivities() {
+    // SCORM doesn't necessarily need course context as implied in reports (exclude via spoor)
+    this.getAncestorModels()
+      .reverse()
+      .filter(model => model.isTypeGroup('contentobject'))
+      .forEach(model => {
+        const id = model.get('_id');
+        const type = model.get('_type');
+        const title = model.get('title') || model.get('displayTitle');
+        this.addContextActivity(id, type, title);
+      });
+  }
+
+  /**
+   * Add a `ContextActivity` to the collection
+   * @param {string} id
+   * @param {string} type
+   * @param {string} title
+   */
+  addContextActivity(id, type, title) {
+    const entry = {
+      id,
+      type,
+      title
+    };
+    const index = this.contextActivities.findIndex(activity => activity.id === id);
+    const isIncluded = index !== -1;
+    if (isIncluded) {
+      this.contextActivities[index] = entry;
+      return;
+    }
+    this.contextActivities.push(entry);
+  }
+
+  /**
+   * Returns the `ContextActivity` collection for the question
+   * @returns {ContextActivity[]}
+   */
+  get contextActivities() {
+    return this._contextActivities;
   }
 
   // Returns a string detailing how the user answered the question.
@@ -449,6 +474,7 @@ class QuestionModel extends ComponentModel {
     // Stores the current attempt state
     if (this.get('_shouldStoreAttempts')) this.addAttemptObject();
     this.set('_shouldShowMarking', this.shouldShowMarking);
+    this.addContentObjectContextActivities();
   }
 
   /** @type {boolean} */

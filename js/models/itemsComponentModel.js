@@ -14,6 +14,7 @@ export default class ItemsComponentModel extends ComponentModel {
     this.setUpItems();
     this.listenTo(this.getChildren(), {
       all: this.onAll,
+      change: this.storeUserAnswer,
       'change:_isActive': this.setVisitedStatus,
       'change:_isVisited': this.checkCompletionStatus
     });
@@ -23,11 +24,13 @@ export default class ItemsComponentModel extends ComponentModel {
   restoreUserAnswers() {
     const booleanArray = this.get('_userAnswer');
     if (!booleanArray) return;
-    this.getChildren().forEach((child, index) => child.set('_isVisited', booleanArray[index]));
+    this.getChildren().forEach(child => child.set('_isVisited', booleanArray[child.get('_index')]));
   }
 
   storeUserAnswer() {
-    const booleanArray = this.getChildren().map(child => child.get('_isVisited'));
+    const items = this.getChildren().slice(0);
+    items.sort((a, b) => a.get('_index') - b.get('_index'));
+    const booleanArray = items.map(child => child.get('_isVisited'));
     this.set('_userAnswer', booleanArray);
   }
 
@@ -60,7 +63,6 @@ export default class ItemsComponentModel extends ComponentModel {
 
   checkCompletionStatus() {
     this.setVisitedStatus();
-    this.storeUserAnswer();
     if (!this.areAllItemsCompleted()) return;
     this.setCompletionStatus();
   }
@@ -84,7 +86,6 @@ export default class ItemsComponentModel extends ComponentModel {
   setActiveItem(index) {
     const item = this.getItem(index);
     if (!item) return;
-
     const activeItem = this.getActiveItem();
     if (activeItem) activeItem.toggleActive(false);
     item.toggleActive(true);

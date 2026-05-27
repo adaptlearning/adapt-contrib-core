@@ -3,6 +3,7 @@ import logging from '../logging';
 import TooltipItemView from './TooltipItemView';
 import TooltipItemModel from '../models/TooltipItemModel';
 import a11y from '../a11y';
+import documentModifications from '../DOMElementModifications';
 
 export default class TooltipView extends Backbone.View {
 
@@ -18,10 +19,11 @@ export default class TooltipView extends Backbone.View {
   }
 
   initialize() {
-    _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut');
+    _.bindAll(this, 'onMouseOver', 'onKeyDown', 'onMouseOut', 'onClick');
     this._tooltipData = {};
     this._tooltips = [];
-    this.listenTo(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+    this.listenToOnce(Adapt, 'adapt:preInitialize', this.onAdaptPreInitialize);
+    this.listenTo(documentModifications, 'added:[data-tooltip-id]', this.onAdded);
     this.render();
   }
 
@@ -35,6 +37,7 @@ export default class TooltipView extends Backbone.View {
     });
     $(document).on('mouseenter', '[data-tooltip-id]', this.onMouseOver);
     $(document).on('mouseleave blur', '[data-tooltip-id]', this.onMouseOut);
+    $(document).on('click', '[data-tooltip-id]', this.onClick);
   }
 
   get config() {
@@ -64,13 +67,21 @@ export default class TooltipView extends Backbone.View {
     if (this._currentId === id && event.name === 'focusin') return;
     this._currentId = id;
     const tooltip = this.getTooltip(id);
+    if (tooltip?.get('_isStatic')) return;
     if (!tooltip?.get('_isEnabled')) return this.hide();
     if (event.ctrlKey && this.config._allowTest) {
       this.showTest(tooltip, $mouseoverEl);
     } else {
       this.show(tooltip, $mouseoverEl);
     }
-    $(document).on('scroll', this.onScroll);
+  }
+
+  onAdded(event) {
+    const $addedEl = $(event.target);
+    const id = $addedEl.data('tooltip-id');
+    const tooltip = this.getTooltip(id);
+    if (!tooltip?.get('_isEnabled') || !tooltip?.get('_isStatic')) return;
+    _.defer(() => this.show(tooltip, $addedEl));
   }
 
   /**
@@ -78,6 +89,13 @@ export default class TooltipView extends Backbone.View {
    */
   onMouseOut() {
     this.onMouseOver.cancel();
+  }
+
+  /**
+   * Ensure tooltip is hidden when element is clicked
+   */
+  onClick() {
+    this.hide();
   }
 
   render() {
@@ -89,13 +107,24 @@ export default class TooltipView extends Backbone.View {
    * @param {jQuery} $mouseoverEl
    */
   show(tooltip, $mouseoverEl) {
+    if (this.isShowing(tooltip)) return;
     const tooltipItem = new TooltipItemView({
       model: tooltip,
       $target: $mouseoverEl,
       parent: this
     });
-    this._tooltips.push(tooltipItem);
+    if (!tooltip?.get('_isStatic')) {
+      this._tooltips.push(tooltipItem);
+    }
     this.$el.append(tooltipItem.$el);
+  }
+
+  /**
+   * @param {TooltipModel} tooltip
+   */
+  isShowing(tooltip) {
+    const id = tooltip.get('_id');
+    return this._tooltips.some(tooltipView => tooltipView.model?.get('_id') === id);
   }
 
   /**
@@ -130,6 +159,7 @@ export default class TooltipView extends Backbone.View {
   register(tooltipData) {
     if (!tooltipData._id) return logging.warn('Tooltip cannot be registered with no id');
     this._tooltipData[tooltipData._id] = new TooltipItemModel(tooltipData);
+    return this._tooltipData[tooltipData._id];
   }
 
   /**

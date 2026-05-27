@@ -11,6 +11,8 @@ import 'core/js/models/questionModel';
 class QuestionView extends ComponentView {
 
   className() {
+    const canShowCorrectness = this.model.get('_canShowCorrectness');
+    const canShowModelAnswer = this.model.get('_canShowModelAnswer');
     return [
       'component',
       'is-question',
@@ -21,7 +23,8 @@ class QuestionView extends ComponentView {
       'is-' + this.model.get('_layout'),
       (this.model.get('_isComplete') ? 'is-complete' : ''),
       (this.model.get('_isOptional') ? 'is-optional' : ''),
-      (this.model.get('_canShowModelAnswer') ? 'can-show-model-answer' : ''),
+      (canShowCorrectness ? 'can-show-correctness' : ''),
+      (canShowModelAnswer && !canShowCorrectness ? 'can-show-model-answer' : ''),
       (this.model.get('_canShowFeedback') ? 'can-show-feedback' : ''),
       (this.model.get('_canShowMarking') ? 'can-show-marking' : '')
     ].join(' ');
@@ -44,10 +47,10 @@ class QuestionView extends ComponentView {
   }
 
   preRender() {
-    // Setup listener for _isEnabled
-    this.listenTo(this.model, 'change:_isEnabled', this.onEnabledChanged);
-
-    this.listenTo(this.model, 'question:refresh', this.refresh);
+    this.listenTo(this.model, {
+      'change:_isEnabled': this.onEnabledChanged,
+      'question:refresh': this.refresh
+    });
 
     // Checks to see if the question should be reset on revisit
     if (this.checkIfResetOnRevisit !== QuestionView.prototype.checkIfResetOnRevisit) {
@@ -170,6 +173,8 @@ class QuestionView extends ComponentView {
     // and give a blank method, onCannotSubmit to the question
     const canSubmit = this._runModelCompatibleFunction('canSubmit');
 
+    this.model.toggleClass('has-error', !canSubmit);
+
     if (!canSubmit) {
       this.showInstructionError();
       this.onCannotSubmit();
@@ -206,8 +211,6 @@ class QuestionView extends ComponentView {
       this.showMarking();
     }
 
-    this.recordInteraction();
-
     // Used to setup the feedback by checking against
     // question isCorrect or isPartlyCorrect
     this._runModelCompatibleFunction('setupFeedback');
@@ -227,10 +230,12 @@ class QuestionView extends ComponentView {
 
     this.startRendering();
     this.changed();
-    
+
     this.model.onSubmitted();
     this.onSubmitted();
     Adapt.trigger('questionView:submitted', this);
+
+    this.recordInteraction();
   }
 
   showInstructionError() {
@@ -300,14 +305,18 @@ class QuestionView extends ComponentView {
     const currentModel = data.findById(location._currentId);
     // Make sure the page is ready
     if (!currentModel?.get('_isReady')) return;
-    // Focus on the first readable item in this element
-    a11y.focusNext(this.$el, { preventScroll: true });
+    this.focusAfterReset();
   }
 
   setQuestionAsReset() {
     this.model.setQuestionAsReset();
     this.resetQuestion();
     this.$('.component__widget').removeClass('is-submitted');
+  }
+
+  focusAfterReset() {
+    // Focus on the first readable item in this element
+    a11y.focusNext(this.$el);
   }
 
   /**
@@ -405,7 +414,7 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
 
   // Retturns a string detailing how the user answered the question.
   getResponse() {
-    log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
+    log.deprecated('QuestionView.getResponse, please use QuestionModel.getResponse');
     return this.model.getResponse();
   }
 

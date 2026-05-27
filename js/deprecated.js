@@ -51,13 +51,13 @@ Adapt.on({
     logging.deprecated('Use drawer.remove, Adapt.trigger(\'drawer:remove\') will be removed in the future');
     drawer.remove();
   },
-  'drawer:closeDrawer'() {
+  'drawer:closeDrawer'($toElement) {
     logging.deprecated('Use drawer.close, Adapt.trigger(\'drawer:closeDrawer\') will be removed in the future');
-    drawer.close();
+    drawer.close($toElement);
   },
   'drawer:triggerCustomView'() {
-    logging.deprecated('Use drawer.triggerCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
-    drawer.triggerCustomView();
+    logging.deprecated('Use drawer.openCustomView(), Adapt.trigger(\'drawer:triggerCustomView\') will be removed in the future');
+    drawer.openCustomView();
   }
 });
 
@@ -178,7 +178,7 @@ Object.defineProperties(Adapt, {
   },
   offlineStorage: {
     get() {
-      logging.deprecated('offlineStorage, please use src/core/offlineStorage instead');
+      logging.deprecated('offlineStorage, please use core/js/offlineStorage instead');
       return offlineStorage;
     }
   },
@@ -232,7 +232,7 @@ Object.defineProperties(Adapt, {
   },
   wait: {
     get() {
-      logging.deprecated('Adapt.wait, please use src/core/wait instead');
+      logging.deprecated('Adapt.wait, please use core/js/wait instead');
       return wait;
     }
   }

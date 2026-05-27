@@ -1,7 +1,7 @@
 {{import_globals}}
 
 <div id="{{_id}}-heading" class="js-heading-inner" role="heading" aria-level="{{a11y_aria_level _id _type _ariaLevel}}">
-  <span class="aria-label">
+  <span class="aria-label js-a11y-completion-description">
   {{#if _isA11yCompletionDescriptionEnabled}}
     {{#if _isOptional}}
       {{else if _isComplete}}

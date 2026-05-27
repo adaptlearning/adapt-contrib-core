@@ -1,6 +1,43 @@
-import Adapt from 'core/js/adapt';
+/**
+ * @file Push Notification View - Renders individual push notifications
+ * @module core/js/views/notifyPushView
+ * @description View responsible for rendering and managing individual push notifications
+ * in the top-right corner of the viewport. Handles auto-close timing, positioning,
+ * click callbacks, and accessibility.
+ *
+ * **Display Behavior:**
+ * - Appears in top-right corner
+ * - Maximum 2 visible simultaneously (managed by {@link NotifyPushCollection})
+ * - Auto-closes after timeout
+ * - Can be manually closed via close button
+ * - Uses `<dialog>` element for semantic HTML
+ * - Animated entrance/exit via CSS transitions
+ *
+ * **Positioning:**
+ * - Top notification: below navigation bar + offset
+ * - Second notification: below first notification + offset
+ * - Automatically repositions when notifications added/removed
+ *
+ * **Important:** Do NOT manually instantiate with `new NotifyPushView()`.
+ * Views are created internally by {@link NotifyPushCollection}. Use `notify.push()` instead.
+ */
 
+import Adapt from 'core/js/adapt';
+import a11y from '../a11y';
+import {
+  transitionsEnded
+} from '../transitions';
+
+/**
+ * @class NotifyPushView
+ * @classdesc Lifecycle: Created → Delayed render → Positioned → Auto-closed → Removed
+ * @extends {Backbone.View}
+ */
 export default class NotifyPushView extends Backbone.View {
+
+  tagName() {
+    return 'dialog';
+  }
 
   className() {
     const classes = [
@@ -13,25 +50,47 @@ export default class NotifyPushView extends Backbone.View {
 
   attributes() {
     return {
-      role: 'dialog',
       'aria-labelledby': 'notify-push-heading',
       'aria-modal': 'false'
     };
   }
 
   initialize() {
+    _.bindAll(this, 'onKeyDown');
     this.listenTo(Adapt, {
       'notify:pushShown notify:pushRemoved': this.updateIndexPosition,
       remove: this.remove
     });
-
     this.listenTo(this.model.collection, {
       remove: this.updateIndexPosition,
       'change:_index': this.updatePushPosition
     });
-
+    this.setupEscapeKey();
     this.preRender();
     this.render();
+  }
+
+  /**
+   * Sets up Escape key listener for keyboard accessibility.
+   * Allows users to dismiss push notification with Esc key.
+   * @private
+   */
+  setupEscapeKey() {
+    $(window).on('keydown', this.onKeyDown);
+  }
+
+  /**
+   * Handles keydown events for Escape key dismissal.
+   * Only triggers if focus is within the push notification.
+   * @param {jQuery.Event} event - Keyboard event
+   * @private
+   */
+  onKeyDown(event) {
+    if (event.which !== 27) return;
+    const isFocusInPopup = Boolean($(document.activeElement).closest(this.$el).length);
+    if (!isFocusInPopup) return;
+    event.preventDefault();
+    this.closePush();
   }
 
   events() {
@@ -48,7 +107,7 @@ export default class NotifyPushView extends Backbone.View {
   render() {
     const data = this.model.toJSON();
     const template = Handlebars.templates.notifyPush;
-    this.$el.html(template(data)).appendTo('.notify__push-container');
+    this.$el.html(template(data));
 
     _.defer(this.postRender.bind(this));
 
@@ -56,6 +115,8 @@ export default class NotifyPushView extends Backbone.View {
   }
 
   postRender() {
+    this.$el[0].open = true;
+    this.$el.appendTo('.notify__push-container');
     this.$el.addClass('is-active');
 
     _.delay(this.closePush.bind(this), this.model.get('_timeout'));
@@ -63,31 +124,65 @@ export default class NotifyPushView extends Backbone.View {
     Adapt.trigger('notify:pushShown');
   }
 
-  closePush(event) {
+  /**
+   * Closes and removes the push notification.
+   * Handles animation, accessibility cleanup, and model removal.
+   * Can be triggered by: timeout, close button, Esc key, or notification click.
+   * @async
+   * @param {jQuery.Event} [event] - Click event if triggered by user interaction
+   * @private
+   */
+  async closePush(event) {
     if (event) {
       event.preventDefault();
     }
 
-    // Check whether this view has been removed as the delay can cause it to be fired twice
+    // Check whether this view has been removed in case called multiple times whilst closing
     if (this.hasBeenRemoved === false) {
-
       this.hasBeenRemoved = true;
-
       this.$el.removeClass('is-active');
-
-      _.delay(() => {
-        this.model.collection.remove(this.model);
-        Adapt.trigger('notify:pushRemoved', this);
-        this.remove();
-      }, 600);
+      await transitionsEnded(this.$el);
+      this.$el[0].open = false;
+      a11y.gotoPreviousActiveElement();
+      this.model.collection.remove(this.model);
+      Adapt.trigger('notify:pushRemoved', this);
+      this.model.close();
+      this.remove();
     }
   }
 
+  /**
+   * Triggers the callback event associated with this notification.
+   * Called when user clicks the notification body (not the close button).
+   * Specify callback event using `_callbackEvent` option when creating notification.
+   *
+   * **Important:** Unlike `notify.popup()` which passes the view instance to callbacks,
+   * push notification event handlers receive NO arguments. The callback cannot identify
+   * which notification triggered it. Store model reference if identification needed.
+   *
+   * @param {jQuery.Event} event - Click event
+   * @example
+   * const pushModel = notify.push({
+   *   title: 'New Message',
+   *   body: 'Click to view',
+   *   _callbackEvent: 'messages:show'
+   * });
+   *
+   * const onMessagesShow = () => {
+   *   Adapt.off('messages:show', onMessagesShow);
+   * };
+   * Adapt.on('messages:show', onMessagesShow);
+   */
   triggerEvent(event) {
     Adapt.trigger(this.model.get('_callbackEvent'));
     this.closePush();
   }
 
+  /**
+   * Updates position index for all active push notifications.
+   * Recalculates and applies index to each active notification.
+   * @private
+   */
   updateIndexPosition() {
     if (this.hasBeenRemoved) return;
     const models = this.model.collection.models;
@@ -98,6 +193,12 @@ export default class NotifyPushView extends Backbone.View {
     });
   }
 
+  /**
+   * Updates the vertical position of this push notification.
+   * Positions based on index (0 = top, 1 = below first notification).
+   * Takes navigation bar height into account.
+   * @private
+   */
   updatePushPosition() {
     if (this.hasBeenRemoved) {
       return;
@@ -117,5 +218,15 @@ export default class NotifyPushView extends Backbone.View {
       const positionLowerPush = (elementHeight + offset) * flippedIndex + navigationHeight + offset;
       this.$el.css('top', positionLowerPush);
     }
+  }
+
+  /**
+   * Cleanup when view is removed.
+   * Removes global event listeners.
+   * @param {...*} args - Arguments passed to Backbone's remove method
+   */
+  remove(...args) {
+    $(window).off('keydown', this.onKeyDown);
+    super.remove(...args);
   }
 }

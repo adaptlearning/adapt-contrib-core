@@ -1,9 +1,27 @@
 /**
- * Controller for blocking scroll events on specified elements.
- * @class
+ * @file Scroll - Controller for managing scrolling behavior
+ * @module core/js/a11y/scroll
+ * @description Manages scrolling behavior across multiple input methods including touch, mouse wheel,
+ * and keyboard navigation. Supports selective scroll disabling on specified elements while allowing
+ * scrolling in other regions. Handles various edge cases including multi-touch gestures,
+ * nested scrollable elements, and accessible form inputs.
+ */
+
+/**
+ * @class Scroll
+ * @classdesc Manages scroll event blocking on specified elements for accessibility purposes.
+ * @extends Backbone.Controller
  */
 export default class Scroll extends Backbone.Controller {
 
+  /**
+   * Sets up event listeners for touch, wheel, and keyboard scroll events across the document
+   * and window. Configures key codes for scroll-preventing keys (Page Up/Down, Home/End, Arrow keys)
+   * and establishes exclusion selectors for form elements that should allow keyboard interaction.
+   * @param {Object} options - Configuration options
+   * @param {Object} options.a11y - The accessibility module instance
+   * @returns {void}
+   */
   initialize({ a11y }) {
     this._a11y = a11y;
     this._onTouchStart = this._onTouchStart.bind(this);
@@ -42,8 +60,10 @@ export default class Scroll extends Backbone.Controller {
 
   /**
    * Block scrolling on the given elements.
-   *
-   * @param {Object|string|Array} $elements
+   * Adds elements to the collection of scroll-disabled elements. Activates scroll event
+   * listeners if this is the first disabled element.
+   * @param {jQuery|string|Array|HTMLElement} $elements - Element(s) to disable scrolling on
+   * @returns {Scroll} Returns this for method chaining.
    */
   disable($elements) {
     $elements = $($elements);
@@ -54,8 +74,10 @@ export default class Scroll extends Backbone.Controller {
 
   /**
    * Stop blocking scrolling on the given elements.
-   *
-   * @param {Object|string|Array} $items
+   * Removes elements from the collection of scroll-disabled elements. If no elements remain
+   * disabled, deactivates scroll event listeners.
+   * @param {jQuery|string|Array|HTMLElement} $elements - Element(s) to re-enable scrolling on
+   * @returns {Scroll} Returns this for method chaining.
    */
   enable($elements) {
     $elements = $($elements);
@@ -69,7 +91,8 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Stop blocking all scrolling.
+   * Clears all scroll-disabled elements and deactivates scroll event listeners.
+   * @returns {Scroll} Returns this for method chaining.
    */
   clear() {
     this._scrollDisabledElements = $([]);
@@ -78,7 +101,11 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Start or stop listening for events to block if and when needed.
+   * Starts or stops listening for scroll events based on disabled element count.
+   * Activates scroll event listeners if there are disabled elements, or deactivates them
+   * if the disabled collection is empty.
+   * @private
+   * @returns {void}
    */
   _checkRunning() {
     if (!this._scrollDisabledElements.length) {
@@ -90,6 +117,8 @@ export default class Scroll extends Backbone.Controller {
 
   /**
    * Start listening for events to block.
+   * @private
+   * @returns {void}
    */
   _start() {
     if (this._isRunning) {
@@ -99,9 +128,12 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Capture the touchstart event object for deltaY calculations.
-   *
-   * @param {JQuery.Event} event
+   * Captures the touchstart event object for deltaY calculations.
+   * Stores the initial touch position to later calculate the direction and distance
+   * of touch movement for scroll prevention.
+   * @private
+   * @param {Event} event - The native touch start event
+   * @returns {boolean} Returns true
    */
   _onTouchStart(event) {
     if (!this._isRunning) return;
@@ -111,7 +143,10 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Clear touchstart event object.
+   * Clears the touchstart event object.
+   * Resets the stored touch start position after the touch ends.
+   * @private
+   * @returns {boolean} Returns true
    */
   _onTouchEnd() {
     if (!this._isRunning) return;
@@ -120,9 +155,11 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Process a native scroll event.
-   *
-   * @param {JQuery.Event} event
+   * Processes a native scroll event (wheel or touch movement).
+   * Delegates to `_preventScroll` to determine if scrolling should be blocked.
+   * @private
+   * @param {Event} event - The native wheel or touch move event
+   * @returns {*} Result from `_preventScroll` (false if blocked, undefined otherwise)
    */
   _onScrollEvent(event) {
     if (!this._isRunning) return;
@@ -131,9 +168,13 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Process a native keydown event.
-   *
-   * @param {JQuery.Event} event
+   * Processes a native keydown event to prevent scroll-related keyboard navigation.
+   * Handles arrow keys (when accessible navigation is enabled) and scroll-trigger keys
+   * (Page Up/Down, Home/End, arrow keys). Redirects focus to the first scrollable element
+   * in an open popup when appropriate. Excludes form elements that should accept keyboard input.
+   * @private
+   * @param {Event} event - The native keydown event
+   * @returns {*} Result from `_preventScroll` if key should be blocked, undefined otherwise
    */
   _onKeyDown(event) {
     if (!this._isRunning) return;
@@ -162,9 +203,13 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Process jquery event object.
-   *
-   * @param {JQuery.Event} event
+   * Prevents scroll on the target element if it's in the disabled collection.
+   * Checks if the scroll target is within a disabled element. Handles multi-touch gestures
+   * by allowing them through. For single-touch/wheel scrolls, prevents default behavior
+   * and returns false if the scroll target is disabled.
+   * @private
+   * @param {Event} event - The scroll event (wheel, touch, or keyboard)
+   * @returns {boolean|undefined} Returns false if scroll is prevented, undefined otherwise
    */
   _preventScroll(event) {
     const isGesture = (event.touches?.length > 1);
@@ -187,10 +232,13 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Return the parent which will be scrolling from the current scroll event.
-   *
-   * @param {JQuery.Event} event
-   * @param {Object} $target jQuery element object.
+   * Determines which parent element will handle the scroll event.
+   * Considers scroll direction (up/down) and whether the parent has available scroll space.
+   * Returns the body element if no scrollable parent is found.
+   * @private
+   * @param {Event} event - The scroll event
+   * @param {jQuery} $target - The target element where scroll event originated
+   * @returns {jQuery} The parent element that will handle the scroll
    */
   _getScrollingParent(event, $target) {
     const isTouchEvent = event.type === 'touchmove';
@@ -222,10 +270,12 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Returns true if the specified target is scrollable.
-   *
-   * @param {Object} $target jQuery element object.
-   * @returns {boolean}
+   * Checks if the specified element is scrollable.
+   * An element is scrollable if it has `overflow-y` set to 'auto' or 'scroll' and
+   * has `pointer-events` enabled (not 'none').
+   * @private
+   * @param {jQuery} $target - The element to check
+   * @returns {boolean} True if element is scrollable, false otherwise
    */
   _isScrollable($target) {
     const scrollType = $target.css('overflow-y');
@@ -240,12 +290,13 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Returns true if the specified target is the scrolling target.
-   *
-   * @param {Object} $target jQuery element object.
-   * @param {string} directionY 'none' | 'up' | 'down'
-   *
-   * @returns {boolean}
+   * Checks if the specified element has available scroll space in the given direction.
+   * Compares the current scroll position and viewport height against the total scroll height
+   * to determine if there's room to scroll in the specified direction.
+   * @private
+   * @param {jQuery} $target - The element to check
+   * @param {string} directionY - Scroll direction: 'none' | 'up' | 'down'
+   * @returns {boolean} True if element can scroll in the given direction, false otherwise
    */
   _isScrolling($target, directionY) {
     const scrollTop = Math.ceil($target.scrollTop());
@@ -270,10 +321,12 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Returns the vertical direction of scroll.
-   *
-   * @param {JQuery.Event} event
-   * @returns {string} 'none' | 'up' | 'down'
+   * Determines the vertical direction of scroll from an event.
+   * Calculates scroll direction based on the deltaY value. Positive values indicate
+   * scrolling up, negative values indicate scrolling down.
+   * @private
+   * @param {Event} event - The scroll event
+   * @returns {string} Scroll direction: 'none' | 'up' | 'down'
    */
   _getScrollDirection(event) {
     const deltaY = this._getScrollDelta(event);
@@ -284,10 +337,15 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Returns the number of pixels which is intended to be scrolled.
-   *
-   * @param {JQuery.Event} event
-   * @returns {number}
+   * Calculates the scroll delta (distance) from a scroll event.
+   * Handles different input methods:
+   * - Touch events: calculates delta from touchstart position to current touch position
+   * - Keyboard events: returns 1 or -1 based on scroll-trigger key
+   * - Mouse wheel: extracts delta from wheelDeltaY or deltaY properties
+   * Accounts for cross-browser differences (Firefox/IE delta inversion, Chrome/Safari wheel delta).
+   * @private
+   * @param {Event} event - The scroll event
+   * @returns {number} Pixel delta value (positive = up, negative = down)
    */
   _getScrollDelta(event) {
     let deltaY = 0;
@@ -328,7 +386,10 @@ export default class Scroll extends Backbone.Controller {
   }
 
   /**
-   * Stop listening for events to block.
+   * Deactivates the scroll event listener.
+   * Sets the running flag to false, disabling scroll event processing.
+   * @private
+   * @returns {void}
    */
   _stop() {
     if (!this._isRunning) {

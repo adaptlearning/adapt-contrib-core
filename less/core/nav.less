@@ -1,10 +1,10 @@
 // Add top padding equal to the height of the navigation bar
 // --------------------------------------------------
-html.is-nav-top #wrapper {
+.html.is-nav-top #wrapper {
   padding-top: var(--adapt-navigation-height);
 }
 
-html.is-nav-bottom #wrapper {
+.html.is-nav-bottom #wrapper {
   padding-bottom: var(--adapt-navigation-height);
 }
 
@@ -13,11 +13,11 @@ html.is-nav-bottom #wrapper {
   width: 100%;
   z-index: 80;
 
-  html.is-nav-top & {
+  .html.is-nav-top & {
     top: 0;
   }
 
-  html.is-nav-bottom & {
+  .html.is-nav-bottom & {
     bottom: 0;
   }
 
@@ -38,7 +38,7 @@ html.is-nav-bottom #wrapper {
     float: none !important;
   }
 
-  &.hide-label &__btn-label,
+  &.hide-label &__btn:not(.nav__skip-btn) &__btn-label,
   &__btn.hide-label &__btn-label {
     display: none;
   }
@@ -50,7 +50,7 @@ html.is-nav-bottom #wrapper {
   }
 
   &.has-label-right &__btn-label {
-    margin-left: (@icon-padding / 2);
+    margin-inline-start: @icon-padding / 2;
   }
 
   &.has-label-bottom {
@@ -59,7 +59,7 @@ html.is-nav-bottom #wrapper {
     }
 
     .nav__btn-label {
-      margin-top: (@icon-padding / 2);
+      margin-top: @icon-padding / 2;
     }
   }
 
@@ -70,26 +70,20 @@ html.is-nav-bottom #wrapper {
 
     .nav__btn-label {
       order: -1;
-      margin-bottom: (@icon-padding / 2);
+      margin-bottom: @icon-padding / 2;
     }
   }
-  
+
   .has-label-left &__btn-label {
     order: -1;
   }
 
-  &.has-label-left &__btn-label {
-    margin-right: (@icon-padding / 2);
+  &.has-label-left .icon ~ .nav__btn-label {
+    margin-inline-end: @icon-padding / 2;
   }
 
-  &.has-label-auto {
-    .dir-rtl & .nav__btn-label {
-      margin-right: (@icon-padding / 2);
-    }
-
-    .dir-ltr & .nav__btn-label {
-      margin-left: (@icon-padding / 2);
-    }
+  &.has-label-auto .icon ~ .nav__btn-label {
+    margin-inline-start: @icon-padding / 2;
   }
 
   &__spacer {
@@ -102,24 +96,15 @@ html.is-nav-bottom #wrapper {
     top: 0;
     z-index: 100;
 
-    html:not(.has-accessibility) & {
+    .html:not(.has-accessibility) & {
       .u-display-none;
     }
 
-    &:not(:focus-visible) {
-      height: 0;
-      padding: 0;
-      margin: 0;
-      overflow: hidden;
-    }
+    .visually-hidden-focusable()
   }
 
   &__back-btn .icon {
     .icon-controls-small-left;
-  }
-
-  &__drawer-btn .icon {
-    .icon-list;
   }
 }
 

@@ -13,23 +13,28 @@ class Router extends Backbone.Router {
     return {
       '': 'handleRoute',
       'id/:id': 'handleRoute',
+      'preview/:id': 'handlePreview',
       ':pluginName(/*location)(/*action)': 'handleRoute'
     };
   }
 
   initialize({ model }) {
     this.navigateToElement = this.navigateToElement.bind(this);
-    this._isBackward = false;
     this.model = model;
     this._navigationRoot = null;
+    this._isBackward = false;
+    this._isInNavigateTo = false;
+    this._shouldIgnoreNextRouteAction = false;
     // Flag to indicate if the router has tried to redirect to the current location.
     this._isCircularNavigationInProgress = false;
+    this.isPreviewMode = false;
     this.showLoading();
     // Store #wrapper element and html to cache for later use.
     this.$wrapper = $('#wrapper');
     this.$html = $('html');
     this.listenToOnce(Adapt, 'app:dataReady', this.setDocumentTitle);
     this.listenTo(Adapt, 'router:navigateTo', this.navigateToArguments);
+    this.listenToOnce(Adapt, 'configModel:dataLoaded', this.onConfigLoaded);
   }
 
   get rootModel() {
@@ -41,10 +46,12 @@ class Router extends Backbone.Router {
   }
 
   showLoading() {
+    $('html').removeClass('is-loading-hidden').addClass('is-loading-visible');
     $('.js-loading').show();
   }
 
   hideLoading() {
+    $('html').addClass('is-loading-hidden').removeClass('is-loading-visible');
     $('.js-loading').hide();
   }
 
@@ -76,7 +83,16 @@ class Router extends Backbone.Router {
     this.handleRoute(...args);
   }
 
+  handlePreview(...args) {
+    this.isPreviewMode = true;
+    this.handleRoute(...args);
+  }
+
   handleRoute(...args) {
+    if (this._shouldIgnoreNextRouteAction) {
+      this._shouldIgnoreNextRouteAction = false;
+      return;
+    }
     args = args.filter(v => v !== null);
 
     if (this.model.get('_canNavigate')) {
@@ -97,6 +113,9 @@ class Router extends Backbone.Router {
       this.model.set('_canNavigate', false, { pluginName: 'adapt' });
       this._isBackward = false;
       if (args.length <= 1) {
+        if (this.isPreviewMode) {
+          return this.handleIdPreview(...args);
+        }
         return this.handleId(...args);
       }
       return this.handlePluginRouter(...args);
@@ -144,7 +163,7 @@ class Router extends Backbone.Router {
     }
 
     // Keep the routed id incase it needs to be scrolled to later
-    const isContentObject = model.isTypeGroup?.('contentobject');
+    const isContentObject = model.isTypeGroup?.('contentobject') && !model.isTypeGroup?.('group');
     const navigateToId = model.get('_id');
 
     // Ensure that the router is rendering a contentobject
@@ -170,9 +189,140 @@ class Router extends Backbone.Router {
       return this.navigateBack();
     }
 
+    const isNavigateToSubContent = (model === location._currentModel && !isContentObject);
+    if (isNavigateToSubContent) {
+      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
+      return;
+    }
+
     // Move to a content object
     this.showLoading();
     await Adapt.remove();
+    await this.removePreviews();
+
+    /**
+     * TODO:
+     * As the course object has separate location and type rules,
+     * it makes it more difficult to update the location object
+     * should stop doing this.
+     */
+    const isCourse = model.isTypeGroup?.('course');
+    const type = isCourse ? 'menu' : model.get('_type');
+    const newLocation = isCourse ? 'course' : `${type}-${id}`;
+
+    model.set({
+      _isVisited: true,
+      _isRendered: true
+    });
+    await this.updateLocation(newLocation, type, id, model);
+
+    Adapt.trigger(`router:${type} router:contentObject`, model);
+
+    const ViewClass = components.getViewClass(model);
+    const isMenu = model.isTypeGroup?.('menu');
+    if (!ViewClass && isMenu) {
+      logging.deprecated(`Using event based menu view instantiation for '${components.getViewName(model)}'`);
+      return;
+    }
+
+    if (!isMenu) {
+      // checkIfResetOnRevisit where exists on descendant models before render
+      _.invoke(model.getAllDescendantModels(), 'checkIfResetOnRevisit');
+      // wait for completion to settle
+      await Adapt.deferUntilCompletionChecked();
+    }
+
+    this.$wrapper.append(new ViewClass({ model }).$el);
+
+    await new Promise(resolve => Adapt.once('contentObjectView:ready', resolve));
+
+    // Allow navigation.
+    this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+    if (this._isInNavigateTo || this._isInScroll) return;
+    if (!isContentObject) {
+      // Scroll to element if not a content object or not already trying to
+      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
+      return;
+    }
+    this.handleNavigationFocus();
+
+  }
+
+  async handleIdPreview(id) {
+    const rootModel = router.rootModel;
+    let model = (!id) ? rootModel : data.findById(id);
+
+    if (!model) {
+      // Bad id
+      this.model.set('_canNavigate', true, { pluginName: 'adapt' });
+      return;
+    }
+
+    // Move to a content object
+    this.showLoading();
+    await Adapt.remove();
+    await this.removePreviews();
+
+    let isContentObject = model.isTypeGroup?.('contentobject');
+    if (!isContentObject) {
+      // If the preview id is not a content object then make
+      // some containers to put it in
+      const types = ['page', 'article', 'block', 'component'];
+      const type = model.get('_type');
+      const buildTypes = types.slice(0, types.indexOf(type));
+      let parentModel = Adapt.course;
+      let _parentId = parentModel.get('_id');
+      const built = buildTypes.map((_type, index) => {
+        const ModelClass = components.getModelClass({ _type });
+        const _id = `preview-${_type}`;
+        const builtModel = new ModelClass({
+          _type,
+          _id,
+          _parentId,
+          _isPreview: true
+        });
+        if (index) parentModel.getChildren().add(builtModel);
+        data.add(builtModel);
+        parentModel = builtModel;
+        _parentId = _id;
+        return builtModel;
+      });
+      // Clone the requested content to sanitise
+      model.deepClone((clone, orig) => {
+        // Make the cloned item available and unlocked
+        clone.set({
+          _isAvailable: true,
+          _isLocked: false
+        });
+        clone.on('change', function () {
+          // Sync the cloned item with the original
+          const state = this.getAttemptObject
+            ? this.getAttemptObject()
+            : this.getTrackableState();
+          delete state._id;
+          delete state._isAvailable;
+          delete state._isLocked;
+          if (this.getAttemptObject) orig.setAttemptObject(state);
+          else orig.set(state);
+        });
+        if (orig !== model) return;
+        // Relocate the cloned item into the preview containers
+        clone.set({
+          _parentId
+        });
+      });
+      built.forEach(model => model.setupModel());
+      isContentObject = true;
+      model = built[0];
+      model.setOnChildren({ _isPreview: true });
+    }
+
+    const navigateToId = model.get('_id');
+
+    // Ensure that the router is rendering a contentobject
+    model = isContentObject ? model : model.findAncestor('contentobject');
+    id = navigateToId;
 
     /**
      * TODO:
@@ -213,14 +363,16 @@ class Router extends Backbone.Router {
 
     this.$wrapper.append(new ViewClass({ model }).$el);
 
-    if (!isContentObject && !this.isScrolling) {
-      // Scroll to element if not a content object or not already trying to
-      await this.navigateToElement('.' + navigateToId, { replace: true, duration: 400 });
-    }
+  }
 
+  async removePreviews() {
+    const previews = data.filter(model => model.get('_isPreview'));
+    previews.forEach(model => data.remove(model));
   }
 
   async updateLocation(currentLocation, type, id, currentModel) {
+    if (location._currentId === id && id === null) return;
+
     // Handles updating the location.
     location._previousModel = location._currentModel;
     location._previousId = location._currentId;
@@ -343,29 +495,38 @@ class Router extends Backbone.Router {
    * asynchronously when the element has been navigated to.
    * @param {JQuery|string} selector CSS selector or id of the Adapt element you want to navigate to e.g. `".co-05"` or `"co-05"`
    * @param {Object} [settings] The settings for the `$.scrollTo` function (See https://github.com/flesler/jquery.scrollTo#settings).
-   * @param {Object} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
+   * @param {boolean} [settings.addSubContentRouteToHistory=false] Set to `true` if you want to add a sub content route to the browser's history.
+   * @param {boolean} [settings.replace=false] Set to `true` if you want to update the URL without creating an entry in the browser's history.
    */
   async navigateToElement(selector, settings = {}) {
     const currentModelId = typeof selector === 'string' && selector.replace(/\./g, '').split(' ')[0];
     const isSelectorAnId = data.hasId(currentModelId);
+    let currentModel;
 
     if (isSelectorAnId) {
-      const currentModel = data.findById(currentModelId);
-      const contentObject = currentModel.isTypeGroup?.('contentobject') ? currentModel : currentModel.findAncestor('contentobject');
+      currentModel = data.findById(currentModelId);
+      const contentObject = currentModel.isTypeGroup?.('contentobject') && !currentModel.isTypeGroup?.('group')
+        ? currentModel
+        : currentModel.findAncestor('contentobject');
       const contentObjectId = contentObject.get('_id');
-      const isNotInCurrentContentObject = (contentObjectId !== location._currentId);
+      const isInCurrentContentObject = (contentObjectId === location._currentId);
 
-      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || isNotInCurrentContentObject)) {
+      if (currentModel && (!currentModel.get('_isRendered') || !currentModel.get('_isReady') || !isInCurrentContentObject)) {
         const shouldReplace = settings.replace || false;
-        if (isNotInCurrentContentObject) {
-          this.isScrolling = true;
+        if (!isInCurrentContentObject) {
+          this._isInNavigateTo = true;
           this.navigate(`#/id/${currentModelId}`, { trigger: true, replace: shouldReplace });
           this.model.set('_shouldNavigateFocus', false, { pluginName: 'adapt' });
           await new Promise(resolve => Adapt.once('contentObjectView:ready', _.debounce(() => {
             this.model.set('_shouldNavigateFocus', true, { pluginName: 'adapt' });
             resolve();
           }, 1)));
-          this.isScrolling = false;
+          this._isInNavigateTo = false;
+          const shouldFocusOnBody = (location._currentId === currentModelId);
+          if (shouldFocusOnBody) {
+            a11y.focusFirst(document.body);
+            return;
+          }
         }
         await Adapt.parentView.renderTo(currentModelId);
       }
@@ -382,11 +543,18 @@ class Router extends Backbone.Router {
       return;
     }
 
+    const isSubContent = currentModel && (!currentModel.isTypeGroup('contentobject') || currentModel.isTypeGroup('group'));
+    const addSubContentRouteToHistory = (settings?.addSubContentRouteToHistory && isSubContent);
+    if (addSubContentRouteToHistory) {
+      this.addRouteToHistory(`#/id/${currentModelId}`);
+    }
+
     // Get the current location - this is set in the router
     const newLocation = (location._contentType)
       ? location._contentType
       : location._currentLocation;
     // Trigger initial scrollTo event
+    this._isInScroll = true;
     Adapt.trigger(`${newLocation}:scrollTo`, selector);
     // Setup duration variable
     const disableScrollToAnimation = Adapt.config.has('_disableAnimation') ? Adapt.config.get('_disableAnimation') : false;
@@ -420,9 +588,21 @@ class Router extends Backbone.Router {
     await new Promise(resolve => {
       _.delay(() => {
         a11y.focusNext(selector);
-        Adapt.trigger(`${location}:scrolledTo`, selector);
+        Adapt.trigger(`${newLocation}:scrolledTo`, selector);
+        this._isInScroll = false;
         resolve();
       }, settings.duration + 300);
+    });
+  }
+
+  addRouteToHistory(hash) {
+    const isCurrentRoute = (window.location.hash === hash);
+    if (isCurrentRoute) return;
+    // Add the route to the browser history without causing a change of content
+    this._shouldIgnoreNextRouteAction = true;
+    this.navigate(hash, {
+      trigger: false,
+      replace: false
     });
   }
 
@@ -434,6 +614,14 @@ class Router extends Backbone.Router {
   set(...args) {
     logging.deprecated('router.set, please use router.model.set');
     return this.model.set(...args);
+  }
+
+  onConfigLoaded() {
+    this.listenTo(Adapt.config, 'change:_activeLanguage', this.onLanguageChange);
+  }
+
+  onLanguageChange() {
+    this.updateLocation(null, null, null, null);
   }
 
 }

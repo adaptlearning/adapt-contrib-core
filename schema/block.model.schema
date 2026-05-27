@@ -99,13 +99,23 @@
       "title": "Require completion of",
       "help": "The number of components within this block the learner must complete in order for this block to be set as completed. A value of -1 requires all of them to be completed."
     },
+    "_isA11yCompletionDescriptionEnabled": {
+      "type": "boolean",
+      "default": true,
+      "isSetting": true,
+      "inputType": "Checkbox",
+      "validators": [],
+      "title": "Enable accessibility completion description",
+      "help": "Controls whether a hidden label is appended to the block title that describes the completion state of the block."
+    },
     "_ariaLevel": {
       "type": "number",
       "default": 0,
       "isSetting": true,
       "inputType": "Number",
-      "validators": ["number"],
-      "help": "If you need to override the default block ARIA level (as defined in Configuration Settings), set this to any number greater than 0."
+      "validators": [ "number" ],
+      "title": "Aria level",
+      "help": "The aria-level attribute of the title used to determine the heading level. When set to 0 (default), the level will be automatically determined by the element type. Only override if content does not properly use the CO/A/B/C structure."
     },
     "_onScreen": {
       "type": "object",
@@ -139,6 +149,40 @@
           "inputType": "Number",
           "validators": ["number"],
           "help": "Controls what percentage of the block's height needs to be in the viewport in order for the CSS class(es) to be added."
+        }
+      }
+    },
+    "_priorityLabels": {
+      "type": "object",
+      "title": "Priority Labels Override",
+      "help": "Override the global priority labels settings for this specific element",
+      "properties": {
+        "_isOverride": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Override global settings",
+          "help": "When enabled, this element will use the local settings instead of the global priority labels configuration"
+        },
+        "_showWhenRequired": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Show label when required",
+          "help": "Display a 'Required' label when this element is not optional"
+        },
+        "_showWhenOptional": {
+          "type": "boolean",
+          "default": false,
+          "isSetting": true,
+          "inputType": "Checkbox",
+          "validators": [],
+          "title": "Show label when optional",
+          "help": "Display an 'Optional' label when this element is optional"
         }
       }
     },

@@ -1,7 +1,7 @@
 import device from 'core/js/device';
 import a11y from 'core/js/a11y';
 import React from 'react';
-import { html, classes, prefixClasses } from 'core/js/reactHelpers';
+import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Size switching content image
@@ -22,31 +22,36 @@ export default function Image(props) {
   );
   const hasSource = Boolean(src);
   if (!hasSource) return null;
+  const classNamePrefixSeparator = (props.classNamePrefixSeparator || '__');
   const attributionClassNamePrefixes = (props.attributionClassNamePrefixes || props.classNamePrefixes);
   return (
     <span
       id={props.id}
       className={classes([
-        prefixClasses(props.classNamePrefixes, ['__image-container']),
+        prefixClasses(props.classNamePrefixes, [`${classNamePrefixSeparator}image-container`]),
         props.classes,
         props.attribution && 'has-attribution'
       ])}
     >
 
       <img
-        className={prefixClasses(props.classNamePrefixes, ['__image'])}
+        className={classes([
+          prefixClasses(props.classNamePrefixes, [`${classNamePrefixSeparator}image`]),
+          props?._srcFocalPoint && `object-position-${props?._srcFocalPoint}`
+        ])}
         src={src}
-        aria-label={a11y.normalize(props.alt)}
-        aria-hidden={!props.alt}
+        alt={a11y.normalize(props.alt)}
         loading='eager'
         aria-describedby={props.longdescription ? props.longDescriptionId : undefined}
+        draggable={props.draggable ?? null}
       />
 
       {props.attribution &&
       <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution'])}>
-        <span className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}>
-          {html(props.attribution)}
-        </span>
+        <span
+          className={prefixClasses(attributionClassNamePrefixes, ['__attribution-inner'])}
+          dangerouslySetInnerHTML={{ __html: compile(props.attribution, props) }}
+        />
       </span>
       }
 

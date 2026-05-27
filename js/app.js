@@ -17,11 +17,13 @@ import 'core/js/models/lockingModel';
 import 'core/js/mpabc';
 import 'core/js/helpers';
 import 'core/js/scrolling';
+import 'core/js/scrollPosition';
 import 'core/js/headings';
 import 'core/js/navigation';
 import 'core/js/startController';
 import 'core/js/DOMElementModifications';
 import 'core/js/tooltips';
+import 'core/js/shadow';
 import 'plugins';
 
 $('body').append(Handlebars.templates.loading());

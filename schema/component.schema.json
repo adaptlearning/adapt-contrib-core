@@ -15,6 +15,9 @@
           "type": "string",
           "title": "Component"
         },
+        "displayTitle": {
+          "default": "Untitled"
+        },
         "_layout": {
           "type": "string",
           "title": "Layout",
@@ -34,15 +37,6 @@
             "isSetting": true
           },
           "_backboneForms": "Select"
-        },
-        "_disableAccessibilityState": {
-          "type": "boolean",
-          "title": "Disable completion ARIA label",
-          "description": "Controls whether the user can tab to a hidden label that describes the completion state of the component",
-          "default": false,
-          "_adapt": {
-            "isSetting": true
-          }
         },
         "properties": {
           "type": "object",

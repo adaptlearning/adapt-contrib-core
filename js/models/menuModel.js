@@ -20,7 +20,7 @@ class MenuModel extends ContentObjectModel {
   setCustomLocking() {
     const children = this.getAvailableChildModels();
     children.forEach(child => {
-      child.set('_isLocked', this.shouldLock(child));
+      child.set('_isLocked', this.shouldLock(child), { pluginName: 'adapt' });
       if (!(child instanceof MenuModel)) return;
       child.checkLocking();
     });

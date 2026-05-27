@@ -4,6 +4,16 @@
 {{#any displayTitle body instruction}}
 <div class="component__header {{lowercase _component}}__header" id="{{_id}}-header">
   <div class="component__header-inner {{lowercase _component}}__header-inner">
+    {{#if priorityLabel}}
+    <div class="component__priority {{lowercase _component}}__priority {{_priorityClass}}">
+      {{#if _priorityIconClass}}
+      <span class="icon {{_priorityIconClass}}" aria-hidden="true"></span>
+      {{/if}}
+      <div class="component__priority-label {{lowercase _component}}__priority-label">
+        {{{compile priorityLabel}}}
+      </div>
+    </div>
+    {{/if}}
 
     {{#if displayTitle}}
     <div class="component__title {{lowercase _component}}__title">
@@ -13,13 +23,13 @@
 
     {{component_description}}
 
-    {{#if body}}
+    {{#any body mobileBody}}
     <div class="component__body {{lowercase _component}}__body">
       <div class="component__body-inner {{lowercase _component}}__body-inner">
         {{{compile body}}}
       </div>
     </div>
-    {{/if}}
+    {{/any}}
 
     {{#any instruction mobileInstruction}}
     <div class="component__instruction {{lowercase _component}}__instruction">

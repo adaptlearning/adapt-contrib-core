@@ -1,19 +1,19 @@
 import Adapt from 'core/js/adapt';
 import device from 'core/js/device';
 import React, { useRef } from 'react';
-import { prefixClasses, compile } from 'core/js/reactHelpers';
+import { classes, prefixClasses, compile } from 'core/js/reactHelpers';
 
 /**
  * Content header for displayTitle, body, instruction text, etc.
- * instruction and mobileInstruction will switch automatically
+ * body / mobileBody and instruction / mobileInstruction will switch automatically
  * @param {Object} props
  * @param {string} [props.displayTitle]
  * @param {string} [props.body]
  * @param {string} [props.instruction]
+ * @param {string} [props.mobileBody]
  * @param {string} [props.mobileInstruction]
  * @param {string} [props._type]
  * @param {string} [props._component]
- * @param {string} [props._disableAccessibilityState]
  */
 export default function Header(props) {
   // Create references to un-controlled view containers
@@ -23,23 +23,31 @@ export default function Header(props) {
     displayTitle,
     body,
     instruction,
+    mobileBody,
     mobileInstruction,
     _type,
     _component,
     _extension,
     _isA11yComponentDescriptionEnabled,
+    priorityLabel,
+    _priorityClass,
+    _priorityIconClass,
     classNamePrefixes = [
       _type && _type.toLowerCase(),
       _component && _component.toLowerCase(),
       _extension && _extension.toLowerCase()
     ].filter(Boolean)
   } = props;
+  const sizedBody = (mobileBody && !device.isScreenSizeMin('medium')) ?
+    mobileBody :
+    body;
   const sizedInstruction = (mobileInstruction && !device.isScreenSizeMin('medium')) ?
     mobileInstruction :
     instruction;
   const _globals = Adapt.course.get('_globals');
   const ariaRegion = _globals?._components?.[`_${_component}`]?.ariaRegion ??
                      _globals?._extensions?.[`_${_extension}`]?.ariaRegion;
+
   const isSet = (displayTitle || body || sizedInstruction);
   if (!isSet && _isA11yComponentDescriptionEnabled && ariaRegion) {
     // If no title, displaytitle, body or instruction is specified
@@ -51,8 +59,29 @@ export default function Header(props) {
   }
   if (!isSet) return null;
   return (
-    <div id={`${_id}-header`} className={prefixClasses(classNamePrefixes, ['__header'])}>
+    <div
+      id={`${_id}-header`}
+      className={classes([
+        prefixClasses(classNamePrefixes, ['__header']),
+        props.classes
+      ])}
+    >
       <div className={prefixClasses(classNamePrefixes, ['__header-inner'])}>
+        {priorityLabel &&
+        <div className={classes([
+          prefixClasses(classNamePrefixes, ['__priority']),
+          _priorityClass
+        ])}>
+          {_priorityIconClass &&
+            <span className={classes(['icon', _priorityIconClass])} aria-hidden="true" />
+          }
+          <div
+            className={prefixClasses(classNamePrefixes, ['__priority-label'])}
+            dangerouslySetInnerHTML={{ __html: compile(priorityLabel, props) }}
+          />
+        </div>
+        }
+
         {displayTitle &&
         <div className={prefixClasses(classNamePrefixes, ['__title'])}>
           <div className={prefixClasses(classNamePrefixes, ['__title-inner']) + ' js-heading'} ref={jsxHeading}></div>
@@ -64,9 +93,9 @@ export default function Header(props) {
         </div>
         }
 
-        {body &&
+        {sizedBody &&
         <div className={prefixClasses(classNamePrefixes, ['__body'])}>
-          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(body, props) }}>
+          <div className={prefixClasses(classNamePrefixes, ['__body-inner'])} dangerouslySetInnerHTML={{ __html: compile(sizedBody, props) }}>
           </div>
         </div>
         }

@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import location from 'core/js/location';
 import logging from 'core/js/logging';
-
+import PRIORITY_LABEL_SUPPORTED_TYPE from 'core/js/enums/priorityLabelSupportedType';
 class AdaptView extends Backbone.View {
 
   attributes() {
@@ -24,7 +24,7 @@ class AdaptView extends Backbone.View {
       'change:_isHidden': this.toggleHidden,
       'change:_isComplete': this.onIsCompleteChange
     });
-    this.isJSX = (this.constructor.template || '').includes('.jsx');
+    this.isJSX = (this.template || this.constructor.template || '').includes('.jsx');
     if (this.isJSX) {
       this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
       this.listenTo(this.model, 'change', this.changed);
@@ -37,6 +37,9 @@ class AdaptView extends Backbone.View {
       _globals: Adapt.course.get('_globals'),
       _isReady: false
     });
+
+    this.setPriorityLabels();
+
     this._isRemoved = false;
 
     if (location._currentId === this.model.get('_id')) {
@@ -100,7 +103,7 @@ class AdaptView extends Backbone.View {
       // Add globals
       _globals: Adapt.course.get('_globals')
     };
-    const Template = templates[this.constructor.template.replace('.jsx', '')];
+    const Template = templates[(this.template || this.constructor.template).replace('.jsx', '')];
     this.updateViewProperties();
     ReactDOM.render(<Template {...props} />, this.el);
   }
@@ -136,6 +139,8 @@ class AdaptView extends Backbone.View {
       const minVerticalInview = onscreen._percentInviewVertical || 33;
       if (m.percentInviewVertical < minVerticalInview) return;
       this.$el.addClass(`${onscreen._classes}-after`).off('onscreen.adaptView');
+      const type = this.model.get('_type');
+      Adapt.trigger(`${type}View:animationStart view:animationStart`, this);
     });
   }
 
@@ -144,12 +149,24 @@ class AdaptView extends Backbone.View {
    * views are added before resolving asynchronously.
    * Will trigger 'view:addChild'(ChildEvent), 'view:requestChild'(ChildEvent)
    * and 'view:childAdded'(ParentView, ChildView) accordingly.
-   * @returns {number} Count of views added
+   * @param {object} [options]
+   * @param {boolean} [options.returnNewDescendants=false]
+   * @returns {number|AdaptView[]} Count of views added or a list of the views
    */
-  async addChildren() {
+  async addChildren({ returnNewDescendants = false } = {}) {
+    const newChildren = [];
     this.nthChild = this.nthChild || 0;
     // Check descendants first
-    let addedCount = await this.addDescendants(false);
+    let addedCount = 0;
+    // addDescendants may return either an array or an integer
+    // Due to backward compatibility, it should processed accordingly
+    const result = await this.addDescendants({ returnNewDescendants });
+    if (Array.isArray(result)) {
+      addedCount = result.length;
+      newChildren.push(...result);
+    } else {
+      addedCount = result;
+    }
     // Iterate through existing available children and/or request new children
     // if required and allowed
     while (true) {
@@ -180,6 +197,7 @@ class AdaptView extends Backbone.View {
         throw new Error(`The component '${model.attributes._id}' ('${model.attributes._component}') has not been installed, and so is not available in your project.`);
       }
       const childView = new ChildView({ model });
+      newChildren.push(childView);
       this.addChildView(childView);
       addedCount++;
       if (event.isStoppedNext) {
@@ -188,12 +206,12 @@ class AdaptView extends Backbone.View {
     }
 
     if (!addedCount) {
-      return addedCount;
+      return returnNewDescendants ? [] : addedCount;
     }
 
     // Children were added, unset _isReady
     this.model.set('_isReady', false);
-    return addedCount;
+    return returnNewDescendants ? newChildren : addedCount;
   }
 
   /**
@@ -229,28 +247,43 @@ class AdaptView extends Backbone.View {
   /**
    * Iterates through existing childViews and runs addChildren on them, resolving
    * the total count of views added asynchronously.
-   * @returns {number} Count of views added
+   * @param {object} [options]
+   * @param {boolean} [options.returnNewDescendants=false]
+   * @returns {number|[AdaptView]} Count of views added or a list of the views
    */
-  async addDescendants() {
+  async addDescendants({ returnNewDescendants = false } = {}) {
     let addedDescendantCount = 0;
     const childViews = this.getChildViews();
     if (!childViews) {
-      return addedDescendantCount;
+      return returnNewDescendants
+        ? []
+        : addedDescendantCount;
     }
+    const newDescendants = [];
     for (let i = 0, l = childViews.length; i < l; i++) {
       const view = childViews[i];
-      addedDescendantCount = view.addChildren ? await view.addChildren() : 0;
+      // addChildren may return either an array or an integer
+      // Due to backward compatibility, it should be processed accordingly
+      const result = view.addChildren
+        ? await view.addChildren({ returnNewDescendants: true })
+        : 0;
+      if (Array.isArray(result)) {
+        addedDescendantCount += result.length;
+        newDescendants.push(...result);
+      } else {
+        addedDescendantCount += result;
+      }
       if (addedDescendantCount) {
         break;
       }
     }
     if (!addedDescendantCount) {
       this.model.checkReadyStatus();
-      return addedDescendantCount;
+      return returnNewDescendants ? [] : addedDescendantCount;
     }
     // Descendants were added, unset _isReady
     this.model.set('_isReady', false);
-    return addedDescendantCount;
+    return returnNewDescendants ? newDescendants : addedDescendantCount;
   }
 
   /**
@@ -346,12 +379,14 @@ class AdaptView extends Backbone.View {
   preRemove() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRemove view:preRemove`, this);
+    this.trigger('preRemove');
   }
 
   remove() {
     const type = this.constructor.type;
     this.preRemove();
     Adapt.trigger(`${type}View:remove view:remove`, this);
+    this.trigger('remove');
     this._isRemoved = true;
     this.stopListening();
 
@@ -363,6 +398,7 @@ class AdaptView extends Backbone.View {
       super.remove();
       _.defer(() => {
         Adapt.trigger(`${type}View:postRemove view:postRemove`, this);
+        this.trigger('postRemove');
       });
       end();
     });
@@ -386,6 +422,47 @@ class AdaptView extends Backbone.View {
     this.$el.toggleClass('u-display-none', this.model.get('_isHidden'));
   }
 
+  /**
+   * Calculate and set priority label data on the model based on configuration.
+   * Supports per-element override via model's _priorityLabels with _isOverride: true.
+   * Handles all the logic internally: checks type, gets config, and sets model data.
+   */
+  setPriorityLabels() {
+    const type = this.constructor.type;
+    if (!PRIORITY_LABEL_SUPPORTED_TYPE.includes(type)) return;
+
+    const _globals = Adapt.course.get('_globals');
+    const globalConfig = _globals?._priorityLabels;
+    const localConfig = this.model.get('_priorityLabels');
+
+    // Use local override if _isOverride is explicitly true
+    const isLocalOverride = localConfig?._isOverride === true;
+    const typeConfig = isLocalOverride
+      ? localConfig
+      : globalConfig?.[`_${type}`];
+
+    if (!typeConfig) return;
+
+    const _isOptional = this.model.get('_isOptional');
+    const optionalLabel = _globals?._accessibility?._ariaLabels?.optional;
+    const requiredLabel = _globals?._accessibility?._ariaLabels?.required;
+
+    const showWhenOptional = typeConfig._showWhenOptional && _isOptional && optionalLabel;
+    const showWhenRequired = typeConfig._showWhenRequired && !_isOptional && requiredLabel;
+
+    if (!showWhenOptional && !showWhenRequired) return;
+
+    // Icon classes always come from global config
+    const _iconClassOptional = globalConfig?._iconClassOptional ?? '';
+    const _iconClassRequired = globalConfig?._iconClassRequired ?? '';
+
+    this.model.set({
+      _priorityClass: _isOptional ? 'is-optional' : 'is-required',
+      _priorityIconClass: _isOptional ? _iconClassOptional : _iconClassRequired,
+      priorityLabel: _isOptional ? optionalLabel : requiredLabel
+    });
+  }
+
   onIsCompleteChange(model, isComplete) {
     this.$el.toggleClass('is-complete', isComplete);
   }
@@ -394,7 +471,7 @@ class AdaptView extends Backbone.View {
    * @returns {[AdaptView]}
    */
   getChildViews() {
-    if (!this._childViews) return this._childViews;
+    if (!this._childViews) return null;
     // Allow both a deprecated id/view map or a new array of child views
     return Object.entries(this._childViews).map(([key, value]) => value);
   }

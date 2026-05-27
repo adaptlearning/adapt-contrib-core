@@ -1,5 +1,6 @@
 import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
+import data from 'core/js/data';
 import logging from './logging';
 
 const helpers = {
@@ -65,6 +66,14 @@ const helpers = {
       case '/': return lvalue / rvalue;
       case '%': return lvalue % rvalue;
     }
+  },
+
+  use(id, block) {
+    if (!block.fn) return;
+    try {
+      const model = data.findById(id);
+      return block.fn(model.toJSON());
+    } catch (err) {}
   },
 
   /**
@@ -309,7 +318,7 @@ const helpers = {
    */
   a11y_wrap_focus() {
     const cfg = Adapt.config.get('_accessibility');
-    if (cfg._isPopupWrapFocusEnabled === false) return '';
+    if (cfg._options?._isPopupWrapFocusEnabled === false) return '';
     return new Handlebars.SafeString('<a class="a11y-focusguard a11y-ignore a11y-ignore-focus" tabindex="0" role="presentation">&nbsp;</a>');
   },
 
