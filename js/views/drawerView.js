@@ -294,8 +294,10 @@ class DrawerView extends Backbone.View {
     Adapt.trigger('drawer:opened');
 
     this.$el.addClass('anim-show-before');
-    // focus on first tabbable element in drawer
-    a11y.focusFirst(this.$el, { defer: false });
+    // focus the drawer dialog itself so its accessible name (aria-labelledby)
+    // is announced once on open; focusing the heading element directly caused
+    // a duplicate announcement (label + focused element)
+    a11y.focus(this.$el, { defer: false });
     await transitionNextFrame();
     this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
