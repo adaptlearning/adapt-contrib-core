@@ -295,7 +295,7 @@ class DrawerView extends Backbone.View {
 
     this.$el.addClass('anim-show-before');
     // focus on first tabbable element in drawer
-    a11y.focusFirst(this.$el, { defer: true });
+    a11y.focusFirst(this.$el, { defer: false });
     await transitionNextFrame();
     this.$el.addClass('anim-show-after');
     await transitionsEnded(this.$el);
