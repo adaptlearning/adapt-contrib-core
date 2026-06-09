@@ -392,6 +392,35 @@
           "type": "boolean",
           "title": "Suppress subsequent deprecation warnings",
           "default": true
+        },
+        "_notify": {
+          "type": "object",
+          "title": "Notify on error",
+          "default": {},
+          "properties": {
+            "_isEnabled": {
+              "type": "boolean",
+              "title": "Show on-screen notifications for errors",
+              "description": "When enabled, error and fatal log messages are also shown as on-screen push notifications. Intended for authors previewing a course; leave disabled for published courses so learners do not see them.",
+              "default": false
+            },
+            "_level": {
+              "type": "string",
+              "title": "Minimum level to notify",
+              "default": "error",
+              "enum": [
+                "error",
+                "fatal"
+              ],
+              "_backboneForms": "Select"
+            },
+            "_timeout": {
+              "type": "number",
+              "title": "Notification timeout (ms)",
+              "description": "How long each notification stays on screen before fading. Notifications can also be dismissed manually.",
+              "default": 15000
+            }
+          }
         }
       }
     },

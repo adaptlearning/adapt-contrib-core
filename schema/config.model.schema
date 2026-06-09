@@ -444,6 +444,41 @@
           "inputType": "Checkbox",
           "validators": [],
           "title": "Show only first deprecated and removed warnings?"
+        },
+        "_notify": {
+          "type": "object",
+          "title": "Notify on error",
+          "properties": {
+            "_isEnabled": {
+              "type": "boolean",
+              "default": false,
+              "inputType": "Checkbox",
+              "validators": [],
+              "title": "Show on-screen notifications for errors?",
+              "help": "When enabled, error and fatal log messages are also shown as on-screen push notifications. Intended for authors previewing a course; leave disabled for published courses so learners do not see them."
+            },
+            "_level": {
+              "type": "string",
+              "default": "error",
+              "title": "Minimum level to notify",
+              "validators": [],
+              "inputType": {
+                "type": "Select",
+                "options": [
+                  "error",
+                  "fatal"
+                ]
+              }
+            },
+            "_timeout": {
+              "type": "number",
+              "default": 15000,
+              "inputType": "Number",
+              "validators": [],
+              "title": "Notification timeout (ms)",
+              "help": "How long each notification stays on screen before fading. Notifications can also be dismissed manually."
+            }
+          }
         }
       }
     },
