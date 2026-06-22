@@ -1,0 +1,28 @@
+{
+  "$anchor": "items-question-component",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "$merge": {
+    "source": {
+      "$ref": "question-component"
+    },
+    "with": {
+      "required": [
+      ],
+      "properties": {
+        "_items": {
+          "type": "array",
+          "title": "Items",
+          "items": {
+            "type": "object"
+          }
+        },
+        "_isRandom": {
+          "type": "boolean",
+          "title": "Randomise answers",
+          "default": false
+        }
+      }
+    }
+  }
+}
