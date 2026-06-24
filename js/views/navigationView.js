@@ -1,3 +1,16 @@
+/**
+ * @file Navigation View - Renders and manages the navigation bar and its buttons
+ * @module core/js/views/navigationView
+ * @description Owns the `<nav>` element inserted before `#app`. Manages a list of
+ * {@link module:core/js/views/NavigationButtonView NavigationButtonView} instances,
+ * keeps them sorted by `data-order`, and handles alignment changes on device resize.
+ *
+ * @example
+ * import navigation from 'core/js/navigation';
+ * // navigation is the running NavigationView instance
+ * navigation.addButton(myButtonView);
+ * navigation.removeButton(myButtonView);
+ */
 import Adapt from 'core/js/adapt';
 import device from 'core/js/device';
 import tooltips from '../tooltips';
@@ -5,6 +18,11 @@ import _ from 'underscore';
 import NavigationButtonView from './NavigationButtonView';
 import NavigationButtonModel from '../models/NavigationButtonModel';
 
+/**
+ * @class NavigationView
+ * @classdesc Backbone view for the main navigation bar. Exposed as `Adapt.navigation`
+ * via {@link module:core/js/navigation navigation.js}.
+ */
 class NavigationView extends Backbone.View {
 
   className() {
@@ -22,6 +40,11 @@ class NavigationView extends Backbone.View {
     };
   }
 
+  /**
+   * All currently registered {@link module:core/js/views/NavigationButtonView NavigationButtonView}
+   * instances, including both framework buttons and plugin-injected buttons.
+   * @type {NavigationButtonView[]}
+   */
   get buttons() {
     return (this._buttons = this._buttons || []);
   }
@@ -35,6 +58,12 @@ class NavigationView extends Backbone.View {
     this._classSet = new Set(_.result(this, 'className').trim().split(/\s+/));
   }
 
+  /**
+   * Binds the view to a model, registers the back-button tooltip, sets up
+   * listeners, and triggers an initial render. Called once by
+   * {@link module:core/js/navigation NavigationController} after course data loads.
+   * @param {NavigationModel} model - Navigation configuration model
+   */
   start(model) {
     tooltips.register({
       _id: 'back',
@@ -106,6 +135,15 @@ class NavigationView extends Backbone.View {
     });
   }
 
+  /**
+   * Sorts all child elements of `.nav__inner` by their `data-order` attribute,
+   * avoiding DOM moves that would steal focus. Also reconciles any buttons
+   * injected directly into the DOM (not via {@link NavigationView#addButton addButton})
+   * by wrapping them in ephemeral `NavigationButtonView` instances.
+   * Called automatically by a `MutationObserver` and after every model change.
+   * @param {MutationRecord[]|null} [changed=null] - Mutation records from the observer,
+   *   or `null` / a Backbone event string when called manually
+   */
   sortNavigationButtons(changed) {
     if (Array.isArray(changed)) {
       // Summarize mutation observer changes
@@ -189,15 +227,27 @@ class NavigationView extends Backbone.View {
     this.listenForInjectedButtons();
   }
 
+  /**
+   * Hides the back and home buttons when the learner is at the course root.
+   * @param {Backbone.Model} contentObjectModel - The content object being navigated to
+   */
   hideNavigationButton(contentObjectModel) {
     const shouldHide = (contentObjectModel.get('_type') === 'course');
     this.$('.nav__back-btn, .nav__home-btn').toggleClass('u-display-none', shouldHide);
   }
 
+  /**
+   * Restores the back and home buttons after they were hidden by
+   * {@link NavigationView#hideNavigationButton hideNavigationButton}.
+   */
   showNavigationButton() {
     this.$('.nav__back-btn, .nav__home-btn').removeClass('u-display-none');
   }
 
+  /**
+   * Registers a button view, appends it to `.nav__inner`, and re-sorts all buttons.
+   * @param {NavigationButtonView} buttonView - The button view to add
+   */
   addButton(buttonView) {
     this.buttons.push(buttonView);
     const container = this.$('.nav__inner');
@@ -208,10 +258,21 @@ class NavigationView extends Backbone.View {
     this.sortNavigationButtons();
   }
 
+  /**
+   * Returns the registered button view with the given `_id`, or `undefined`.
+   * @param {string} id - The `_id` value of the target button model
+   * @returns {NavigationButtonView|undefined}
+   */
   getButton(id) {
     return this.buttons.find(button => button.model.get('_id') === id);
   }
 
+  /**
+   * Unregisters and removes a button view from the DOM. For injected buttons
+   * only the element is removed; for framework buttons the full Backbone
+   * `remove()` lifecycle is used.
+   * @param {NavigationButtonView} buttonView - The button view to remove
+   */
   removeButton(buttonView) {
     this.buttons = this.buttons.filter(view => view !== buttonView);
     this.stopListening(buttonView.model, 'change', this.sortNavigationButtons);
