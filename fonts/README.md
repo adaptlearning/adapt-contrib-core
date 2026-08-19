@@ -6,7 +6,7 @@ The `vanilla` icon font is generated via [IcoMoon](https://icomoon.io). It is re
 
 | File | Purpose |
 |------|---------|
-| `vanilla.woff` / `vanilla.woff2` | Compiled font files used at runtime |
+| `vanilla.woff` | Compiled font file used at runtime |
 | `Vanilla icons.json` | IcoMoon app project state - import this to resume editing in the app |
 | `vanilla-icons.icomoon.json` | IcoMoon font definition (new app format) - use this to regenerate the font |
 | `selection.json` | Legacy IcoMoon backup (old app format) - kept for backwards compatibility |
@@ -19,7 +19,8 @@ Use this when adding, removing, or modifying icons in the shared `vanilla` font 
 2. Import `Vanilla icons.json` from the project selection screen.
 3. Add, remove, or modify icons as needed.
 4. Export the font package (the zip download).
-5. Replace `vanilla.woff` and `vanilla.woff2` with the new files from the `fonts/` folder in the zip.
+5. Replace `vanilla.woff` with the new file from the `fonts/` folder in the zip.
+   - WOFF2 generation requires a paid IcoMoon plan, so only WOFF is used. Do not add a `vanilla.woff2`.
 6. Replace `vanilla-icons.icomoon.json` with the version from the zip root.
 7. Update `icons.less` if any icon class names or unicode values have changed.
 
