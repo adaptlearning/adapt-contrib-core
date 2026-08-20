@@ -187,16 +187,23 @@ export default class Popup extends Backbone.Controller {
    * @returns {Promise<Popup>} Returns a promise that resolves to this for method chaining.
    */
   async closed($forceFocusElement, silent) {
+    // capture the layer being closed as another popup can be opened whilst waiting
+    const closingIndex = this._floorStack.length - 1;
+    const $closingElement = this._floorStack[closingIndex];
     if (!silent) {
       Adapt.trigger('popup:closing');
       await wait.queue();
     }
-    const $previousFocusElement = this._removeLastPopupLayer();
+    const wasLastPopupLayer = (this._floorStack[this._floorStack.length - 1] === $closingElement);
+    const $previousFocusElement = this._removePopupLayerAt(closingIndex, $closingElement);
     const $focusElement = $forceFocusElement || $previousFocusElement || $('body');
     if (!silent) {
       Adapt.trigger('popup:closed', $focusElement, true);
     }
-    this.a11y.focusFirst($($focusElement), { preventScroll: true });
+    // leave the focus with the newer popup as it now owns the top of the stack
+    if (wasLastPopupLayer) {
+      this.a11y.focusFirst($($focusElement), { preventScroll: true });
+    }
     return this;
   }
 
@@ -211,14 +218,45 @@ export default class Popup extends Backbone.Controller {
    *                            or undefined if no popup was open.
    */
   _removeLastPopupLayer() {
+    return this._removePopupLayerAt(this._floorStack.length - 1);
+  }
+
+  /**
+   * Restores tabbing and screen reader access to the state before the
+   * `_addPopupLayer` call which added the layer at the specified index.
+   * Removes that popup from the stack and restores the original tabindex and
+   * aria-hidden attribute values for all affected elements. For native dialog elements,
+   * closes them using the dialog.close() API.
+   * @private
+   * @param {number} index - Index of the layer in the popup stack.
+   * @param {jQuery} [$expectedElement=null] - Layer expected at that index. When it does
+   *                                           not match, the layer has already been
+   *                                           removed and nothing is done.
+   * @returns {jQuery|undefined} Returns the previously active element as a jQuery object,
+   *                            or undefined if no popup was removed.
+   */
+  _removePopupLayerAt(index, $expectedElement = null) {
     // the body layer is the first element and must always exist
-    if (this._floorStack.length <= 1) {
+    if (index < 1 || index >= this._floorStack.length) {
       return;
     }
-    const $popupElement = this._floorStack.pop();
-    if ($popupElement.is('dialog')) {
+    const $popupElement = this._floorStack[index];
+    // the layer has already been removed
+    if ($expectedElement && $popupElement !== $expectedElement) {
+      return;
+    }
+    const isDialog = $popupElement.is('dialog');
+    const isLastPopupLayer = (index === this._floorStack.length - 1);
+    if (!isDialog && !isLastPopupLayer) {
+      // tabindex and aria-hidden states are stored in stack order so can only be restored from the top down
+      logging.warn('a11y/popup: cannot close a non-dialog popup whilst a newer popup is open', $popupElement);
+      return;
+    }
+    this._floorStack.splice(index, 1);
+    const $previousFocusElement = this._focusStack.splice(index - 1, 1)[0];
+    if (isDialog) {
       $popupElement[0].close();
-      return this._focusStack.pop();
+      return $previousFocusElement;
     }
     const config = this.a11y.config;
     if (!config._isEnabled || !config._options._isPopupManagementEnabled) {
@@ -262,7 +300,7 @@ export default class Popup extends Backbone.Controller {
         }
       }
     });
-    return this._focusStack.pop();
+    return $previousFocusElement;
   }
 
   /**
