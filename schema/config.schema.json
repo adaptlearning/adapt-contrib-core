@@ -377,6 +377,7 @@
           "enum": [
             "debug",
             "info",
+            "success",
             "warn",
             "error",
             "fatal"
