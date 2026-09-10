@@ -1,3 +1,30 @@
+/**
+ * @file AdaptView - Base Backbone view for all Adapt content
+ * @module core/js/views/adaptView
+ * @description Base view class for every rendered content item in the Adapt Framework.
+ * Handles both Handlebars and JSX template rendering, child view lifecycle
+ * management, on-screen animation, visibility toggling, and completion/ready
+ * state delegation to the model.
+ *
+ * **Key Responsibilities:**
+ * - Template rendering (Handlebars and React/JSX)
+ * - Child view creation and hierarchical addition (`addChildren`, `addChildView`)
+ * - View lifecycle events: `preRemove`, `remove`, `postRemove`
+ * - On-screen animation via `_onScreen` model config
+ * - Visibility and display toggling
+ * - Priority label calculation
+ *
+ * **Public Events Triggered:**
+ * - `{type}View:preRender view:preRender` - Before template is rendered
+ * - `{type}View:render view:render` - During render
+ * - `{type}View:postRender view:postRender` - After render and children added
+ * - `{type}View:addChild view:addChild` - Before a child view is created
+ * - `{type}View:childAdded view:childAdded` - After a child view is appended
+ * - `{type}View:preRemove view:preRemove` - Before removal begins
+ * - `{type}View:remove view:remove` - During removal
+ * - `{type}View:postRemove view:postRemove` - After removal completes
+ * - `{type}View:animationStart view:animationStart` - On-screen animation triggered
+ */
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import components from 'core/js/components';
@@ -8,6 +35,14 @@ import ReactDOM from 'react-dom';
 import location from 'core/js/location';
 import logging from 'core/js/logging';
 import PRIORITY_LABEL_SUPPORTED_TYPE from 'core/js/enums/priorityLabelSupportedType';
+/**
+ * @class AdaptView
+ * @classdesc Base Backbone view for all Adapt content items. Manages template
+ * rendering (Handlebars and JSX), child view hierarchy, on-screen animations,
+ * and visibility state. Subclassed by menu, page, article, block, and component
+ * views.
+ * @extends {Backbone.View}
+ */
 class AdaptView extends Backbone.View {
 
   attributes() {
@@ -57,6 +92,17 @@ class AdaptView extends Backbone.View {
     await this.addChildren();
   }
 
+  /**
+   * Renders the Handlebars or JSX template into the root element and fires
+   * lifecycle events. Defers `postRender` to allow the browser to paint first.
+   * @fires {type}View:preRender
+   * @fires view:preRender
+   * @fires {type}View:render
+   * @fires view:render
+   * @fires {type}View:postRender
+   * @fires view:postRender
+   * @returns {AdaptView} Returns this for chaining
+   */
   render() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRender view:preRender`, this);
@@ -84,8 +130,8 @@ class AdaptView extends Backbone.View {
   }
 
   /**
-   * Re-render a react template
-   * @param {string} eventName=null Backbone change event name
+   * Re-renders the JSX template in response to model or device changes.
+   * @param {string} [eventName=null] Backbone change event name; bubbling events are ignored
    */
   changed(eventName = null) {
     if (this._jsxIgnoreChanges !== 0) return;
@@ -108,10 +154,19 @@ class AdaptView extends Backbone.View {
     ReactDOM.render(<Template {...props} />, this.el);
   }
 
+  /**
+   * Pauses JSX re-renders. Increments a counter; call `startRendering` to
+   * resume. Useful when making multiple model changes that should only
+   * result in a single render pass.
+   */
   stopRendering() {
     this._jsxIgnoreChanges++;
   }
 
+  /**
+   * Resumes JSX re-renders after a `stopRendering` call.
+   * Decrements the pause counter; rendering resumes when the counter reaches zero.
+   */
   startRendering() {
     this._jsxIgnoreChanges--;
     if (this._jsxIgnoreChanges < 0) {
@@ -119,6 +174,11 @@ class AdaptView extends Backbone.View {
     }
   }
 
+  /**
+   * Synchronises the DOM element's class list and attributes with the current
+   * Backbone `className` and `attributes` results. Called by `changed` before
+   * each JSX render to ensure the element stays up to date.
+   */
   updateViewProperties() {
     const classesToAdd = _.result(this, 'className').trim().split(/\s+/);
     classesToAdd.forEach(i => this._classSet.add(i));
@@ -128,6 +188,14 @@ class AdaptView extends Backbone.View {
     this.$el.removeClass(classesToRemove).addClass(classesToAdd);
   }
 
+  /**
+   * Attaches an `onscreen` CSS animation handler when `_onScreen._isEnabled` is
+   * set on the model. Adds the before-animation class immediately, then switches
+   * to the after-animation class once the element enters the viewport beyond the
+   * configured vertical threshold.
+   * @fires {type}View:animationStart
+   * @fires view:animationStart
+   */
   setupOnScreenHandler() {
     const onscreen = this.model.get('_onScreen');
 
@@ -365,6 +433,12 @@ class AdaptView extends Backbone.View {
     this.model.setCompletionStatus();
   }
 
+  /**
+   * Resets completion state on this view's model or all its descendant components.
+   * Has no effect if the model's `_canReset` is `false`.
+   * @param {string} type - Reset type: `'hard'` resets `_isComplete` and
+   * `_isInteractionComplete`; `'soft'` resets `_isInteractionComplete` only
+   */
   resetCompletionStatus(type) {
     if (!this.model.get('_canReset')) return;
 
@@ -376,12 +450,27 @@ class AdaptView extends Backbone.View {
     }
   }
 
+  /**
+   * Triggers `preRemove` lifecycle events on Adapt and this view.
+   * Called automatically by `remove` before teardown begins.
+   * @fires {type}View:preRemove
+   * @fires view:preRemove
+   */
   preRemove() {
     const type = this.constructor.type;
     Adapt.trigger(`${type}View:preRemove view:preRemove`, this);
     this.trigger('preRemove');
   }
 
+  /**
+   * Removes the view from the DOM, unmounts any React tree, and triggers
+   * lifecycle events. Stops all listeners and defers a `postRemove` event.
+   * @override
+   * @returns {AdaptView} Returns this for chaining
+   * @fires {type}View:preRemove
+   * @fires {type}View:remove
+   * @fires {type}View:postRemove
+   */
   remove() {
     const type = this.constructor.type;
     this.preRemove();
@@ -406,6 +495,11 @@ class AdaptView extends Backbone.View {
     return this;
   }
 
+  /**
+   * Returns the CSS class to apply for the current `_isVisible` state.
+   * Used in Handlebars templates to set initial visibility.
+   * @returns {string} `'u-visibility-hidden'` when hidden, otherwise `''`
+   */
   setVisibility() {
     return this.model.get('_isVisible') ? '' : 'u-visibility-hidden';
   }
@@ -414,6 +508,11 @@ class AdaptView extends Backbone.View {
     this.$el.toggleClass('u-visibility-hidden', !this.model.get('_isVisible'));
   }
 
+  /**
+   * Returns the CSS class to apply for the current `_isHidden` state.
+   * Used in Handlebars templates to set initial display state.
+   * @returns {string} `'u-display-none'` when hidden, otherwise `''`
+   */
   setHidden() {
     return this.model.get('_isHidden') ? 'u-display-none' : '';
   }
@@ -463,12 +562,19 @@ class AdaptView extends Backbone.View {
     });
   }
 
+  /**
+   * Reacts to `change:_isComplete` on the model by toggling the
+   * `is-complete` CSS class on the root element.
+   * @param {AdaptModel} model - The model that changed
+   * @param {boolean} isComplete - New completion state
+   */
   onIsCompleteChange(model, isComplete) {
     this.$el.toggleClass('is-complete', isComplete);
   }
 
   /**
-   * @returns {[AdaptView]}
+   * Returns an array of direct child views.
+   * @returns {Array<AdaptView>|null} Child views, or `null` if none have been added
    */
   getChildViews() {
     if (!this._childViews) return null;
@@ -476,9 +582,6 @@ class AdaptView extends Backbone.View {
     return Object.entries(this._childViews).map(([key, value]) => value);
   }
 
-  /**
-   * @param {[AdaptView]} value
-   */
   setChildViews(value) {
     this._childViews = value;
   }

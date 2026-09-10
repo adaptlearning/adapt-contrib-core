@@ -1,3 +1,29 @@
+/**
+ * @file AdaptModel - Base data model for all Adapt content
+ * @module core/js/models/adaptModel
+ * @description Base Backbone model for every content item in the Adapt Framework
+ * (course, contentobject, article, block, component). Extends
+ * {@link module:core/js/models/lockingModel|LockingModel} to provide cooperative
+ * locking, and adds hierarchy traversal, trackable state, completion checking,
+ * and accessibility label support.
+ *
+ * **Key Responsibilities:**
+ * - Hierarchy traversal: `getParent`, `getChildren`, `getAncestorModels`, `getSiblings`, `findDescendantModels`
+ * - Completion checking: `checkCompletionStatus`, `checkInteractionCompletionStatus`
+ * - Trackable state: `getTrackableState`, `setTrackableState`, `triggerTrackableState`
+ * - Type group queries: `isTypeGroup`, `getTypeGroups`
+ * - Relative navigation: `findRelativeModel`
+ *
+ * **State Properties:**
+ * - `_isComplete` {boolean} - Model has been completed
+ * - `_isInteractionComplete` {boolean} - Interaction portion is complete
+ * - `_isReady` {boolean} - All rendered children are ready
+ * - `_isRendered` {boolean} - View has been rendered
+ * - `_isAvailable` {boolean} - Model is included in the course
+ * - `_isVisible` {boolean} - Model is shown in the UI
+ * - `_isLocked` {boolean} - Model is locked (lockable)
+ * - `_isOptional` {boolean} - Model does not count towards parent completion
+ */
 import Adapt from 'core/js/adapt';
 import data from 'core/js/data';
 import ModelEvent from 'core/js/modelEvent';
@@ -5,8 +31,23 @@ import LockingModel from 'core/js/models/lockingModel';
 import logging from 'core/js/logging';
 import { toggleModelClass } from '../modelHelpers';
 
+/**
+ * @class AdaptModel
+ * @classdesc Base data model for all Adapt content items. Provides hierarchy
+ * traversal, completion checking, trackable state management, and type group
+ * querying. Subclassed by course, contentobject, article, block, and component
+ * models.
+ * @extends {LockingModel}
+ */
 export default class AdaptModel extends LockingModel {
 
+  /**
+   * Serializes the model attributes to a plain JSON object.
+   * Performs a deep clone and removes the `_children` and `_parent` references,
+   * which are Backbone collections/models and not valid JSON.
+   * @override
+   * @returns {Object} Deep-cloned plain object of model attributes
+   */
   toJSON() {
     // Perform shallow clone
     const json = { ...this.attributes };
@@ -17,6 +58,14 @@ export default class AdaptModel extends LockingModel {
     return $.extend(true, {}, json);
   }
 
+  /**
+   * Overrides Backbone `get` to emit deprecation warnings when accessing
+   * `_children` or `_parent` directly.
+   * Use {@link getChildren} and {@link getParent} instead.
+   * @override
+   * @param {string} name - Attribute name
+   * @returns {*} Attribute value
+   */
   get(name) {
     switch (name) {
       case '_parent':
@@ -57,8 +106,11 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Fetch an array representing the relative location of the model to the nearest _trackingId
-   * @returns {Array<Number, Number>}
+   * Returns the relative location of this model to the nearest `_trackingId` ancestor
+   * as a two-element tuple `[trackingId, indexOffset]`. `indexOffset` is ≥ 0 when this
+   * model is the tracking-id model or one of its flattened descendants, and negative
+   * when it is an ancestor.
+   * @returns {[number, number]|undefined}
    */
   get trackingPosition() {
     const firstDescendant = this.getAllDescendantModels(false).concat([this])[0];
@@ -79,9 +131,12 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * The AAT always sets the value of `_isResetOnRevisit` to a String
-   * which is fine for the 'soft' and 'hard' values - but 'false' needs
-   * converting to Boolean - see #2825
+   * Pre-processes raw data before setting it on the model.
+   * Converts the string `'false'` value of `_isResetOnRevisit` to a Boolean,
+   * working around an AAT serialization issue (see #2825).
+   * @override
+   * @param {Object} data - Raw model data
+   * @returns {Object} Processed data
    */
   parse(data) {
     if (data._isResetOnRevisit === 'false') {
@@ -90,6 +145,11 @@ export default class AdaptModel extends LockingModel {
     return data;
   }
 
+  /**
+   * Returns the list of attribute names that should be persisted to the LMS.
+   * Override in subclasses to extend the trackable attribute set.
+   * @returns {Array<string>} Trackable attribute names
+   */
   trackable() {
     return [
       '_id',
@@ -99,6 +159,11 @@ export default class AdaptModel extends LockingModel {
     ];
   }
 
+  /**
+   * Returns the expected constructor types for each trackable attribute,
+   * in the same order as {@link trackable}.
+   * @returns {Array<Function>} Constructor functions (e.g. `String`, `Boolean`)
+   */
   trackableType() {
     return [
       String,
@@ -108,6 +173,11 @@ export default class AdaptModel extends LockingModel {
     ];
   }
 
+  /**
+   * Returns the list of events that should bubble up through the model hierarchy.
+   * Override in subclasses to extend the bubbling event set.
+   * @returns {Array<string>} Backbone event names to bubble
+   */
   bubblingEvents() {
     return [
       'change:_isComplete',
@@ -118,9 +188,10 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Toggle a className in the _classes attribute
-   * @param className {string} Name or names of class to add/remove to _classes attribute, space separated list
-   * @param hasClass {boolean|null|undefined} true to add a class, false to remove, null or undefined to toggle
+   * Toggles a class name in the `_classes` model attribute.
+   * @param {string} className - Class name(s) to add/remove, space-separated
+   * @param {boolean|null} [hasClass] - `true` to add, `false` to remove, omit to toggle
+   * @returns {AdaptModel} Returns this for chaining
    */
   toggleClass(className, hasClass) {
     toggleModelClass(this, className, hasClass);
@@ -205,6 +276,11 @@ export default class AdaptModel extends LockingModel {
 
   init() {}
 
+  /**
+   * Returns a plain object containing only the trackable attributes and their
+   * current values, as declared by {@link trackable}.
+   * @returns {Object} Trackable attribute snapshot
+   */
   getTrackableState() {
 
     const trackable = this.resultExtend('trackable', []);
@@ -217,6 +293,12 @@ export default class AdaptModel extends LockingModel {
 
   }
 
+  /**
+   * Applies a previously captured trackable state snapshot to this model.
+   * Only attributes declared by {@link trackable} are applied.
+   * @param {Object} state - Attribute snapshot, typically from `getTrackableState`
+   * @returns {AdaptModel} Returns this for chaining
+   */
   setTrackableState(state) {
 
     const trackable = this.resultExtend('trackable', []);
@@ -232,6 +314,11 @@ export default class AdaptModel extends LockingModel {
 
   }
 
+  /**
+   * Fires the `state:change` event on Adapt with this model and its current
+   * trackable state snapshot. Debounced in practice via `setupTrackables`.
+   * @fires state:change
+   */
   triggerTrackableState() {
 
     Adapt.trigger('state:change', this, this.getTrackableState());
@@ -239,9 +326,12 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * @param {string} [type] 'hard' resets _isComplete and _isInteractionComplete, 'soft' resets _isInteractionComplete only.
-   * @param {boolean} [canReset] Defaults to this.get('_canReset')
-   * @returns {boolean}
+   * Resets the model's completion state. A hard reset clears both `_isComplete`
+   * and `_isInteractionComplete`; a soft reset clears `_isInteractionComplete` only.
+   * Returns `false` and does nothing if `canReset` is `false` or `type` is unrecognised.
+   * @param {string} [type='hard'] Reset type: `'hard'` or `'soft'`
+   * @param {boolean} [canReset=this.get('_canReset')] Override the model's reset guard
+   * @returns {boolean} `true` if the reset was applied, `false` otherwise
    */
   reset(type = 'hard', canReset = this.get('_canReset')) {
     if (!canReset) return false;
@@ -288,6 +378,11 @@ export default class AdaptModel extends LockingModel {
     this.set('_isReady', true);
   }
 
+  /**
+   * Checks child models and sets `_isVisited` to `true` if any child has been
+   * visited, completed, or interaction-completed.
+   * @returns {boolean} Whether any child is considered visited
+   */
   checkVisitedStatus() {
     const children = this.getAvailableChildModels();
     const isVisited = children.some(child => child.get('_isVisited') || child.get('_isComplete') || child.get('_isInteractionComplete'));
@@ -300,6 +395,10 @@ export default class AdaptModel extends LockingModel {
     this.set('_isVisited', true);
   }
 
+  /**
+   * Sets this model as complete, interaction-complete, and visited.
+   * Has no effect if the model is not visible.
+   */
   setCompletionStatus() {
     if (!this.get('_isVisible')) return;
 
@@ -310,12 +409,20 @@ export default class AdaptModel extends LockingModel {
     });
   }
 
+  /**
+   * Schedules a deferred check of `_isComplete` across child models.
+   * Defers to allow other `change:_isComplete` handlers to fire first.
+   */
   checkCompletionStatus() {
     // defer to allow other change:_isComplete handlers to fire before cascading to parent
     Adapt.checkingCompletion();
     _.defer(this.checkCompletionStatusFor.bind(this), '_isComplete');
   }
 
+  /**
+   * Schedules a deferred check of `_isInteractionComplete` across child models.
+   * Defers to allow other `change:_isInteractionComplete` handlers to fire first.
+   */
   checkInteractionCompletionStatus() {
     // defer to allow other change:_isInteractionComplete handlers to fire before cascading to parent
     Adapt.checkingCompletion();
@@ -407,10 +514,10 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Searches the model's ancestors to find the first instance of the specified ancestor type
-   * @param {string} [ancestorType] Valid values are 'course', 'pages', 'contentObjects', 'articles' or 'blocks'.
-   * If left blank, the immediate ancestor (if there is one) is returned
-   * @return {object} Reference to the model of the first ancestor of the specified type that's found - or `undefined` if none found
+   * Searches the model's ancestors to find the first instance of the specified type.
+   * If `ancestorType` is omitted, returns the immediate parent.
+   * @param {string} [ancestorType] Type group to search for — e.g. `'course'`, `'contentobject'`, `'article'`, `'block'`
+   * @returns {AdaptModel|undefined} First matching ancestor model, or `undefined` if none found
    */
   findAncestor(ancestorType) {
     const parent = this.getParent();
@@ -422,14 +529,13 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Returns all the descendant models of a specific type
-   * @param {string} descendants Valid values are 'contentobject', 'page', 'menu', 'article', 'block', 'component', 'question'
-   * @param {object} options an object that defines the search type and the properties/values to search on. Currently only the `where` search type (equivalent to `Backbone.Collection.where()`) is supported.
-   * @param {object} options.where
-   * @return {array}
+   * Returns all descendant models of a specific type, optionally filtered by attribute values.
+   * @param {string} descendants Type group to search for — e.g. `'contentobject'`, `'article'`, `'block'`, `'component'`, `'question'`
+   * @param {Object} [options] Filter options
+   * @param {Object} [options.where] Attribute/value pairs all matched descendants must satisfy (equivalent to `Backbone.Collection.where()`)
+   * @returns {Array<AdaptModel>}
    * @example
-   * //find all available, non-optional components
-   * this.findDescendantModels('component', { where: { _isAvailable: true, _isOptional: false }});
+   * this.findDescendantModels('component', { where: { _isAvailable: true, _isOptional: false } });
    */
   findDescendantModels(descendants, options) {
     const allDescendantsModels = this.getAllDescendantModels();
@@ -467,8 +573,8 @@ export default class AdaptModel extends LockingModel {
    *  [ a1, b1, c1, c2, b2, c3, c4, a2, b3, c5, c6 ]
    *
    * This is useful when sequential operations are performed on the menu/page/article/block/component hierarchy.
-   * @param {boolean} [isParentFirst]
-   * @return {array}
+   * @param {boolean} [isParentFirst=false] When `true`, each parent is returned before its children
+   * @returns {Array<AdaptModel>}
    */
   getAllDescendantModels(isParentFirst) {
 
@@ -516,10 +622,10 @@ export default class AdaptModel extends LockingModel {
    * @see Adapt.parseRelativeString for a description of relativeStrings
    * @param {string} relativeString
    * @param {object} options Search configuration settings
-   * @param {boolean} options.limitParentId Constrain to a parent
-   * @param {function} options.filter Model filter
-   * @param {boolean} options.loop Allow offsets and insets to loop around to the beginning
-   * @return {array}
+   * @param {string} [options.limitParentId] Constrain the search to descendants of the model with this `_id`
+   * @param {Function} [options.filter] Additional filter function applied to candidate models
+   * @param {boolean} [options.loop=false] Allow offsets to loop around when they exceed the available count
+   * @returns {AdaptModel|undefined}
    */
   findRelativeModel(relativeString, options = {}) {
     if (!relativeString) return this;
@@ -622,10 +728,17 @@ export default class AdaptModel extends LockingModel {
     return foundModel;
   }
 
+  // Override in subclasses to return `false` for leaf nodes (e.g. components).
   get hasManagedChildren() {
     return true;
   }
 
+  /**
+   * Returns the collection of direct child models, building and caching it on
+   * first access. Block models with two children are re-ordered to ensure
+   * the `left`-layout component appears first.
+   * @returns {Backbone.Collection<AdaptModel>} Child model collection
+   */
   getChildren() {
     if (this._childrenCollection) {
       return this._childrenCollection;
@@ -656,6 +769,10 @@ export default class AdaptModel extends LockingModel {
     return this._childrenCollection;
   }
 
+  /**
+   * Sets the children collection and updates the deprecated `_children` attribute.
+   * @param {Backbone.Collection<AdaptModel>} children - New children collection
+   */
   setChildren(children) {
     this._childrenCollection = children;
     // Setup deprecated reference
@@ -668,6 +785,11 @@ export default class AdaptModel extends LockingModel {
     });
   }
 
+  /**
+   * Returns the parent model, looked up by `_parentId` from the data module.
+   * Caches the result on first access.
+   * @returns {AdaptModel|undefined}
+   */
   getParent() {
     if (this._parentModel) {
       return this._parentModel;
@@ -685,6 +807,11 @@ export default class AdaptModel extends LockingModel {
     return this._parentModel;
   }
 
+  /**
+   * Sets the parent model reference and updates `_parentId` and the deprecated
+   * `_parent` attribute accordingly.
+   * @param {AdaptModel} parent - Parent model
+   */
   setParent(parent) {
     this._parentModel = parent;
     this.set('_parentId', this._parentModel.get('_id'));
@@ -692,6 +819,11 @@ export default class AdaptModel extends LockingModel {
     this.set('_parent', this._parentModel);
   }
 
+  /**
+   * Returns an ordered array of ancestor models, from immediate parent to the root.
+   * @param {boolean} [shouldIncludeChild=false] - Include this model at the start of the array
+   * @returns {Array<AdaptModel>|null} Ancestor models, or `null` if none
+   */
   getAncestorModels(shouldIncludeChild) {
     const parents = [];
     let context = this;
@@ -706,6 +838,11 @@ export default class AdaptModel extends LockingModel {
     return parents.length ? parents : null;
   }
 
+  /**
+   * Returns a collection of sibling models that share the same `_parentId`.
+   * @param {boolean} [passSiblingsAndIncludeSelf=false] - When `true`, includes this model in the result
+   * @returns {Backbone.Collection<AdaptModel>} Sibling collection
+   */
   getSiblings(passSiblingsAndIncludeSelf) {
     const id = this.get('_id');
     const parentId = this.get('_parentId');
@@ -740,9 +877,10 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * @param  {string} key
-   * @param  {any} value
-   * @param  {Object} options
+   * Sets attributes on this model and recursively on all descendant models.
+   * @param {string|Object} key - Attribute name or hash of key/value pairs
+   * @param {*} [value] - Attribute value (when key is a string)
+   * @param {Object} [options] - Backbone set options
    */
   setOnChildren(...args) {
 
