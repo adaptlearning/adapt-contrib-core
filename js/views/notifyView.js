@@ -22,10 +22,21 @@
 
 import Adapt from 'core/js/adapt';
 import logging from 'core/js/logging';
+import LOG_LEVEL from 'core/js/enums/logLevelEnum';
 import NotifyPushCollection from 'core/js/collections/notifyPushCollection';
 import NotifyPopupView from 'core/js/views/notifyPopupView';
 import NotifyModel from 'core/js/models/notifyModel';
 import a11y from '../a11y';
+
+// Defaults for the optional on-screen notification of logged errors. Merged
+// over any `_logging._notify` config so an older config without the block is
+// safe. Disabled by default so published courses do not surface errors to
+// learners; authors enable it when previewing.
+const NOTIFY_ON_ERROR_DEFAULTS = {
+  _isEnabled: false,
+  _level: 'error',
+  _timeout: 15000
+};
 
 /**
  * @class NotifyView
@@ -40,6 +51,7 @@ export default class NotifyView extends Backbone.View {
 
   initialize() {
     this._stack = [];
+    this._notifiedErrors = {};
 
     this.notifyPushes = new NotifyPushCollection();
 
@@ -50,7 +62,48 @@ export default class NotifyView extends Backbone.View {
       'notify:prompt': this._deprecated.bind(this, 'prompt'),
       'notify:push': this._deprecated.bind(this, 'push')
     });
+    this.listenTo(logging, 'log:error log:fatal', this.onErrorLogged);
     this.render();
+  }
+
+  /**
+   * Optionally surfaces error/fatal logs as on-screen push notifications so a
+   * non-developer author previewing a course can see them. Gated by the
+   * `_logging._notify` config; the console output is unchanged either way.
+   * @param {Object} level - The {@link LOG_LEVEL} of the log entry
+   * @param {Array} data - The arguments passed to the log call
+   * @private
+   */
+  onErrorLogged(level, data) {
+
+    const config = this._getNotifyOnErrorConfig();
+    if (!config._isEnabled) return;
+
+    const minimumLevel = LOG_LEVEL(config._level.toUpperCase());
+    if (!minimumLevel || level < minimumLevel) return;
+
+    const message = data.map(String).join(' ');
+    if (this._hasNotifiedError(message)) return;
+
+    this.push({
+      body: message,
+      _classes: 'notify-push--error',
+      _timeout: config._timeout
+    });
+
+  }
+
+  _getNotifyOnErrorConfig() {
+    const loggingConfig = Adapt.config?.get('_logging');
+    return Object.assign({}, NOTIFY_ON_ERROR_DEFAULTS, loggingConfig?._notify);
+  }
+
+  _hasNotifiedError(message) {
+    if (this._notifiedErrors[message]) {
+      return true;
+    }
+    this._notifiedErrors[message] = true;
+    return false;
   }
 
   onDataReady() {
