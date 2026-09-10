@@ -1,8 +1,29 @@
+/**
+ * @file Component Model - Base component data model
+ * @module core/js/models/componentModel
+ * @description Base data model for all Adapt components. Extends
+ * {@link module:core/js/models/adaptModel~AdaptModel} to provide attempt tracking,
+ * user answer storage, and state restoration. Registered as the abstract 'component'
+ * type to support deprecated view-only components.
+ *
+ * Attempt state is stored as a compact array format `[numbers[], booleans[], arrays[]]`
+ * for efficient SCORM tracking. Use {@link module:core/js/models/componentModel~ComponentModel#getAttemptObject}
+ * to retrieve a readable key-value representation.
+ */
+
 import components from 'core/js/components';
 import Adapt from 'core/js/adapt';
 import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
+/**
+ * @class ComponentModel
+ * @classdesc Base data model for Adapt components. Manages user answer storage,
+ * attempt state serialization, and state restoration for SCORM tracking. All
+ * interactive Adapt components extend this model. Component models are leaf nodes
+ * in the Adapt content hierarchy, held within blocks.
+ * @extends AdaptModel
+ */
 class ComponentModel extends AdaptModel {
 
   get _parent() {

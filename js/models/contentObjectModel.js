@@ -1,7 +1,23 @@
+/**
+ * @file Content Object Model - Base model for pages and menus
+ * @module core/js/models/contentObjectModel
+ * @description Base data model for content objects (pages and menus). Extends
+ * {@link module:core/js/models/adaptModel~AdaptModel} to represent navigable course
+ * sections that are direct children of the course root or a nested menu.
+ */
+
 import Adapt from 'core/js/adapt';
 import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
+/**
+ * @class ContentObjectModel
+ * @classdesc Base data model for content objects — pages and menus. Content objects are
+ * the navigable sections of a course, sitting directly below the course root or nested
+ * inside menus. Provides base type-group identification and deprecated navigation helpers
+ * for the content object hierarchy.
+ * @extends AdaptModel
+ */
 export default class ContentObjectModel extends AdaptModel {
 
   get _parent() {
