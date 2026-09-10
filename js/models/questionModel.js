@@ -1,3 +1,16 @@
+/**
+ * @file QuestionModel - Abstract base model for all question components
+ * @module core/js/models/questionModel
+ * @description Abstract base model providing the full question lifecycle: setup, submission,
+ * scoring, feedback, marking, and reset. Subclasses must implement {@link QuestionModel#canSubmit},
+ * {@link QuestionModel#isCorrect}, {@link QuestionModel#isPartlyCorrect},
+ * {@link QuestionModel#resetQuestion}, {@link QuestionModel#getResponse}, and
+ * {@link QuestionModel#getResponseType}.
+ *
+ * **Known Issues & Improvements:**
+ *   - `setScore` is deprecated but still called internally; callers should migrate to the `score`, `maxScore`, and `minScore` getters.
+ *   - `getFeedback` handles both legacy and current config shapes, adding long-term maintenance complexity.
+ */
 import Adapt from 'core/js/adapt';
 import components from 'core/js/components';
 import ComponentModel from 'core/js/models/componentModel';
@@ -9,13 +22,15 @@ import BUTTON_STATE from 'core/js/enums/buttonStateEnum';
  * @property {string} title
  */
 
+/**
+ * @class QuestionModel
+ * @classdesc Abstract base model for Adapt question components. Manages attempts, scoring,
+ * button state, feedback, and context activities. Register concrete question types via
+ * `components.register()` with a subclass of this model.
+ * @extends ComponentModel
+ */
 class QuestionModel extends ComponentModel {
 
-  /// ///
-  // Setup question types
-  /// /
-
-  // Used to set model defaults
   defaults() {
     // Extend from the ComponentModel defaults
     return ComponentModel.resultExtend('defaults', {
@@ -35,7 +50,6 @@ class QuestionModel extends ComponentModel {
     });
   }
 
-  // Extend from the ComponentModel trackable
   trackable() {
     return ComponentModel.resultExtend('trackable', [
       '_isSubmitted',
@@ -78,7 +92,6 @@ class QuestionModel extends ComponentModel {
     super.init();
   }
 
-  // Calls default methods to setup on questions
   setupDefaultSettings() {
     // Not sure this is needed anymore, keeping to maintain API
     this.setupWeightSettings();
@@ -86,7 +99,6 @@ class QuestionModel extends ComponentModel {
     this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
-  // Used to setup either global or local button text
   setupButtonSettings() {
     const globalButtons = Adapt.course.get('_buttons');
 
@@ -118,31 +130,26 @@ class QuestionModel extends ComponentModel {
     }
   }
 
-  // Used to setup either global or local question weight/score
   setupWeightSettings() {
     // Not needed as handled by model defaults, keeping to maintain API
   }
 
-  /// ///
-  // Submit process
-  /// /
-
-  // Use to check if the user is allowed to submit the question
-  // Maybe the user has to select an item?
+  /**
+   * Override in subclasses to determine whether the learner may submit the question.
+   * @returns {boolean} `true` if submission is allowed
+   */
   canSubmit() {}
 
   checkCanSubmit() {
     this.set('_canSubmit', this.canSubmit(), { pluginName: 'adapt' });
   }
 
-  // Used to update the amount of attempts the user has left
   updateAttempts() {
     const attemptsLeft = this.get('_attemptsLeft') || this.get('_attempts');
 
     this.set('_attemptsLeft', attemptsLeft - 1);
   }
 
-  // Used to set _isEnabled and _isSubmitted on the model
   setQuestionAsSubmitted() {
     this.set({
       _isEnabled: false,
@@ -151,7 +158,6 @@ class QuestionModel extends ComponentModel {
     });
   }
 
-  // Sets _isCorrect:true/false based upon isCorrect method below
   markQuestion() {
     this.set({
       _isCorrect: this.isCorrect(),
@@ -160,11 +166,16 @@ class QuestionModel extends ComponentModel {
     this.updateRawScore();
   }
 
-  // Should return a boolean based upon whether to question is correct or not
+  /**
+   * Override in subclasses to evaluate whether the learner's answer is fully correct.
+   * @returns {boolean} `true` if the answer is correct
+   */
   isCorrect() {}
 
-  // Used by the question to determine if the question is incorrect or partly correct
-  // Should return a boolean
+  /**
+   * Override in subclasses to evaluate whether the learner's answer is partly correct.
+   * @returns {boolean} `true` if the answer is partly correct
+   */
   isPartlyCorrect() {}
 
   /**
@@ -208,8 +219,6 @@ class QuestionModel extends ComponentModel {
     return 0;
   }
 
-  // Checks if the question should be set to complete
-  // Calls setCompletionStatus and adds complete classes
   checkQuestionCompletion() {
     const isComplete = (this.get('_isCorrect') || this.get('_attemptsLeft') === 0);
 
@@ -220,8 +229,6 @@ class QuestionModel extends ComponentModel {
     return isComplete;
   }
 
-  // Updates buttons based upon question state by setting
-  // _buttonState on the model which buttonsView listens to
   updateButtons() {
     const isInteractionComplete = this.get('_isInteractionComplete');
     const isCorrect = this.get('_isCorrect');
@@ -260,6 +267,13 @@ class QuestionModel extends ComponentModel {
 
   }
 
+  /**
+   * Build a feedback configuration object for the current question state.
+   * Handles both legacy config shapes (`feedback.correct` string / `_partlyCorrect` / `_incorrect`)
+   * and the current shape (`_correct`, `_partlyCorrectFinal`, `_incorrectFinal`, etc.).
+   * @param {Object} [feedback] - Feedback config; defaults to `this.get('_feedback')`
+   * @returns {{ title: string, body: string, _classes: string, isAltTitle: boolean, _graphic?: Object, _imageAlignment?: string }}
+   */
   getFeedback(feedback = this.get('_feedback')) {
     if (!feedback) return {};
 
@@ -321,7 +335,6 @@ class QuestionModel extends ComponentModel {
     return feedbackConfig;
   }
 
-  // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
     if (!this.has('_feedback')) return;
     const { title = '', body = '' } = this.getFeedback();
@@ -372,7 +385,6 @@ class QuestionModel extends ComponentModel {
     return true;
   }
 
-  // Reset question for subsequent attempts
   setQuestionAsReset() {
     this.set({
       _isEnabled: true,
@@ -388,10 +400,17 @@ class QuestionModel extends ComponentModel {
    */
   resetQuestion() {}
 
+  /**
+   * Trigger a `question:refresh` event to prompt the view to re-render.
+   */
   refresh() {
     this.trigger('question:refresh');
   }
 
+  /**
+   * Return the appropriate `BUTTON_STATE` value for the current question state.
+   * @returns {string} A value from {@link module:core/js/enums/buttonStateEnum|BUTTON_STATE}
+   */
   getButtonState() {
     if (this.get('_isCorrect')) {
       return BUTTON_STATE.CORRECT;
@@ -408,16 +427,16 @@ class QuestionModel extends ComponentModel {
     return this.get('_isSubmitted') ? BUTTON_STATE.RESET : BUTTON_STATE.SUBMIT;
   }
 
-  // Returns an object specific to the question type, e.g. if the question
-  // is a 'choice' this should contain an object with:
-  // - correctResponsesPattern[]
-  // - choices[]
+  /**
+   * Override in subclasses to return SCORM interaction data for `cmi.interactions`.
+   * @returns {{ correctResponsesPattern: string[], choices?: Array<{id: string, description: string}> }}
+   */
   getInteractionObject() {
     return {};
   }
 
   /**
-   * Add a `ContextActivity` for the content object ancestors assocaited with the question
+   * Add a `ContextActivity` for the content object ancestors associated with the question
    */
   addContentObjectContextActivities() {
     // SCORM doesn't necessarily need course context as implied in reports (exclude via spoor)
@@ -434,9 +453,9 @@ class QuestionModel extends ComponentModel {
 
   /**
    * Add a `ContextActivity` to the collection
-   * @param {string} id
-   * @param {string} type
-   * @param {string} title
+   * @param {string} id - The content object's `_id`
+   * @param {string} type - The content object's `_type` (e.g. `'page'`, `'menu'`)
+   * @param {string} title - The content object's display title
    */
   addContextActivity(id, type, title) {
     const entry = {
@@ -461,10 +480,16 @@ class QuestionModel extends ComponentModel {
     return this._contextActivities;
   }
 
-  // Returns a string detailing how the user answered the question.
+  /**
+   * Override in subclasses to return the learner's answer as a string for SCORM reporting.
+   * @returns {string}
+   */
   getResponse() {}
 
-  // Returns a string describing the type of interaction: "choice" and "matching" supported (see scorm wrapper)
+  /**
+   * Override in subclasses to return the SCORM interaction type string (e.g. `'choice'`, `'matching'`).
+   * @returns {string}
+   */
   getResponseType() {}
 
   /**
