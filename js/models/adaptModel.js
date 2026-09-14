@@ -3,7 +3,7 @@
  * @module core/js/models/adaptModel
  * @description Base Backbone model for every content item in the Adapt Framework
  * (course, contentobject, article, block, component). Extends
- * {@link module:core/js/models/lockingModel|LockingModel} to provide cooperative
+ * {@link LockingModel} to provide cooperative
  * locking, and adds hierarchy traversal, trackable state, completion checking,
  * and accessibility label support.
  *
@@ -12,7 +12,7 @@
  * - Completion checking: `checkCompletionStatus`, `checkInteractionCompletionStatus`
  * - Trackable state: `getTrackableState`, `setTrackableState`, `triggerTrackableState`
  * - Type group queries: `isTypeGroup`, `getTypeGroups`
- * - Relative navigation: `findRelativeModel`
+ * - Relative traversal: `findRelativeModel`
  *
  * **State Properties:**
  * - `_isComplete` {boolean} - Model has been completed
@@ -106,7 +106,7 @@ export default class AdaptModel extends LockingModel {
   }
 
   /**
-   * Returns the relative location of this model to the nearest `_trackingId` ancestor
+   * Returns the position of this model relative to its nearest `_trackingId` ancestor
    * as a two-element tuple `[trackingId, indexOffset]`. `indexOffset` is ≥ 0 when this
    * model is the tracking-id model or one of its flattened descendants, and negative
    * when it is an ancestor.
@@ -328,10 +328,13 @@ export default class AdaptModel extends LockingModel {
   /**
    * Resets the model's completion state. A hard reset clears both `_isComplete`
    * and `_isInteractionComplete`; a soft reset clears `_isInteractionComplete` only.
+   * Either way the model is re-enabled, with `_isEnabled` set to `true`.
    * Returns `false` and does nothing if `canReset` is `false` or `type` is unrecognised.
-   * @param {string} [type='hard'] Reset type: `'hard'` or `'soft'`
+   * @param {string|boolean} [type='hard'] Reset type: `'hard'`, `'soft'`, or `true`
+   * which is treated as a hard reset
    * @param {boolean} [canReset=this.get('_canReset')] Override the model's reset guard
    * @returns {boolean} `true` if the reset was applied, `false` otherwise
+   * @fires reset
    */
   reset(type = 'hard', canReset = this.get('_canReset')) {
     if (!canReset) return false;
@@ -728,7 +731,11 @@ export default class AdaptModel extends LockingModel {
     return foundModel;
   }
 
-  // Override in subclasses to return `false` for leaf nodes (e.g. components).
+  /**
+   * Whether this model manages child models. Override in subclasses to return
+   * `false` for leaf nodes (e.g. components).
+   * @type {boolean}
+   */
   get hasManagedChildren() {
     return true;
   }

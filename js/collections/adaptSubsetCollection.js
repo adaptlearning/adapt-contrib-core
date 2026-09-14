@@ -10,7 +10,7 @@ import AdaptCollection from 'core/js/collections/adaptCollection';
 /**
  * @class AdaptSubsetCollection
  * @classdesc Maintains a live, filtered subset of a parent
- * {@link module:core/js/collections/adaptCollection|AdaptCollection}. When the parent
+ * {@link AdaptCollection}. When the parent
  * resets, `loadSubset` rebuilds the subset by retaining only models that are
  * instances of `this.model`. Also builds a `_byAdaptID` lookup map for fast
  * retrieval by `_id`.
@@ -26,8 +26,11 @@ export default class AdaptSubsetCollection extends AdaptCollection {
 
   /**
    * Rebuilds the subset from the parent collection, keeping only models that
-   * are instances of `this.model`. Also indexes the subset by `_id` in
-   * `this._byAdaptID` for fast lookup.
+   * are instances of `this.model`, then indexes it by `_id` in `this._byAdaptID`.
+   *
+   * **Note:** this index is built with `groupBy`, so each `_id` maps to an
+   * **array** of models. This differs from `data._byAdaptID`, which maps each
+   * `_id` to a single model despite the identical property name.
    */
   loadSubset() {
     this.set(this.parent.filter(model => model instanceof this.model));

@@ -95,11 +95,12 @@ class AdaptView extends Backbone.View {
   /**
    * Renders the Handlebars or JSX template into the root element and fires
    * lifecycle events. Defers `postRender` to allow the browser to paint first.
-   * @fires {type}View:preRender
+   *
+   * Each event is also fired as `<type>View:<name>`, where `<type>` is the view's
+   * `constructor.type` (`page`, `article`, `block`, `component`).
+   *
    * @fires view:preRender
-   * @fires {type}View:render
    * @fires view:render
-   * @fires {type}View:postRender
    * @fires view:postRender
    * @returns {AdaptView} Returns this for chaining
    */
@@ -193,7 +194,10 @@ class AdaptView extends Backbone.View {
    * set on the model. Adds the before-animation class immediately, then switches
    * to the after-animation class once the element enters the viewport beyond the
    * configured vertical threshold.
-   * @fires {type}View:animationStart
+   *
+   * Also fires `<type>View:animationStart`, where `<type>` is the view's
+   * `constructor.type`.
+   *
    * @fires view:animationStart
    */
   setupOnScreenHandler() {
@@ -453,7 +457,10 @@ class AdaptView extends Backbone.View {
   /**
    * Triggers `preRemove` lifecycle events on Adapt and this view.
    * Called automatically by `remove` before teardown begins.
-   * @fires {type}View:preRemove
+   *
+   * Also fires `<type>View:preRemove`, where `<type>` is the view's
+   * `constructor.type` (`page`, `article`, `block`, `component`).
+   *
    * @fires view:preRemove
    */
   preRemove() {
@@ -465,11 +472,16 @@ class AdaptView extends Backbone.View {
   /**
    * Removes the view from the DOM, unmounts any React tree, and triggers
    * lifecycle events. Stops all listeners and defers a `postRemove` event.
+   * Delegates the `preRemove` events to {@link AdaptView#preRemove preRemove()};
+   * this method fires `remove` immediately and defers `postRemove`.
+   *
+   * Also fires `<type>View:remove` and `<type>View:postRemove`, where `<type>`
+   * is the view's `constructor.type`.
+   *
    * @override
    * @returns {AdaptView} Returns this for chaining
-   * @fires {type}View:preRemove
-   * @fires {type}View:remove
-   * @fires {type}View:postRemove
+   * @fires view:remove
+   * @fires view:postRemove
    */
   remove() {
     const type = this.constructor.type;
@@ -582,6 +594,10 @@ class AdaptView extends Backbone.View {
     return Object.entries(this._childViews).map(([key, value]) => value);
   }
 
+  /**
+   * Replaces the direct child views of this view.
+   * @param {Array<AdaptView>} value - The child views to store
+   */
   setChildViews(value) {
     this._childViews = value;
   }
