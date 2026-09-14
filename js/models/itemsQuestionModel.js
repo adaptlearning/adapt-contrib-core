@@ -1,16 +1,10 @@
 /**
  * @file ItemsQuestionModel - Question model for item-selection question types
  * @module core/js/models/itemsQuestionModel
- * @description Combines {@link module:core/js/models/questionModel|QuestionModel} and
- * {@link module:core/js/models/itemsComponentModel|ItemsComponentModel} to support
+ * @description Combines {@link module:core/js/models/questionModel~QuestionModel} and
+ * {@link module:core/js/models/itemsComponentModel~ItemsComponentModel} to support
  * item-selection question types (e.g. MCQ, matching). Handles single- and multi-select modes,
  * optional item-level scoring, randomisation, and individual item feedback.
- *
- * **Known Issues & Improvements:**
- *   - `BlendedItemsComponentQuestionModel` uses `Object.getOwnPropertyNames` to mix in
- *     `ItemsComponentModel` methods; a proper mixin utility would be cleaner.
- *   - `storeUserAnswer` overrides the `ItemsComponentModel` version to track `_isActive`
- *     instead of `_isVisited`; this asymmetry can be confusing.
  */
 import Adapt from 'core/js/adapt';
 import QuestionModel from 'core/js/models/questionModel';
@@ -240,6 +234,9 @@ export default class ItemsQuestionModel extends BlendedItemsComponentQuestionMod
     return selectedItems[selectedItems.length - 1];
   }
 
+  /**
+   * Resets the question's items ready for another attempt.
+   */
   resetQuestion() {
     this.resetItems();
   }

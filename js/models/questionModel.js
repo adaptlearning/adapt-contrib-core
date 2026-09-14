@@ -2,14 +2,10 @@
  * @file QuestionModel - Abstract base model for all question components
  * @module core/js/models/questionModel
  * @description Abstract base model providing the full question lifecycle: setup, submission,
- * scoring, feedback, marking, and reset. Subclasses must implement {@link QuestionModel#canSubmit},
- * {@link QuestionModel#isCorrect}, {@link QuestionModel#isPartlyCorrect},
- * {@link QuestionModel#resetQuestion}, {@link QuestionModel#getResponse}, and
- * {@link QuestionModel#getResponseType}.
- *
- * **Known Issues & Improvements:**
- *   - `setScore` is deprecated but still called internally; callers should migrate to the `score`, `maxScore`, and `minScore` getters.
- *   - `getFeedback` handles both legacy and current config shapes, adding long-term maintenance complexity.
+ * scoring, feedback, marking, and reset. Subclasses must implement {@link QuestionModel#canSubmit canSubmit()},
+ * {@link QuestionModel#isCorrect isCorrect()}, {@link QuestionModel#isPartlyCorrect isPartlyCorrect()},
+ * {@link QuestionModel#resetQuestion resetQuestion()}, {@link QuestionModel#getResponse getResponse()}, and
+ * {@link QuestionModel#getResponseType getResponseType()}.
  */
 import Adapt from 'core/js/adapt';
 import components from 'core/js/components';
@@ -50,6 +46,11 @@ class QuestionModel extends ComponentModel {
     });
   }
 
+  /**
+   * Extends `ComponentModel`'s trackable attribute list with the question's own
+   * submission and scoring state.
+   * @returns {Array<string>} Attribute names to persist
+   */
   trackable() {
     return ComponentModel.resultExtend('trackable', [
       '_isSubmitted',
@@ -92,6 +93,10 @@ class QuestionModel extends ComponentModel {
     super.init();
   }
 
+  /// ///
+  // Setup question types
+  /// /
+
   setupDefaultSettings() {
     // Not sure this is needed anymore, keeping to maintain API
     this.setupWeightSettings();
@@ -99,6 +104,10 @@ class QuestionModel extends ComponentModel {
     this.set('_shouldShowMarking', this.shouldShowMarking);
   }
 
+  /**
+   * Resolves the question's button text and ARIA labels, falling back to the
+   * course-level `_buttons` config wherever a component-level value is absent.
+   */
   setupButtonSettings() {
     const globalButtons = Adapt.course.get('_buttons');
 
@@ -133,6 +142,10 @@ class QuestionModel extends ComponentModel {
   setupWeightSettings() {
     // Not needed as handled by model defaults, keeping to maintain API
   }
+
+  /// ///
+  // Submit process
+  /// /
 
   /**
    * Override in subclasses to determine whether the learner may submit the question.
@@ -219,6 +232,11 @@ class QuestionModel extends ComponentModel {
     return 0;
   }
 
+  /**
+   * Checks whether the question should now be marked complete — when it is correct,
+   * or when no attempts remain. Calls `setCompletionStatus()` when it is.
+   * @returns {boolean} `true` if the question is complete
+   */
   checkQuestionCompletion() {
     const isComplete = (this.get('_isCorrect') || this.get('_attemptsLeft') === 0);
 
@@ -409,7 +427,7 @@ class QuestionModel extends ComponentModel {
 
   /**
    * Return the appropriate `BUTTON_STATE` value for the current question state.
-   * @returns {string} A value from {@link module:core/js/enums/buttonStateEnum|BUTTON_STATE}
+   * @returns {string} A value from {@link module:core/js/enums/buttonStateEnum~BUTTON_STATE}
    */
   getButtonState() {
     if (this.get('_isCorrect')) {
@@ -473,8 +491,8 @@ class QuestionModel extends ComponentModel {
   }
 
   /**
-   * Returns the `ContextActivity` collection for the question
-   * @returns {ContextActivity[]}
+   * The `ContextActivity` collection for the question.
+   * @type {ContextActivity[]}
    */
   get contextActivities() {
     return this._contextActivities;

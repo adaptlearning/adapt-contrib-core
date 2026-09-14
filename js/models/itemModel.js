@@ -4,9 +4,6 @@
  * @description Represents one item (e.g. a tab, accordion panel, or answer option) within
  * an items-based component. Tracks active and visited state, and supports per-item class toggling.
  * Typically managed by {@link module:core/js/models/itemsComponentModel}.
- *
- * **Known Issues & Improvements:**
- *   - `_score` is only used when item scoring is enabled (`_hasItemScoring`); could be clearer in defaults.
  */
 import LockingModel from 'core/js/models/lockingModel';
 import { toggleModelClass } from '../modelHelpers';
