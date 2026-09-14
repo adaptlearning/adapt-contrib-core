@@ -7,8 +7,9 @@ import LockingModel from 'core/js/models/lockingModel';
 /**
  * @class NavigationModel
  * @classdesc Holds `_navigation` course config used by
- * {@link module:core/js/views/navigationView NavigationView} to control alignment,
+ * {@link module:core/js/views/navigationView~NavigationView} to control alignment,
  * label visibility, and touch-device positioning of the navigation bar.
+ * @extends {LockingModel}
  */
 export default class NavigationModel extends LockingModel {
 

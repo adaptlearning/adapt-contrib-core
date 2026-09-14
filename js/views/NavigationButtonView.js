@@ -19,7 +19,8 @@ import location from 'core/js/location';
 /**
  * @class NavigationButtonView
  * @classdesc Backbone view for one button in the navigation bar. Managed by
- * {@link module:core/js/views/navigationView NavigationView}.
+ * {@link module:core/js/views/navigationView~NavigationView}.
+ * @extends {Backbone.View}
  */
 export default class NavigationButtonView extends Backbone.View {
 
@@ -201,9 +202,9 @@ export default class NavigationButtonView extends Backbone.View {
 
   /**
    * Stops listening, unmounts any React component, and removes the element from
-   * the DOM. Uses {@link module:core/js/wait wait} to ensure the unmount completes
+   * the DOM. Uses {@link module:core/js/wait} to ensure the unmount completes
    * before the element is detached.
-   * @returns {this}
+   * @returns {NavigationButtonView} Returns this for chaining
    */
   remove() {
     this._isRemoved = true;

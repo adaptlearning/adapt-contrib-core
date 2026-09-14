@@ -1,8 +1,8 @@
 /**
  * @file Navigation Controller - Bootstraps and exposes the navigation bar
  * @module core/js/navigation
- * @description Instantiates {@link module:core/js/views/navigationView NavigationView} and
- * starts it with a {@link module:core/js/models/NavigationModel NavigationModel} once course
+ * @description Instantiates {@link module:core/js/views/navigationView~NavigationView} and
+ * starts it with a {@link module:core/js/models/NavigationModel~NavigationModel} once course
  * data is ready. Exports the running `NavigationView` instance as `Adapt.navigation`.
  *
  * @example
@@ -13,6 +13,13 @@ import Adapt from 'core/js/adapt';
 import NavigationView from 'core/js/views/navigationView';
 import NavigationModel from './models/NavigationModel';
 
+/**
+ * @class NavigationController
+ * @classdesc Creates the navigation bar view and adds it to the page once the course
+ * config is available. Holds the running {@link module:core/js/views/navigationView~NavigationView}
+ * instance, which is what this module exports as `Adapt.navigation`.
+ * @extends Backbone.Controller
+ */
 class NavigationController extends Backbone.Controller {
 
   initialize() {

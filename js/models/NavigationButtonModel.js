@@ -7,7 +7,8 @@ import LockingModel from 'core/js/models/lockingModel';
 /**
  * @class NavigationButtonModel
  * @classdesc Holds display and behaviour config for one button in the navigation bar.
- * Consumed by {@link module:core/js/views/NavigationButtonView NavigationButtonView}.
+ * Consumed by {@link module:core/js/views/NavigationButtonView~NavigationButtonView}.
+ * @extends {LockingModel}
  */
 export default class NavigationButtonModel extends LockingModel {
 
