@@ -1,42 +1,42 @@
 /**
- * @file Router Service - Core navigation controller for the Adapt Learning Framework
+ * @file Router Service - Core routing controller for the Adapt Learning Framework
  * @module core/js/router
- * @description Singleton service managing all navigation, routing, and content rendering
+ * @description Singleton service managing routing and content rendering
  * for the Adapt Learning Framework. Handles URL routing, content object rendering,
- * view lifecycle management, loading states, and navigation history.
+ * view lifecycle management, loading states, and route history.
  *
  * **Architecture:**
  * - Singleton controller extending Backbone.Router
  * - Manages four route patterns: home, id-based, preview, and plugin routes
  * - Coordinates with location service for state management
  * - Coordinates with data service for model lookups
- * - Controls navigation protection during rendering (_canNavigate flag)
- * - Handles circular navigation protection to prevent infinite loops
+ * - Controls routing protection during rendering (_canNavigate flag)
+ * - Handles circular routing protection to prevent infinite loops
  *
  * **Route Patterns:**
- * - `#/` - Navigate to root content object (course/menu)
- * - `#/id/:id` - Navigate to specific content object or sub-content by ID
- * - `#/preview/:id` - Navigate to preview mode for content (creates containers)
- * - `#/:pluginName/*location/*action` - Navigate to plugin-specific routes
+ * - `#/` - Route to the root content object (course/menu)
+ * - `#/id/:id` - Route to a specific content object or sub-content by ID
+ * - `#/preview/:id` - Route to preview mode for content (creates containers)
+ * - `#/:pluginName/*location/*action` - Route to plugin-specific routes
  *
- * **Navigation Flow:**
- * 1. Route triggered (URL change or programmatic navigation)
- * 2. `handleRoute()` checks `_canNavigate` flag and circular navigation protection
- * 3. Triggers `router:navigate` event (extensions can cancel navigation)
- * 4. Sets `_canNavigate` to false (prevents navigation during rendering)
+ * **Routing Flow:**
+ * 1. Route triggered (URL change or programmatic routing)
+ * 2. `handleRoute()` checks `_canNavigate` flag and circular routing protection
+ * 3. Triggers `router:navigate` event (extensions can cancel routing)
+ * 4. Sets `_canNavigate` to false (prevents routing during rendering)
  * 5. Calls appropriate handler (handleId, handleIdPreview, handlePluginRouter)
  * 6. Updates location service state
  * 7. Removes previous view and renders new view
- * 8. Sets `_canNavigate` to true (allows navigation again)
+ * 8. Sets `_canNavigate` to true (allows routing again)
  *
- * **Circular Navigation Protection:**
+ * **Circular Routing Protection:**
  * - Prevents infinite loops when URL changes while `_canNavigate` is false
  * - Uses `_isCircularNavigationInProgress` flag to track redirection attempts
- * - Automatically corrects URL back to current location if navigation blocked
+ * - Automatically corrects URL back to the current content object if routing blocked
  *
  * **Public Events Triggered:**
- * - `router:navigate` - Before navigation begins (can be canceled)
- * - `router:navigationCancelled` - Navigation was blocked by `_canNavigate`
+ * - `router:navigate` - Before routing begins (can be canceled)
+ * - `router:navigationCancelled` - Routing was blocked by `_canNavigate`
  * - `router:location` - Location has changed (after state update)
  * - `router:contentObject` - Content object will be rendered
  * - `router:{type}` - Specific content type will be rendered (router:menu, router:page)
@@ -49,7 +49,7 @@
  * - Uses `router.model` (RouterModel) to track `_canNavigate` and `_shouldNavigateFocus`
  * - Updates `location` service with current/previous model and ID
  * - Manages loading visibility via HTML classes and DOM elements
- * - Tracks backward navigation for history correction
+ * - Records backward routing for history correction
  *
  * **Preview Mode:**
  * - Creates temporary container models (page, article, block) for component preview
@@ -69,9 +69,11 @@
  * router.navigateToParent();
  *
  * @example
- * Adapt.on('router:location', (location) => {
- *   console.log('Navigated to:', location._currentId);
- * });
+ * const onLocation = location => {
+ *   if (location._currentId !== 'co-05') return;
+ *   Adapt.off('router:location', onLocation);
+ * };
+ * Adapt.on('router:location', onLocation);
  */
 
 import Adapt from 'core/js/adapt';
@@ -85,7 +87,7 @@ import location from 'core/js/location';
 
 /**
  * @class Router
- * @classdesc Core navigation controller managing routing, content rendering, and navigation state.
+ * @classdesc Core routing controller managing routing, content rendering, and route state.
  * Singleton instance exported as `router`. Do not instantiate directly.
  * @extends {Backbone.Router}
  */
@@ -96,9 +98,9 @@ class Router extends Backbone.Router {
    * Called by Backbone.Router during initialization.
    *
    * **Route Patterns:**
-   * - `''` - Root route (navigates to course or root content object)
-   * - `'id/:id'` - Navigate to content by ID
-   * - `'preview/:id'` - Preview mode navigation (creates container models)
+   * - `''` - Root route (routes to course or root content object)
+   * - `'id/:id'` - Route to content by ID
+   * - `'preview/:id'` - Preview mode routing (creates container models)
    * - `':pluginName(/*location)(/*action)'` - Plugin-specific routes
    *
    * @returns {Object} Route configuration mapping patterns to handler method names
@@ -133,11 +135,11 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Gets the root navigation model (navigation starting point).
+   * Gets the root routing model (routing starting point).
    * Returns custom root if set via setter, otherwise returns Adapt.course.
-   * Used by role selector and other extensions to change navigation hierarchy.
+   * Used by role selector and other extensions to change content hierarchy.
    *
-   * @returns {AdaptModel} Root content object model for navigation
+   * @returns {AdaptModel} Root content object model for routing
    * @example
    * const root = router.rootModel;
    */
@@ -146,10 +148,10 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Sets a custom root navigation model.
-   * Allows extensions to override the default course root for navigation.
+   * Sets a custom root routing model.
+   * Allows extensions to override the default course root for routing.
    *
-   * @param {AdaptModel} model - New root content object for navigation
+   * @param {AdaptModel} model - New root content object for routing
    * @example
    * router.rootModel = roleBasedStartPage;
    */
@@ -160,7 +162,7 @@ class Router extends Backbone.Router {
   /**
    * Shows the loading screen.
    * Adds `is-loading-visible` class to html element and displays `.js-loading` element.
-   * Called automatically during content object navigation.
+   * Called automatically during content object routing.
    */
   showLoading() {
     $('html').removeClass('is-loading-hidden').addClass('is-loading-visible');
@@ -178,7 +180,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Sets the browser document title based on current location.
+   * Sets the browser document title based on the current content object.
    * Combines root model title with current model title if available.
    * Updates on next `contentObjectView:preRender` event.
    *
@@ -202,7 +204,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Handles navigation triggered by legacy `Adapt.trigger('router:navigateTo')` pattern.
+   * Handles routing triggered by legacy `Adapt.trigger('router:navigateTo')` pattern.
    * Converts arguments to appropriate URL format and calls navigate().
    *
    * **Argument Patterns:**
@@ -210,7 +212,7 @@ class Router extends Backbone.Router {
    * - Multiple args (≤3): Joins as `#/arg1/arg2/arg3`
    * - More than 3: Falls back to direct `handleRoute()` call (deprecated)
    *
-   * @param {Array} args - Navigation arguments from event trigger
+   * @param {Array} args - Routing arguments from event trigger
    * @private
    * @deprecated Prefer using Backbone.history.navigate or window.location.href
    */
@@ -242,17 +244,17 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Primary route handler for all navigation.
-   * Coordinates navigation protection, circular navigation detection, and routing delegation.
-   * Called automatically when URL changes or navigation is triggered programmatically.
+   * Primary route handler for all routing.
+   * Coordinates routing protection, circular routing detection, and routing delegation.
+   * Called automatically when URL changes or routing is triggered programmatically.
    *
-   * **Navigation Protection:**
-   * - Checks `_canNavigate` flag to prevent navigation during rendering
+   * **Routing Protection:**
+   * - Checks `_canNavigate` flag to prevent routing during rendering
    * - If blocked, triggers `router:navigationCancelled` and corrects URL
    * - Uses `_isCircularNavigationInProgress` to prevent infinite redirect loops
    *
    * **Route Delegation:**
-   * - 0-1 args: Calls `handleId()` or `handleIdPreview()` (content object navigation)
+   * - 0-1 args: Calls `handleId()` or `handleIdPreview()` (content object routing)
    * - 2+ args: Calls `handlePluginRouter()` (plugin-specific routes)
    *
    * @param {...string} args - Route parameters extracted from URL
@@ -321,10 +323,11 @@ class Router extends Backbone.Router {
    * - `router:plugin` - Generic plugin route triggered
    *
    * @param {string} pluginName - Name of the plugin handling the route
-   * @param {string} [location] - Plugin-specific location parameter
+   * @param {string} [location] - The `*location` route segment, passed through to the plugin
    * @param {string} [action] - Plugin-specific action parameter
+   * Also fires `router:plugin:<pluginName>`, where `<pluginName>` is the plugin's name.
+   *
    * @async
-   * @fires router:plugin:{pluginName}
    * @fires router:plugin
    * @private
    */
@@ -342,28 +345,30 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Handles navigation to content objects by ID.
-   * Primary navigation method for rendering course content (menus and pages).
+   * Handles routing to content objects by ID.
+   * Primary routing method for rendering course content (menus and pages).
    *
-   * **Navigation Logic:**
+   * **Routing Logic:**
    * 1. Validates ID and finds model in data collection
    * 2. Checks for content locking and start controller restrictions
-   * 3. If navigating to sub-content (article/block/component), scrolls without re-rendering
+   * 3. If routing to sub-content (article/block/component), scrolls without re-rendering
    * 4. For content objects, removes current view and renders new view
    * 5. Updates location service and triggers appropriate events
-   * 6. Waits for view ready before allowing further navigation
+   * 6. Waits for view ready before allowing further routing
    *
-   * **Sub-Content Navigation:**
+   * **Sub-Content Routing:**
    * - If target is within current content object, scrolls to element instead of re-rendering
    * - Preserves view state and improves performance
    *
    * **Locking:**
    * - Respects `_isLocked` property when `_forceRouteLocking` config is enabled
-   * - Navigates back or to home if attempting to access locked content
+   * - Routes back or to home if attempting to access locked content
    *
-   * @param {string} [id] - Content object ID to navigate to (undefined navigates to root)
+   * @param {string} [id] - Content object ID to route to (undefined routes to root)
+   * Also fires `router:<type>`, where `<type>` is the content object's type
+   * (`page`, `menu`).
+   *
    * @async
-   * @fires router:{type}
    * @fires router:contentObject
    * @private
    */
@@ -465,7 +470,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Handles preview mode navigation for content.
+   * Handles preview mode routing for content.
    * Creates temporary container models (page, article, block) if previewing non-content-object.
    * Clones the target content to prevent modification of original data.
    *
@@ -481,8 +486,10 @@ class Router extends Backbone.Router {
    * - Syncs preview state changes back to original model
    *
    * @param {string} [id] - Content ID to preview (undefined previews root)
+   * Also fires `router:<type>`, where `<type>` is the content object's type
+   * (`page`, `menu`).
+   *
    * @async
-   * @fires router:{type}
    * @fires router:contentObject
    * @private
    */
@@ -616,15 +623,15 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Updates the location service state with new navigation context.
-   * Stores previous location for navigation history and triggers location change event.
+   * Updates the location service state with new routing context.
+   * Stores previous location for route history and triggers location change event.
    *
    * **Location Properties Updated:**
    * - `_previousModel` / `_currentModel` - Model references
    * - `_previousId` / `_currentId` - Content IDs
    * - `_previousContentType` / `_contentType` - Content types (menu/page)
    * - `_currentLocation` - Location string (e.g., "page-co-05", "course")
-   * - `_lastVisitedType` / `_lastVisitedMenu` / `_lastVisitedPage` - History tracking
+   * - `_lastVisitedType` / `_lastVisitedMenu` / `_lastVisitedPage` - History recording
    *
    * **Side Effects:**
    * - Updates document title via `setDocumentTitle()`
@@ -676,7 +683,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Applies CSS classes to HTML and wrapper elements based on current location.
+   * Applies CSS classes to HTML and wrapper elements based on the current content object.
    * Adds location-type and location-id classes for CSS targeting.
    * Removes previous classes to prevent accumulation.
    *
@@ -714,7 +721,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Sets accessibility focus to body element after navigation.
+   * Sets accessibility focus to body element after routing.
    * Forces screen readers to start reading from the top of the new content.
    * Only applies if `_shouldNavigateFocus` flag is true in router model.
    *
@@ -728,8 +735,8 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Navigates backward in browser history.
-   * Sets `_isBackward` flag to support URL correction during circular navigation protection.
+   * Moves backward in browser history.
+   * Sets `_isBackward` flag to support URL correction during circular routing protection.
    */
   navigateBack() {
     this._isBackward = true;
@@ -737,8 +744,8 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Re-navigates to the current content object.
-   * Useful for refreshing content or correcting navigation state.
+   * Re-routes to the current content object.
+   * Useful for refreshing content or correcting route state.
    *
    * @param {boolean} [force=false] - If true, bypasses `_canNavigate` check
    * @example
@@ -758,14 +765,14 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Navigates to the previous route in history.
-   * Intelligent navigation that handles different content types appropriately.
+   * Routes to the previous route in history.
+   * Intelligent routing that handles different content types appropriately.
    *
-   * **Navigation Logic:**
+   * **Routing Logic:**
    * - If no current model: Calls browser back
-   * - If current is menu: Navigates to parent
+   * - If current is menu: Routes to parent
    * - If previous model exists: Calls browser back
-   * - Otherwise: Navigates to parent
+   * - Otherwise: Routes to parent
    *
    * @param {boolean} [force=false] - If true, bypasses `_canNavigate` check
    * @example
@@ -792,8 +799,8 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Navigates to the parent content object of the current location.
-   * If parent is root, navigates to home route.
+   * Routes to the parent content object of the current location.
+   * If parent is root, routes to home route.
    *
    * @param {boolean} [force=false] - If true, bypasses `_canNavigate` check
    * @example
@@ -811,7 +818,7 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Navigates to the home route (root content object).
+   * Routes to the home route (root content object).
    *
    * @param {boolean} [force=false] - If true, bypasses `_canNavigate` check
    * @example
@@ -825,12 +832,12 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Navigates to and scrolls to a specific element in the course.
-   * Most versatile navigation method supporting content objects, sub-content, and CSS selectors.
-   * Handles cross-content-object navigation, rendering, scrolling, and accessibility focus.
+   * Routes to and scrolls to a specific element in the course.
+   * Most versatile routing method supporting content objects, sub-content, and CSS selectors.
+   * Handles cross-content-object routing, rendering, scrolling, and accessibility focus.
    *
-   * **Navigation Modes:**
-   * - Content object not rendered: Navigates to content object and renders
+   * **Routing Modes:**
+   * - Content object not rendered: Routes to content object and renders
    * - Sub-content not rendered: Renders sub-content then scrolls
    * - Element exists: Scrolls to element
    *
@@ -853,17 +860,18 @@ class Router extends Backbone.Router {
    * - Triggers `{type}:scrollTo` before scrolling
    * - Triggers `{type}:scrolledTo` after scrolling completes
    *
-   * @param {jQuery|string} selector - CSS selector or model ID to navigate to
-   * @param {Object} [settings={}] - Navigation and scroll configuration
+   * @param {jQuery|string} selector - CSS selector or model ID to route to
+   * @param {Object} [settings={}] - Routing and scroll configuration
    * @param {boolean} [settings.addSubContentRouteToHistory=false] - Add sub-content route to browser history
    * @param {boolean} [settings.replace=false] - Update URL without creating history entry
    * @param {number} [settings.duration] - Scroll animation duration in milliseconds
    * @param {Object} [settings.offset] - Scroll offset configuration
    * @param {number} [settings.offset.top] - Top offset in pixels
    * @param {number} [settings.offset.left] - Left offset in pixels
+   * Fires `<location>:scrollTo` before scrolling and `<location>:scrolledTo` after,
+   * where `<location>` is the current location id.
+   *
    * @async
-   * @fires {type}:scrollTo
-   * @fires {type}:scrolledTo
    * @example
    * await router.navigateToElement('.c-05');
    *
@@ -981,8 +989,8 @@ class Router extends Backbone.Router {
   }
 
   /**
-   * Adds a route to browser history without triggering navigation.
-   * Used for sub-content navigation to update URL while staying on same content object.
+   * Adds a route to browser history without triggering routing.
+   * Used for sub-content routing to update URL while staying on same content object.
    * Prevents duplicate history entries if already at target route.
    *
    * @param {string} hash - URL hash to add to history (e.g., "#/id/co-05")

@@ -8,8 +8,8 @@
  * **Architecture:**
  * - Singleton instance (only one exists per course)
  * - Global event bus (all framework events flow through Adapt.trigger/on/off)
- * - Lifecycle coordinator (initialization, navigation, teardown)
- * - State manager (_canScroll, _isStarted, completion tracking)
+ * - Lifecycle coordinator (initialization, routing, teardown)
+ * - State manager (_canScroll, _isStarted, completion state)
  * - Plugin coordination (manages plugin wait queues and readiness)
  *
  * **Key Responsibilities:**
@@ -18,7 +18,7 @@
  * - View lifecycle management (create/remove)
  * - RTL/LTR direction handling
  * - Animation control
- * - Relative string parsing for navigation
+ * - Relative string parsing for routing
  *
  * **Public Events Triggered:**
  * - `adapt:preInitialize` - Before initialization begins
@@ -29,19 +29,21 @@
  * - `postRemove` - After view removal
  * - `plugins:ready` - All plugins loaded (deprecated)
  *
- * **State Properties:**
- * - `_canScroll` {boolean} - Whether scrolling is allowed (lockable)
- * - `_outstandingCompletionChecks` {number} - Pending async completion checks
- * - `_pluginWaitCount` {number} - Plugins still loading (deprecated)
- * - `_isStarted` {boolean} - Framework has completed initialization
- * - `_shouldDestroyContentObjects` {boolean} - Whether to destroy views on navigation
- *
  * **Important:** Many properties have been moved to dedicated modules.
  * Use `import module from 'core/js/module'` instead of `Adapt.module`.
  */
 
 import wait from 'core/js/wait';
 import LockingModel from 'core/js/models/lockingModel';
+
+/**
+ * A single hop in the model hierarchy, parsed from a relative string.
+ * Exactly one of `offset` or `inset` is set; the other is `null`.
+ * @typedef {Object} ParsedDirective
+ * @property {string} type - Content type (component, block, article, page, menu)
+ * @property {number|null} offset - Siblings to move (+/-), or `null` for an inset directive
+ * @property {number|null} inset - Child index to select (0-indexed, -1 for last), or `null` for an offset directive
+ */
 
 /**
  * @class AdaptSingleton
@@ -188,44 +190,49 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * @typedef {Object} ParsedDirective
-   * @property {string} type - Content type (component, block, article, page, menu)
-   * @property {number} [offset] - Number of siblings to offset (+/-)
-   * @property {number} [inset] - Child index to select (0-indexed, -1 for last)
-   */
-
-  /**
-   * Parses relative navigation strings into structured directives.
-   * Used by Trickle to determine scroll targets and by Branching to resolve navigation paths.
+   * Parses relative routing strings into structured directives.
+   * Used by Trickle to determine scroll targets and by Branching to resolve routing paths.
    *
    * **Syntax:**
    * - **Offset directives**: `@type+n` or `@type-n` (move n steps forward/back)
    * - **Inset directives**: `@type=n` (select nth child, 0-indexed, -1 for last)
-   * - **Multiple directives**: Space-separated for nested navigation
+   * - **Multiple directives**: Space-separated for nested routing
    *
    * **Directive Behavior:**
    * - Offset (`+`/`-`): Navigate to ancestor or sibling
    * - Inset (`=`): Navigate to descendant
    * - Omit number: Defaults to 0 (current/first)
    *
-   * @param {string} relativeString - Navigation directive string
-   * @returns {ParsedDirective|Array<ParsedDirective>} Single directive or array for multi-step navigation
+   * **What each directive resolves to:**
+   * - `@component+1` - the next component outside this container, or `undefined`
+   * - `@component-1` - the previous component outside this container, or `undefined`
+   * - `@block+0` or `@block` - this block, the first ancestor block, or `undefined`
+   * - `@type+0` or `@type` - this of type, the first ancestor of type, or `undefined`
+   * - `@article=0` - the first article inside this container, or `undefined`
+   * - `@article=-1` - the last article inside this container, or `undefined`
+   * - `@type=n` - the relatively positioned of type inside this container, or `undefined`
+   * - `@block+2 @component=0` - move two blocks forward and return its first component
+   * - `@block-1 @component=-2` - move one block backward and return its second to last component
+   * - `@article+2 @block=1 @component=-1` - move two articles forward, find the second block and return its last component
+   * - `@article @component=-1` - find the first ancestor article and return its last component
+   *
+   * @param {string} relativeString - One or more space-separated relative references
+   * @returns {ParsedDirective|Array<ParsedDirective>} A single directive, or an array when
+   * the string contains multiple space-separated references
    * @example
-   * Adapt.parseRelativeString('@component+1');
+   * const directive = Adapt.parseRelativeString('@component+1');
+   * // { type: 'component', offset: 1, inset: null }
    *
-   * Adapt.parseRelativeString('@block+0');
+   * @example
+   * const directive = Adapt.parseRelativeString('@article=0');
+   * // { type: 'article', offset: null, inset: 0 }
    *
-   * Adapt.parseRelativeString('@article=0');
-   *
-   * Adapt.parseRelativeString('@article=-1');
-   *
-   * Adapt.parseRelativeString('@block+2 @component=0');
-   *
-   * Adapt.parseRelativeString('@block-1 @component=-2');
-   *
-   * Adapt.parseRelativeString('@article+2 @block=1 @component=-1');
-   *
-   * Adapt.parseRelativeString('@article @component=-1');
+   * @example
+   * const directives = Adapt.parseRelativeString('@block+2 @component=0');
+   * // [
+   * //   { type: 'block', offset: 2, inset: null },
+   * //   { type: 'component', offset: null, inset: 0 }
+   * // ]
    */
   parseRelativeString(relativeString) {
     const parts = relativeString
@@ -273,15 +280,23 @@ class AdaptSingleton extends LockingModel {
   }
 
   /**
-   * Configures animation settings based on config and browser detection.
-   * Checks `_disableAnimationFor` array for CSS selectors matching `<html>`.
-   * If match found, disables animations globally.
+   * Configures animation settings from config.
+   *
+   * When `_disableAnimationFor` is set, each of its CSS selectors is tested against
+   * `<html>`; a match sets `_disableAnimation` and adds the `disable-animation` class.
+   * **The method then returns**, so the `_disableAnimation` fallback below is skipped
+   * entirely whenever `_disableAnimationFor` is present — even if no selector matched.
+   *
+   * Only when `_disableAnimationFor` is absent is `disable-animation` toggled from
+   * the `_disableAnimation` config value.
+   *
    * Called during initialization.
    * @private
    */
   disableAnimation() {
     const disableAnimationArray = this.config.get('_disableAnimationFor');
     const disableAnimation = this.config.get('_disableAnimation');
+
     // Check if animations should be disabled
     if (disableAnimationArray) {
       for (let i = 0, l = disableAnimationArray.length; i < l; i++) {
@@ -298,7 +313,7 @@ class AdaptSingleton extends LockingModel {
 
   /**
    * Removes the current view and resets child state.
-   * Called during navigation to clean up previous content before rendering new content.
+   * Called during routing to clean up previous content before rendering new content.
    * Triggers lifecycle events for view teardown coordination.
    *
    * **Removal Sequence:**
@@ -335,98 +350,84 @@ class AdaptSingleton extends LockingModel {
   /**
    * @deprecated Please use core/js/a11y instead
    * @see module:core/js/a11y
-   * @readonly
    */
   get a11y() {}
 
   /**
    * @deprecated Please use core/js/components instead
    * @see module:core/js/components
-   * @readonly
    */
   get componentStore() {}
 
   /**
    * @deprecated Please use core/js/data instead
    * @see module:core/js/data
-   * @readonly
    */
   get data() {}
 
   /**
    * @deprecated Please use core/js/device instead
    * @see module:core/js/device
-   * @readonly
    */
   get device() {}
 
   /**
    * @deprecated Please use core/js/drawer instead
    * @see module:core/js/drawer
-   * @readonly
    */
   get drawer() {}
 
   /**
    * @deprecated Please use core/js/location instead
    * @see module:core/js/location
-   * @readonly
    */
   get location() {}
 
   /**
    * @deprecated Please use core/js/notify instead
    * @see module:core/js/notify
-   * @readonly
    */
   get notify() {}
 
   /**
    * @deprecated Please use core/js/offlineStorage instead
    * @see module:core/js/offlineStorage
-   * @readonly
    */
   get offlineStorage() {}
 
   /**
    * @deprecated Please use core/js/router instead
    * @see module:core/js/router
-   * @readonly
    */
   get router() {}
 
   /**
    * @deprecated Please use core/js/scrolling instead
    * @see module:core/js/scrolling
-   * @readonly
    */
   get scrolling() {}
 
   /**
    * @deprecated Please use core/js/startController instead
    * @see module:core/js/startController
-   * @readonly
    */
   get startController() {}
 
   /**
    * @deprecated Please use core/js/components instead
    * @see module:core/js/components
-   * @readonly
    */
   get store() {}
 
   /**
    * @deprecated Please use core/js/tracking instead
    * @see module:core/js/tracking
-   * @readonly
    */
   get tracking() {}
 
   /**
    * @deprecated Please use core/js/wait instead
    * @see module:core/js/wait
-   * @readonly
    */
   get wait() {}
 

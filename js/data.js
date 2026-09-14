@@ -53,8 +53,8 @@
  * console.log(model.get('title'));
  *
  * @example
- * data.on('ready', () => {
- *   console.log('Data loaded, models ready');
+ * data.once('ready', () => {
+ *   const model = data.findById('c-05');
  * });
  */
 import Adapt from 'core/js/adapt';
@@ -218,8 +218,6 @@ class Data extends AdaptCollection {
     await this.loadCourseData(language, previousLanguage);
   }
 
-  // All code that needs to run before adapt starts should go here
-
   /**
    * Loads course data files for the active language.
    * Orchestrates the complete data loading sequence.
@@ -241,6 +239,7 @@ class Data extends AdaptCollection {
    */
   async loadCourseData(newLanguage, previousLanguage) {
 
+    // All code that needs to run before adapt starts should go here
     const language = Adapt.config.get('_activeLanguage');
 
     const courseFolder = Adapt.build.get('coursedir') + '/' + language + '/';
@@ -367,9 +366,9 @@ class Data extends AdaptCollection {
    * @private
    */
   async triggerDataLoaded() {
-    // Setup the newly added models
     logging.debug('Firing app:dataLoaded');
     try {
+      // Setup the newly added models
       this.forEach(model => model.setupModel?.());
       await wait.queue();
       Adapt.trigger('app:dataLoaded');
@@ -476,13 +475,13 @@ class Data extends AdaptCollection {
 
   /**
    * Finds a rendered view by its model's _id property.
-   * Walks the view tree from current location to find the target view.
-   * Only returns views that are children of the current location (Adapt.parentView).
+   * Walks the view tree from the current `Adapt.parentView` to find the target view.
+   * Only returns views that are children of the current `Adapt.parentView`.
    *
-   * **Navigation Context:**
-   * - Only finds views within current location's view tree
+   * **Routing Context:**
+   * - Only finds views within the current `Adapt.parentView` tree
    * - Will not find views on different pages/menus
-   * - Returns undefined if view not rendered or not in current location
+   * - Returns undefined if the view is not rendered, or sits outside `Adapt.parentView`
    *
    * @param {string} id - Model ID to find view for (e.g., 'c-05', 'b-10')
    * @returns {Backbone.View|undefined} View instance or undefined if not found

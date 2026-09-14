@@ -26,32 +26,10 @@
  *
  * **Framework Integration:**
  * - Data service uses `getModelClass()` to instantiate models from JSON
- * - Router uses `getViewClass()` to create views for navigation
+ * - Router uses `getViewClass()` to create views for routing
  * - AdaptView uses `getViewClass()` to render child components
  * - Plugins register during initialization via `components.register()`
  *
- * @example
- * import components from 'core/js/components';
- *
- * components.register('hotgraphic', {
- *   model: HotGraphicModel,
- *   view: HotGraphicView
- * });
- *
- * @example
- * components.register(['article', 'page'], {
- *   view: ArticleView
- * });
- *
- * @example
- * const ViewClass = components.getViewClass({
- *   _component: 'hotgraphic'
- * });
- * const view = new ViewClass({ model });
- *
- * @example
- * const ModelClass = components.getModelClass(model);
- * const newModel = new ModelClass(json);
  */
 
 import Backbone from 'backbone';
@@ -97,7 +75,7 @@ class Components extends Backbone.Controller {
    *
    * @param {string|Array<string>} name - Component name(s) to register
    * @param {ComponentRegistration} object - Registration object containing model and/or view classes
-   * @returns {Object} The registered object (for chaining)
+   * @returns {ComponentRegistration} The registration object that was passed in
    * @throws {Error} If model is not Backbone.Model subclass or Function
    * @throws {Error} If view is not Backbone.View subclass or Function
    * @example
@@ -238,11 +216,6 @@ class Components extends Backbone.Controller {
    * 3. If view is Function (not Backbone.View subclass), call and return result
    * 4. Otherwise return view class directly
    *
-   * **Usage Context:**
-   * - Router calls this to instantiate views during navigation
-   * - AdaptView calls this to render child components
-   * - NotifyPopupView calls this to render notification content
-   *
    * @param {string|Backbone.Model|Backbone.View|Object} nameModelViewOrData - Input to resolve view class from
    * @returns {Function|undefined} View class constructor or undefined if not registered
    * @example
@@ -345,11 +318,6 @@ class Components extends Backbone.Controller {
    * 2. Look up registration object in registry
    * 3. If model is Function (not Backbone.Model subclass), call and return result
    * 4. Otherwise return model class directly
-   *
-   * **Usage Context:**
-   * - Data service calls this during collection instantiation from JSON
-   * - Router calls this when creating runtime models (menu tracking)
-   * - Trickle extension uses this to instantiate button models
    *
    * @param {string|Backbone.Model|Object} nameModelOrData - Input to resolve model class from
    * @returns {Function|undefined} Model class constructor or undefined if not registered

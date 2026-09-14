@@ -8,7 +8,7 @@
  * **Architecture:**
  * - Singleton controller extending Backbone.Controller
  * - Loads `_start` configuration from Adapt.course model
- * - Coordinates with router service for navigation
+ * - Coordinates with router service for routing
  * - Coordinates with data service for model lookups
  * - Manages session state to prevent duplicate start location logic
  *
@@ -52,7 +52,7 @@
  * @example
  * import startController from 'core/js/startController';
  *
- * Adapt.trigger('navigation:returnToStart');
+ * startController.returnToStartLocation();
  */
 import Adapt from 'core/js/adapt';
 import LockingModel from 'core/js/models/lockingModel';
@@ -72,7 +72,7 @@ import data from 'core/js/data';
  * @property {boolean} [_force=false] - Force start location ignoring URL hash
  * @property {string} _id - Default start content object ID
  * @property {Array<StartIdConfig>} [_startIds] - Conditional start location configurations
- * @property {boolean} [_isMenuDisabled=false] - Prevent navigation to root menu when _isEnabled
+ * @property {boolean} [_isMenuDisabled=false] - Prevent routing to root menu when _isEnabled
  */
 
 /**
@@ -102,13 +102,13 @@ class StartController extends Backbone.Controller {
   }
 
   /**
-   * Sets the initial course navigation location based on _start configuration.
-   * On first call, updates browser history without triggering navigation.
-   * On subsequent calls (language change), navigates to start location.
+   * Sets the initial course routing location based on _start configuration.
+   * On first call, updates browser history without triggering routing.
+   * On subsequent calls (language change), routes to start location.
    *
    * **Behavior:**
-   * - First call: Uses history.replaceState to update URL without navigation
-   * - Subsequent calls: Uses router.navigate to trigger full navigation
+   * - First call: Uses history.replaceState to update URL without routing
+   * - Subsequent calls: Uses router.navigate to trigger full routing
    * - Respects _isEnabled flag (falls back to default routing if disabled)
    *
    * @private
@@ -119,7 +119,6 @@ class StartController extends Backbone.Controller {
       if (!this.isEnabled()) return;
       return window.history.replaceState('', '', this.getStartHash());
     }
-    // ensure we can return to the start page even if it is completed
     const hash = this.isEnabled() ? this.getStartHash(false) : '#/';
     router.navigate(hash, { trigger: true, replace: true });
   }
@@ -129,13 +128,8 @@ class StartController extends Backbone.Controller {
    * Resets `_skipIfComplete` flags to ensure completed start pages are accessible.
    * Can be triggered via event or button click.
    *
-   * **Triggering Methods:**
-   * - Event: `Adapt.trigger('navigation:returnToStart')`
-   * - Button: Add `data-event="returnToStart"` to navigation button
-   * - Direct: `startController.returnToStartLocation()`
-   *
-   * @example
-   * Adapt.trigger('navigation:returnToStart');
+   * Also runs when a `data-event="returnToStart"` button is clicked, and when the
+   * legacy `navigation:returnToStart` event fires.
    *
    * @example
    * startController.returnToStartLocation();
@@ -143,6 +137,7 @@ class StartController extends Backbone.Controller {
   returnToStartLocation() {
     const startIds = this.model.get('_startIds');
     if (startIds) {
+      // ensure we can return to the start page even if it is completed
       startIds.forEach(startId => (startId._skipIfComplete = false));
     }
     window.location.hash = this.getStartHash(true);
