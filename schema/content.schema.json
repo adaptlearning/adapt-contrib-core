@@ -39,7 +39,8 @@
       "description": "When viewing an element - this is the title that will be displayed on the page",
       "default": "",
       "_adapt": {
-        "translatable": true
+        "translatable": true,
+        "linkedTo": "title"
       },
       "_backboneForms": "DisplayTitle"
     },
