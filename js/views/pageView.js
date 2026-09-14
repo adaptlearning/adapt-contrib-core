@@ -19,9 +19,8 @@ import ContentObjectView from 'core/js/views/contentObjectView';
 class PageView extends ContentObjectView {
 
   /**
-   * Removes the page view from the DOM. Cleans up the injected
-   * `$pageLabel` element (added by the page heading plugin) before
-   * delegating full removal to
+   * Removes the page view from the DOM. Removes the `$pageLabel` element, if a
+   * plugin has assigned one, before delegating full removal to
    * {@link module:core/js/views/contentObjectView~ContentObjectView#remove}.
    * @returns {PageView} This view instance
    */

@@ -4,8 +4,7 @@
  * @description Extends {@link module:core/js/views/contentObjectView~ContentObjectView}
  * for menu content objects. Renders child content objects as
  * {@link module:core/js/views/menuItemView~MenuItemView} instances inside
- * `.js-children`. The child view class is currently fixed; making it configurable
- * is a planned improvement.
+ * `.js-children`. The child view class is fixed.
  */
 import ContentObjectView from 'core/js/views/contentObjectView';
 import MenuItemView from 'core/js/views/menuItemView';

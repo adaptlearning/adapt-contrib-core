@@ -3,7 +3,7 @@
  * @module core/js/views/componentView
  * @description Base class for all Adapt presentation and question component views.
  * Provides optional ARIA region labelling, inview scroll-based completion tracking
- * via {@link ComponentView#setupInviewCompletion}, and standard remove lifecycle
+ * via {@link ComponentView#setupInviewCompletion setupInviewCompletion()}, and standard remove lifecycle
  * cleanup. Registered as the 'component' type.
  */
 import logging from 'core/js/logging';
@@ -14,7 +14,7 @@ import AdaptView from 'core/js/views/adaptView';
  * @classdesc Base view for Adapt components. All presentation and question component
  * views extend this class. Provides:
  * - Optional ARIA `role="region"` and `aria-labelledby` when `_isA11yRegionEnabled` is set
- * - Inview-based completion via {@link ComponentView#setupInviewCompletion}
+ * - Inview-based completion via {@link ComponentView#setupInviewCompletion setupInviewCompletion()}
  * - Automatic inview listener cleanup on removal
  * @extends AdaptView
  */

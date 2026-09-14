@@ -21,16 +21,29 @@ import router from 'core/js/router';
  * scroll-to-top, velocity fade-in animation, and recursive child-view removal via
  * ReactDOM or standard DOM cleanup. Subclassed by {@link module:core/js/views/pageView~PageView}
  * and menu views.
+ * Each lifecycle event below is fired under three names by the same trigger call:
+ * `<type>View:<name>` (where `<type>` is the view's `constructor.type`),
+ * `contentObjectView:<name>`, and `view:<name>`.
+ *
  * @extends AdaptView
  * @fires contentObjectView:preRender
+ * @fires view:preRender
  * @fires contentObjectView:render
+ * @fires view:render
  * @fires contentObjectView:postRender
+ * @fires view:postRender
  * @fires contentObjectView:preReady
+ * @fires view:preReady
  * @fires contentObjectView:ready
+ * @fires view:ready
  * @fires contentObjectView:postReady
+ * @fires view:postReady
  * @fires contentObjectView:preRemove
+ * @fires view:preRemove
  * @fires contentObjectView:remove
+ * @fires view:remove
  * @fires contentObjectView:postRemove
+ * @fires view:postRemove
  */
 export default class ContentObjectView extends AdaptView {
 

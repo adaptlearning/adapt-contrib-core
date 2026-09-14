@@ -114,7 +114,6 @@ class QuestionView extends ComponentView {
    * Called when the question is disabled (e.g. during submit or after completion).
    * Override in component views to prevent learner interaction.
    * @protected
-   * @returns {void}
    */
   disableQuestion() {}
 
@@ -122,7 +121,6 @@ class QuestionView extends ComponentView {
    * Called when the question is re-enabled (e.g. after a reset).
    * Override in component views to restore learner interaction.
    * @protected
-   * @returns {void}
    */
   enableQuestion() {}
 
@@ -169,7 +167,6 @@ class QuestionView extends ComponentView {
    * Override this method to perform question-specific setup before rendering.
    * Prefer this over overriding `preRender` in question components.
    * @protected
-   * @returns {void}
    */
   setupQuestion() {}
 
@@ -225,7 +222,6 @@ class QuestionView extends ComponentView {
    * Override in component views for any post-render DOM setup, equivalent to
    * `postRender` for presentational components.
    * @protected
-   * @returns {void}
    */
   onQuestionRendered() {}
 
@@ -326,7 +322,6 @@ class QuestionView extends ComponentView {
    * Called when `canSubmit` returns false (e.g. no answer selected).
    * Override in component views to provide additional validation feedback.
    * @protected
-   * @returns {void}
    */
   onCannotSubmit() {}
 
@@ -334,7 +329,6 @@ class QuestionView extends ComponentView {
    * Called after a successful submission has been fully processed.
    * Override in component views for any post-submit UI updates.
    * @protected
-   * @returns {void}
    */
   onSubmitted() {}
 
@@ -352,7 +346,6 @@ class QuestionView extends ComponentView {
    * Override in component views to display answer marking (e.g. ticks and
    * crosses) on the question after submission or when showing the user answer.
    * @protected
-   * @returns {void}
    */
   showMarking() {}
 
@@ -446,7 +439,6 @@ class QuestionView extends ComponentView {
    * (e.g. deselect items). Called when the reset button is clicked — this is a
    * UI-only reset, not a full model reset.
    * @protected
-   * @returns {void}
    */
   resetQuestion() {}
 
@@ -528,10 +520,10 @@ class QuestionView extends ComponentView {
   }
 
   /**
-   * Returns the time elapsed (in seconds) between when the question became
-   * available and the learner's first response. Override in component views to
+   * Returns the time elapsed between the question becoming available to the learner
+   * and their first response. Returns `null` here; override in component views to
    * provide a measured value for SCORM interaction tracking.
-   * @returns {number|null} Latency in seconds, or `null` if not measured
+   * @returns {number|null} The measured latency, or `null` if not measured
    */
   getLatency() {
     return null;
@@ -544,9 +536,8 @@ class QuestionView extends ComponentView {
    * @param {string} name - Method name to call on the model
    * @param {string} [lookForViewOnlyFunction] - Alternative method name to check for a view override
    * @returns {*} Return value from the delegated method
-   * @private
+   * @protected
    */
-  // This function is overridden if useQuestionModeOnly: false. see below.
   _runModelCompatibleFunction(name, lookForViewOnlyFunction) {
     return this.model[name](); // questionModel Only
   }
@@ -575,7 +566,6 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
    * @returns {Object} Interaction object specific to the question type
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#getInteractionObject} instead
    */
-  // Returns an object specific to the question type.
   getInteractionObject() {
     log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
     return this.model.getInteractionObject();
@@ -586,7 +576,6 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
    * @returns {string} The learner's response
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#getResponse} instead
    */
-  // Retturns a string detailing how the user answered the question.
   getResponse() {
     log.deprecated('QuestionView.getResponse, please use QuestionModel.getResponse');
     return this.model.getResponse();
@@ -604,27 +593,27 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   }
 
   /**
+   * Calls the default setup methods for the question.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupDefaultSettings} instead
    */
-  // Calls default methods to setup on questions
   setupDefaultSettings() {
     log.deprecated('QuestionView.setupDefaultSettings, please use QuestionModel.setupDefaultSettings');
     return this.model.setupDefaultSettings();
   }
 
   /**
+   * Sets up the question's button text, using either the global or the local values.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupButtonSettings} instead
    */
-  // Used to setup either global or local button text
   setupButtonSettings() {
     log.deprecated('QuestionView.setupButtonSettings, please use QuestionModel.setupButtonSettings');
     return this.model.setupButtonSettings();
   }
 
   /**
+   * Sets up the question's weight and score, using either the global or the local values.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupWeightSettings} instead
    */
-  // Used to setup either global or local question weight/score
   setupWeightSettings() {
     log.deprecated('QuestionView.setupWeightSettings, please use QuestionModel.setupWeightSettings');
     return this.model.setupWeightSettings();
@@ -633,19 +622,19 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   /**
    * Returns whether the learner's current selection is valid for submission.
    * @returns {boolean}
+   * Checks whether the learner may submit the question — for example, whether
+   * they have selected an item.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#canSubmit} instead
    */
-  // Use to check if the user is allowed to submit the question
-  // Maybe the user has to select an item?
   canSubmit() {
     log.deprecated('QuestionView.canSubmit, please use QuestionModel.canSubmit');
     return this.model.canSubmit();
   }
 
   /**
+   * Updates the number of attempts the learner has left.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#updateAttempts} instead
    */
-  // Used to update the amount of attempts the user has left
   updateAttempts() {
     log.deprecated('QuestionView.updateAttempts, please use QuestionModel.updateAttempts');
     return this.model.updateAttempts();
@@ -654,19 +643,19 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   /**
    * Stores the learner's current answer for later retrieval (e.g. when
    * toggling between user answer and correct answer views).
+   * Stores the learner's answer, preserving its state so it can be returned to
+   * or redisplayed later.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#storeUserAnswer} instead
    */
-  // This is important for returning or showing the users answer
-  // This should preserve the state of the users answers
   storeUserAnswer() {
     log.deprecated('QuestionView.storeUserAnswer, please use QuestionModel.storeUserAnswer');
     return this.model.storeUserAnswer();
   }
 
   /**
-   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#resetUserAnswer} instead
+   * Resets the stored user answer ready for another attempt.
+   * @deprecated Use {@link module:core/js/models/componentModel~ComponentModel#resetUserAnswer} instead
    */
-  // Used by the question view to reset the stored user answer
   resetUserAnswer() {
     log.deprecated('QuestionView.resetUserAnswer, please use QuestionModel.resetUserAnswer');
     return this.model.resetUserAnswer();
@@ -678,7 +667,6 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
    * in view-only compatible mode.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#markQuestion} instead
    */
-  // Sets _isCorrect:true/false based upon isCorrect method below
   markQuestion() {
 
     if (this._isInViewOnlyCompatibleMode('isCorrect')) {
@@ -705,26 +693,25 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
    * @returns {boolean}
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#isCorrect} instead
    */
-  // Should return a boolean based upon whether to question is correct or not
   isCorrect() {
     log.deprecated('QuestionView.isCorrect, please use QuestionModel.isCorrect');
     return this.model.isCorrect();
   }
 
   /**
+   * Sets the question's score based upon `_questionWeight`.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setScore} instead
    */
-  // Used to set the score based upon the _questionWeight
   setScore() {
     log.deprecated('QuestionView.setScore, please use QuestionModel.setScore');
     return this.model.setScore();
   }
 
   /**
+   * Updates the buttons for the current question state by setting `_buttonState`
+   * on the model, which `buttonsView` listens to and renders from.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#updateButtons} instead
    */
-  // Updates buttons based upon question state by setting
-  // _buttonState on the model which buttonsView listens to
   updateButtons() {
     log.deprecated('QuestionView.updateButtons, please use QuestionModel.updateButtons');
     return this.model.updateButtons();
@@ -736,7 +723,6 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
    * view-only compatible mode, otherwise delegates to `model.setupFeedback()`.
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupFeedback} instead
    */
-  // Used to setup the correct, incorrect and partly correct feedback
   setupFeedback() {
 
     if (this._isInViewOnlyCompatibleMode('isPartlyCorrect')) {
@@ -760,17 +746,18 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   /**
    * Returns whether the learner's answer is partly correct.
    * @returns {boolean}
+   * Determines whether the question is partly correct rather than incorrect.
+   * @returns {boolean} `true` if the question is partly correct
    * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#isPartlyCorrect} instead
    */
-  // Used by the question to determine if the question is incorrect or partly correct
-  // Should return a boolean
   isPartlyCorrect() {
     log.deprecated('QuestionView.isPartlyCorrect, please use QuestionModel.isPartlyCorrect');
     return this.model.isPartlyCorrect();
   }
 
   /**
-   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupCorrectFeedback} instead
+   * Sets up the correct feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
    */
   setupCorrectFeedback() {
     log.deprecated('QuestionView.setupCorrectFeedback, please use QuestionModel.setupCorrectFeedback');
@@ -778,7 +765,8 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   }
 
   /**
-   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupPartlyCorrectFeedback} instead
+   * Sets up the partly correct feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
    */
   setupPartlyCorrectFeedback() {
     log.deprecated('QuestionView.setupPartlyCorrectFeedback, please use QuestionModel.setupPartlyCorrectFeedback');
@@ -786,7 +774,8 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
   }
 
   /**
-   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupIncorrectFeedback} instead
+   * Sets up the incorrect feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
    */
   setupIncorrectFeedback() {
     log.deprecated('QuestionView.setupIncorrectFeedback, please use QuestionModel.setupIncorrectFeedback');
