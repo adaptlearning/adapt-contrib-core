@@ -1,3 +1,9 @@
+/**
+ * @file Application entry point for the Adapt Learning Framework.
+ * @module core/js/app
+ * @description Imports the core modules for their side effects, renders the loading
+ * template, then initialises the data module and calls `Adapt.init()` once it is ready.
+ */
 import Adapt from 'core/js/adapt';
 import 'core/js/wait';
 import 'core/js/deprecated.js';
