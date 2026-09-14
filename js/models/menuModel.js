@@ -1,11 +1,8 @@
 /**
  * @file Menu Model - Menu content object data model
  * @module core/js/models/menuModel
- * @description Data model for menu content objects. Extends
- * {@link module:core/js/models/contentObjectModel~ContentObjectModel} to represent
- * menus that contain other content objects. Menus apply locking logic to their
- * children via {@link module:core/js/models/menuModel~MenuModel#setCustomLocking}.
- * Registered as the 'menu' component type.
+ * @description Defines {@link module:core/js/models/menuModel~MenuModel} and
+ * registers it as the 'menu' content type.
  */
 
 import components from 'core/js/components';
@@ -36,7 +33,9 @@ class MenuModel extends ContentObjectModel {
 
   /**
    * Applies lock state to each available child model using the configured locking strategy.
-   * Recursively triggers locking on any child that is itself a {@link MenuModel}.
+   * Calls `checkLocking()` on any child that is itself a
+   * {@link module:core/js/models/menuModel~MenuModel}, so nested menus re-evaluate their
+   * own children in turn.
    */
   setCustomLocking() {
     const children = this.getAvailableChildModels();

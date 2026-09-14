@@ -1,8 +1,8 @@
 /**
  * @file Course Model - Top-level course data model
  * @module core/js/models/courseModel
- * @description Data model for the course root node. Extends {@link module:core/js/models/menuModel~MenuModel}
- * to represent the top-level course container. Registered as the 'course' component type.
+ * @description Defines {@link module:core/js/models/courseModel~CourseModel} and
+ * registers it as the 'course' content type.
  */
 
 import components from 'core/js/components';

@@ -1,10 +1,8 @@
 /**
  * @file Article Model - Article data model
  * @module core/js/models/articleModel
- * @description Data model for article content. Extends
- * {@link module:core/js/models/adaptModel~AdaptModel} to represent articles in the
- * Adapt content hierarchy. Articles are children of content objects (pages) and
- * parents of blocks. Registered as the 'article' component type.
+ * @description Defines {@link module:core/js/models/articleModel~ArticleModel} and
+ * registers it as the 'article' content type.
  */
 
 import components from 'core/js/components';
