@@ -17,6 +17,20 @@
     left: 0;
   }
 
+  // Error variant used by logging notifications. Fixed system colours that
+  // echo the browser console's error styling (red outline, pink fill), kept
+  // independent of theme variables so diagnostics look consistent per project.
+  // Doubled class (`.notify-push.notify-push--error`) so the fill beats the
+  // theme's `.notify-push` background rule regardless of stylesheet order.
+  &&--error {
+    background-color: #fdecea;
+    border: 1px solid #d93025;
+
+    .notify-push__body-inner {
+      color: #d93025;
+    }
+  }
+
   &__inner {
     cursor: pointer;
   }
