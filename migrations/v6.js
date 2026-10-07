@@ -1,6 +1,53 @@
 import { describe, whereContent, whereFromPlugin, mutateContent, checkContent, updatePlugin, getCourse, testSuccessWhere, testStopWhere, getConfig } from 'adapt-migrations';
 import _ from 'lodash';
 
+describe('core - update to v6.0.0', async () => {
+  let course;
+
+  const isObject = (value) => (typeof value === 'object' && value !== null && !Array.isArray(value));
+
+  whereFromPlugin('core - from less than v6.0.0', { name: 'adapt-contrib-core', version: '<6.0.0' });
+
+  whereContent('core - where course menuSettings is not an object', async (content) => {
+    course = getCourse();
+    return course && !isObject(course.menuSettings);
+  });
+
+  mutateContent('core - normalise course.menuSettings to an object', async (content) => {
+    _.set(course, 'menuSettings', {});
+    return true;
+  });
+
+  checkContent('core - check course.menuSettings is an object', async (content) => {
+    if (!isObject(_.get(course, 'menuSettings'))) throw new Error('core - menuSettings not normalised to an object');
+    return true;
+  });
+
+  updatePlugin('core - update to v6.0.0', { name: 'adapt-contrib-core', version: '6.0.0', framework: '>=5.17.0' });
+
+  testSuccessWhere('legacy string menuSettings', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '5.12.0' }],
+    content: [
+      { _type: 'course', menuSettings: '' }
+    ]
+  });
+
+  testStopWhere('menuSettings already an object', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '5.12.0' }],
+    content: [
+      { _type: 'course', menuSettings: {} }
+    ]
+  });
+
+  testStopWhere('incorrect version', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '6.0.0' }]
+  });
+
+  testStopWhere('no course', {
+    content: [{ _type: 'config' }]
+  });
+});
+
 describe('core - update to v6.22.0', async () => {
   let course;
   const defaultNavigation = {
