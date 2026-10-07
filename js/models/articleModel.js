@@ -1,7 +1,21 @@
+/**
+ * @file Article Model - Article data model
+ * @module core/js/models/articleModel
+ * @description Defines {@link module:core/js/models/articleModel~ArticleModel} and
+ * registers it as the 'article' content type.
+ */
+
 import components from 'core/js/components';
 import logging from 'core/js/logging';
 import AdaptModel from 'core/js/models/adaptModel';
 
+/**
+ * @class ArticleModel
+ * @classdesc Data model for an article. Articles are mid-level content containers
+ * in the Adapt hierarchy, sitting between content objects (pages) and blocks.
+ * Each article holds one or more blocks.
+ * @extends AdaptModel
+ */
 class ArticleModel extends AdaptModel {
 
   get _parent() {

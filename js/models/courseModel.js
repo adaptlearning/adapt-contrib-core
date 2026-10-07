@@ -1,7 +1,22 @@
+/**
+ * @file Course Model - Top-level course data model
+ * @module core/js/models/courseModel
+ * @description Defines {@link module:core/js/models/courseModel~CourseModel} and
+ * registers it as the 'course' content type.
+ */
+
 import components from 'core/js/components';
 import logging from 'core/js/logging';
 import MenuModel from 'core/js/models/menuModel';
 
+/**
+ * @class CourseModel
+ * @classdesc Top-level course data model. Represents the root course node in the Adapt
+ * content hierarchy. The course is the parent of all content objects and has no parent
+ * of its own. Extends {@link module:core/js/models/menuModel~MenuModel} with course-specific
+ * type identification.
+ * @extends MenuModel
+ */
 class CourseModel extends MenuModel {
 
   get _parent() {

@@ -1,3 +1,13 @@
+/**
+ * @file MPABC - Menus, Pages, Articles, Blocks and Components controller
+ * @module core/js/mpabc
+ * @description Imported for its side effects: bootstraps the core content hierarchy by
+ * defining and instantiating {@link module:core/js/mpabc~MPABC}.
+ *
+ * @example
+ * import 'core/js/mpabc';
+ */
+
 import Adapt from 'core/js/adapt';
 import wait from 'core/js/wait';
 import Data from 'core/js/data';
@@ -14,6 +24,17 @@ import 'core/js/views/pageView';
 import 'core/js/views/articleView';
 import 'core/js/views/blockView';
 
+/**
+ * @class MPABC
+ * @classdesc Singleton controller responsible for bootstrapping the core content type
+ * hierarchy. Sets up `Adapt.contentObjects`, `Adapt.articles`, `Adapt.blocks`, and
+ * `Adapt.components` as
+ * {@link module:core/js/collections/adaptSubsetCollection~AdaptSubsetCollection} instances
+ * filtered by model type.
+ * Coordinates with the data loader via the wait API to ensure collections are ready
+ * before the framework proceeds.
+ * @extends Backbone.Controller
+ */
 class MPABC extends Backbone.Controller {
 
   initialize() {
