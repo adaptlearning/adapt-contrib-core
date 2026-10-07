@@ -425,6 +425,7 @@
             "options": [
               "debug",
               "info",
+              "success",
               "warn",
               "error",
               "fatal"

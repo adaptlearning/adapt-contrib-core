@@ -1,7 +1,18 @@
-// Used to determine if log call should be printed based on log level
+/**
+ * @file Ordered log-level enum used by the logging service.
+ * @module core/js/enums/logLevelEnum
+ */
+
+/**
+ * Ordered log levels used to determine whether a log call should be printed.
+ * Levels are compared ordinally — a configured level of `WARN` will suppress
+ * `DEBUG`, `INFO`, and `SUCCESS` output.
+ * @enum {number}
+ */
 const LOG_LEVEL = ENUM([
   'DEBUG',
   'INFO',
+  'SUCCESS',
   'WARN',
   'ERROR',
   'FATAL'
