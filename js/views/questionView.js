@@ -1,3 +1,13 @@
+/**
+ * @file Question View - Base view for interactive question components
+ * @module core/js/views/questionView
+ * @description Base class for all Adapt question component views. Orchestrates the
+ * full question lifecycle: setup, submission, marking, feedback display, answer
+ * reset, and correct-answer reveal. Business logic is delegated to
+ * {@link module:core/js/models/questionModel~QuestionModel} where available.
+ * A backwards-compatibility layer (`ViewOnlyQuestionViewCompatibilityLayer`) supports
+ * components that have not yet migrated question logic to a model.
+ */
 import Adapt from 'core/js/adapt';
 import ComponentView from 'core/js/views/componentView';
 import ButtonsView from 'core/js/views/buttonsView';
@@ -8,6 +18,21 @@ import data from 'core/js/data';
 import location from 'core/js/location';
 import 'core/js/models/questionModel';
 
+/**
+ * @class QuestionView
+ * @classdesc Base view for question components. Coordinates button state updates,
+ * the submit pipeline (canSubmit → mark → score → feedback → updateButtons),
+ * answer reset, and correct-answer reveal. Delegates to
+ * {@link module:core/js/models/questionModel~QuestionModel} for business logic
+ * where available; legacy view-only components are supported by
+ * `ViewOnlyQuestionViewCompatibilityLayer`.
+ * @extends ComponentView
+ * @fires questionView:submitted
+ * @fires questionView:showFeedback
+ * @fires questionView:disabledFeedback
+ * @fires questionView:showInstructionError
+ * @fires questionView:recordInteraction
+ */
 class QuestionView extends ComponentView {
 
   className() {
@@ -38,7 +63,7 @@ class QuestionView extends ComponentView {
 
   /**
    * Used to determine whether the learner is allowed to interact with the question component or not.
-   * @return {Boolean}
+   * @returns {Boolean}
    * @deprecated since v6.0.5 please use this.model.isInteractive, this.model.get('_shouldShowMarking') or this.model.shouldShowMarking
   */
   isInteractive() {
@@ -64,7 +89,13 @@ class QuestionView extends ComponentView {
     this.setupQuestion();
   }
 
-  // Used in the question view to disabled the question when _isEnabled has been set to false
+  /**
+   * Toggles the `is-disabled` CSS class on the component widget and calls
+   * `disableQuestion` or `enableQuestion` in response to `_isEnabled` changing.
+   * @param {Backbone.Model} model - The question model
+   * @param {boolean} changedAttribute - The new value of `_isEnabled`
+   * @returns {void}
+   */
   onEnabledChanged(model, changedAttribute) {
 
     // If isEnabled == false add disabled class
@@ -79,10 +110,18 @@ class QuestionView extends ComponentView {
 
   }
 
-  // Used by the question to disable the question during submit and complete stages
+  /**
+   * Called when the question is disabled (e.g. during submit or after completion).
+   * Override in component views to prevent learner interaction.
+   * @protected
+   */
   disableQuestion() {}
 
-  // Used by the question to enable the question during interactions
+  /**
+   * Called when the question is re-enabled (e.g. after a reset).
+   * Override in component views to restore learner interaction.
+   * @protected
+   */
   enableQuestion() {}
 
   /**
@@ -124,7 +163,11 @@ class QuestionView extends ComponentView {
    */
   resetQuestionOnRevisit(type) {}
 
-  // Left blank for question setup - should be used instead of preRender
+  /**
+   * Override this method to perform question-specific setup before rendering.
+   * Prefer this over overriding `preRender` in question components.
+   * @protected
+   */
   setupQuestion() {}
 
   // Calls default methods to setup after the question is rendered
@@ -133,7 +176,12 @@ class QuestionView extends ComponentView {
     this.onQuestionRendered();
   }
 
-  // Used to setup buttonsView and sets up the internal events for the question
+  /**
+   * Creates a {@link module:core/js/views/buttonsView~ButtonsView} and attaches
+   * it to `.btn__container`. Listens for `buttons:stateUpdate` to drive the
+   * question state machine.
+   * @returns {void}
+   */
   addButtonsView() {
     this.buttonsView = new ButtonsView({ model: this.model, el: this.$('.btn__container') });
 
@@ -141,6 +189,12 @@ class QuestionView extends ComponentView {
 
   }
 
+  /**
+   * Routes a {@link module:core/js/enums/buttonStateEnum~BUTTON_STATE} value
+   * from `ButtonsView` to the appropriate question handler method.
+   * @param {string} buttonState - A `BUTTON_STATE` enum value
+   * @returns {void}
+   */
   onButtonStateUpdate(buttonState) {
 
     switch (buttonState) {
@@ -163,10 +217,25 @@ class QuestionView extends ComponentView {
 
   }
 
-  // Blank method used just like postRender is for presentational components
+  /**
+   * Called after the question has been rendered and the buttons view created.
+   * Override in component views for any post-render DOM setup, equivalent to
+   * `postRender` for presentational components.
+   * @protected
+   */
   onQuestionRendered() {}
 
-  // Triggered when the submit button is clicked
+  /**
+   * Runs the full submission pipeline: validates input, records attempts, marks
+   * the question, calculates score, checks completion, shows marking and feedback,
+   * updates button state, and triggers `questionView:submitted`.
+   * @fires questionView:submitted
+   * @fires questionView:showFeedback
+   * @fires questionView:disabledFeedback
+   * @fires questionView:showInstructionError
+   * @fires questionView:recordInteraction
+   * @returns {void}
+   */
   onSubmitClicked() {
     // canSubmit is setup in questions and should return a boolean
     // If the question stops the user form submitting - show instruction error
@@ -238,29 +307,54 @@ class QuestionView extends ComponentView {
     this.recordInteraction();
   }
 
+  /**
+   * Fires the `questionView:showInstructionError` event so plugins (e.g. tutor)
+   * can display a validation message when the learner tries to submit without
+   * making a selection.
+   * @fires questionView:showInstructionError
+   * @returns {void}
+   */
   showInstructionError() {
     Adapt.trigger('questionView:showInstructionError', this);
   }
 
-  // Blank method for question to fill out when the question cannot be submitted
+  /**
+   * Called when `canSubmit` returns false (e.g. no answer selected).
+   * Override in component views to provide additional validation feedback.
+   * @protected
+   */
   onCannotSubmit() {}
 
-  // Blank method for question to fill out when the question was successfully submitted
+  /**
+   * Called after a successful submission has been fully processed.
+   * Override in component views for any post-submit UI updates.
+   * @protected
+   */
   onSubmitted() {}
 
-  // Used to set _isEnabled and _isSubmitted on the model
-  // Also adds a 'submitted' class to the widget
+  /**
+   * Delegates to `model.setQuestionAsSubmitted()` and adds the `is-submitted`
+   * CSS class to the component widget.
+   * @returns {void}
+   */
   setQuestionAsSubmitted() {
     this.model.setQuestionAsSubmitted();
     this.$('.component__widget').addClass('is-submitted');
   }
 
-  // This is important and should give the user feedback on how they answered the question
-  // Normally done through ticks and crosses by adding classes
+  /**
+   * Override in component views to display answer marking (e.g. ticks and
+   * crosses) on the question after submission or when showing the user answer.
+   * @protected
+   */
   showMarking() {}
 
-  // Checks if the question should be set to complete
-  // Calls setCompletionStatus and adds complete classes
+  /**
+   * Delegates to `model.checkQuestionCompletion()` and adds `is-complete` and
+   * `show-user-answer` CSS classes to the component widget when the question
+   * is complete.
+   * @returns {void}
+   */
   checkQuestionCompletion() {
 
     const isComplete = this.model.checkQuestionCompletion();
@@ -271,13 +365,27 @@ class QuestionView extends ComponentView {
 
   }
 
+  /**
+   * Fires `questionView:recordInteraction` unless `_recordInteraction` is
+   * explicitly set to `false` on the model. Called at the end of
+   * `onSubmitClicked` to allow tracking plugins (e.g. SCORM) to record the
+   * learner's interaction.
+   * @fires questionView:recordInteraction
+   * @returns {void}
+   */
   recordInteraction() {
     if (this.model.get('_recordInteraction') === true || !this.model.has('_recordInteraction')) {
       Adapt.trigger('questionView:recordInteraction', this);
     }
   }
 
-  // Used to show feedback based upon whether _canShowFeedback is true
+  /**
+   * Triggers feedback display if `_canShowFeedback` is true, otherwise signals
+   * that feedback is disabled. Can be called by plugins to re-trigger feedback.
+   * @fires questionView:showFeedback
+   * @fires questionView:disabledFeedback
+   * @returns {void}
+   */
   showFeedback() {
 
     if (this.model.get('_canShowFeedback')) {
@@ -288,6 +396,13 @@ class QuestionView extends ComponentView {
 
   }
 
+  /**
+   * Resets the question to its pre-submission state: clears submitted classes,
+   * restores the stored user answer, re-evaluates canSubmit, and updates button
+   * state. When called after the view is ready, shifts focus to the first
+   * tabbable element for accessibility.
+   * @returns {void}
+   */
   onResetClicked() {
     this.setQuestionAsReset();
 
@@ -320,11 +435,19 @@ class QuestionView extends ComponentView {
   }
 
   /**
-   * Used by the question view to reset the look and feel of the component.
-   * This is triggered when the reset button is clicked so it shouldn't be a full reset.
+   * Override in component views to reset the visual state of the question
+   * (e.g. deselect items). Called when the reset button is clicked — this is a
+   * UI-only reset, not a full model reset.
+   * @protected
    */
   resetQuestion() {}
 
+  /**
+   * Re-evaluates button state and optionally re-renders marking. Called in
+   * response to the `question:refresh` model event. Defers `buttonsView.refresh`
+   * to allow any pending DOM updates to complete first.
+   * @returns {void}
+   */
   refresh() {
     this.model.set('_buttonState', this.model.getButtonState());
 
@@ -337,6 +460,11 @@ class QuestionView extends ComponentView {
     }
   }
 
+  /**
+   * Handles the show-correct-answer button press. Updates DOM state classes,
+   * refreshes buttons, then calls `showCorrectAnswer`.
+   * @returns {void}
+   */
   onShowCorrectAnswerClicked() {
     this.setQuestionAsShowCorrect();
 
@@ -351,11 +479,21 @@ class QuestionView extends ComponentView {
       .removeClass('show-user-answer');
   }
 
-  // Used by the question to display the correct answer to the user
+  /**
+   * Override in component views to display the correct answer. Also sets
+   * `_isCorrectAnswerShown` to `true` on the model.
+   * @protected
+   * @returns {void}
+   */
   showCorrectAnswer() {
     this.model.set('_isCorrectAnswerShown', true);
   }
 
+  /**
+   * Handles the hide-correct-answer button press. Updates DOM state classes,
+   * refreshes buttons, then calls `hideCorrectAnswer`.
+   * @returns {void}
+   */
   onHideCorrectAnswerClicked() {
     this.setQuestionAsHideCorrect();
 
@@ -370,19 +508,36 @@ class QuestionView extends ComponentView {
       .removeClass('show-correct-answer');
   }
 
-  // Used by the question to display the users answer and
-  // hide the correct answer
-  // Should use the values stored in storeUserAnswer
+  /**
+   * Override in component views to restore the learner's submitted answer
+   * after the correct answer has been shown. Should use the values stored by
+   * `storeUserAnswer`. Also sets `_isCorrectAnswerShown` to `false` on the model.
+   * @protected
+   * @returns {void}
+   */
   hideCorrectAnswer() {
     this.model.set('_isCorrectAnswerShown', false);
   }
 
-  // Time elapsed between the time the interaction was made available to the learner for response and the time of the first response
+  /**
+   * Returns the time elapsed between the question becoming available to the learner
+   * and their first response. Returns `null` here; override in component views to
+   * provide a measured value for SCORM interaction tracking.
+   * @returns {number|null} The measured latency, or `null` if not measured
+   */
   getLatency() {
     return null;
   }
 
-  // This function is overridden if useQuestionModeOnly: false. see below.
+  /**
+   * Dispatches a named method call to the question model. Overridden in
+   * `ViewOnlyQuestionViewCompatibilityLayer` to redirect to view-only
+   * implementations when the component has not yet migrated to a model.
+   * @param {string} name - Method name to call on the model
+   * @param {string} [lookForViewOnlyFunction] - Alternative method name to check for a view override
+   * @returns {*} Return value from the delegated method
+   * @protected
+   */
   _runModelCompatibleFunction(name, lookForViewOnlyFunction) {
     return this.model[name](); // questionModel Only
   }
@@ -406,69 +561,112 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
     * Please remove them from your question component's view.
   */
 
-  // Returns an object specific to the question type.
+  /**
+   * Returns an object describing the learner's interaction for SCORM/xAPI reporting.
+   * @returns {Object} Interaction object specific to the question type
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#getInteractionObject} instead
+   */
   getInteractionObject() {
     log.deprecated('QuestionView.getInteractionObject, please use QuestionModel.getInteractionObject');
     return this.model.getInteractionObject();
   }
 
-  // Retturns a string detailing how the user answered the question.
+  /**
+   * Returns a string describing how the learner answered the question.
+   * @returns {string} The learner's response
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#getResponse} instead
+   */
   getResponse() {
     log.deprecated('QuestionView.getResponse, please use QuestionModel.getResponse');
     return this.model.getResponse();
   }
 
-  // Returns a string describing the type of interaction: "choice" and "matching" supported (see scorm wrapper)
+  /**
+   * Returns a string describing the interaction type (e.g. `"choice"` or
+   * `"matching"`) for SCORM wrapper compatibility.
+   * @returns {string} The interaction type
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#getResponseType} instead
+   */
   getResponseType() {
     log.deprecated('QuestionView.getResponseType, please use QuestionModel.getResponseType');
     return this.model.getResponseType();
   }
 
-  // Calls default methods to setup on questions
+  /**
+   * Calls the default setup methods for the question.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupDefaultSettings} instead
+   */
   setupDefaultSettings() {
     log.deprecated('QuestionView.setupDefaultSettings, please use QuestionModel.setupDefaultSettings');
     return this.model.setupDefaultSettings();
   }
 
-  // Used to setup either global or local button text
+  /**
+   * Sets up the question's button text, using either the global or the local values.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupButtonSettings} instead
+   */
   setupButtonSettings() {
     log.deprecated('QuestionView.setupButtonSettings, please use QuestionModel.setupButtonSettings');
     return this.model.setupButtonSettings();
   }
 
-  // Used to setup either global or local question weight/score
+  /**
+   * Sets up the question's weight and score, using either the global or the local values.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupWeightSettings} instead
+   */
   setupWeightSettings() {
     log.deprecated('QuestionView.setupWeightSettings, please use QuestionModel.setupWeightSettings');
     return this.model.setupWeightSettings();
   }
 
-  // Use to check if the user is allowed to submit the question
-  // Maybe the user has to select an item?
+  /**
+   * Returns whether the learner's current selection is valid for submission.
+   * @returns {boolean}
+   * Checks whether the learner may submit the question — for example, whether
+   * they have selected an item.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#canSubmit} instead
+   */
   canSubmit() {
     log.deprecated('QuestionView.canSubmit, please use QuestionModel.canSubmit');
     return this.model.canSubmit();
   }
 
-  // Used to update the amount of attempts the user has left
+  /**
+   * Updates the number of attempts the learner has left.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#updateAttempts} instead
+   */
   updateAttempts() {
     log.deprecated('QuestionView.updateAttempts, please use QuestionModel.updateAttempts');
     return this.model.updateAttempts();
   }
 
-  // This is important for returning or showing the users answer
-  // This should preserve the state of the users answers
+  /**
+   * Stores the learner's current answer for later retrieval (e.g. when
+   * toggling between user answer and correct answer views).
+   * Stores the learner's answer, preserving its state so it can be returned to
+   * or redisplayed later.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#storeUserAnswer} instead
+   */
   storeUserAnswer() {
     log.deprecated('QuestionView.storeUserAnswer, please use QuestionModel.storeUserAnswer');
     return this.model.storeUserAnswer();
   }
 
-  // Used by the question view to reset the stored user answer
+  /**
+   * Resets the stored user answer ready for another attempt.
+   * @deprecated Use {@link module:core/js/models/componentModel~ComponentModel#resetUserAnswer} instead
+   */
   resetUserAnswer() {
     log.deprecated('QuestionView.resetUserAnswer, please use QuestionModel.resetUserAnswer');
     return this.model.resetUserAnswer();
   }
 
-  // Sets _isCorrect:true/false based upon isCorrect method below
+  /**
+   * Sets `_isCorrect` on the model based on `isCorrect()`, then calculates
+   * raw, max, and min scores. Falls back to `model.markQuestion()` when not
+   * in view-only compatible mode.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#markQuestion} instead
+   */
   markQuestion() {
 
     if (this._isInViewOnlyCompatibleMode('isCorrect')) {
@@ -490,26 +688,41 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
     }
   }
 
-  // Should return a boolean based upon whether to question is correct or not
+  /**
+   * Returns whether the learner's answer is correct.
+   * @returns {boolean}
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#isCorrect} instead
+   */
   isCorrect() {
     log.deprecated('QuestionView.isCorrect, please use QuestionModel.isCorrect');
     return this.model.isCorrect();
   }
 
-  // Used to set the score based upon the _questionWeight
+  /**
+   * Sets the question's score based upon `_questionWeight`.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setScore} instead
+   */
   setScore() {
     log.deprecated('QuestionView.setScore, please use QuestionModel.setScore');
     return this.model.setScore();
   }
 
-  // Updates buttons based upon question state by setting
-  // _buttonState on the model which buttonsView listens to
+  /**
+   * Updates the buttons for the current question state by setting `_buttonState`
+   * on the model, which `buttonsView` listens to and renders from.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#updateButtons} instead
+   */
   updateButtons() {
     log.deprecated('QuestionView.updateButtons, please use QuestionModel.updateButtons');
     return this.model.updateButtons();
   }
 
-  // Used to setup the correct, incorrect and partly correct feedback
+  /**
+   * Sets up the appropriate feedback (correct, partly correct, or incorrect)
+   * based on the question outcome. Uses view-based feedback methods when in
+   * view-only compatible mode, otherwise delegates to `model.setupFeedback()`.
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#setupFeedback} instead
+   */
   setupFeedback() {
 
     if (this._isInViewOnlyCompatibleMode('isPartlyCorrect')) {
@@ -530,23 +743,40 @@ class ViewOnlyQuestionViewCompatibilityLayer extends QuestionView {
 
   }
 
-  // Used by the question to determine if the question is incorrect or partly correct
-  // Should return a boolean
+  /**
+   * Returns whether the learner's answer is partly correct.
+   * @returns {boolean}
+   * Determines whether the question is partly correct rather than incorrect.
+   * @returns {boolean} `true` if the question is partly correct
+   * @deprecated Use {@link module:core/js/models/questionModel~QuestionModel#isPartlyCorrect} instead
+   */
   isPartlyCorrect() {
     log.deprecated('QuestionView.isPartlyCorrect, please use QuestionModel.isPartlyCorrect');
     return this.model.isPartlyCorrect();
   }
 
+  /**
+   * Sets up the correct feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
+   */
   setupCorrectFeedback() {
     log.deprecated('QuestionView.setupCorrectFeedback, please use QuestionModel.setupCorrectFeedback');
     return this.model.setupCorrectFeedback();
   }
 
+  /**
+   * Sets up the partly correct feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
+   */
   setupPartlyCorrectFeedback() {
     log.deprecated('QuestionView.setupPartlyCorrectFeedback, please use QuestionModel.setupPartlyCorrectFeedback');
     return this.model.setupPartlyCorrectFeedback();
   }
 
+  /**
+   * Sets up the incorrect feedback for the question.
+   * @deprecated Use the model's own feedback setup instead; this view method only delegates
+   */
   setupIncorrectFeedback() {
     log.deprecated('QuestionView.setupIncorrectFeedback, please use QuestionModel.setupIncorrectFeedback');
     return this.model.setupIncorrectFeedback();
