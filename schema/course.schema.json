@@ -8,9 +8,6 @@
     },
     "with": {
       "properties": {
-        "displayTitle": {
-          "default": "Untitled"
-        },
         "heroImage": {
           "type": "string",
           "title": "Preview image",
