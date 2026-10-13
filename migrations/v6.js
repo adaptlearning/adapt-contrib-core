@@ -829,3 +829,62 @@ describe('core - 6.74.0 to 6.75.0', async () => {
     content: [{ _type: 'config' }]
   });
 });
+
+describe('core - @@CURRENT_VERSION to @@RELEASE_VERSION', async () => {
+  let course;
+
+  whereFromPlugin('core - from @@CURRENT_VERSION', { name: 'adapt-contrib-core', version: '<@@RELEASE_VERSION' });
+
+  whereContent('core - where course', async (content) => {
+    course = getCourse();
+    return course;
+  });
+
+  mutateContent('core - add course._globals._extensions._drawer.title', async (content) => {
+    if (_.has(course, '_globals._extensions._drawer.title')) return true;
+    _.set(course, '_globals._extensions._drawer.title', 'Course resources');
+    return true;
+  });
+
+  mutateContent('core - add course._globals._extensions._drawer._isTitleVisible', async (content) => {
+    if (_.has(course, '_globals._extensions._drawer._isTitleVisible')) return true;
+    _.set(course, '_globals._extensions._drawer._isTitleVisible', false);
+    return true;
+  });
+
+  checkContent('core - check course._globals._extensions._drawer.title', async (content) => {
+    const isValid = _.has(course, '_globals._extensions._drawer.title');
+    if (!isValid) throw new Error('core - missing _globals._extensions._drawer.title');
+    return true;
+  });
+
+  checkContent('core - check course._globals._extensions._drawer._isTitleVisible', async (content) => {
+    const isValid = _.has(course, '_globals._extensions._drawer._isTitleVisible');
+    if (!isValid) throw new Error('core - missing _globals._extensions._drawer._isTitleVisible');
+    return true;
+  });
+
+  updatePlugin('core - update to @@RELEASE_VERSION', { name: 'adapt-contrib-core', version: '@@RELEASE_VERSION', framework: '>=5.20.2' });
+
+  testSuccessWhere('correct version with empty course', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
+    content: [
+      { _type: 'course' }
+    ]
+  });
+
+  testSuccessWhere('correct version with existing drawer globals', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@CURRENT_VERSION' }],
+    content: [
+      { _type: 'course', _globals: { _extensions: { _drawer: { _navOrder: 100 } } } }
+    ]
+  });
+
+  testStopWhere('incorrect version', {
+    fromPlugins: [{ name: 'adapt-contrib-core', version: '@@RELEASE_VERSION' }]
+  });
+
+  testStopWhere('no course', {
+    content: [{ _type: 'config' }]
+  });
+});

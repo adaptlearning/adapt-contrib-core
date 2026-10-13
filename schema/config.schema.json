@@ -144,6 +144,11 @@
               "type": "string",
               "title": "Notify popup title",
               "default": "1"
+            },
+            "_drawer": {
+              "type": "string",
+              "title": "Drawer title",
+              "default": "1"
             }
           }
         },

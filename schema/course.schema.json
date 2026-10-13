@@ -369,6 +369,21 @@
                   "title": "Drawer",
                   "default": {},
                   "properties": {
+                    "title": {
+                      "type": "string",
+                      "title": "Title",
+                      "description": "Heading for the drawer when it lists more than one item. Used as the accessible name of the drawer",
+                      "default": "Course resources",
+                      "_adapt": {
+                        "translatable": true
+                      }
+                    },
+                    "_isTitleVisible": {
+                      "type": "boolean",
+                      "title": "Display title",
+                      "description": "If enabled, the title is displayed as a heading at the top of the drawer. Otherwise it is only read by screen readers",
+                      "default": false
+                    },
                     "_navOrder": {
                       "type": "number",
                       "title": "Navigation bar order",
