@@ -124,6 +124,9 @@ class Drawer extends Backbone.Controller {
    * @param {Backbone.View|jQuery|HTMLElement|string} view - View instance or HTML content to display
    * @param {boolean} [hasBackButton=true] - Show back button to return to drawer list
    * @param {string} [position] - Override drawer position ('left'|'right', null uses global config)
+   * @param {Object} [options] - Heading options
+   * @param {string} [options.title] - Heading text, used as the dialog's accessible name. Defaults to `_globals._accessibility._ariaLabels.drawer`
+   * @param {boolean} [options.isTitleVisible=false] - Show the heading on screen
    * @fires drawer:opened
    * @fires drawer:openedCustomView
    * @fires drawer:empty
@@ -135,9 +138,12 @@ class Drawer extends Backbone.Controller {
    *
    * // Or use simple HTML
    * drawer.openCustomView('<div>Simple HTML</div>', false);
+   *
+   * // Name the drawer with a heading, shown on screen
+   * drawer.openCustomView(resourcesView, true, null, { title: 'Resources', isTitleVisible: true });
    */
-  openCustomView(view, hasBackButton, position) {
-    this._drawerView?.openCustomView(view, hasBackButton, position);
+  openCustomView(view, hasBackButton, position, options) {
+    this._drawerView?.openCustomView(view, hasBackButton, position, options);
   }
 
   /**

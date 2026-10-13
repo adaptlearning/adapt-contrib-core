@@ -67,6 +67,27 @@
     margin-inline-end: auto;
   }
 
+  // Visible drawer heading, a fixed row between the toolbar and the scrolling holder
+  // Long titles (e.g. German compound words) wrap rather than overflow
+  // --------------------------------------------------
+  &__title:not(.aria-label) {
+    flex: 0 0 auto;
+    padding: 0.5rem 1rem;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  &.has-title &__inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &.has-title &__holder {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+
   &__back .icon {
     .icon-controls-small-left;
   }
