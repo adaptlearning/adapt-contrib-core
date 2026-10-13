@@ -255,6 +255,16 @@ class DrawerView extends Backbone.View {
    * await this.showDrawer(null, 'right');
    */
   async showDrawer(emptyDrawer, position = null) {
+    if (emptyDrawer && this.collection.models.length === 1) {
+      // A single drawer item opens its own view directly. Its callback calls
+      // openCustomView(), which shows the drawer, so it must not be shown here too
+      Adapt.trigger(this.collection.models[0].get('eventCallback'));
+      const hasOpenedCustomView = this._isCustomViewVisible;
+      // Set _isCustomViewVisible to false to prevent re-rendering
+      // the drawer and fix the toggle functionality on toggle button press
+      this._isCustomViewVisible = false;
+      if (hasOpenedCustomView) return;
+    }
     shadow.show();
     this.setDrawerPosition(position);
     this.$el
@@ -271,19 +281,9 @@ class DrawerView extends Backbone.View {
       this.$('.drawer__back').addClass('u-display-none');
       this._isCustomViewVisible = false;
       this.emptyDrawer();
-      if (this.collection.models.length === 1) {
-        // This callback triggers openCustomView() and sets
-        // _isCustomViewVisible to true, causing toggleDrawer()
-        // to re-render the drawer on every toggle button press
-        Adapt.trigger(this.collection.models[0].get('eventCallback'));
-        // Set _isCustomViewVisible to false to prevent re-rendering
-        // the drawer and fix the toggle functionality on toggle button press
-        this._isCustomViewVisible = false;
-      } else {
-        this._useMenuPosition = true;
-        this.renderItems();
-        Adapt.trigger('drawer:openedItemView');
-      }
+      this._useMenuPosition = true;
+      this.renderItems();
+      Adapt.trigger('drawer:openedItemView');
     } else {
       const hideDrawerBackButton = (!this._hasBackButton || this.collection.models.length <= 1);
       this.$('.drawer__back').toggleClass('u-display-none', hideDrawerBackButton);
