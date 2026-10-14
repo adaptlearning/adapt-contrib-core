@@ -294,6 +294,7 @@ class Data extends AdaptCollection {
    * @private
    */
   async loadManifestFiles(languagePath) {
+    this.isReady = false;
     this.trigger('loading');
     this.reset();
     this._byAdaptID = {};
