@@ -308,20 +308,16 @@ describe('core - update to v5.12.0', async () => {
     return course;
   });
 
+  // Visible button text is only added where missing. Existing text, including the old defaults, is
+  // kept because the longer new defaults can wrap in themes sized for the old ones
   mutateContent('core - add course._buttons._showCorrectAnswer.buttonText', async (content) => {
-    if (_.has(course, '_buttons._showCorrectAnswer.buttonText') &&
-        _.get(course, '_buttons._showCorrectAnswer.buttonText') !== originalShowCorrectAnswer) {
-      return true;
-    };
+    if (_.has(course, '_buttons._showCorrectAnswer.buttonText')) return true;
     _.set(course, '_buttons._showCorrectAnswer.buttonText', newShowCorrectAnswer);
     return true;
   });
 
   mutateContent('core - add course._buttons._hideCorrectAnswer.buttonText', async (content) => {
-    if (_.has(course, '_buttons._hideCorrectAnswer.buttonText') &&
-        _.get(course, '_buttons._hideCorrectAnswer.buttonText') !== originalHideCorrectAnswer) {
-      return true;
-    };
+    if (_.has(course, '_buttons._hideCorrectAnswer.buttonText')) return true;
     _.set(course, '_buttons._hideCorrectAnswer.buttonText', newHideCorrectAnswer);
     return true;
   });
@@ -336,14 +332,14 @@ describe('core - update to v5.12.0', async () => {
   });
 
   checkContent('core - check course._buttons._showCorrectAnswer.buttonText', async (content) => {
-    const isValid = _.get(course, '_buttons._showCorrectAnswer.buttonText') !== originalShowCorrectAnswer;
-    if (!isValid) throw new Error('core - _buttons._showCorrectAnswer.buttonText not modified');
+    const isValid = _.has(course, '_buttons._showCorrectAnswer.buttonText');
+    if (!isValid) throw new Error('core - _buttons._showCorrectAnswer.buttonText not added');
     return true;
   });
 
   checkContent('core - check course._buttons._hideCorrectAnswer.buttonText', async (content) => {
-    const isValid = _.get(course, '_buttons._hideCorrectAnswer.buttonText') !== originalHideCorrectAnswer;
-    if (!isValid) throw new Error('core - _buttons._hideCorrectAnswer.buttonText not modified');
+    const isValid = _.has(course, '_buttons._hideCorrectAnswer.buttonText');
+    if (!isValid) throw new Error('core - _buttons._hideCorrectAnswer.buttonText not added');
     return true;
   });
 
