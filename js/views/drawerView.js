@@ -51,6 +51,14 @@ import {
   transitionsEnded
 } from '../transitions';
 import logging from '../logging';
+import defaultAriaLevels from 'core/js/enums/defaultAriaLevels';
+import { compile } from 'core/js/reactHelpers';
+
+/**
+ * @typedef {Object} DrawerCustomViewOptions
+ * @property {string} [title] - Heading text for the drawer, used as the dialog's accessible name. Defaults to `_globals._accessibility._ariaLabels.drawer`
+ * @property {boolean} [isTitleVisible=false] - Show the heading on screen rather than only to screen readers
+ */
 
 /**
  * @typedef {Object} DrawerCloseOptions
@@ -185,20 +193,45 @@ class DrawerView extends Backbone.View {
   }
 
   /**
+   * Sets the drawer heading, which labels the dialog.
+   * Falls back to `_globals._accessibility._ariaLabels.drawer` when no title is given.
+   * @param {string} [title] - Heading text (may contain handlebars and html)
+   * @param {boolean} [isTitleVisible=false] - Show the heading on screen
+   * @private
+   */
+  setTitle(title, isTitleVisible = false) {
+    const _globals = Adapt.course.get('_globals');
+    const hasTitle = Boolean(title);
+    const text = compile(title || (_globals?._accessibility?._ariaLabels?.drawer ?? ''), { _globals });
+    const level = a11y.ariaLevel({
+      override: Adapt.config.get('_accessibility')?._ariaLevels?._drawer ?? defaultAriaLevels._drawer
+    });
+    this.$('.js-drawer-title-inner')
+      .html(text)
+      .attr('aria-level', level);
+    const isVisible = hasTitle && Boolean(isTitleVisible);
+    this.$('.js-drawer-title').toggleClass('aria-label', !isVisible);
+    this.$el.toggleClass('has-title', isVisible);
+  }
+
+  /**
    * Opens drawer with custom view content.
    * Called by {@link module:core/js/drawer#openCustomView}.
    * @param {Backbone.View|jQuery|HTMLElement|string} view - View instance or HTML content
    * @param {boolean} [hasBackButton=true] - Show back button to return to drawer.
    * @param {string} [position] - Override drawer position ('left'|'right')
+   * @param {DrawerCustomViewOptions} [options] - Heading options
    * @fires drawer:empty
    * @fires drawer:opened
    * @fires drawer:openedCustomView
    * @example
    * this.openCustomView(new ResourcesView(), true, 'right');
    * this.openCustomView($('<div>Content</div>'), false);
+   * this.openCustomView(new ResourcesView(), true, null, { title: 'Resources' });
    */
-  openCustomView(view, hasBackButton = true, position) {
+  openCustomView(view, hasBackButton = true, position, { title, isTitleVisible = false } = {}) {
     this.$('.js-drawer-holder').removeAttr('role');
+    this.setTitle(title, isTitleVisible);
     this._hasBackButton = hasBackButton;
     this._isCustomViewVisible = true;
     this._customView = view;
@@ -281,6 +314,8 @@ class DrawerView extends Backbone.View {
         this._isCustomViewVisible = false;
       } else {
         this._useMenuPosition = true;
+        const { title, _isTitleVisible } = Adapt.course.get('_globals')?._extensions?._drawer ?? {};
+        this.setTitle(title, _isTitleVisible);
         this.renderItems();
         Adapt.trigger('drawer:openedItemView');
       }

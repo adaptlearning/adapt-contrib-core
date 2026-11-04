@@ -1,7 +1,5 @@
 <div class="drawer__inner">
 
-  <span id="drawer-heading" class="aria-label" aria-hidden="true">{{_globals._accessibility._ariaLabels.drawer}}</span>
-
   <div class="drawer__toolbar">
 
     <div class="drawer__back">
@@ -16,6 +14,10 @@
       </button>
     </div>
 
+  </div>
+
+  <div class="drawer__title js-drawer-title aria-label" id="drawer-heading">
+    <div class="drawer__title-inner js-drawer-title-inner" role="heading" aria-level="1">{{_globals._accessibility._ariaLabels.drawer}}</div>
   </div>
 
   <div class="drawer__holder js-drawer-holder"></div>

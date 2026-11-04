@@ -7,5 +7,6 @@ export default {
   _block: 3,
   _component: 4,
   _componentItem: 5,
-  _notify: 1
+  _notify: 1,
+  _drawer: 1
 };
